@@ -7,7 +7,7 @@ set(CMAKE_CXX_STANDARD 20)
 # strongly encouraged to enable this globally to avoid conflicts between
 # -Wpedantic being enabled and -std=c++20 and -std=gnu++20 for example
 # when compiling with PCH enabled
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_EXTENSIONS ON)
 
 # Note: by default ENABLE_DEVELOPER_MODE is True
 # This means that all analysis (sanitizers, static analysis)
@@ -36,7 +36,7 @@ include(${_project_options_SOURCE_DIR}/Index.cmake)
 project(
   JEngine3D
   VERSION 0.0.1
-  DESCRIPTION ""
+  DESCRIPTION "Custom game engine JEngine3D"
   HOMEPAGE_URL "https://github.com/JesusKrists/JEngine3D"
   LANGUAGES CXX C)
 
@@ -87,11 +87,30 @@ include(${_project_options_SOURCE_DIR}/src/DynamicProjectOptions.cmake)
 # This overwrites `project_options` and sets `project_warnings`
 # uncomment the options to enable them:
 dynamic_project_options(
+  # ENABLE_CACHE
+  # ENABLE_CPPCHECK
+  # ENABLE_CLANG_TIDY
+  # ENABLE_CONAN
+  # ENABLE_INTERPROCEDURAL_OPTIMIZATION
+  # ENABLE_NATIVE_OPTIMIZATION
+  # ENABLE_DOXYGEN
+  # ENABLE_COVERAGE
+  # ENABLE_SANITIZER_ADDRESS
+  # ENABLE_SANITIZER_LEAK
+  # ENABLE_SANITIZER_UNDEFINED_BEHAVIOR
+  # ENABLE_SANITIZER_THREAD
+  # ENABLE_SANITIZER_MEMORY
+  # ENABLE_PCH
   # Note: PCH is disabled by default in developer mode because these headers become
   # globally included and they can mask other errors
-  PCH_HEADERS
-  <vector>
-  <string> # This is a list of headers to pre-compile, here are some common ones
+  # PCH_HEADERS
+  # <vector>
+  # <string> # This is a list of headers to pre-compile, here are some common ones
+  # WARNINGS_AS_ERRORS
+  # ENABLE_INCLUDE_WHAT_YOU_USE
+  # ENABLE_USER_LINKER
+  # ENABLE_BUILD_WITH_TIME_TRACE
+  # ENABLE_UNITY
   # CONAN_OPTIONS    # Extra options to pass to conan
   # MSVC_WARNINGS    # Override the defaults for the MSVC warnings
   # CLANG_WARNINGS   # Override the defaults for the CLANG warnings
