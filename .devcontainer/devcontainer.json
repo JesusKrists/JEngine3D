@@ -1,18 +1,19 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.205.2/containers/cpp
 {
-	"name": "C++",
+	"name": "JEngine3D C++",
 	"build": {
 		"dockerfile": "Dockerfile",
 		// Update 'VARIANT' to pick an Ubuntu OS version. Options: [bionic, focal]. Default: focal
 		// Update 'GCC_VER' to pick a gcc and g++ version. Options: [7, 8, 9, 10, 11]. Default: 11
 		// Update 'LLVM_VER' to pick clang version. Options: [10, 11, 12, 13]. Default: 13
 		// Update 'USE_CLANG' to set clang as the default C and C++ compiler. Options: [1, null]. Default null
-		// "args": {
-		// 	"VARIANT": "focal",
-		// 	"GCC_VER": "11",
-		// 	"LLVM_VER": "13"
-		// }
+		"args": {
+			"VARIANT": "focal",
+			"GCC_VER": "11",
+			"LLVM_VER": "13",
+			"USE_CLANG": "1"
+		}
 	},
 	"runArgs": [
 		"--cap-add=SYS_PTRACE",
@@ -21,8 +22,16 @@
 	],
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
-		"cmake.configureOnOpen": true,
-		"editor.formatOnSave": true
+		"workbench.tree.indent": 24,
+		"cmake.configureOnOpen": false,
+		"editor.formatOnSave": true,
+		"workbench.iconTheme": "vscode-icons",
+		"workbench.colorTheme": "Visual Studio Dark - C++",
+		"editor.fontFamily": "Source Code Pro, Consolas, 'Courier New', monospace",
+		"tabnine.experimentalAutoImports": true,
+		"files.exclude": {
+			"**/.git": false
+		},
 	},
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
@@ -35,7 +44,7 @@
 		"ms-python.python",
 		"ms-python.vscode-pylance",
 		"mutantdino.resourcemonitor",
-		// Custom extensions added my Jesus
+		// Custom extensions added by Jesus
 		"jeff-hykin.better-cpp-syntax",
 		"TabNine.tabnine-vscode",
 		"vscode-icons-team.vscode-icons",
