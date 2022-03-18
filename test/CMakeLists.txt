@@ -5,12 +5,26 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(Catch2)
 list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
+set_property(TARGET Catch2 PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
+set_property(TARGET Catch2 PROPERTY C_INCLUDE_WHAT_YOU_USE "")
+set_property(TARGET Catch2WithMain PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
+set_property(TARGET Catch2WithMain PROPERTY C_INCLUDE_WHAT_YOU_USE "")
+#
+set_property(TARGET Catch2 PROPERTY CXX_CLANG_TIDY "")
+set_property(TARGET Catch2 PROPERTY C_CLANG_TIDY "")
+set_property(TARGET Catch2WithMain PROPERTY CXX_CLANG_TIDY "")
+set_property(TARGET Catch2WithMain PROPERTY C_CLANG_TIDY "")
+#
+set_property(TARGET Catch2 PROPERTY CXX_CPPCHECK "")
+set_property(TARGET Catch2 PROPERTY C_CPPCHECK "")
+set_property(TARGET Catch2WithMain PROPERTY CXX_CPPCHECK "")
+set_property(TARGET Catch2WithMain PROPERTY C_CPPCHECK "")
 
 include(CTest)
 include(Catch)
 
 add_library(catch_main OBJECT catch_main.cpp)
-target_link_libraries(catch_main PUBLIC Catch2::Catch2)
+target_link_system_libraries(catch_main PUBLIC Catch2::Catch2)
 target_link_libraries(catch_main PRIVATE project_options)
 
 # Provide a simple smoke test to make sure that the CLI works and can display a --help message
@@ -24,7 +38,8 @@ add_test(NAME cli.version_matches COMMAND JEngine3D_Editor_Executable --version)
 set_tests_properties(cli.version_matches PROPERTIES PASS_REGULAR_EXPRESSION "${PROJECT_VERSION}")
 
 add_executable(tests tests.cpp)
-target_link_libraries(tests PRIVATE project_warnings project_options catch_main)
+target_link_libraries(tests PRIVATE project_warnings project_options Catch2WithMain #catch_main
+)
 
 # automatically discover tests that are defined in catch based test files you can modify the unittests. Set TEST_PREFIX
 # to whatever you want, or use different for different binaries
@@ -43,7 +58,8 @@ catch_discover_tests(
 
 # Add a file containing a set of constexpr tests
 add_executable(constexpr_tests constexpr_tests.cpp)
-target_link_libraries(constexpr_tests PRIVATE project_options project_warnings catch_main)
+target_link_libraries(constexpr_tests PRIVATE project_options project_warnings Catch2WithMain #catch_main
+)
 
 catch_discover_tests(
   constexpr_tests
@@ -61,7 +77,8 @@ catch_discover_tests(
 # Disable the constexpr portion of the test, and build again this allows us to have an executable that we can debug when
 # things go wrong with the constexpr testing
 add_executable(relaxed_constexpr_tests constexpr_tests.cpp)
-target_link_libraries(relaxed_constexpr_tests PRIVATE project_options project_warnings catch_main)
+target_link_libraries(relaxed_constexpr_tests PRIVATE project_options project_warnings Catch2WithMain #catch_main
+)
 target_compile_definitions(relaxed_constexpr_tests PRIVATE -DCATCH_CONFIG_RUNTIME_STATIC_REQUIRE)
 
 catch_discover_tests(

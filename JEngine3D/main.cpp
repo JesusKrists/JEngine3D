@@ -1,7 +1,7 @@
 #include <functional>
 #include <iostream>
 
-#include <docopt/docopt.h>
+#include <docopt.h>
 #include <spdlog/spdlog.h>
 
 // This file will be generated automatically when you run the CMake configuration step.
@@ -9,7 +9,8 @@
 // You can modify the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>
 
-static constexpr auto USAGE =
+
+[[maybe_unused]] static constexpr auto USAGE =
   R"(Naval Fate.
 
     Usage:
@@ -27,9 +28,9 @@ static constexpr auto USAGE =
           --drifting    Drifting mine.
 )";
 
-int main(int argc, const char **argv)
+int main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv)
 {
-  try {
+  /*try {
     std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
       { std::next(argv), std::next(argv, argc) },
       true,// show help if requested
@@ -46,5 +47,5 @@ int main(int argc, const char **argv)
     fmt::print("Hello, from {}\n", "{fmt}");
   } catch (const std::exception &e) {
     fmt::print("Unhandled exception in main: {}", e.what());
-  }
+  }*/
 }
