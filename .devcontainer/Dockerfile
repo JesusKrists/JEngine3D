@@ -21,6 +21,9 @@ RUN python3 -m pip install --upgrade pip setuptools && \
 # Install cmake-format
 RUN python3 -m pip install cmakelang
 
+# Install clang-format
+RUN apt-get install -y clang-format
+
 # Install packages required by SDL2
 RUN apt-get -y install libx11-dev libx11-xcb-dev libfontenc-dev libice-dev libsm-dev \
     libxau-dev libxaw7-dev libxcomposite-dev libxcursor-dev libxdamage-dev libxdmcp-dev \

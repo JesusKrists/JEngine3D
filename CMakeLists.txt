@@ -20,11 +20,11 @@ set(ENABLE_DEVELOPER_MODE
 # Change this to false if you want to disable warnings_as_errors in developer mode
 set(OPT_WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT TRUE)
 
-# Add project_options v0.17.0
+# Add project_options v0.19.0
 # https://github.com/cpp-best-practices/project_options
 include(FetchContent)
 FetchContent_Declare(_project_options
-                     URL https://github.com/cpp-best-practices/project_options/archive/refs/tags/v0.17.0.zip)
+                     URL https://github.com/cpp-best-practices/project_options/archive/refs/tags/v0.19.0.zip)
 FetchContent_MakeAvailable(_project_options)
 include(${_project_options_SOURCE_DIR}/Index.cmake)
 
