@@ -18,7 +18,8 @@ set(ENABLE_DEVELOPER_MODE
     CACHE BOOL "Enable 'developer mode'")
 
 # Change this to false if you want to disable warnings_as_errors in developer mode
-set(OPT_WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT TRUE)
+set(WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT TRUE)
+set(ENABLE_INCLUDE_WHAT_YOU_USE_DEVELOPER_DEFAULT TRUE)
 
 # Add project_options v0.19.0
 # https://github.com/cpp-best-practices/project_options
@@ -27,6 +28,15 @@ FetchContent_Declare(_project_options
                      URL https://github.com/cpp-best-practices/project_options/archive/refs/tags/v0.19.0.zip)
 FetchContent_MakeAvailable(_project_options)
 include(${_project_options_SOURCE_DIR}/Index.cmake)
+include(${_project_options_SOURCE_DIR}/src/DynamicProjectOptions.cmake)
+
+# Set the project name and language
+project(
+  JEngine3D
+  VERSION 0.0.1
+  DESCRIPTION "Custom game engine JEngine3D"
+  HOMEPAGE_URL "https://github.com/JesusKrists/JEngine3D"
+  LANGUAGES CXX C)
 
 set(GIT_SHA
     "Unknown"
@@ -58,8 +68,6 @@ if(BUILDING_MULTI_CONFIG)
         CACHE STRING "Enabled build types" FORCE)
   endif()
 endif()
-
-include(${_project_options_SOURCE_DIR}/src/DynamicProjectOptions.cmake)
 
 # defaulted_project_options sets recommended defaults and provides user and developer
 # modes and full GUI support for choosing options at configure time
@@ -108,6 +116,9 @@ dynamic_project_options(
 
 target_compile_features(project_options INTERFACE cxx_std_${CMAKE_CXX_STANDARD})
 
+# Add 3rd party libraries (SDL2, imgui, etc.)
+include(CMake/Vendor.cmake)
+
 # Adding the src:
 add_subdirectory(JEngine3D)
 add_subdirectory(JEngine3D_Editor)
@@ -116,8 +127,7 @@ add_subdirectory(JEngine3D_Editor)
 option(ENABLE_TESTING "Enable the tests" ON)
 if(ENABLE_TESTING)
   enable_testing()
-  message("Building Tests. Be sure to check out test/constexpr_tests for constexpr
-testing")
+  message("Building Tests. Be sure to check out test/constexpr_tests for constexpr testing")
   add_subdirectory(test)
 endif()
 
@@ -139,8 +149,16 @@ set_property(DIRECTORY PROPERTY VS_STARTUP_PROJECT JEngine3D_Editor_Executable)
 
 # Add other targets that you want installed here, be default we just package the one executable
 # we know we want to ship
-package_project(TARGETS JEngine3D)
-package_project(TARGETS JEngine3D_Editor_Executable)
+package_project(
+  TARGETS
+  JEngine3D
+  JEngine3D_Editor_Executable
+  project_options
+  project_warnings
+  ####################
+  docopt
+  fmt
+  spdlog)
 
 # Experience shows that explicit package naming can help make it easier to sort
 # out potential ABI related issues before they start, while helping you

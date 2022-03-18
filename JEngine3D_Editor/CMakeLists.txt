@@ -20,7 +20,7 @@ target_link_libraries(
 
 add_executable(JEngine3D_Editor_Executable "main copy.cpp")
 target_link_libraries(
-  JEngine3D_Editor
+  JEngine3D_Editor_Executable
   PRIVATE project_options
           project_warnings
           docopt::docopt
@@ -28,5 +28,5 @@ target_link_libraries(
           spdlog::spdlog
           JEngine3D_Editor)
 
-target_include_directories(JEngine3D_Editor PRIVATE "${CMAKE_BINARY_DIR}/configured_files/include")
-target_include_directories(JEngine3D_Editor_Executable PRIVATE "${CMAKE_BINARY_DIR}/configured_files/include")
+target_include_directories(JEngine3D_Editor PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/include")
+target_include_directories(JEngine3D_Editor_Executable PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/include")
