@@ -117,7 +117,7 @@ jobs:
 
           cmake: true
           ninja: true
-          conan: true
+          conan: false
           vcpkg: false
           ccache: true
           clangtidy: true
