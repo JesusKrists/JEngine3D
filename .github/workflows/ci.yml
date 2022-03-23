@@ -209,6 +209,18 @@ jobs:
           pwd
           gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml test --gcov-executable '${{ matrix.gcov_executable }}'
 
+      - name: DEBUG - print build directory contents
+        if: runner.os != 'Windows'
+        run: |
+          ls
+          cd test
+          ls
+          cd CMakeFiles
+          ls
+          cd tests.dir
+          ls
+
+
       - name: Windows - Test and coverage
         if: runner.os == 'Windows'
         working-directory: ./build
