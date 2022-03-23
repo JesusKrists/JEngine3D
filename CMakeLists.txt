@@ -165,8 +165,7 @@ package_project(
   project_options
   project_warnings
   ####################
-  docopt
-  fmt
+  docopt_s
   spdlog)
 
 # Experience shows that explicit package naming can help make it easier to sort

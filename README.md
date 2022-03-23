@@ -7,6 +7,7 @@
 
 ## About JEngine3D
 
+My own game engine because why not. I enjoy making my own stuff
 
 
 ## More Details

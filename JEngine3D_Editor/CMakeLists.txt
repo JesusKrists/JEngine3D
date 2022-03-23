@@ -15,7 +15,6 @@ target_link_system_libraries(
   JEngine3D_Editor
   PRIVATE
   docopt::docopt
-  fmt::fmt
   spdlog::spdlog)
 
 add_executable(JEngine3D_Editor_Executable "main copy.cpp")
@@ -29,7 +28,6 @@ target_link_system_libraries(
   JEngine3D_Editor_Executable
   PRIVATE
   docopt::docopt
-  fmt::fmt
   spdlog::spdlog)
 
 target_include_directories(JEngine3D_Editor
