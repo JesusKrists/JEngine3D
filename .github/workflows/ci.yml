@@ -16,7 +16,7 @@ env:
   CONAN_SYSREQUIRES_MODE: enabled
   CONAN_USER_HOME: "${{ github.workspace }}/conan-cache"
   CONAN_USER_HOME_SHORT: "${{ github.workspace }}/conan-cache/short"
-  # SonarCloud stuff added my me
+  # SonarCloud stuff added by me
   SONAR_SCANNER_VERSION: 4.7.0.2747
   SONAR_SERVER_URL: "https://sonarcloud.io"
   BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory # Directory where build-wrapper output will be placed
@@ -50,6 +50,9 @@ jobs:
         developer_mode:
           - ON
           - OFF
+        sonarcloud_build:
+          - ON
+          - OFF
 
         exclude:
           # mingw is determined by this author to be too buggy to support
@@ -57,6 +60,21 @@ jobs:
             compiler: gcc
           - os: ubuntu-20.04
             compiler: llvm
+
+          - os: macos-11
+            sonarcloud_build: ON
+          - os: windows-2022
+            sonarcloud_build: ON
+
+          - os: ubuntu-20.04
+            compiler: gcc
+            sonarcloud_build: ON
+            developer_mode: ON
+          - os: ubuntu-20.04
+            compiler: gcc
+            sonarcloud_build: ON
+            developer_mode: OFF
+            build_type: Release
 
         include:
           # Add appropriate variables for gcov version required. This will intentionally break
@@ -92,13 +110,6 @@ jobs:
             build_type: Release
             developer_mode: OFF
             package_generator: ZIP
-          - os: ubuntu-20.04
-            compiler: gcc
-            gcov_executable: gcov
-            build_type: Debug
-            developer_mode: OFF
-            sonarcloud_build: ON
-
 
 
     steps:
@@ -145,13 +156,13 @@ jobs:
           sudo apt-get -y install libx11-dev libx11-xcb-dev libfontenc-dev libice-dev libsm-dev libxau-dev libxaw7-dev libxcomposite-dev libxcursor-dev libxdamage-dev libxdmcp-dev libxext-dev libxfixes-dev libxft-dev libxi-dev libxinerama-dev libxkbfile-dev libxmu-dev libxmuu-dev libxpm-dev libxrandr-dev libxrender-dev libxres-dev libxss-dev libxt-dev libxtst-dev libxv-dev libxvmc-dev libxxf86vm-dev xtrans-dev libxcb-render0-dev libxcb-render-util0-dev libxcb-xkb-dev libxcb-icccm4-dev libxcb-image0-dev libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-sync-dev libxcb-xfixes0-dev libxcb-xinerama0-dev xkb-data libxcb-dri3-dev libxcb-util-dev libegl-dev
 
       - name: Set up JDK 11
-        if: matrix.sonarcloud_build != ''
+        if: matrix.sonarcloud_build == 'ON'
         uses: actions/setup-java@v1
         with:
           java-version: 11
 
       - name: Download and set up sonar-scanner
-        if: matrix.sonarcloud_build != ''
+        if: matrix.sonarcloud_build == 'ON'
         env:
           SONAR_SCANNER_DOWNLOAD_URL: https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-${{ env.SONAR_SCANNER_VERSION }}-linux.zip
         run: |
@@ -160,7 +171,7 @@ jobs:
           unzip -o $HOME/.sonar/sonar-scanner.zip -d $HOME/.sonar/
           echo "$HOME/.sonar/sonar-scanner-${{ env.SONAR_SCANNER_VERSION }}-linux/bin" >> $GITHUB_PATH
       - name: Download and set up build-wrapper
-        if: matrix.sonarcloud_build != ''
+        if: matrix.sonarcloud_build == 'ON'
         env:
           BUILD_WRAPPER_DOWNLOAD_URL: ${{ env.SONAR_SERVER_URL }}/static/cpp/build-wrapper-linux-x86.zip
         run: |
@@ -175,13 +186,13 @@ jobs:
           cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DOPT_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF' }} -DGIT_SHA:STRING=${{ github.sha }} -DOPT_ENABLE_INCLUDE_WHAT_YOU_USE:BOOL=OFF
 
       - name: Build (Regular)
-        if: matrix.sonarcloud_build == ''
+        if: matrix.sonarcloud_build == 'OFF'
         # Execute the build.  You can specify a specific target with "--target <NAME>"
         run: |
           cmake --build ./build --config ${{matrix.build_type}}
 
       - name: Build (SonarCloud)
-        if: matrix.sonarcloud_build != ''
+        if: matrix.sonarcloud_build == 'ON'
         # Execute the build.  You can specify a specific target with "--target <NAME>"
         run: |
           build-wrapper-linux-x86-64 --out-dir ${{ env.BUILD_WRAPPER_OUT_DIR }} cmake --build ./build --config ${{matrix.build_type}}
@@ -202,7 +213,7 @@ jobs:
           OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest -C ${{matrix.build_type}}
 
       - name: Run sonar-scanner
-        if: matrix.sonarcloud_build != ''
+        if: matrix.sonarcloud_build == 'ON'
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
