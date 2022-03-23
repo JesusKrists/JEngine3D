@@ -25,7 +25,7 @@ include(Catch)
 
 add_library(catch_main OBJECT catch_main.cpp)
 target_link_system_libraries(catch_main PUBLIC Catch2::Catch2)
-target_link_libraries(catch_main PRIVATE project_options)
+target_link_libraries(catch_main PRIVATE project_options project_warnings)
 
 # Provide a simple smoke test to make sure that the CLI works and can display a --help message
 add_test(NAME cli.has_help COMMAND JEngine3D_Editor_Executable --help)
@@ -48,7 +48,7 @@ catch_discover_tests(
   TEST_PREFIX
   "unittests."
   REPORTER
-  xml
+  XML
   OUTPUT_DIR
   .
   OUTPUT_PREFIX
@@ -66,7 +66,7 @@ catch_discover_tests(
   TEST_PREFIX
   "constexpr."
   REPORTER
-  xml
+  XML
   OUTPUT_DIR
   .
   OUTPUT_PREFIX
@@ -86,7 +86,7 @@ catch_discover_tests(
   TEST_PREFIX
   "relaxed_constexpr."
   REPORTER
-  xml
+  XML
   OUTPUT_DIR
   .
   OUTPUT_PREFIX
