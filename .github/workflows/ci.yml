@@ -206,11 +206,11 @@ jobs:
         # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
         run: |
           ctest -C ${{matrix.build_type}}
-          pwd
           gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml test --gcov-executable '${{ matrix.gcov_executable }}'
 
       - name: DEBUG - print build directory contents
         if: runner.os != 'Windows'
+        working-directory: ./build
         run: |
           ls
           cd test
