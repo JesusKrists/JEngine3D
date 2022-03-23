@@ -33,6 +33,7 @@
           --drifting    Drifting mine.
 )";
 
+// NOLINTNEXTLINE
 int main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv)
 {
   static constexpr auto VERSION_STRING_BUFFER_SIZE = 32;

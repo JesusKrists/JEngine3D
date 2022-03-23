@@ -28,6 +28,7 @@
           --drifting    Drifting mine.
 )";
 
+// NOLINTNEXTLINE
 int main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv)
 {
   /*try {

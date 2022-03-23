@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>
 
-unsigned int Factorial(unsigned int number)// NOLINT(misc-no-recursion)
+auto Factorial(unsigned int number) -> unsigned int// NOLINT(misc-no-recursion)
 {
   return number <= 1 ? number : Factorial(number - 1) * number;
 }
