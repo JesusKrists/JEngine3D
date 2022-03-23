@@ -79,6 +79,12 @@ endif()
 # set(<feature_name>_DEVELOPER_DEFAULT <value>) - set default for developer mode
 # set(<feature_name>_USER_DEFAULT <value>) - set default for user mode
 
+if(OPT_ENABLE_COVERAGE)
+  set(ENABLE_COVERAGE_VALUE ENABLE_COVERAGE)
+else()
+  unset(ENABLE_COVERAGE_VALUE)
+endif()
+
 # Initialize project_options variable related to this project
 # This overwrites `project_options` and sets `project_warnings`
 # uncomment the options to enable them:
@@ -90,7 +96,7 @@ dynamic_project_options(
   # ENABLE_INTERPROCEDURAL_OPTIMIZATION
   # ENABLE_NATIVE_OPTIMIZATION
   # ENABLE_DOXYGEN
-  # ENABLE_COVERAGE
+  ${ENABLE_COVERAGE_VALUE}
   # ENABLE_SANITIZER_ADDRESS
   # ENABLE_SANITIZER_LEAK
   # ENABLE_SANITIZER_UNDEFINED_BEHAVIOR
