@@ -1,13 +1,18 @@
-#include <functional>
-#include <iostream>
-
-#include <docopt.h>
-#include <spdlog/spdlog.h>
-
 // This file will be generated automatically when you run the CMake configuration step.
 // It creates a namespace called `JEngine3D`.
 // You can modify the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>
+
+#include <array>// for array
+#include <cstdio>// for snprintf
+#include <docopt.h>// for docopt
+#include <docopt_value.h>// for operator<<, value
+#include <iostream>// for operator<<, basic_ostream
+#include <iterator>// for next
+#include <map>// for map, operator==, _Rb_tree_it...
+#include <string>// for string, allocator, operator<<
+#include <string_view>// for string_view
+#include <utility>// for pair
 
 
 [[maybe_unused]] static constexpr auto USAGE =
@@ -30,22 +35,19 @@
 
 int main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv)
 {
-  /*try {
-    std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
-      { std::next(argv), std::next(argv, argc) },
-      true,// show help if requested
-      fmt::format("{} {}",
-        JEditor::cmake::project_name,
-        JEditor::cmake::project_version));// version string, acquired from config.hpp via CMake
+  static constexpr auto VERSION_STRING_BUFFER_SIZE = 32;
+  std::array<char, VERSION_STRING_BUFFER_SIZE> versionStr{};
+  // NOLINTNEXTLINE
+  std::snprintf(versionStr.data(),
+    VERSION_STRING_BUFFER_SIZE,
+    "%s %s",
+    JEditor::cmake::project_name.data(),
+    JEditor::cmake::project_version.data());
 
-    for (auto const &arg : args) { std::cout << arg.first << "=" << arg.second << '\n'; }
+  std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
+    { std::next(argv), std::next(argv, argc) },
+    true,// show help if requested
+    { versionStr.data() });// version string, acquired from config.hpp via CMake
 
-
-    // Use the default logger (stdout, multi-threaded, colored)
-    spdlog::info("Hello, {}!", "World");
-
-    fmt::print("Hello, from {}\n", "{fmt}");
-  } catch (const std::exception &e) {
-    fmt::print("Unhandled exception in main: {}", e.what());
-  }*/
+  for (auto const &arg : args) { std::cout << arg.first << "=" << arg.second << '\n'; }
 }
