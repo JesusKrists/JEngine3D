@@ -139,9 +139,8 @@ target_compile_features(project_options INTERFACE cxx_std_${CMAKE_CXX_STANDARD})
 include(CMake/Vendor.cmake)
 
 find_program(MEMORYCHECK_COMMAND NAMES valgrind)
-set(MEMORYCHECK_SUPPRESSIONS_FILE "${CMAKE_SOURCE_DIR}/valgrind.supp")
 set(MEMORYCHECK_COMMAND_OPTIONS
-    "${MEMORYCHECK_COMMAND_OPTIONS} --leak-check=full --show-leak-kinds=all --error-exitcode=1 --errors-for-leak-kinds=all"
+    "${MEMORYCHECK_COMMAND_OPTIONS} --leak-check=full --show-leak-kinds=all --error-exitcode=1 --errors-for-leak-kinds=all --suppressions=${CMAKE_SOURCE_DIR}/valgrind.supp"
 )
 
 # Adding the src:
