@@ -202,9 +202,27 @@ jobs:
       - name: Unix - Test and coverage
         if: runner.os != 'Windows'
         working-directory: ./build
+        env:
+          ASAN_OPTIONS: fast_unwind_on_malloc=0
+        # LSAN_OPTIONS: print_suppressions=false:suppressions=$GITHUB_WORKSPACE/LSAN.supp
         # Execute tests defined by the CMake configuration.
         # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
         run: |
+          echo ASAN_OPTIONS=$ASAN_OPTIONS
+          echo LSAN_OPTIONS=$LSAN_OPTIONS
+          ctest -C ${{matrix.build_type}}
+          gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml --sonarqube coverage_sonarqube.xml . --gcov-executable '${{ matrix.gcov_executable }}'
+      - name: Linux - Run tests with valgrind
+        if: runner.os == 'Linux' && matrix.developer_mode == 'OFF'
+        working-directory: ./build
+        env:
+          ASAN_OPTIONS: fast_unwind_on_malloc=0
+        # LSAN_OPTIONS: print_suppressions=false:suppressions=$GITHUB_WORKSPACE/LSAN.supp
+        # Execute tests defined by the CMake configuration.
+        # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
+        run: |
+          echo ASAN_OPTIONS=$ASAN_OPTIONS
+          echo LSAN_OPTIONS=$LSAN_OPTIONS
           ctest -C ${{matrix.build_type}}
           gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml --sonarqube coverage_sonarqube.xml . --gcov-executable '${{ matrix.gcov_executable }}'
 

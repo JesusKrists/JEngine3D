@@ -1,0 +1,36 @@
+{
+   SDLFalsePositives
+   Memcheck:Leak
+   ...
+   fun:SDL_*
+}
+{
+   X11FalsePositives
+   Memcheck:Leak
+   ...
+   obj:/usr/*lib*/libX11*
+}
+{
+   LLVMFalsePositives
+   Memcheck:Leak
+   ...
+   obj:/usr/*lib*/libLLVM*
+}
+{
+   <_dl_open>
+   Memcheck:Leak
+   ...
+   fun:_dl_open
+}
+{
+   <_dl_init>
+   Memcheck:Leak
+   ...
+   fun:_dl_init
+}
+{
+   <g_type_register_static>
+   Memcheck:Leak
+   ...
+   fun:g_type_register_static
+}

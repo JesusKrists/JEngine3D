@@ -11,6 +11,8 @@
 
 namespace JE {
 
+template<typename T> constexpr void UNUSED(T &&val) { (void)val; }
+
 struct Size
 {
   int32_t width;
@@ -25,15 +27,15 @@ class IPlatformBackend// NOLINT(hicpp-special-member-functions, cppcoreguideline
 public:
   virtual ~IPlatformBackend() = default;
 
-  virtual auto Initialize() -> bool = 0;
-  virtual auto CreateWindow(const std::string &title, const Size &size) -> WindowHandle = 0;
+  [[nodiscard]] virtual auto Initialize() -> bool = 0;
+  [[nodiscard]] virtual auto CreateWindow(const std::string &title, const Size &size) -> WindowHandle = 0;
 };
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
-class SDLPlatformBackend : public IPlatformBackend
+class SDLPlatformBackend final : public IPlatformBackend
 {
 public:
-  auto Initialize() -> bool override
+  [[nodiscard]] auto Initialize() -> bool override
   {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
       // TODO(JesusKrists): Log SDL error message with a proper logger
@@ -44,7 +46,7 @@ public:
     return true;
   }
 
-  auto CreateWindow(const std::string &title, const Size &size) -> WindowHandle override
+  [[nodiscard]] auto CreateWindow(const std::string &title, const Size &size) -> WindowHandle override
   {
 
     return SDL_CreateWindow(title.c_str(),
@@ -68,7 +70,8 @@ static constexpr auto WINDOW_HEIGHT = 720;
 TEST_CASE("JE::SDLPlatformBackend creates an SDLWindow and returns a valid WindowHandle", "[JE::SDLPlatformBackend]")
 {
   JE::SDLPlatformBackend backend;
-  backend.Initialize();
+  auto success = backend.Initialize();
+  JE::UNUSED(success);
 
   auto *windowHandle = backend.CreateWindow(WINDOW_TITLE, { WINDOW_WIDTH, WINDOW_HEIGHT });
   auto sdlWindowTitleView = std::string_view{ SDL_GetWindowTitle(static_cast<SDL_Window *>(windowHandle)) };

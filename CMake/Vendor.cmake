@@ -57,7 +57,7 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SDL2)
 
-if(UNIX)
+if(UNIX AND NOT APPLE)
   target_link_libraries(SDL2-static PUBLIC X11 Xext)
 endif()
 
