@@ -156,6 +156,9 @@ jobs:
         if: runner.os == 'Linux'
         run: |
           sudo apt-get -y install xorg-dev libsdl2-dev
+          sudo apt-get -y install xvfb
+          Xvfb :99 -fbdir /var/tmp -screen 0 1600x1200x24+32 &
+          export DISPLAY=':99.0'
 
       - name: Set up JDK 11
         if: matrix.sonarcloud_build == 'ON'

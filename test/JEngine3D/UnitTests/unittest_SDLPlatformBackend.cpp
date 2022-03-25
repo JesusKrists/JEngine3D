@@ -13,7 +13,7 @@ namespace JE {
 
 template<typename T> constexpr void UNUSED(T &&val) { (void)val; }
 
-struct Size
+struct Size2D
 {
   int32_t width;
   int32_t height;
@@ -28,7 +28,7 @@ public:
   virtual ~IPlatformBackend() = default;
 
   [[nodiscard]] virtual auto Initialize() -> bool = 0;
-  [[nodiscard]] virtual auto CreateWindow(const std::string &title, const Size &size) -> WindowHandle = 0;
+  [[nodiscard]] virtual auto CreateWindow(const std::string &title, const Size2D &size) -> WindowHandle = 0;
 };
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
@@ -46,7 +46,7 @@ public:
     return true;
   }
 
-  [[nodiscard]] auto CreateWindow(const std::string &title, const Size &size) -> WindowHandle override
+  [[nodiscard]] auto CreateWindow(const std::string &title, const Size2D &size) -> WindowHandle override
   {
 
     return SDL_CreateWindow(title.c_str(),
