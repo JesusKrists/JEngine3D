@@ -19,24 +19,9 @@ FetchContent_MakeAvailable(spdlog)
 set(SDL_SHARED_ENABLED_BY_DEFAULT
     OFF
     CACHE BOOL "Disable shared build of SDL2" FORCE)
-set(SDL_WAYLAND
-    OFF
-    CACHE BOOL "Disable wayland support" FORCE)
-set(SDL_WAYLAND_SHARED
-    OFF
-    CACHE BOOL "Disable wayland shared support" FORCE)
 set(SDL_AUDIO
     OFF
     CACHE BOOL "Disable audio subsystem" FORCE)
-set(SDL_DLOPEN
-    OFF
-    CACHE BOOL "Disable dlopen" FORCE)
-set(HAVE_DLOPEN
-    OFF
-    CACHE BOOL "Disable dlopen" FORCE)
-set(SDL_LOADSO
-    OFF
-    CACHE BOOL "Disable loadso" FORCE)
 set(SDL_POWER
     OFF
     CACHE BOOL "Disable power subsystem" FORCE)
@@ -56,10 +41,6 @@ FetchContent_Declare(
   GIT_TAG release-2.0.20)
 
 FetchContent_MakeAvailable(SDL2)
-
-if(UNIX AND NOT APPLE)
-  target_link_libraries(SDL2-static PUBLIC X11 Xext)
-endif()
 
 ######################### Remove static analysis tools ##################
 set_property(TARGET docopt PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")

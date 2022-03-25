@@ -81,6 +81,7 @@ endif()
 # set(<feature_name>_DEVELOPER_DEFAULT <value>) - set default for developer mode
 # set(<feature_name>_USER_DEFAULT <value>) - set default for user mode
 
+# TODO(JesusKrists) - Remove this once dynamic_project_options is fixed
 if(OPT_ENABLE_COVERAGE)
   set(ENABLE_COVERAGE_VALUE ENABLE_COVERAGE)
 else()

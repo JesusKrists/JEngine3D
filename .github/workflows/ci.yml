@@ -210,7 +210,7 @@ jobs:
         run: |
           echo ASAN_OPTIONS=$ASAN_OPTIONS
           echo LSAN_OPTIONS=$LSAN_OPTIONS
-          ctest -C ${{matrix.build_type}}
+          ctest -C ${{matrix.build_type}} --output-on-failure
           gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml --sonarqube coverage_sonarqube.xml . --gcov-executable '${{ matrix.gcov_executable }}'
       - name: Linux - Run tests with valgrind
         if: runner.os == 'Linux' && matrix.developer_mode == 'OFF'
@@ -223,14 +223,13 @@ jobs:
         run: |
           echo ASAN_OPTIONS=$ASAN_OPTIONS
           echo LSAN_OPTIONS=$LSAN_OPTIONS
-          ctest -C ${{matrix.build_type}} --output-on-failure
-          gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml --sonarqube coverage_sonarqube.xml . --gcov-executable '${{ matrix.gcov_executable }}'
-
+          ctest -C ${{matrix.build_type}} -D NightlyMemCheck --output-on-failure
+          
       - name: Windows - Test and coverage
         if: runner.os == 'Windows'
         working-directory: ./build
         run: |
-          OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest -C ${{matrix.build_type}}
+          OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest -C ${{matrix.build_type}} --output-on-failure
 
       - name: Run sonar-scanner
         if: matrix.sonarcloud_build == 'ON'
