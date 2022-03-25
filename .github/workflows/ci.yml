@@ -223,7 +223,7 @@ jobs:
         run: |
           echo ASAN_OPTIONS=$ASAN_OPTIONS
           echo LSAN_OPTIONS=$LSAN_OPTIONS
-          ctest -C ${{matrix.build_type}}
+          ctest -C ${{matrix.build_type}} --output-on-failure
           gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml --sonarqube coverage_sonarqube.xml . --gcov-executable '${{ matrix.gcov_executable }}'
 
       - name: Windows - Test and coverage
