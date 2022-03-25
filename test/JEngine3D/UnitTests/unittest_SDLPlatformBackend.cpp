@@ -15,8 +15,8 @@ template<typename T> constexpr void UNUSED(T &&val) { (void)val; }
 
 struct Size2D
 {
-  int32_t width;
-  int32_t height;
+  int32_t width;// cppcheck-suppress unusedStructMember
+  int32_t height;// cppcheck-suppress unusedStructMember
 };
 
 
