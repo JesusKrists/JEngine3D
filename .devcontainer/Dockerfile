@@ -25,14 +25,7 @@ RUN python3 -m pip install cmakelang
 RUN apt-get install -y clang-format
 
 # Install packages required by SDL2
-RUN apt-get -y install libx11-dev libx11-xcb-dev libfontenc-dev libice-dev libsm-dev \
-    libxau-dev libxaw7-dev libxcomposite-dev libxcursor-dev libxdamage-dev libxdmcp-dev \
-    libxext-dev libxfixes-dev libxft-dev libxi-dev libxinerama-dev libxkbfile-dev libxmu-dev \
-    libxmuu-dev libxpm-dev libxrandr-dev libxrender-dev libxres-dev libxss-dev libxt-dev \
-    libxtst-dev libxv-dev libxvmc-dev libxxf86vm-dev xtrans-dev libxcb-render0-dev \
-    libxcb-render-util0-dev libxcb-xkb-dev libxcb-icccm4-dev libxcb-image0-dev \
-    libxcb-keysyms1-dev libxcb-randr0-dev libxcb-shape0-dev libxcb-sync-dev libxcb-xfixes0-dev \
-    libxcb-xinerama0-dev xkb-data libxcb-dri3-dev libxcb-util-dev libegl-dev
+RUN apt-get -y install xorg-dev libsdl2-dev
 
 # By default, anything you run in Docker is done as superuser.
 # Conan runs some install commands as superuser, and will prepend `sudo` to

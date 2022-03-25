@@ -24,7 +24,11 @@ include(CTest)
 include(Catch)
 
 add_library(JEngine3D_catch_main OBJECT catch_main.cpp)
-target_link_system_libraries(JEngine3D_catch_main PUBLIC Catch2::Catch2)
+target_link_system_libraries(
+  JEngine3D_catch_main
+  PUBLIC
+  Catch2::Catch2
+  SDL2-static)
 target_link_libraries(JEngine3D_catch_main PRIVATE project_options project_warnings)
 
 # Provide a simple smoke test to make sure that the CLI works and can display a --help message
@@ -37,9 +41,15 @@ target_link_libraries(JEngine3D_catch_main PRIVATE project_options project_warni
 #add_test(NAME cli.version_matches COMMAND JEngine3D_Editor_Executable --version)
 #set_tests_properties(cli.version_matches PROPERTIES PASS_REGULAR_EXPRESSION "${PROJECT_VERSION}")
 
-add_executable(JEngine3D_tests tests.cpp)
-target_link_libraries(JEngine3D_tests PRIVATE project_warnings project_options Catch2WithMain #JEngine3D_catch_main
-)
+set(UNITTEST_SOURCES UnitTests/unittest_SDLPlatformBackend.cpp)
+
+add_executable(JEngine3D_tests tests.cpp ${UNITTEST_SOURCES})
+target_link_libraries(
+  JEngine3D_tests
+  PRIVATE project_warnings
+          project_options
+          Catch2WithMain
+          JEngine3D_catch_main)
 
 # automatically discover tests that are defined in catch based test files you can modify the unittests. Set TEST_PREFIX
 # to whatever you want, or use different for different binaries
@@ -59,8 +69,11 @@ catch_discover_tests(
 # Add a file containing a set of constexpr tests
 add_executable(JEngine3D_constexpr_tests constexpr_tests.cpp)
 target_link_libraries(
-  JEngine3D_constexpr_tests PRIVATE project_options project_warnings Catch2WithMain #JEngine3D_catch_main
-)
+  JEngine3D_constexpr_tests
+  PRIVATE project_options
+          project_warnings
+          Catch2WithMain
+          JEngine3D_catch_main)
 
 catch_discover_tests(
   JEngine3D_constexpr_tests
@@ -79,8 +92,11 @@ catch_discover_tests(
 # things go wrong with the constexpr testing
 add_executable(JEngine3D_relaxed_constexpr_tests constexpr_tests.cpp)
 target_link_libraries(
-  JEngine3D_relaxed_constexpr_tests PRIVATE project_options project_warnings Catch2WithMain #JEngine3D_catch_main
-)
+  JEngine3D_relaxed_constexpr_tests
+  PRIVATE project_options
+          project_warnings
+          Catch2WithMain
+          JEngine3D_catch_main)
 target_compile_definitions(JEngine3D_relaxed_constexpr_tests PRIVATE -DCATCH_CONFIG_RUNTIME_STATIC_REQUIRE)
 
 catch_discover_tests(

@@ -20,6 +20,9 @@
 		"--security-opt",
 		"seccomp=unconfined"
 	],
+	"remoteEnv": {
+		"DISPLAY": "${env:REMOTE_DISPLAY_IP}:0.0"
+	},
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
 		"clangd.path": "clangd-13",
@@ -35,10 +38,14 @@
 			"**/.git": false
 		},
 		"editor.guides.bracketPairs": true,
-		"editor.bracketPairColorization.enabled": true
+		"editor.bracketPairColorization.enabled": true,
+		"debug.allowBreakpointsEverywhere": true,
+		"C_Cpp.intelliSenseEngine": "Disabled"
 	},
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
+		"ms-vscode.cpptools",
+		"vadimcn.vscode-lldb",
 		"llvm-vs-code-extensions.vscode-clangd",
 		"ms-vscode.cmake-tools",
 		"twxs.cmake",
