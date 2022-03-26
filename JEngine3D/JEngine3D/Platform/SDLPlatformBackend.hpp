@@ -7,6 +7,8 @@
 
 namespace JE {
 
+class EventProcessor;
+
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
 class SDLPlatformBackend final : public IPlatformBackend
 {
@@ -23,6 +25,8 @@ public:
 
   [[nodiscard]] auto WindowTitle(NativeWindowHandle handle) -> std::string_view override;
   void SetWindowTitle(NativeWindowHandle handle, std::string_view title) override;
+
+  void PollEvents(EventProcessor &processor) override;
 };
 
 }// namespace JE

@@ -1,12 +1,13 @@
-
 #include <catch2/catch_test_macros.hpp>// for StringRef, oper...
 
 #include <JEngine3D/Platform/IPlatformBackend.hpp>// for IPlatformBackend
 #include <JEngine3D/Platform/SDLPlatformBackend.hpp>// for SDLPlatformBackend
 #include <JEngine3D/Core/Base.hpp>// for UNUSED
 #include <JEngine3D/Core/Types.hpp>// for Size2D
+#include <JEngine3D/Event/Events.hpp>
 
 #include <SDL_video.h>// for SDL_GetWindowID
+#include <SDL_events.h>
 #include <string>// for char_traits
 #include <string_view>// for operator==, bas...
 
@@ -87,4 +88,29 @@ TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   REQUIRE(backend.WindowTitle(windowHandle) == NEW_WINDOW_TITLE);
 
   backend.DestroyWindow(windowHandle);
+}
+
+
+TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
+  "JE::SDLPlatformBackend Polls events to EventProcessor (Fake Quit event)",
+  "[JE::SDLPlatformBackend]")
+{
+
+  class SDLQUITChecker final : public JE::EventProcessor
+  {
+  public:
+    inline void OnEvent(JE::IEvent &event) override { m_QuitEventReceived = (event.Type() == JE::EventType::Quit); }
+    [[nodiscard]] inline auto QuitEventReceived() const -> bool { return m_QuitEventReceived; }
+
+  private:
+    bool m_QuitEventReceived = false;
+  } checker;
+
+  SDL_Event quitEvent;
+  quitEvent.type = SDL_EventType::SDL_QUIT;
+  SDL_PushEvent(&quitEvent);
+
+  backend.PollEvents(checker);
+
+  REQUIRE(checker.QuitEventReceived());
 }

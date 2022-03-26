@@ -7,6 +7,8 @@
 
 namespace JE {
 
+class EventProcessor;
+
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
 class IPlatformBackend
 {
@@ -15,17 +17,17 @@ public:
 
   IPlatformBackend()
   {
-    ASSERT(!Instance, "Platform backend instance already created");
-    Instance = this;
+    ASSERT(!s_Instance, "Platform backend instance already created");
+    s_Instance = this;
   }
 
   [[nodiscard]] static inline auto Get() -> IPlatformBackend &
   {
-    ASSERT(Instance, "Platform backend instance is null");
-    return *Instance;
+    ASSERT(s_Instance, "Platform backend instance is null");
+    return *s_Instance;
   }
 
-  virtual ~IPlatformBackend() { Instance = nullptr; };
+  virtual ~IPlatformBackend() { s_Instance = nullptr; };
 
   [[nodiscard]] virtual auto Initialize() -> bool = 0;
 
@@ -38,8 +40,10 @@ public:
   [[nodiscard]] virtual auto WindowTitle(NativeWindowHandle handle) -> std::string_view = 0;
   virtual void SetWindowTitle(NativeWindowHandle handle, std::string_view title) = 0;
 
+  virtual void PollEvents(EventProcessor &processor) = 0;
+
 private:
-  static IPlatformBackend *Instance;// NOLINT
+  static IPlatformBackend *s_Instance;// NOLINT
 };
 
 }// namespace JE

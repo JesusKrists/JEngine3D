@@ -1,7 +1,10 @@
 #include "SDLPlatformBackend.hpp"
 
+#include "JEngine3D/Event/Events.hpp"
+
 #include <cstring>// IWYU pragma: keep
 #include <iostream>// for operator<<, basic_ostream, char_traits, cout
+#include <SDL_events.h>// for SDL_PollEvent, SDL_Event, SDL_...
 #include <SDL_error.h>// for SDL_GetError
 #include <SDL_video.h>// for SDL_Window, SDL_CreateWindow, SDL_DestroyWindow
 #include <SDL.h>
@@ -57,6 +60,17 @@ auto SDLPlatformBackend::WindowTitle(NativeWindowHandle handle) -> std::string_v
 void SDLPlatformBackend::SetWindowTitle(NativeWindowHandle handle, std::string_view title)
 {
   SDL_SetWindowTitle(static_cast<SDL_Window *>(handle), title.data());
+}
+
+void SDLPlatformBackend::PollEvents(EventProcessor &processor)
+{
+  SDL_Event nativeEvent;
+  while (SDL_PollEvent(&nativeEvent) != 0) {
+    if (nativeEvent.type == SDL_EventType::SDL_QUIT) {
+      QuitEvent event{};
+      processor.OnEvent(event);
+    }
+  }
 }
 
 }// namespace JE
