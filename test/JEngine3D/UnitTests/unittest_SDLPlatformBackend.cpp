@@ -20,27 +20,30 @@ struct Size2D
 };
 
 
-using WindowHandle = void *;
-
 class IPlatformBackend// NOLINT(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
 {
 public:
+  using WindowHandle = void *;
+
   virtual ~IPlatformBackend() = default;
 
   [[nodiscard]] virtual auto Initialize() -> bool = 0;
   [[nodiscard]] virtual auto CreateWindow(const std::string &title, const Size2D &size) -> WindowHandle = 0;
+  virtual void DestroyWindow(WindowHandle handle) = 0;
 };
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
 class SDLPlatformBackend final : public IPlatformBackend
 {
 public:
+  ~SDLPlatformBackend() override { SDL_Quit(); }
+
   [[nodiscard]] auto Initialize() -> bool override
   {
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
       // TODO(JesusKrists): Log SDL error message with a proper logger
       std::cout << "SDL Failed to initialize - " << SDL_GetError() << "\n";
-      return false;// NOLINT(readability-simplify-boolean-expr)
+      return false;
     }
 
     return true;
@@ -57,7 +60,7 @@ public:
       SDL_WINDOW_OPENGL);
   }
 
-  ~SDLPlatformBackend() override { SDL_Quit(); }
+  void DestroyWindow(WindowHandle handle) override { SDL_DestroyWindow(static_cast<SDL_Window *>(handle)); }
 };
 
 }// namespace JE
@@ -74,9 +77,8 @@ TEST_CASE("JE::SDLPlatformBackend creates an SDLWindow and returns a valid Windo
   JE::UNUSED(success);
 
   auto *windowHandle = backend.CreateWindow(WINDOW_TITLE, { WINDOW_WIDTH, WINDOW_HEIGHT });
-  auto sdlWindowTitleView = std::string_view{ SDL_GetWindowTitle(static_cast<SDL_Window *>(windowHandle)) };
 
-  REQUIRE(sdlWindowTitleView == WINDOW_TITLE);
+  REQUIRE(std::string_view{ SDL_GetWindowTitle(static_cast<SDL_Window *>(windowHandle)) } == WINDOW_TITLE);
 
-  SDL_DestroyWindow(static_cast<SDL_Window *>(windowHandle));
+  backend.DestroyWindow(windowHandle);
 }

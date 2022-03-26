@@ -21,7 +21,9 @@
 		"seccomp=unconfined"
 	],
 	"remoteEnv": {
-		"DISPLAY": "${env:REMOTE_DISPLAY_IP}:0.0"
+		"DISPLAY": "${env:REMOTE_DISPLAY_IP}:0.0",
+		"ASAN_OPTIONS": "fast_unwind_on_malloc=0",
+		"LSAN_OPTIONS": "print_suppressions=false:suppressions=${workspaceFolder}/LSAN.supp"
 	},
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
