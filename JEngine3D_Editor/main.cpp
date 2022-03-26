@@ -45,10 +45,10 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv)
     JEditor::cmake::project_name.data(),
     JEditor::cmake::project_version.data());
 
-  std::map<std::string, docopt::value> args = docopt::docopt(USAGE,
+  [[maybe_unused]] auto args = docopt::docopt(USAGE,
     { std::next(argv), std::next(argv, argc) },
     true,// show help if requested
     { versionStr.data() });// version string, acquired from config.hpp via CMake
 
-  for (auto const &arg : args) { std::cout << arg.first << "=" << arg.second << '\n'; }
+  (void)args;
 }

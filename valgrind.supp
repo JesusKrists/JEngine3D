@@ -5,10 +5,22 @@
    fun:SDL_*
 }
 {
+   DocoptFalsePositives
+   Memcheck:Leak
+   ...
+   fun:*docopt*
+}
+{
    X11FalsePositives
    Memcheck:Leak
    ...
    obj:/usr/*lib*/libX11*
+}
+{
+   libdbusFalsePositives
+   Memcheck:Leak
+   ...
+   obj:/usr/*lib*/libdbus*
 }
 {
    LLVMFalsePositives

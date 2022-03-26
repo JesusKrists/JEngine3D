@@ -1,5 +1,13 @@
 cmake_minimum_required(VERSION 3.16)
 
+find_program(MEMORYCHECK_COMMAND NAMES valgrind)
+set(MEMORYCHECK_SUPPRESSIONS_FILE
+    "${CMAKE_SOURCE_DIR}/valgrind.supp"
+    CACHE FILEPATH "File that contains suppressions for the memory checker")
+set(MEMORYCHECK_COMMAND_OPTIONS
+    "--leak-check=full --show-leak-kinds=all --error-exitcode=1 --errors-for-leak-kinds=definite,possible"
+    CACHE STRING "valgrind command line options")
+
 # Not ideal to use this global variable, but necessary to make sure
 # that tooling and projects use the same version
 set(CMAKE_CXX_STANDARD 20)
@@ -21,8 +29,8 @@ set(ENABLE_DEVELOPER_MODE
 # Change this to false if you want to disable warnings_as_errors in developer mode
 set(WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT TRUE)
 set(ENABLE_INCLUDE_WHAT_YOU_USE_DEVELOPER_DEFAULT TRUE)
-#set(ENABLE_SANITIZER_ADDRESS_DEVELOPER_DEFAULT FALSE)
-#set(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR_DEVELOPER_DEFAULT FALSE)
+set(ENABLE_SANITIZER_ADDRESS_DEVELOPER_DEFAULT FALSE)
+set(ENABLE_SANITIZER_UNDEFINED_BEHAVIOR_DEVELOPER_DEFAULT FALSE)
 
 # Add project_options v0.19.0
 # https://github.com/cpp-best-practices/project_options
@@ -137,11 +145,6 @@ target_compile_features(project_options INTERFACE cxx_std_${CMAKE_CXX_STANDARD})
 
 # Add 3rd party libraries (SDL2, imgui, etc.)
 include(CMake/Vendor.cmake)
-
-find_program(MEMORYCHECK_COMMAND NAMES valgrind)
-set(MEMORYCHECK_COMMAND_OPTIONS
-    "${MEMORYCHECK_COMMAND_OPTIONS} --leak-check=full --show-leak-kinds=all --error-exitcode=1 --errors-for-leak-kinds=all --suppressions=${CMAKE_SOURCE_DIR}/valgrind.supp"
-)
 
 # Adding the src:
 add_subdirectory(JEngine3D)
