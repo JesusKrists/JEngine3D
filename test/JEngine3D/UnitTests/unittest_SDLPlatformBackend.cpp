@@ -31,8 +31,6 @@ TEST_CASE("JE::SDLPlatformBackend creates an SDLWindow and returns a valid Windo
   REQUIRE(SDL_GetWindowID(static_cast<SDL_Window *>(windowHandle)) != 0);
 
   backend.DestroyWindow(windowHandle);
-
-  REQUIRE(SDL_GetWindowID(static_cast<SDL_Window *>(windowHandle)) == 0);
 }
 
 TEST_CASE("JE::SDLPlatformBackend creates an SDLWindow and can query the size", "[JE::SDLPlatformBackend]")
