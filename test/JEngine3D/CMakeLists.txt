@@ -29,7 +29,10 @@ target_link_system_libraries(
   PUBLIC
   Catch2::Catch2
   SDL2-static)
-target_link_libraries(JEngine3D_catch_main PRIVATE project_options project_warnings)
+target_link_libraries(
+  JEngine3D_catch_main
+  PRIVATE project_options project_warnings
+  PUBLIC JEngine3D)
 
 # Provide a simple smoke test to make sure that the CLI works and can display a --help message
 #add_test(NAME cli.has_help COMMAND JEngine3D_Editor_Executable --help)

@@ -1,74 +1,23 @@
-#include <catch2/catch_test_macros.hpp>// for StringRef, TEST_CASE
-#include <cstdint>// for int32_t
-#include <string>// for allocator, string
-#include <string_view>// for string_view
-#include <iostream>// for cout
 
-#include <SDL.h>// for SDL_Init, SDL_Quit, SDL_INIT...
-#include <SDL_video.h>// for SDL_CreateWindow, SDL_GetWin...
-#include <SDL_error.h>// for SDL_GetError
+#include <catch2/catch_test_macros.hpp>// for StringRef, oper...
 
+#include <JEngine3D/Platform/IPlatformBackend.hpp>// for IPlatformBackend
+#include <JEngine3D/Platform/SDLPlatformBackend.hpp>// for SDLPlatformBackend
+#include <JEngine3D/Core/Base.hpp>// for UNUSED
+#include <JEngine3D/Core/Types.hpp>// for Size2D
 
-namespace JE {
+#include <SDL_video.h>// for SDL_GetWindowID
+#include <string>// for char_traits
+#include <string_view>// for operator==, bas...
 
-template<typename T> constexpr void UNUSED(T &&val) { (void)val; }
+static constexpr auto WINDOW_TITLE = std::string_view{ "Test Window" };
+static constexpr auto WINDOW_SIZE = JE::Size2D{ 1280, 720 };
 
-struct Size2D
+TEST_CASE("JE::IPlatformBackend creates singleton instance which can be accessed", "[JE::IPlatformBackend]")
 {
-  int32_t width;// cppcheck-suppress unusedStructMember
-  int32_t height;// cppcheck-suppress unusedStructMember
-};
-
-
-class IPlatformBackend// NOLINT(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
-{
-public:
-  using WindowHandle = void *;
-
-  virtual ~IPlatformBackend() = default;
-
-  [[nodiscard]] virtual auto Initialize() -> bool = 0;
-  [[nodiscard]] virtual auto CreateWindow(const std::string &title, const Size2D &size) -> WindowHandle = 0;
-  virtual void DestroyWindow(WindowHandle handle) = 0;
-};
-
-// NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
-class SDLPlatformBackend final : public IPlatformBackend
-{
-public:
-  ~SDLPlatformBackend() override { SDL_Quit(); }
-
-  [[nodiscard]] auto Initialize() -> bool override
-  {
-    if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-      // TODO(JesusKrists): Log SDL error message with a proper logger
-      std::cout << "SDL Failed to initialize - " << SDL_GetError() << "\n";
-      return false;
-    }
-
-    return true;
-  }
-
-  [[nodiscard]] auto CreateWindow(const std::string &title, const Size2D &size) -> WindowHandle override
-  {
-
-    return SDL_CreateWindow(title.c_str(),
-      SDL_WINDOWPOS_CENTERED,// NOLINT(hicpp-signed-bitwise)
-      SDL_WINDOWPOS_CENTERED,// NOLINT(hicpp-signed-bitwise)
-      size.width,
-      size.height,
-      SDL_WINDOW_OPENGL);
-  }
-
-  void DestroyWindow(WindowHandle handle) override { SDL_DestroyWindow(static_cast<SDL_Window *>(handle)); }
-};
-
-}// namespace JE
-
-
-static constexpr auto WINDOW_TITLE = "Test Window";
-static constexpr auto WINDOW_WIDTH = 1280;
-static constexpr auto WINDOW_HEIGHT = 720;
+  JE::SDLPlatformBackend backend;
+  REQUIRE(&JE::IPlatformBackend::Get() == &backend);
+}
 
 TEST_CASE("JE::SDLPlatformBackend creates an SDLWindow and returns a valid WindowHandle", "[JE::SDLPlatformBackend]")
 {
@@ -76,9 +25,70 @@ TEST_CASE("JE::SDLPlatformBackend creates an SDLWindow and returns a valid Windo
   auto success = backend.Initialize();
   JE::UNUSED(success);
 
-  auto *windowHandle = backend.CreateWindow(WINDOW_TITLE, { WINDOW_WIDTH, WINDOW_HEIGHT });
+  auto *windowHandle = backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
 
-  REQUIRE(std::string_view{ SDL_GetWindowTitle(static_cast<SDL_Window *>(windowHandle)) } == WINDOW_TITLE);
+
+  REQUIRE(SDL_GetWindowID(static_cast<SDL_Window *>(windowHandle)) != 0);
+
+  backend.DestroyWindow(windowHandle);
+
+  REQUIRE(SDL_GetWindowID(static_cast<SDL_Window *>(windowHandle)) == 0);
+}
+
+TEST_CASE("JE::SDLPlatformBackend creates an SDLWindow and can query the size", "[JE::SDLPlatformBackend]")
+{
+  JE::SDLPlatformBackend backend;
+  auto success = backend.Initialize();
+  JE::UNUSED(success);
+
+  auto *windowHandle = backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
+
+  REQUIRE(backend.WindowSize(windowHandle) == WINDOW_SIZE);
+
+  backend.DestroyWindow(windowHandle);
+}
+
+TEST_CASE("JE::SDLPlatformBackend creates an SDLWindow and can set window size", "[JE::SDLPlatformBackend]")
+{
+  static constexpr auto NEW_WINDOW_SIZE = JE::Size2D{ 640, 480 };
+
+  JE::SDLPlatformBackend backend;
+  auto success = backend.Initialize();
+  JE::UNUSED(success);
+
+  auto *windowHandle = backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
+  backend.SetWindowSize(windowHandle, NEW_WINDOW_SIZE);
+
+  REQUIRE(backend.WindowSize(windowHandle) == NEW_WINDOW_SIZE);
+
+  backend.DestroyWindow(windowHandle);
+}
+
+TEST_CASE("JE::SDLPlatformBackend creates an SDLWindow and can query window title", "[JE::SDLPlatformBackend]")
+{
+  JE::SDLPlatformBackend backend;
+  auto success = backend.Initialize();
+  JE::UNUSED(success);
+
+  auto *windowHandle = backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
+
+  REQUIRE(backend.WindowTitle(windowHandle) == WINDOW_TITLE);
+
+  backend.DestroyWindow(windowHandle);
+}
+
+TEST_CASE("JE::SDLPlatformBackend creates an SDLWindow and can set window title", "[JE::SDLPlatformBackend]")
+{
+  static constexpr auto NEW_WINDOW_TITLE = std::string_view{ "Test Window - New" };
+
+  JE::SDLPlatformBackend backend;
+  auto success = backend.Initialize();
+  JE::UNUSED(success);
+
+  auto *windowHandle = backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
+  backend.SetWindowTitle(windowHandle, NEW_WINDOW_TITLE);
+
+  REQUIRE(backend.WindowTitle(windowHandle) == NEW_WINDOW_TITLE);
 
   backend.DestroyWindow(windowHandle);
 }
