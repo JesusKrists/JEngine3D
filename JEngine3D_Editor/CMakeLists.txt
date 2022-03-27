@@ -9,7 +9,9 @@ project(
 # configure files based on CMake configuration options
 add_subdirectory(configured_files)
 
-add_library(JEngine3D_Editor temp.cpp)
+include(JEngine3D_Editor_Sources.cmake)
+
+add_library(JEngine3D_Editor ${JEngine3D_Editor_SOURCES} ${JEngine3D_Editor_HEADERS})
 target_link_libraries(
   JEngine3D_Editor
   PRIVATE project_options project_warnings

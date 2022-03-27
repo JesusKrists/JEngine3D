@@ -151,6 +151,7 @@ add_subdirectory(JEngine3D_Editor)
 # Adding the tests:
 option(ENABLE_TESTING "Enable the tests" ON)
 if(ENABLE_TESTING)
+  include(CMake/SetupCatch2.cmake)
   enable_testing()
   message("Building Tests. Be sure to check out test/constexpr_tests for constexpr testing")
   add_subdirectory(test/JEngine3D)

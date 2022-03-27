@@ -6,10 +6,10 @@ namespace JE {
 
 struct Size2D
 {
-  int32_t width;
-  int32_t height;
+  int32_t Width;
+  int32_t Height;
 
-  auto operator==(const Size2D &other) const -> bool = default;
+  constexpr auto operator==(const Size2D &other) const -> bool = default;
 };
 
 }// namespace JE

@@ -20,74 +20,74 @@ public:
   static constexpr auto NEW_WINDOW_SIZE = JE::Size2D{ 640, 480 };
   static constexpr auto NEW_WINDOW_TITLE = std::string_view{ "Test Window - New" };
 
-  SDLPlatformBackendTestsFixture() { JE::UNUSED(backend.Initialize()); }
+  SDLPlatformBackendTestsFixture() { JE::UNUSED(m_Backend.Initialize()); }
 
 protected:
-  JE::SDLPlatformBackend backend;
+  JE::SDLPlatformBackend m_Backend;
 };
 
 TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   "JE::IPlatformBackend creates singleton instance which can be accessed",
   "[JE::IPlatformBackend]")
 {
-  REQUIRE(&JE::IPlatformBackend::Get() == &backend);
+  REQUIRE(&JE::IPlatformBackend::Get() == &m_Backend);
 }
 
 TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   "JE::SDLPlatformBackend creates an SDLWindow and returns a valid WindowHandle",
   "[JE::SDLPlatformBackend]")
 {
-  auto *windowHandle = backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
+  auto *windowHandle = m_Backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
 
   REQUIRE(SDL_GetWindowID(static_cast<SDL_Window *>(windowHandle)) != 0);
 
-  backend.DestroyWindow(windowHandle);
+  m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   "JE::SDLPlatformBackend creates an SDLWindow and can query the size",
   "[JE::SDLPlatformBackend]")
 {
-  auto *windowHandle = backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
+  auto *windowHandle = m_Backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
 
-  REQUIRE(backend.WindowSize(windowHandle) == WINDOW_SIZE);
+  REQUIRE(m_Backend.WindowSize(windowHandle) == WINDOW_SIZE);
 
-  backend.DestroyWindow(windowHandle);
+  m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   "JE::SDLPlatformBackend creates an SDLWindow and can set window size",
   "[JE::SDLPlatformBackend]")
 {
-  auto *windowHandle = backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
-  backend.SetWindowSize(windowHandle, NEW_WINDOW_SIZE);
+  auto *windowHandle = m_Backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
+  m_Backend.SetWindowSize(windowHandle, NEW_WINDOW_SIZE);
 
-  REQUIRE(backend.WindowSize(windowHandle) == NEW_WINDOW_SIZE);
+  REQUIRE(m_Backend.WindowSize(windowHandle) == NEW_WINDOW_SIZE);
 
-  backend.DestroyWindow(windowHandle);
+  m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   "JE::SDLPlatformBackend creates an SDLWindow and can query window title",
   "[JE::SDLPlatformBackend]")
 {
-  auto *windowHandle = backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
+  auto *windowHandle = m_Backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
 
-  REQUIRE(backend.WindowTitle(windowHandle) == WINDOW_TITLE);
+  REQUIRE(m_Backend.WindowTitle(windowHandle) == WINDOW_TITLE);
 
-  backend.DestroyWindow(windowHandle);
+  m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   "JE::SDLPlatformBackend creates an SDLWindow and can set window title",
   "[JE::SDLPlatformBackend]")
 {
-  auto *windowHandle = backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
-  backend.SetWindowTitle(windowHandle, NEW_WINDOW_TITLE);
+  auto *windowHandle = m_Backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
+  m_Backend.SetWindowTitle(windowHandle, NEW_WINDOW_TITLE);
 
-  REQUIRE(backend.WindowTitle(windowHandle) == NEW_WINDOW_TITLE);
+  REQUIRE(m_Backend.WindowTitle(windowHandle) == NEW_WINDOW_TITLE);
 
-  backend.DestroyWindow(windowHandle);
+  m_Backend.DestroyWindow(windowHandle);
 }
 
 
@@ -96,7 +96,7 @@ TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   "[JE::SDLPlatformBackend]")
 {
 
-  class SDLQUITChecker final : public JE::EventProcessor
+  class SDLQUITChecker final : public JE::IEventProcessor
   {
   public:
     inline void OnEvent(JE::IEvent &event) override { m_QuitEventReceived = (event.Type() == JE::EventType::Quit); }
@@ -110,7 +110,7 @@ TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   quitEvent.type = SDL_EventType::SDL_QUIT;
   SDL_PushEvent(&quitEvent);
 
-  backend.PollEvents(checker);
+  m_Backend.PollEvents(checker);
 
   REQUIRE(checker.QuitEventReceived());
 }

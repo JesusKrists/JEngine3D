@@ -1,5 +1,6 @@
 #include "SDLPlatformBackend.hpp"
 
+#include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
 #include "JEngine3D/Event/Events.hpp"
 
 #include <cstring>// IWYU pragma: keep
@@ -11,18 +12,25 @@
 
 namespace JE {
 
+static auto s_Initialized = false;// NOLINT
+
 SDLPlatformBackend::~SDLPlatformBackend() { SDL_Quit(); }
 
 auto SDLPlatformBackend::Initialize() -> bool
 {
+  ASSERT(!s_Initialized, "Backend already initialized");
+
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     // TODO(JesusKrists): Log SDL error message with a proper logger
     std::cout << "SDL Failed to initialize - " << SDL_GetError() << "\n";
     return false;
   }
 
+  s_Initialized = true;
   return true;
 }
+
+auto SDLPlatformBackend::Initialized() -> bool { return s_Initialized; }
 
 auto SDLPlatformBackend::CreateWindow(std::string_view title, const Size2D &size) -> NativeWindowHandle
 {
@@ -30,8 +38,8 @@ auto SDLPlatformBackend::CreateWindow(std::string_view title, const Size2D &size
   return SDL_CreateWindow(title.data(),
     SDL_WINDOWPOS_CENTERED,// NOLINT(hicpp-signed-bitwise)
     SDL_WINDOWPOS_CENTERED,// NOLINT(hicpp-signed-bitwise)
-    size.width,
-    size.height,
+    size.Width,
+    size.Height,
     SDL_WINDOW_OPENGL);
 }
 
@@ -43,13 +51,13 @@ void SDLPlatformBackend::DestroyWindow(NativeWindowHandle handle)
 auto SDLPlatformBackend::WindowSize(NativeWindowHandle handle) -> Size2D
 {
   Size2D size{};
-  SDL_GetWindowSize(static_cast<SDL_Window *>(handle), &size.width, &size.height);
+  SDL_GetWindowSize(static_cast<SDL_Window *>(handle), &size.Width, &size.Height);
   return size;
 }
 
 void SDLPlatformBackend::SetWindowSize(NativeWindowHandle handle, const Size2D &size)
 {
-  SDL_SetWindowSize(static_cast<SDL_Window *>(handle), size.width, size.height);
+  SDL_SetWindowSize(static_cast<SDL_Window *>(handle), size.Width, size.Height);
 }
 
 auto SDLPlatformBackend::WindowTitle(NativeWindowHandle handle) -> std::string_view
@@ -62,7 +70,7 @@ void SDLPlatformBackend::SetWindowTitle(NativeWindowHandle handle, std::string_v
   SDL_SetWindowTitle(static_cast<SDL_Window *>(handle), title.data());
 }
 
-void SDLPlatformBackend::PollEvents(EventProcessor &processor)
+void SDLPlatformBackend::PollEvents(IEventProcessor &processor)
 {
   SDL_Event nativeEvent;
   while (SDL_PollEvent(&nativeEvent) != 0) {

@@ -10,6 +10,8 @@
 
 #define JE_STRINGIFY_MACRO(x) #x
 
+#include <algorithm>
+
 
 namespace JE {
 
@@ -25,5 +27,10 @@ inline void DEBUGBREAK()
 }
 
 template<typename T> constexpr void UNUSED(T &&val) { (void)val; }
+
+template<typename T, typename Predicate> constexpr auto FindIf(T &&container, Predicate predicate) -> decltype(auto)
+{
+  return std::find_if(std::begin(container), std::end(container), predicate);
+}
 
 }// namespace JE

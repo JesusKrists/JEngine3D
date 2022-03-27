@@ -1,13 +1,7 @@
 # configure files based on CMake configuration options
 add_subdirectory(configured_files)
 
-set(JEngine3D_SOURCES JEngine3D/Platform/IPlatformBackend.cpp JEngine3D/Platform/SDLPlatformBackend.cpp)
-set(JEngine3D_HEADERS
-    JEngine3D/Core/Base.hpp
-    JEngine3D/Core/Assert.hpp
-    JEngine3D/Core/Types.hpp
-    JEngine3D/Platform/IPlatformBackend.hpp
-    JEngine3D/Platform/SDLPlatformBackend.hpp)
+include(JEngine3D_Sources.cmake)
 
 add_library(JEngine3D ${JEngine3D_SOURCES} ${JEngine3D_HEADERS})
 target_link_libraries(JEngine3D PRIVATE project_options project_warnings)

@@ -1,25 +1,4 @@
-FetchContent_Declare(
-  Catch2
-  GIT_REPOSITORY https://github.com/catchorg/Catch2.git
-  GIT_TAG v3.0.0-preview4)
-
-FetchContent_MakeAvailable(Catch2)
 list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
-set_property(TARGET Catch2 PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
-set_property(TARGET Catch2 PROPERTY C_INCLUDE_WHAT_YOU_USE "")
-set_property(TARGET Catch2WithMain PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
-set_property(TARGET Catch2WithMain PROPERTY C_INCLUDE_WHAT_YOU_USE "")
-#
-set_property(TARGET Catch2 PROPERTY CXX_CLANG_TIDY "")
-set_property(TARGET Catch2 PROPERTY C_CLANG_TIDY "")
-set_property(TARGET Catch2WithMain PROPERTY CXX_CLANG_TIDY "")
-set_property(TARGET Catch2WithMain PROPERTY C_CLANG_TIDY "")
-#
-set_property(TARGET Catch2 PROPERTY CXX_CPPCHECK "")
-set_property(TARGET Catch2 PROPERTY C_CPPCHECK "")
-set_property(TARGET Catch2WithMain PROPERTY CXX_CPPCHECK "")
-set_property(TARGET Catch2WithMain PROPERTY C_CPPCHECK "")
-
 include(CTest)
 include(Catch)
 
@@ -44,7 +23,7 @@ target_link_libraries(
 #add_test(NAME cli.version_matches COMMAND JEngine3D_Editor_Executable --version)
 #set_tests_properties(cli.version_matches PROPERTIES PASS_REGULAR_EXPRESSION "${PROJECT_VERSION}")
 
-set(UNITTEST_SOURCES UnitTests/unittest_SDLPlatformBackend.cpp)
+include(UnitTest_Sources.cmake)
 
 add_executable(JEngine3D_tests tests.cpp ${UNITTEST_SOURCES})
 target_link_libraries(
