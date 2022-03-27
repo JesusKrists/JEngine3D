@@ -1,9 +1,9 @@
 set(UNITTEST_SOURCES
-    UnitTests/Application.cpp
-    UnitTests/Base.cpp
-    UnitTests/Events.cpp
-    UnitTests/SDLPlatformBackend.cpp
-    UnitTests/Types.cpp
-    UnitTests/WindowController.cpp)
+    UnitTests/Core/Application.cpp
+    UnitTests/Core/Base.cpp
+    UnitTests/Core/Events.cpp
+    UnitTests/Core/Types.cpp
+    UnitTests/Core/WindowController.cpp
+    UnitTests/Platform/SDLPlatformBackend.cpp)
 
-set(CONSTEXPR_SOURCES UnitTests/Base_constexpr.cpp UnitTests/Types_constexpr.cpp)
+set(CONSTEXPR_SOURCES UnitTests/Core/Base_constexpr.cpp UnitTests/Core/Types_constexpr.cpp)
