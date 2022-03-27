@@ -3,7 +3,6 @@
 #include <JEngine3D/Core/Base.hpp>
 
 #include <cstddef>// for size_t
-#include <initializer_list>// for end
 
 TEST_CASE("JE::BIT returns shifted bit from bit index", "[JE::BIT]")
 {
