@@ -40,7 +40,7 @@ constexpr auto AlignTo(size_t value, size_t alignment) -> size_t
   return value + (alignment - remainder);
 }
 
-template<typename T, typename Predicate> constexpr auto FindIf(T &&container, Predicate predicate) -> decltype(auto)
+template<typename T, typename Predicate> inline auto FindIf(T &&container, Predicate predicate) -> decltype(auto)
 {
   return std::find_if(std::begin(std::forward<T>(container)), std::end(std::forward<T>(container)), predicate);
 }

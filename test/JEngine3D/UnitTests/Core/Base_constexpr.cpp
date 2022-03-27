@@ -34,14 +34,3 @@ TEST_CASE("JE::AlignTo aligns value to a given alignment", "[JE::AlignTo]")
   STATIC_REQUIRE(JE::AlignTo(val2, alignment1) == 12);
   STATIC_REQUIRE(JE::AlignTo(val2, alignment2) == 16);
 }
-TEST_CASE("JE::FindIf return iterator to correct element", "[JE::FindIf]")
-{
-  static constexpr auto VALUE_TO_FIND = 5;
-
-  static constexpr auto values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
-
-  static constexpr auto *it = JE::FindIf(values, [](auto value) { return value == VALUE_TO_FIND; });
-
-  STATIC_REQUIRE(it != std::end(values));
-  STATIC_REQUIRE(*it == VALUE_TO_FIND);
-}
