@@ -6,6 +6,15 @@
 
 namespace JE {
 
+
+Window::Window(const std::string_view &title, const Size2D &size, IPlatformBackend::NativeWindowHandle nativeHandle)
+  : m_NativeHandle(nativeHandle), m_Title(title), m_Size(size)
+{
+  ASSERT(
+    m_Title == IPlatformBackend::Get().WindowTitle(m_NativeHandle), "Window title mismatch with native window title");
+  ASSERT(m_Size == IPlatformBackend::Get().WindowSize(m_NativeHandle), "Window size mismatch with native window size");
+}
+
 Window::~Window() { IPlatformBackend::Get().DestroyWindow(m_NativeHandle); }
 
 void Window::SetTitle(const std::string_view &title)

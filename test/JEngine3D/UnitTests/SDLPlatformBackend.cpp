@@ -14,8 +14,8 @@
 class SDLPlatformBackendTestsFixture
 {
 public:
-  static constexpr auto WINDOW_SIZE = JE::Size2D{ 1280, 720 };
-  static constexpr auto WINDOW_TITLE = std::string_view{ "Test Window" };
+  static constexpr auto TEST_WINDOW_SIZE = JE::Size2D{ 1280, 720 };
+  static constexpr auto TEST_WINDOW_TITLE = std::string_view{ "Test Window" };
 
   static constexpr auto NEW_WINDOW_SIZE = JE::Size2D{ 640, 480 };
   static constexpr auto NEW_WINDOW_TITLE = std::string_view{ "Test Window - New" };
@@ -37,7 +37,7 @@ TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   "JE::SDLPlatformBackend creates an SDLWindow and returns a valid WindowHandle",
   "[JE::SDLPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
+  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
   REQUIRE(SDL_GetWindowID(static_cast<SDL_Window *>(windowHandle)) != 0);
 
@@ -48,9 +48,9 @@ TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   "JE::SDLPlatformBackend creates an SDLWindow and can query the size",
   "[JE::SDLPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
+  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
-  REQUIRE(m_Backend.WindowSize(windowHandle) == WINDOW_SIZE);
+  REQUIRE(m_Backend.WindowSize(windowHandle) == TEST_WINDOW_SIZE);
 
   m_Backend.DestroyWindow(windowHandle);
 }
@@ -59,7 +59,7 @@ TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   "JE::SDLPlatformBackend creates an SDLWindow and can set window size",
   "[JE::SDLPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
+  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
   m_Backend.SetWindowSize(windowHandle, NEW_WINDOW_SIZE);
 
   REQUIRE(m_Backend.WindowSize(windowHandle) == NEW_WINDOW_SIZE);
@@ -71,9 +71,9 @@ TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   "JE::SDLPlatformBackend creates an SDLWindow and can query window title",
   "[JE::SDLPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
+  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
-  REQUIRE(m_Backend.WindowTitle(windowHandle) == WINDOW_TITLE);
+  REQUIRE(m_Backend.WindowTitle(windowHandle) == TEST_WINDOW_TITLE);
 
   m_Backend.DestroyWindow(windowHandle);
 }
@@ -82,7 +82,7 @@ TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   "JE::SDLPlatformBackend creates an SDLWindow and can set window title",
   "[JE::SDLPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(WINDOW_TITLE, WINDOW_SIZE);
+  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
   m_Backend.SetWindowTitle(windowHandle, NEW_WINDOW_TITLE);
 
   REQUIRE(m_Backend.WindowTitle(windowHandle) == NEW_WINDOW_TITLE);

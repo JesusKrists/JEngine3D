@@ -20,11 +20,10 @@ public:
   Window(Window &&other) = delete;
   auto operator=(Window &&other) -> Window & = delete;
 
-  Window(const std::string_view &title, const Size2D &size, IPlatformBackend::NativeWindowHandle nativeHandle)
-    : m_NativeHandle(nativeHandle), m_Title(title), m_Size(size)
-  {}
-
+  Window(const std::string_view &title, const Size2D &size, IPlatformBackend::NativeWindowHandle nativeHandle);
   ~Window();
+
+  [[nodiscard]] inline auto GetNativeHandle() const -> IPlatformBackend::NativeWindowHandle { return m_NativeHandle; }
 
   [[nodiscard]] inline auto Title() const -> const std::string & { return m_Title; }
   void SetTitle(const std::string_view &title);
@@ -33,8 +32,6 @@ public:
   void SetSize(const Size2D &size);
 
 private:
-  [[nodiscard]] inline auto GetNativeHandle() const -> IPlatformBackend::NativeWindowHandle { return m_NativeHandle; }
-
   IPlatformBackend::NativeWindowHandle m_NativeHandle;
   std::string m_Title;
   Size2D m_Size;
