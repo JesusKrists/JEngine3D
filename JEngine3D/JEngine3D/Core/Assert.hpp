@@ -17,7 +17,9 @@ inline void ASSERT_([[maybe_unused]] bool check,
   if (!check) {
     // AllLogger::critical("Assertion '{0}' failed at {1}:{2} | {3}", assertion, file, line,
     // std::forward<Args>(args)...); // TODO(JesusKrists) - Log asserts properly
-    std::cout << "Assertion '" << assertion << "' failed at " << file << ":" << line << "\n";
+    std::cout << "Assertion '" << assertion << "' failed at " << file << ":" << line << " | ";
+    (std::cout << ... << args);
+    std::cout << "\n";
     DEBUGBREAK();
   }
 #endif

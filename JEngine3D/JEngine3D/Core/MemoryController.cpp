@@ -19,6 +19,7 @@ MemoryController::~MemoryController()
     ASSERT(memoryTagEntries.empty(),
       "MemoryController still has allocated entries, there is a memory leak somewhere in the program!");
   }
+  s_MemoryControllerInstance = nullptr;
 }
 
 auto MemoryController::Allocate(size_t byteCount, MemoryTag tag) -> void *
