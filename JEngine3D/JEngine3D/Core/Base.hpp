@@ -28,6 +28,8 @@ inline void DEBUGBREAK()
 
 template<typename T> constexpr void UNUSED(T &&val) { (void)val; }
 
+constexpr auto BIT(size_t bitIndex) -> size_t { return static_cast<size_t>(1) << bitIndex; }
+
 constexpr auto AlignTo(size_t value, size_t alignment) -> size_t
 {
   if (value == 0) { return alignment; }

@@ -13,6 +13,8 @@ target_link_libraries(
   PRIVATE project_options project_warnings
   PUBLIC JEngine3D)
 
+target_include_directories(JEngine3D_catch_main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
 # Provide a simple smoke test to make sure that the CLI works and can display a --help message
 #add_test(NAME cli.has_help COMMAND JEngine3D_Editor_Executable --help)
 
@@ -49,7 +51,7 @@ catch_discover_tests(
   .xml)
 
 # Add a file containing a set of constexpr tests
-add_executable(JEngine3D_constexpr_tests constexpr_tests.cpp)
+add_executable(JEngine3D_constexpr_tests ${CONSTEXPR_SOURCES})
 target_link_libraries(
   JEngine3D_constexpr_tests
   PRIVATE project_options
@@ -72,7 +74,7 @@ catch_discover_tests(
 
 # Disable the constexpr portion of the test, and build again this allows us to have an executable that we can debug when
 # things go wrong with the constexpr testing
-add_executable(JEngine3D_relaxed_constexpr_tests constexpr_tests.cpp)
+add_executable(JEngine3D_relaxed_constexpr_tests ${CONSTEXPR_SOURCES})
 target_link_libraries(
   JEngine3D_relaxed_constexpr_tests
   PRIVATE project_options

@@ -10,11 +10,11 @@
 #include <iterator>// for end
 #include <string_view>// for string_view
 #include <vector>// for vector
+#include <string>// for char_traits, string
 
 namespace JE {
 
-// TODO(JesusKrists): Write constexpr tests for JE::FindIf and JE::Size2D operator== and JE::AlignTo and
-// JE::MemoryController and JE::Window
+// TODO(JesusKrists): Write JE::MemoryController test
 
 }// namespace JE
 
@@ -54,18 +54,6 @@ TEST_CASE_METHOD(WindowControllerTestsFixture,
   windowIt = JE::FindIf(windows, windowFindFunction);
 
   REQUIRE(windowIt == std::end(windows));
-}
-
-TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window sets title of underlying NativeHandle", "[JE::Window]")
-{
-  auto *nativeWindow = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-  auto window = JE::Window(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, nativeWindow);
-
-  REQUIRE(window.Title() == TEST_WINDOW_TITLE);
-
-  window.SetTitle(NEW_WINDOW_TITLE);
-
-  REQUIRE(window.Title() == NEW_WINDOW_TITLE);
 }
 
 TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window sets title of underlying NativeHandle", "[JE::Window]")

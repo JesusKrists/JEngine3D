@@ -75,7 +75,7 @@ void SDLPlatformBackend::PollEvents(IEventProcessor &processor)
   SDL_Event nativeEvent;
   while (SDL_PollEvent(&nativeEvent) != 0) {
     if (nativeEvent.type == SDL_EventType::SDL_QUIT) {
-      QuitEvent event{};
+      QuitEvent event;
       processor.OnEvent(event);
     }
   }
