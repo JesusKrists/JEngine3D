@@ -18,14 +18,14 @@ public:
   [[nodiscard]] auto Initialize() -> bool override;
   [[nodiscard]] auto Initialized() -> bool override;
 
-  [[nodiscard]] auto CreateWindow(std::string_view title, const Size2D &size) -> NativeWindowHandle override;
+  [[nodiscard]] auto CreateWindow(const std::string_view &title, const Size2D &size) -> NativeWindowHandle override;
   void DestroyWindow(NativeWindowHandle handle) override;
 
   [[nodiscard]] auto WindowSize(NativeWindowHandle handle) -> Size2D override;
   void SetWindowSize(NativeWindowHandle handle, const Size2D &size) override;
 
   [[nodiscard]] auto WindowTitle(NativeWindowHandle handle) -> std::string_view override;
-  void SetWindowTitle(NativeWindowHandle handle, std::string_view title) override;
+  void SetWindowTitle(NativeWindowHandle handle, const std::string_view &title) override;
 
   void PollEvents(IEventProcessor &processor) override;
 };

@@ -40,7 +40,7 @@ constexpr auto AlignTo(size_t value, size_t alignment) -> size_t
 
 template<typename T, typename Predicate> constexpr auto FindIf(T &&container, Predicate predicate) -> decltype(auto)
 {
-  return std::find_if(std::begin(container), std::end(container), predicate);
+  return std::ranges::find_if(std::forward<T>(container), predicate);
 }
 
 }// namespace JE

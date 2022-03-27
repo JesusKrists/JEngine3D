@@ -32,7 +32,7 @@ auto SDLPlatformBackend::Initialize() -> bool
 
 auto SDLPlatformBackend::Initialized() -> bool { return s_Initialized; }
 
-auto SDLPlatformBackend::CreateWindow(std::string_view title, const Size2D &size) -> NativeWindowHandle
+auto SDLPlatformBackend::CreateWindow(const std::string_view &title, const Size2D &size) -> NativeWindowHandle
 {
 
   return SDL_CreateWindow(title.data(),
@@ -65,7 +65,7 @@ auto SDLPlatformBackend::WindowTitle(NativeWindowHandle handle) -> std::string_v
   return SDL_GetWindowTitle(static_cast<SDL_Window *>(handle));
 }
 
-void SDLPlatformBackend::SetWindowTitle(NativeWindowHandle handle, std::string_view title)
+void SDLPlatformBackend::SetWindowTitle(NativeWindowHandle handle, const std::string_view &title)
 {
   SDL_SetWindowTitle(static_cast<SDL_Window *>(handle), title.data());
 }

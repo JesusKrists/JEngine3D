@@ -32,14 +32,14 @@ public:
   [[nodiscard]] virtual auto Initialize() -> bool = 0;
   [[nodiscard]] virtual auto Initialized() -> bool = 0;
 
-  [[nodiscard]] virtual auto CreateWindow(std::string_view title, const Size2D &size) -> NativeWindowHandle = 0;
+  [[nodiscard]] virtual auto CreateWindow(const std::string_view &title, const Size2D &size) -> NativeWindowHandle = 0;
   virtual void DestroyWindow(NativeWindowHandle handle) = 0;
 
   [[nodiscard]] virtual auto WindowSize(NativeWindowHandle handle) -> Size2D = 0;
   virtual void SetWindowSize(NativeWindowHandle handle, const Size2D &size) = 0;
 
   [[nodiscard]] virtual auto WindowTitle(NativeWindowHandle handle) -> std::string_view = 0;
-  virtual void SetWindowTitle(NativeWindowHandle handle, std::string_view title) = 0;
+  virtual void SetWindowTitle(NativeWindowHandle handle, const std::string_view &title) = 0;
 
   virtual void PollEvents(IEventProcessor &processor) = 0;
 

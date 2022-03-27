@@ -20,14 +20,14 @@ public:
   Window(Window &&other) = delete;
   auto operator=(Window &&other) -> Window & = delete;
 
-  Window(std::string_view title, const Size2D &size, IPlatformBackend::NativeWindowHandle nativeHandle)
+  Window(const std::string_view &title, const Size2D &size, IPlatformBackend::NativeWindowHandle nativeHandle)
     : m_NativeHandle(nativeHandle), m_Title(title), m_Size(size)
   {}
 
   ~Window();
 
   [[nodiscard]] inline auto Title() const -> const std::string & { return m_Title; }
-  void SetTitle(std::string_view title);
+  void SetTitle(const std::string_view &title);
 
   [[nodiscard]] inline auto Size() const -> const Size2D & { return m_Size; }
   void SetSize(const Size2D &size);
@@ -47,7 +47,7 @@ class WindowController
 public:
   WindowController();
 
-  auto CreateWindow(std::string_view title, const Size2D &size) -> Window &;
+  auto CreateWindow(const std::string_view &title, const Size2D &size) -> Window &;
   [[nodiscard]] inline auto Windows() const -> const WindowContainer & { return m_Windows; }
 
   inline void DeleteAllWindows() { m_Windows.clear(); }

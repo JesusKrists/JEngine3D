@@ -20,7 +20,8 @@ public:
   [[nodiscard]] inline auto Initialize() -> bool override { return true; }
   [[nodiscard]] inline auto Initialized() -> bool override { return true; }
 
-  [[nodiscard]] inline auto CreateWindow(std::string_view title, const JE::Size2D &size) -> NativeWindowHandle override
+  [[nodiscard]] inline auto CreateWindow(const std::string_view &title, const JE::Size2D &size)
+    -> NativeWindowHandle override
   {
     auto window = m_CreatedWindows.emplace_back(++m_CurrentWindowID, title, size);
     return reinterpret_cast<NativeWindowHandle>(window.ID);// NOLINT
@@ -49,7 +50,7 @@ public:
     if (windowIt != std::end(m_CreatedWindows)) { return windowIt->Title; }
     return INVALID_WINDOW_TITLE;
   }
-  inline void SetWindowTitle(NativeWindowHandle handle, std::string_view title) override
+  inline void SetWindowTitle(NativeWindowHandle handle, const std::string_view &title) override
   {
     auto windowIt = GetWindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { windowIt->Title = title; }
@@ -60,7 +61,7 @@ public:
 private:
   struct TestWindow
   {
-    TestWindow(size_t ID, std::string_view title, const JE::Size2D &size) : ID(ID), Title(title), Size(size) {}
+    TestWindow(size_t id, const std::string_view &title, const JE::Size2D &size) : ID(id), Title(title), Size(size) {}
     size_t ID;
     std::string Title;
     JE::Size2D Size;
