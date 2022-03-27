@@ -4,7 +4,7 @@
 #include <JEngine3D/Platform/SDLPlatformBackend.hpp>// for SDLPlatformBackend
 #include <JEngine3D/Core/Base.hpp>// for UNUSED
 #include <JEngine3D/Core/Types.hpp>// for Size2D
-#include <JEngine3D/Event/Events.hpp>
+#include <JEngine3D/Core/Events.hpp>
 
 #include <SDL_video.h>// for SDL_GetWindowID
 #include <SDL_events.h>

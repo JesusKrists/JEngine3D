@@ -17,45 +17,45 @@ public:
   static constexpr auto INVALID_WINDOW_SIZE = JE::Size2D{ -1, -1 };
   static constexpr auto INVALID_WINDOW_TITLE = std::string_view{ "Invalid Window" };
 
-  [[nodiscard]] auto Initialize() -> bool override { return true; }
-  [[nodiscard]] auto Initialized() -> bool override { return true; }
+  [[nodiscard]] inline auto Initialize() -> bool override { return true; }
+  [[nodiscard]] inline auto Initialized() -> bool override { return true; }
 
-  [[nodiscard]] auto CreateWindow(std::string_view title, const JE::Size2D &size) -> NativeWindowHandle override
+  [[nodiscard]] inline auto CreateWindow(std::string_view title, const JE::Size2D &size) -> NativeWindowHandle override
   {
     auto window = m_CreatedWindows.emplace_back(++m_CurrentWindowID, title, size);
     return reinterpret_cast<NativeWindowHandle>(window.ID);// NOLINT
   }
-  void DestroyWindow(NativeWindowHandle handle) override
+  inline void DestroyWindow(NativeWindowHandle handle) override
   {
     auto windowIt = GetWindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { m_CreatedWindows.erase(windowIt); }
   }
 
-  [[nodiscard]] auto WindowSize(NativeWindowHandle handle) -> JE::Size2D override
+  [[nodiscard]] inline auto WindowSize(NativeWindowHandle handle) -> JE::Size2D override
   {
     auto windowIt = GetWindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { return windowIt->Size; }
     return INVALID_WINDOW_SIZE;
   }
-  void SetWindowSize(NativeWindowHandle handle, const JE::Size2D &size) override
+  inline void SetWindowSize(NativeWindowHandle handle, const JE::Size2D &size) override
   {
     auto windowIt = GetWindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { windowIt->Size = size; }
   }
 
-  [[nodiscard]] auto WindowTitle(NativeWindowHandle handle) -> std::string_view override
+  [[nodiscard]] inline auto WindowTitle(NativeWindowHandle handle) -> std::string_view override
   {
     auto windowIt = GetWindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { return windowIt->Title; }
     return INVALID_WINDOW_TITLE;
   }
-  void SetWindowTitle(NativeWindowHandle handle, std::string_view title) override
+  inline void SetWindowTitle(NativeWindowHandle handle, std::string_view title) override
   {
     auto windowIt = GetWindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { windowIt->Title = title; }
   }
 
-  void PollEvents(JE::IEventProcessor &processor) override { JE::UNUSED(processor); }
+  inline void PollEvents(JE::IEventProcessor &processor) override { JE::UNUSED(processor); }
 
 private:
   struct TestWindow

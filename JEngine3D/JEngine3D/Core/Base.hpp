@@ -28,6 +28,16 @@ inline void DEBUGBREAK()
 
 template<typename T> constexpr void UNUSED(T &&val) { (void)val; }
 
+constexpr auto AlignTo(size_t value, size_t alignment) -> size_t
+{
+  if (value == 0) { return alignment; }
+
+  auto remainder = value % alignment;
+  if (remainder == 0) { return value; }
+
+  return value + (alignment - remainder);
+}
+
 template<typename T, typename Predicate> constexpr auto FindIf(T &&container, Predicate predicate) -> decltype(auto)
 {
   return std::find_if(std::begin(container), std::end(container), predicate);

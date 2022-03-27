@@ -1,7 +1,7 @@
 #include "SDLPlatformBackend.hpp"
 
 #include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
-#include "JEngine3D/Event/Events.hpp"
+#include "JEngine3D/Core/Events.hpp"
 
 #include <cstring>// IWYU pragma: keep
 #include <iostream>// for operator<<, basic_ostream, char_traits, cout
