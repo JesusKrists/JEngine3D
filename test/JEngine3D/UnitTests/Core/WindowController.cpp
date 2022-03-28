@@ -9,12 +9,6 @@
 
 #include <iterator>// for end
 
-namespace JE {
-
-// TODO(JesusKrists): Write JE::MemoryController test
-
-}// namespace JE
-
 class WindowControllerTestsFixture
 {
 public:
