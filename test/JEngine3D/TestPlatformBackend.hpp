@@ -61,7 +61,9 @@ public:
 private:
   struct TestWindow
   {
-    TestWindow(size_t id, const std::string_view &title, const JE::Size2D &size) : ID(id), Title(title), Size(size) {}
+    TestWindow(size_t windowID, const std::string_view &title, const JE::Size2D &size)
+      : ID(windowID), Title(title), Size(size)
+    {}
     size_t ID;
     std::string Title;
     JE::Size2D Size;

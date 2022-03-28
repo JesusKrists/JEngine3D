@@ -3,8 +3,6 @@
 #include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Core/Types.hpp"
 
-#include <string_view>
-
 namespace JE {
 
 class IEventProcessor;

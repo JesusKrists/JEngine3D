@@ -3,7 +3,6 @@
 #include "JEngine3D/Platform/IPlatformBackend.hpp"
 #include "JEngine3D/Core/Types.hpp"// for Size2D
 
-#include <string_view>// for string_view
 
 namespace JE {
 

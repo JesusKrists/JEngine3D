@@ -30,6 +30,10 @@ set(ENABLE_DEVELOPER_MODE
 set(WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT TRUE)
 set(ENABLE_INCLUDE_WHAT_YOU_USE_DEVELOPER_DEFAULT TRUE)
 
+set(ENABLE_PCH_USER_DEFAULT TRUE) # TODO(JesusKrists) - Create proper precompiled headers for JEngine3D targets
+set(ENABLE_UNITY_USER_DEFAULT TRUE
+)# TODO(JesusKrists) - ENABLE_UNITY does not work, have to set unity build manually on target
+
 # Add project_options v0.19.0
 # https://github.com/cpp-best-practices/project_options
 include(FetchContent)

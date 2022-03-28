@@ -1,7 +1,6 @@
 #include "MemoryController.hpp"
 
 #include <cstdlib>// for free, malloc, size_t
-#include <iostream>// for operator<<, basic_ostream, basic_ostream<>::__os...
 #include <iterator>// for end
 
 namespace JE {

@@ -1,6 +1,8 @@
 #pragma once
 
-#include <cstdint>
+#include <cstdint>// IWYU pragma: export
+#include <string>// IWYU pragma: export
+#include <string_view>// IWYU pragma: export
 
 namespace JE {
 

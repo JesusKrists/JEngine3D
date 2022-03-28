@@ -18,12 +18,6 @@ RUN python3 -m pip install --upgrade pip setuptools && \
     python3 -m pip install conan && \
     conan --version
 
-# Install cmake-format
-RUN python3 -m pip install cmakelang
-
-# Install clang-format
-RUN apt-get install -y clang-format
-
 # Install packages required by SDL2
 RUN apt-get -y install xorg-dev libsdl2-dev
 
@@ -53,10 +47,12 @@ RUN update-alternatives --install /usr/bin/g++ g++ $(which g++-${GCC_VER}) 100
 ARG LLVM_VER="13"
 # Add clang-${LLVM_VER}
 ARG LLVM_URL="http://apt.llvm.org/${VARIANT}/"
-ARG LLVM_PKG="llvm-toolchain-${VARIANT}-${LLVM_VER}"
-RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - 2>/dev/null && \
-    add-apt-repository -y "deb ${LLVM_URL} ${LLVM_PKG} main" && \
-    apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
+ARG LLVM_PKG="llvm-toolchain-${VARIANT}"
+
+RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - 2>/dev/null
+RUN add-apt-repository -y "deb ${LLVM_URL} ${LLVM_PKG} main" && \
+    apt-get update -qq 
+RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
     clang-${LLVM_VER} lldb-${LLVM_VER} lld-${LLVM_VER} clangd-${LLVM_VER} \
     llvm-${LLVM_VER}-dev libclang-${LLVM_VER}-dev clang-tidy-${LLVM_VER}
@@ -67,6 +63,12 @@ RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-t
 # Set clang-${LLVM_VER} as default clang
 RUN update-alternatives --install /usr/bin/clang clang $(which clang-${LLVM_VER}) 100
 RUN update-alternatives --install /usr/bin/clang++ clang++ $(which clang++-${LLVM_VER}) 100
+
+# Install cmake-format
+RUN python3 -m pip install cmakelang
+
+# Install clang-format
+RUN apt-get install -y clang-format
 
 # Add current cmake/ccmake, from Kitware
 ARG CMAKE_URL="https://apt.kitware.com/ubuntu/"
@@ -91,10 +93,16 @@ RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
 ENV IWYU /home/iwyu
 ENV IWYU_BUILD ${IWYU}/build
 ENV IWYU_SRC ${IWYU}/include-what-you-use
-RUN mkdir -p ${IWYU_BUILD} && \
+RUN if [ "$LLVM_VER" = "15" ] ; then \
+    mkdir -p ${IWYU_BUILD} && \
+    git clone https://github.com/include-what-you-use/include-what-you-use.git \
+    ${IWYU_SRC} ; \
+    else \
+    mkdir -p ${IWYU_BUILD} && \
     git clone --branch clang_${LLVM_VER} \
     https://github.com/include-what-you-use/include-what-you-use.git \
-    ${IWYU_SRC}
+    ${IWYU_SRC} ; \
+    fi
 RUN CC=clang-${LLVM_VER} CXX=clang++-${LLVM_VER} cmake -S ${IWYU_SRC} \
     -B ${IWYU_BUILD} \
     -G "Unix Makefiles" -DCMAKE_PREFIX_PATH=/usr/lib/llvm-${LLVM_VER} && \

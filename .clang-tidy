@@ -12,9 +12,10 @@ Checks: "*,
         -readability-avoid-const-params-in-decls,
         -cppcoreguidelines-non-private-member-variables-in-classes,
         -misc-non-private-member-variables-in-classes,
+        -bugprone-suspicious-include
 "
 WarningsAsErrors: ''
-HeaderFilterRegex: ''
+HeaderFilterRegex: 'JEngine3D'
 FormatStyle:     none
 
 

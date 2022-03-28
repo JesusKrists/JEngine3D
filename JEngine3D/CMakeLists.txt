@@ -5,7 +5,12 @@ include(JEngine3D_Sources.cmake)
 
 add_library(JEngine3D ${JEngine3D_SOURCES} ${JEngine3D_HEADERS})
 target_link_libraries(JEngine3D PRIVATE project_options project_warnings)
-target_link_system_libraries(JEngine3D PRIVATE SDL2-static)
+target_link_system_libraries(
+  JEngine3D
+  PRIVATE
+  SDL2-static
+  PUBLIC
+  fmt::fmt)
 
 target_include_directories(JEngine3D PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
 

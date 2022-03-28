@@ -2,15 +2,15 @@
 
 #ifdef JE_DEBUG
 #if defined(JE_PLATFORM_UNIX)
-#include <csignal>
+#include <csignal>// IWYU pragma: export
 #endif
 #define JE_ENABLE_ASSERTS
 #endif
 
 
-#define JE_STRINGIFY_MACRO(x) #x
+#define JE_STRINGIFY_MACRO(x) #x// NOLINT
 
-#include <algorithm>
+#include <algorithm>// IWYU pragma: export
 
 
 namespace JE {
@@ -21,7 +21,7 @@ inline void DEBUGBREAK()
 #if defined(JE_PLATFORM_WINDOWS)
   __debugbreak();
 #elif defined(JE_PLATFORM_UNIX)
-  raise(SIGTRAP);
+  raise(SIGTRAP);// NOLINT
 #endif
 #endif
 }

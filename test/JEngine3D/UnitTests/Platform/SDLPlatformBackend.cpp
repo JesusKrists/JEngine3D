@@ -8,8 +8,6 @@
 
 #include <SDL_video.h>// for SDL_GetWindowID
 #include <SDL_events.h>
-#include <string>// for char_traits
-#include <string_view>// for operator==, bas...
 
 class SDLPlatformBackendTestsFixture
 {

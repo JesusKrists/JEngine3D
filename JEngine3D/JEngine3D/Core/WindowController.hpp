@@ -4,9 +4,6 @@
 #include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Platform/IPlatformBackend.hpp"
 
-#include <string_view>
-#include <string>// for string
-
 namespace JE {
 
 

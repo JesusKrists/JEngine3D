@@ -2,7 +2,6 @@
 
 #include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
 
-#include <memory>// for unique_ptr
 
 namespace JE {
 

@@ -2,7 +2,7 @@
 
 #include "JEngine3D/Core/Base.hpp"
 
-#include <iostream>
+#include <iostream>// IWYU pragma: export
 
 namespace JE {
 
@@ -18,7 +18,7 @@ inline void ASSERT_([[maybe_unused]] bool check,
     // AllLogger::critical("Assertion '{0}' failed at {1}:{2} | {3}", assertion, file, line,
     // std::forward<Args>(args)...); // TODO(JesusKrists) - Log asserts properly
     std::cout << "Assertion '" << assertion << "' failed at " << file << ":" << line << " | ";
-    (std::cout << ... << args);
+    (std::cout << ... << args);// NOLINT
     std::cout << "\n";
     DEBUGBREAK();
   }

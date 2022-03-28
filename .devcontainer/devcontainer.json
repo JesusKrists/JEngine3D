@@ -11,7 +11,7 @@
 		"args": {
 			"VARIANT": "focal",
 			"GCC_VER": "11",
-			"LLVM_VER": "13",
+			"LLVM_VER": "15",
 			"USE_CLANG": "1"
 		}
 	},
@@ -21,13 +21,14 @@
 		"seccomp=unconfined"
 	],
 	"remoteEnv": {
-		"DISPLAY": "${env:REMOTE_DISPLAY_IP}:0.0",
+		"DISPLAY": "${localEnv:DISPLAY}",
+		"XAUTHORITY": "${localEnv:XAUTHORITY}",
 		"ASAN_OPTIONS": "fast_unwind_on_malloc=0",
 		"LSAN_OPTIONS": "print_suppressions=false:suppressions=${workspaceFolder}/LSAN.supp"
 	},
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
-		"clangd.path": "clangd-13",
+		"clangd.path": "clangd-15",
 		"workbench.tree.indent": 24,
 		"cmake.configureOnOpen": false,
 		"cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
@@ -63,6 +64,10 @@
 		"vscode-icons-team.vscode-icons",
 		"cheshirekow.cmake-format",
 		"Guyutongxue.cpp-reference"
+	],
+	"mounts": [
+		"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",
+		"source=${localEnv:XAUTHORITY},target=${localEnv:XAUTHORITY},type=bind,consistency=cached"
 	],
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
 	// "forwardPorts": [],

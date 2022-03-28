@@ -2,7 +2,6 @@
 
 #include <JEngine3D/Core/Base.hpp>
 
-#include <cstddef>// for size_t
 #include <initializer_list>// for end, initializer_list
 
 TEST_CASE("JE::BIT returns shifted bit from bit index", "[JE::BIT]")
@@ -35,8 +34,8 @@ TEST_CASE("JE::FindIf return iterator to correct element", "[JE::FindIf]")
 
   const auto values = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
-  const auto *it = JE::FindIf(values, [](auto value) { return value == VALUE_TO_FIND; });
+  const auto *iter = JE::FindIf(values, [](auto value) { return value == VALUE_TO_FIND; });
 
-  REQUIRE(it != std::end(values));
-  REQUIRE(*it == VALUE_TO_FIND);
+  REQUIRE(iter != std::end(values));
+  REQUIRE(*iter == VALUE_TO_FIND);
 }

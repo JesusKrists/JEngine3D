@@ -4,7 +4,6 @@
 #include "JEngine3D/Core/Events.hpp"
 
 #include <cstring>// IWYU pragma: keep
-#include <iostream>// for operator<<, basic_ostream, char_traits, cout
 #include <SDL_events.h>// for SDL_PollEvent, SDL_Event, SDL_...
 #include <SDL_error.h>// for SDL_GetError
 #include <SDL_video.h>// for SDL_Window, SDL_CreateWindow, SDL_DestroyWindow

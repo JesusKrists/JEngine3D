@@ -3,11 +3,10 @@
 #include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Core/Base.hpp"
 
-#include <cstddef>
-#include <array>
-#include <utility>
-#include <vector>
-#include <memory>
+#include <array>// IWYU pragma: export
+#include <utility>// IWYU pragma: export
+#include <vector>// IWYU pragma: export
+#include <memory>// IWYU pragma: export
 
 namespace JE {
 
@@ -62,6 +61,7 @@ public:
   [[nodiscard]] inline auto MemoryEntries() const -> const MemoryEntryContainer & { return m_MemoryEntries; }
 
 private:
+  // cppcheck-suppress unusedPrivateFunction
   auto Allocate(size_t byteCount, MemoryTag tag) -> void *;
   void Deallocate(void *memory, MemoryTag tag);
 

@@ -15,6 +15,14 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(spdlog)
 
+########################## fmt ########################################
+FetchContent_Declare(
+  fmt
+  GIT_REPOSITORY https://github.com/fmtlib/fmt.git
+  GIT_TAG 8.1.1)
+
+FetchContent_MakeAvailable(fmt)
+
 ########################## SDL2 ######################################
 set(SDL_SHARED_ENABLED_BY_DEFAULT
     OFF
@@ -55,6 +63,9 @@ endif()
 set_property(TARGET spdlog PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
 set_property(TARGET spdlog PROPERTY C_INCLUDE_WHAT_YOU_USE "")
 
+set_property(TARGET fmt PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
+set_property(TARGET fmt PROPERTY C_INCLUDE_WHAT_YOU_USE "")
+
 set_property(TARGET SDL2main PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
 set_property(TARGET SDL2main PROPERTY C_INCLUDE_WHAT_YOU_USE "")
 set_property(TARGET SDL2-static PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
@@ -72,6 +83,9 @@ endif()
 set_property(TARGET spdlog PROPERTY CXX_CLANG_TIDY "")
 set_property(TARGET spdlog PROPERTY C_CLANG_TIDY "")
 
+set_property(TARGET fmt PROPERTY CXX_CLANG_TIDY "")
+set_property(TARGET fmt PROPERTY C_CLANG_TIDY "")
+
 set_property(TARGET SDL2main PROPERTY CXX_CLANG_TIDY "")
 set_property(TARGET SDL2main PROPERTY C_CLANG_TIDY "")
 set_property(TARGET SDL2-static PROPERTY CXX_CLANG_TIDY "")
@@ -88,6 +102,9 @@ endif()
 
 set_property(TARGET spdlog PROPERTY CXX_CPPCHECK "")
 set_property(TARGET spdlog PROPERTY C_CPPCHECK "")
+
+set_property(TARGET fmt PROPERTY CXX_CPPCHECK "")
+set_property(TARGET fmt PROPERTY C_CPPCHECK "")
 
 set_property(TARGET SDL2main PROPERTY CXX_CPPCHECK "")
 set_property(TARGET SDL2main PROPERTY C_CPPCHECK "")
