@@ -8,7 +8,7 @@ namespace JE {
 
 template<typename... Args>
 inline void ASSERT_([[maybe_unused]] bool check,
-  [[maybe_unused]] const char *assertion,
+  [[maybe_unused]] const char *assertion,// NOLINT(bugprone-easily-swappable-parameters)
   [[maybe_unused]] const char *file,
   [[maybe_unused]] int line,
   [[maybe_unused]] Args &&...args)
