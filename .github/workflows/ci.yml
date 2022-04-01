@@ -149,6 +149,7 @@ jobs:
           opencppcoverage: true
 
       - name: Setup Cpp - Linux clang
+        if: runner.os == 'ubuntu-20.04' && matrix.compiler == 'llvm'
         uses: aminya/setup-cpp@v1
         with:
           cmake: true
