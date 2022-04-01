@@ -20,6 +20,7 @@ env:
   SONAR_SCANNER_VERSION: 4.7.0.2747
   SONAR_SERVER_URL: "https://sonarcloud.io"
   BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory # Directory where build-wrapper output will be placed
+  CPPCHECK: /home/cppcheck
 
 jobs:
   Test:
@@ -203,12 +204,11 @@ jobs:
         if: matrix.os == 'ubuntu-20.04' && matrix.compiler == 'llvm'
         env:
           LLVM_VER: 15
-          CPPCHECK: /home/cppcheck
           CPPCHECK_BUILD: ${{ env.CPPCHECK }}/build
           CPPCHECK_SRC: ${{ env.CPPCHECK }}/cppcheck-src
         run: |
           sudo apt-get purge --auto-remove cppcheck
-          mkdir -p ${{ env.CPPCHECK_BUILD }}
+          sudo mkdir -p ${{ env.CPPCHECK_BUILD }}
           sudo apt-get install libxml2-utils && sudo apt-get install libz3-dev libtinyxml2-dev && sudo apt-get install libpcre3-dev
           git clone --branch 2.7 https://github.com/danmar/cppcheck.git ${{ env.CPPCHECK_SRC }}
           CC=clang-${{ env.LLVM_VER }} CXX=clang++-${{ env.LLVM_VER }} cmake -S ${{ env.CPPCHECK_SRC }} -B ${{ env.CPPCHECK_BUILD }} -G "Unix Makefiles" -DHAVE_RULES=On -DBUILD_GUI=Off
