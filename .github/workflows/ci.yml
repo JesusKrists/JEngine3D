@@ -294,9 +294,9 @@ jobs:
       - name: Linux - Upload Valgrind Test logs
         if: runner.os == 'Linux' && matrix.developer_mode == 'OFF'
         uses: actions/upload-artifact@v3
-          with:
-            name: Valgrind-logs
-            path: ./build/Testing
+        with:
+          name: Valgrind-logs
+          path: ./build/Testing
 
       - name: Publish to codecov
         uses: codecov/codecov-action@v2
