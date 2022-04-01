@@ -21,6 +21,7 @@ env:
   SONAR_SERVER_URL: "https://sonarcloud.io"
   BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory # Directory where build-wrapper output will be placed
   CPPCHECK: /home/cppcheck
+  LLVM_VER: 15
 
 jobs:
   Test:
@@ -195,7 +196,6 @@ jobs:
       - name: Linux - Setup clang-15
         if: runner.os == 'Linux' && matrix.compiler == 'llvm'
         env:
-          LLVM_VER: 15
           LLVM_URL: http://apt.llvm.org/focal/
           LLVM_PKG: llvm-toolchain-focal
         run: |
@@ -210,14 +210,11 @@ jobs:
               clang-${{ env.LLVM_VER }} lldb-${{ env.LLVM_VER }} lld-${{ env.LLVM_VER }} clangd-${{ env.LLVM_VER }} \
               llvm-${{ env.LLVM_VER }}-dev libclang-${{ env.LLVM_VER }}-dev clang-tidy-${{ env.LLVM_VER }}
           sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-tidy-${{ env.LLVM_VER }}) 100 && \
-          sudo update-alternatives --install /usr/bin/clang clang $(which clang-${{ env.LLVM_VER }}) 100 && \
-          sudo update-alternatives --install /usr/bin/clang++ clang++ $(which clang++-${{ env.LLVM_VER }}) 100 && \
           sudo update-alternatives --install /usr/bin/llvm-cov llvm-cov $(which llvm-cov-${{ env.LLVM_VER }}) 100
 
       - name: Linux - Setup cppcheck 2.7
         if: runner.os == 'Linux' && matrix.compiler == 'llvm'
         env:
-          LLVM_VER: 15
           CPPCHECK_BUILD: ${{ env.CPPCHECK }}/build
           CPPCHECK_SRC: ${{ env.CPPCHECK }}/cppcheck-src
         run: |
@@ -239,11 +236,8 @@ jobs:
       
       - name: Configure CMake - Linux clang
         if: runner.os == 'Linux' && matrix.compiler == 'llvm'
-        env:
-          CC: clang
-          CXX: clang++
         run: |
-          cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DOPT_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF' }} -DGIT_SHA:STRING=${{ github.sha }} -DOPT_ENABLE_INCLUDE_WHAT_YOU_USE:BOOL=OFF
+          CC=clang-${{ env.LLVM_VER }} CXX=clang++-${{ env.LLVM_VER }} cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DOPT_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF' }} -DGIT_SHA:STRING=${{ github.sha }} -DOPT_ENABLE_INCLUDE_WHAT_YOU_USE:BOOL=OFF
                     
 
       - name: Build (Regular)
