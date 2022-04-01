@@ -184,8 +184,8 @@ jobs:
         if: matrix.os == 'ubuntu-20.04' && matrix.compiler == 'llvm'
         env:
           LLVM_VER: 15
-          LLVM_URL: http://apt.llvm.org/${VARIANT}/
-          LLVM_PKG: llvm-toolchain-${VARIANT}
+          LLVM_URL: http://apt.llvm.org/focal/
+          LLVM_PKG: llvm-toolchain-focal
         run: |
           sudo apt-get purge --auto-remove clang clang-tidy
           sudo add-apt-repository -y "deb ${{ env.LLVM_URL }} ${{ env.LLVM_PKG }} main" && \
@@ -292,7 +292,7 @@ jobs:
             build/*-*${{ matrix.build_type }}*-*.*
 
       - name: Linux - Upload Valgrind Test logs
-        if: runner.os == 'Linux' && matrix.developer_mode == 'OFF'
+        if: (runner.os == 'Linux' && matrix.developer_mode == 'OFF') && always()
         uses: actions/upload-artifact@v3
         with:
           name: Valgrind-logs
