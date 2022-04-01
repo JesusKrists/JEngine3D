@@ -1,1 +1,3 @@
 leak:SDL_DBus_Init
+leak:X11_GL_LoadLibrary
+leak:X11_VideoInit
