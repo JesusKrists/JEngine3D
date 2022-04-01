@@ -1,3 +1,1 @@
-leak:libGLX*
-leak:libdbus*
-leak:libX11*
+leak:SDL_DBus_Init

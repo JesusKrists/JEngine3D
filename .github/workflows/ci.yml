@@ -39,11 +39,10 @@ jobs:
           - ubuntu-20.04
           - macos-11
         compiler:
-          # you can specify the version after `-` like "llvm-13.0.0".
           - llvm
           - gcc
         generator:
-          - "Ninja Multi-Config"
+          - "Ninja"
         build_type:
           - Release
           - Debug
@@ -58,14 +57,16 @@ jobs:
           # mingw is determined by this author to be too buggy to support
           - os: macos-11
             compiler: gcc
-          - os: ubuntu-20.04
-            compiler: llvm
 
           - os: macos-11
             sonarcloud_build: ON
           - os: windows-2022
             sonarcloud_build: ON
 
+
+          - os: ubuntu-20.04
+            compiler: llvm
+            sonarcloud_build: ON
           - os: ubuntu-20.04
             compiler: gcc
             sonarcloud_build: ON
@@ -121,16 +122,9 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
-            ~/vcpkg
-            ./build/vcpkg_installed
-            ${{ env.CONAN_USER_HOME }}
             ~/.cache/pip
-            ${{ env.HOME }}/.cache/vcpkg/archives
-            ${{ env.XDG_CACHE_HOME }}/vcpkg/archives
-            ${{ env.LOCALAPPDATA }}\vcpkg\archives
-            ${{ env.APPDATA }}\vcpkg\archives
             ~/.sonar/cache
-          key: ${{ runner.os }}-${{ matrix.compiler }}-${{matrix.build_type}}-${{matrix.generator}}-${{matrix.developer_mode}}-${{ hashFiles('**/CMakeLists.txt') }}-${{ hashFiles('./conanfile.txt')}}-${{ hashFiles('./vcpkg.json')}}
+          key: ${{ runner.os }}-${{ matrix.compiler }}-${{matrix.build_type}}-${{matrix.generator}}-${{matrix.developer_mode}}-${{ hashFiles('**/CMakeLists.txt') }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.compiler }}-${{matrix.build_type}}-${{matrix.generator}}-${{matrix.developer_mode}}
 
@@ -138,7 +132,7 @@ jobs:
         uses: aminya/setup-cpp@v1
         with:
           compiler: ${{ matrix.compiler }}
-          vcvarsall: ${{ contains(matrix.os, 'windows' )}}
+          vcvarsall: ${{ contains(matrix.os, 'windows') }}
 
           cmake: true
           ninja: true
@@ -185,6 +179,41 @@ jobs:
           curl -sSLo $HOME/.sonar/build-wrapper-linux-x86.zip ${{ env.BUILD_WRAPPER_DOWNLOAD_URL }}
           unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
           echo "$HOME/.sonar/build-wrapper-linux-x86" >> $GITHUB_PATH
+
+      - name: Linux - Setup clang-15
+        if: matrix.os == 'ubuntu-20.04' && matrix.compiler == 'llvm'
+        env:
+          LLVM_VER: 15
+          LLVM_URL: http://apt.llvm.org/${VARIANT}/
+          LLVM_PKG: llvm-toolchain-${VARIANT}
+        run: |
+          sudo apt-get purge --auto-remove clang clang-tidy
+          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - 2>/dev/null
+          add-apt-repository -y "deb ${{ LLVM_URL }} ${{ LLVM_PKG }} main" && \
+              apt-get update -qq 
+          export DEBIAN_FRONTEND=noninteractive && \
+              apt-get install -y --no-install-recommends \
+              clang-${{ LLVM_VER }} lldb-${{ LLVM_VER }} lld-${{ LLVM_VER }} clangd-${{ LLVM_VER }} \
+              llvm-${{ LLVM_VER }}-dev libclang-${{ LLVM_VER }}-dev clang-tidy-${{ LLVM_VER }}
+          update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-tidy-${{ LLVM_VER }}) 1
+          update-alternatives --install /usr/bin/clang clang $(which clang-${{ LLVM_VER }}) 100
+          update-alternatives --install /usr/bin/clang++ clang++ $(which clang++-${{ LLVM_VER }}) 100
+
+      - name: Linux - Setup cppcheck 2.7
+        if: matrix.os == 'ubuntu-20.04' && matrix.compiler == 'llvm'
+        env:
+          LLVM_VER: 15
+          CPPCHECK: /home/cppcheck
+          CPPCHECK_BUILD: ${{ env.CPPCHECK }}/build
+          CPPCHECK_SRC: ${{ env.CPPCHECK }}/cppcheck-src
+        run: |
+          sudo apt-get purge --auto-remove cppcheck
+          mkdir -p ${{ env.CPPCHECK_BUILD }}
+          apt-get install libxml2-utils && apt-get install libz3-dev libtinyxml2-dev && apt-get install libpcre3-dev
+          git clone --branch 2.7 https://github.com/danmar/cppcheck.git ${{ CPPCHECK_SRC }}
+          CC=clang-${{ LLVM_VER }} CXX=clang++-${{ LLVM_VER }} cmake -S ${{ CPPCHECK_SRC }} -B ${{ env.CPPCHECK_BUILD }} -G "Unix Makefiles" -DHAVE_RULES=On -DBUILD_GUI=Off
+          cmake --build ${{ env.CPPCHECK_BUILD }} -j
+          cmake --install ${{ env.CPPCHECK_BUILD }}
 
         # make sure coverage is only enabled for Debug builds, since it sets -O0 to make sure coverage
         # has meaningful results

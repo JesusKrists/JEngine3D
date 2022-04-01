@@ -9,15 +9,11 @@ CMakeUserPresets.json
 # IDE files
 .vs/
 .idea/
-.vscode/
-!.vscode/settings.json
-!.vscode/tasks.json
-!.vscode/launch.json
-!.vscode/extensions.json
 *.swp
 *~
 _ReSharper*
 *.log
+.vscode/settings.json
 
 # OS Generated Files
 .DS_Store

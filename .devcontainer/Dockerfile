@@ -57,18 +57,16 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     clang-${LLVM_VER} lldb-${LLVM_VER} lld-${LLVM_VER} clangd-${LLVM_VER} \
     llvm-${LLVM_VER}-dev libclang-${LLVM_VER}-dev clang-tidy-${LLVM_VER}
 
+# Install clang-format
+RUN apt-get install -y clang-format-15
 # Set the default clang-tidy, so CMake can find it
 RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-tidy-${LLVM_VER}) 1
-
 # Set clang-${LLVM_VER} as default clang
 RUN update-alternatives --install /usr/bin/clang clang $(which clang-${LLVM_VER}) 100
 RUN update-alternatives --install /usr/bin/clang++ clang++ $(which clang++-${LLVM_VER}) 100
 
 # Install cmake-format
 RUN python3 -m pip install cmakelang
-
-# Install clang-format
-RUN apt-get install -y clang-format
 
 # Add current cmake/ccmake, from Kitware
 ARG CMAKE_URL="https://apt.kitware.com/ubuntu/"
@@ -87,7 +85,18 @@ RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
 # Install optional dependecies
 RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
-    doxygen graphviz ccache cppcheck
+    doxygen graphviz ccache
+
+# Build cppcheck from source
+ENV CPPCHECK /home/cppcheck
+ENV CPPCHECK_BUILD ${CPPCHECK}/build
+ENV CPPCHECK_SRC ${CPPCHECK}/cppcheck-src
+RUN mkdir -p ${CPPCHECK_BUILD}
+RUN apt-get install libxml2-utils && apt-get install libz3-dev libtinyxml2-dev && apt-get install libpcre3-dev
+RUN git clone --branch 2.7 https://github.com/danmar/cppcheck.git ${CPPCHECK_SRC}
+RUN CC=clang-${LLVM_VER} CXX=clang++-${LLVM_VER} cmake -S ${CPPCHECK_SRC} -B ${CPPCHECK_BUILD} -G "Unix Makefiles" -DHAVE_RULES=On -DBUILD_GUI=Off
+RUN cmake --build ${CPPCHECK_BUILD} -j
+RUN cmake --install ${CPPCHECK_BUILD}
 
 # Install include-what-you-use
 ENV IWYU /home/iwyu

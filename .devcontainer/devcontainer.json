@@ -43,11 +43,13 @@
 		"editor.guides.bracketPairs": true,
 		"editor.bracketPairColorization.enabled": true,
 		"debug.allowBreakpointsEverywhere": true,
-		"C_Cpp.intelliSenseEngine": "Disabled"
+		"C_Cpp.intelliSenseEngine": "Disabled",
+		"git.enableSmartCommit": true,
+		"git.confirmSync": false,
+		"output.smartScroll.enabled": false
 	},
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
-		"ms-vscode.cpptools",
 		"vadimcn.vscode-lldb",
 		"llvm-vs-code-extensions.vscode-clangd",
 		"ms-vscode.cmake-tools",

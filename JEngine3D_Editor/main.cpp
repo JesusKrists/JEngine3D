@@ -8,6 +8,10 @@
 #include <iterator>// for next
 #include <string>// for string, allocator
 
+#include <vector>
+
+
+#include <JEngine3D/Core/Base.hpp>
 
 static constexpr auto USAGE =
   R"(JEngine3D Editor.
@@ -23,8 +27,8 @@ static constexpr auto USAGE =
 // NOLINTNEXTLINE
 int main(int argc, const char **argv)
 {
-  docopt::docopt(USAGE,
-    { std::next(argv), std::next(argv, argc) },
-    true,
-    fmt::format("{} {}", JEditor::cmake::project_name, JEditor::cmake::project_version));
+  auto versionString = fmt::format("{} {}", JEditor::cmake::project_name, JEditor::cmake::project_version);
+  auto args = std::vector<std::string>{ std::next(argv), std::next(argv, argc) };
+  auto options = docopt::docopt(USAGE, args, true, versionString);
+  JE::UNUSED(options);
 }

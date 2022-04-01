@@ -1,48 +1,20 @@
 {
-   SDLFalsePositives
+   SDL_DBus_InitFalsePositives
    Memcheck:Leak
    ...
-   fun:SDL_*
+   fun:SDL_DBus_Init
 }
+################################################################################
 {
-   DocoptFalsePositives
-   Memcheck:Leak
-   ...
-   fun:*docopt*
-}
-{
-   X11FalsePositives
-   Memcheck:Leak
-   ...
-   obj:/usr/*lib*/libX11*
-}
-{
-   libdbusFalsePositives
-   Memcheck:Leak
-   ...
-   obj:/usr/*lib*/libdbus*
-}
-{
-   LLVMFalsePositives
-   Memcheck:Leak
-   ...
-   obj:/usr/*lib*/libLLVM*
-}
-{
-   <_dl_open>
-   Memcheck:Leak
-   ...
-   fun:_dl_open
-}
-{
-   <_dl_init>
+   DLInitFalsePositives
    Memcheck:Leak
    ...
    fun:_dl_init
 }
+##################################################################################
 {
-   <g_type_register_static>
+   docoptFalsePositives
    Memcheck:Leak
    ...
-   fun:g_type_register_static
+   fun:*docopt_parse*
 }
