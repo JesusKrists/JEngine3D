@@ -49,19 +49,19 @@ public:
 
   template<typename T, MemoryTag TAG = MemoryTag::Unknown> static inline auto Allocate(size_t elementCount = 1) -> T *
   {
-    auto memorySize = AlignTo(sizeof(T) * elementCount, ALIGNMENT);// NOLINT
+    auto memorySize = AlignTo(sizeof(T) * elementCount, ALIGNMENT);
     return static_cast<T *>(Get().Allocate(memorySize, TAG));
   }
 
   template<typename T, MemoryTag TAG = MemoryTag::Unknown> static inline void Deallocate(T *memory)
   {
+    ASSERT(memory, "Memory is null");
     return Get().Deallocate(static_cast<void *>(memory), TAG);
   }
 
   [[nodiscard]] inline auto MemoryEntries() const -> const MemoryEntryContainer & { return m_MemoryEntries; }
 
 private:
-  // cppcheck-suppress unusedPrivateFunction
   auto Allocate(size_t byteCount, MemoryTag tag) -> void *;
   void Deallocate(void *memory, MemoryTag tag);
 

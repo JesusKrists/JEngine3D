@@ -33,7 +33,7 @@ auto SDLPlatformBackend::Initialized() -> bool { return s_Initialized; }
 
 auto SDLPlatformBackend::CreateWindow(const std::string_view &title, const Size2D &size) -> NativeWindowHandle
 {
-
+  ASSERT(size.Width > 0 && size.Height > 0, "Window size cannot be zero or negative");
   return SDL_CreateWindow(title.data(),
     SDL_WINDOWPOS_CENTERED,// NOLINT(hicpp-signed-bitwise)
     SDL_WINDOWPOS_CENTERED,// NOLINT(hicpp-signed-bitwise)
@@ -44,11 +44,13 @@ auto SDLPlatformBackend::CreateWindow(const std::string_view &title, const Size2
 
 void SDLPlatformBackend::DestroyWindow(NativeWindowHandle handle)
 {
+  ASSERT(handle, "Window handle is null");
   SDL_DestroyWindow(static_cast<SDL_Window *>(handle));
 }
 
 auto SDLPlatformBackend::WindowSize(NativeWindowHandle handle) -> Size2D
 {
+  ASSERT(handle, "Window handle is null");
   Size2D size{};
   SDL_GetWindowSize(static_cast<SDL_Window *>(handle), &size.Width, &size.Height);
   return size;
@@ -56,16 +58,20 @@ auto SDLPlatformBackend::WindowSize(NativeWindowHandle handle) -> Size2D
 
 void SDLPlatformBackend::SetWindowSize(NativeWindowHandle handle, const Size2D &size)
 {
+  ASSERT(handle, "Window handle is null");
+  ASSERT(size.Width > 0 && size.Height > 0, "Window size cannot be zero or negative");
   SDL_SetWindowSize(static_cast<SDL_Window *>(handle), size.Width, size.Height);
 }
 
 auto SDLPlatformBackend::WindowTitle(NativeWindowHandle handle) -> std::string_view
 {
+  ASSERT(handle, "Window handle is null");
   return SDL_GetWindowTitle(static_cast<SDL_Window *>(handle));
 }
 
 void SDLPlatformBackend::SetWindowTitle(NativeWindowHandle handle, const std::string_view &title)
 {
+  ASSERT(handle, "Window handle is null");
   SDL_SetWindowTitle(static_cast<SDL_Window *>(handle), title.data());
 }
 

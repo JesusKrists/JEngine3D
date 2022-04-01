@@ -1,3 +1,7 @@
+include_guard(GLOBAL)
+
+include(${CMAKE_SOURCE_DIR}/CMake/DisableStaticAnalysis.cmake)
+
 ######################### docopt ######################################
 FetchContent_Declare(
   docopt
@@ -7,6 +11,12 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(docopt)
 add_library(docopt::docopt ALIAS docopt_s)
 
+disable_static_analysis(docopt)
+disable_static_analysis(docopt_s)
+if(NOT MSVC AND NOT XCODE)
+  disable_static_analysis(docopt_o)
+endif()
+
 ########################## spdlog ######################################
 FetchContent_Declare(
   spdlog
@@ -15,6 +25,8 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(spdlog)
 
+disable_static_analysis(spdlog)
+
 ########################## fmt ########################################
 FetchContent_Declare(
   fmt
@@ -22,6 +34,8 @@ FetchContent_Declare(
   GIT_TAG 8.1.1)
 
 FetchContent_MakeAvailable(fmt)
+
+disable_static_analysis(fmt)
 
 ########################## SDL2 ######################################
 set(SDL_SHARED_ENABLED_BY_DEFAULT
@@ -50,63 +64,5 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SDL2)
 
-######################### Remove static analysis tools ##################
-set_property(TARGET docopt PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
-set_property(TARGET docopt PROPERTY C_INCLUDE_WHAT_YOU_USE "")
-set_property(TARGET docopt_s PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
-set_property(TARGET docopt_s PROPERTY C_INCLUDE_WHAT_YOU_USE "")
-if(NOT MSVC AND NOT XCODE)
-  set_property(TARGET docopt_o PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
-  set_property(TARGET docopt_o PROPERTY C_INCLUDE_WHAT_YOU_USE "")
-endif()
-
-set_property(TARGET spdlog PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
-set_property(TARGET spdlog PROPERTY C_INCLUDE_WHAT_YOU_USE "")
-
-set_property(TARGET fmt PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
-set_property(TARGET fmt PROPERTY C_INCLUDE_WHAT_YOU_USE "")
-
-set_property(TARGET SDL2main PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
-set_property(TARGET SDL2main PROPERTY C_INCLUDE_WHAT_YOU_USE "")
-set_property(TARGET SDL2-static PROPERTY CXX_INCLUDE_WHAT_YOU_USE "")
-set_property(TARGET SDL2-static PROPERTY C_INCLUDE_WHAT_YOU_USE "")
-#
-set_property(TARGET docopt PROPERTY CXX_CLANG_TIDY "")
-set_property(TARGET docopt PROPERTY C_CLANG_TIDY "")
-set_property(TARGET docopt_s PROPERTY CXX_CLANG_TIDY "")
-set_property(TARGET docopt_s PROPERTY C_CLANG_TIDY "")
-if(NOT MSVC AND NOT XCODE)
-  set_property(TARGET docopt_o PROPERTY CXX_CLANG_TIDY "")
-  set_property(TARGET docopt_o PROPERTY C_CLANG_TIDY "")
-endif()
-
-set_property(TARGET spdlog PROPERTY CXX_CLANG_TIDY "")
-set_property(TARGET spdlog PROPERTY C_CLANG_TIDY "")
-
-set_property(TARGET fmt PROPERTY CXX_CLANG_TIDY "")
-set_property(TARGET fmt PROPERTY C_CLANG_TIDY "")
-
-set_property(TARGET SDL2main PROPERTY CXX_CLANG_TIDY "")
-set_property(TARGET SDL2main PROPERTY C_CLANG_TIDY "")
-set_property(TARGET SDL2-static PROPERTY CXX_CLANG_TIDY "")
-set_property(TARGET SDL2-static PROPERTY C_CLANG_TIDY "")
-#
-set_property(TARGET docopt PROPERTY CXX_CPPCHECK "")
-set_property(TARGET docopt PROPERTY C_CPPCHECK "")
-set_property(TARGET docopt_s PROPERTY CXX_CPPCHECK "")
-set_property(TARGET docopt_s PROPERTY C_CPPCHECK "")
-if(NOT MSVC AND NOT XCODE)
-  set_property(TARGET docopt_o PROPERTY CXX_CPPCHECK "")
-  set_property(TARGET docopt_o PROPERTY C_CPPCHECK "")
-endif()
-
-set_property(TARGET spdlog PROPERTY CXX_CPPCHECK "")
-set_property(TARGET spdlog PROPERTY C_CPPCHECK "")
-
-set_property(TARGET fmt PROPERTY CXX_CPPCHECK "")
-set_property(TARGET fmt PROPERTY C_CPPCHECK "")
-
-set_property(TARGET SDL2main PROPERTY CXX_CPPCHECK "")
-set_property(TARGET SDL2main PROPERTY C_CPPCHECK "")
-set_property(TARGET SDL2-static PROPERTY CXX_CPPCHECK "")
-set_property(TARGET SDL2-static PROPERTY C_CPPCHECK "")
+disable_static_analysis(SDL2main)
+disable_static_analysis(SDL2-static)

@@ -9,8 +9,6 @@ namespace JE {
 
 class Window
 {
-  friend class WindowController;
-
 public:
   Window(const Window &other) = delete;
   auto operator=(const Window &other) -> Window & = delete;
