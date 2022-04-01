@@ -4,6 +4,18 @@
    ...
    fun:SDL_DBus_Init
 }
+{
+   X11_GL_LoadLibraryFalsePositives
+   Memcheck:Leak
+   ...
+   fun:X11_GL_LoadLibrary
+}
+{
+   X11_VideoInitFalsePositives
+   Memcheck:Leak
+   ...
+   fun:X11_VideoInit
+}
 ################################################################################
 {
    DLInitFalsePositives
