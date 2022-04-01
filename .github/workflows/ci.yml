@@ -234,19 +234,7 @@ jobs:
         if: matrix.compiler != 'llvm'
         run: |
           cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DOPT_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF' }} -DGIT_SHA:STRING=${{ github.sha }} -DOPT_ENABLE_INCLUDE_WHAT_YOU_USE:BOOL=OFF
-
-      # make sure coverage is only enabled for Debug builds, since it sets -O0 to make sure coverage
-        # has meaningful results
-      - name: Configure CMake - llvm
-        if: matrix.compiler == 'llvm'
-        env:
-          CC: clang
-          CXX: clang++
-        run: |
-          cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DOPT_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF' }} -DGIT_SHA:STRING=${{ github.sha }} -DOPT_ENABLE_INCLUDE_WHAT_YOU_USE:BOOL=OFF
-
-
-
+          
       - name: Build (Regular)
         if: matrix.sonarcloud_build == 'OFF' || matrix.sonarcloud_build == ''
         # Execute the build.  You can specify a specific target with "--target <NAME>"
