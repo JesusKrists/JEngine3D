@@ -188,7 +188,6 @@ jobs:
           LLVM_PKG: llvm-toolchain-${VARIANT}
         run: |
           sudo apt-get purge --auto-remove clang clang-tidy
-          wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - 2>/dev/null
           add-apt-repository -y "deb ${{ env.LLVM_URL }} ${{ env.LLVM_PKG }} main" && \
               apt-get update -qq 
           export DEBIAN_FRONTEND=noninteractive && \
@@ -292,6 +291,12 @@ jobs:
           files: |
             build/*-*${{ matrix.build_type }}*-*.*
 
+      - name: Linux - Upload Valgrind Test logs
+        if: runner.os == 'Linux' && matrix.developer_mode == 'OFF'
+          uses: actions/upload-artifact@v3
+            with:
+              name: Valgrind-logs
+              path: ./build/Testing
 
       - name: Publish to codecov
         uses: codecov/codecov-action@v2
