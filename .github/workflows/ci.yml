@@ -130,7 +130,7 @@ jobs:
             ${{ runner.os }}-${{ matrix.compiler }}-${{matrix.build_type}}-${{matrix.generator}}-${{matrix.developer_mode}}
 
       - name: Setup Cpp
-        if: runner.os != 'ubuntu-20.04' || (runner.os == 'ubuntu-20.04' && matrix.compiler == 'gcc')
+        if: runner.os != 'Linux' || (runner.os == 'Linux' && matrix.compiler == 'gcc')
         uses: aminya/setup-cpp@v1
         with:
           compiler: ${{ matrix.compiler }}
@@ -149,7 +149,7 @@ jobs:
           opencppcoverage: true
 
       - name: Setup Cpp - Linux clang
-        if: runner.os == 'ubuntu-20.04' && matrix.compiler == 'llvm'
+        if: runner.os == 'Linux' && matrix.compiler == 'llvm'
         uses: aminya/setup-cpp@v1
         with:
           cmake: true
@@ -193,7 +193,7 @@ jobs:
           echo "$HOME/.sonar/build-wrapper-linux-x86" >> $GITHUB_PATH
 
       - name: Linux - Setup clang-15
-        if: matrix.os == 'ubuntu-20.04' && matrix.compiler == 'llvm'
+        if: runner.os == 'Linux' && matrix.compiler == 'llvm'
         env:
           LLVM_VER: 15
           LLVM_URL: http://apt.llvm.org/focal/
@@ -214,7 +214,7 @@ jobs:
           sudo update-alternatives --install /usr/bin/clang++ clang++ $(which clang++-${{ env.LLVM_VER }}) 100
 
       - name: Linux - Setup cppcheck 2.7
-        if: matrix.os == 'ubuntu-20.04' && matrix.compiler == 'llvm'
+        if: runner.os == 'Linux' && matrix.compiler == 'llvm'
         env:
           LLVM_VER: 15
           CPPCHECK_BUILD: ${{ env.CPPCHECK }}/build
