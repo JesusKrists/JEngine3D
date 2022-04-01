@@ -212,7 +212,7 @@ jobs:
           sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-tidy-${{ env.LLVM_VER }}) 100 && \
           sudo update-alternatives --install /usr/bin/clang clang $(which clang-${{ env.LLVM_VER }}) 100 && \
           sudo update-alternatives --install /usr/bin/clang++ clang++ $(which clang++-${{ env.LLVM_VER }}) 100 && \
-          sudo update-alternatives --install /usr/bin/llvm-cov llvm-cov $(which llvm-cov-${{ env.LLVM_VER }}) 100 && \
+          sudo update-alternatives --install /usr/bin/llvm-cov llvm-cov $(which llvm-cov-${{ env.LLVM_VER }}) 100
 
       - name: Linux - Setup cppcheck 2.7
         if: runner.os == 'Linux' && matrix.compiler == 'llvm'
