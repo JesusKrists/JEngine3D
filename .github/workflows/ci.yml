@@ -189,15 +189,15 @@ jobs:
         run: |
           sudo apt-get purge --auto-remove clang clang-tidy
           wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - 2>/dev/null
-          add-apt-repository -y "deb ${{ LLVM_URL }} ${{ LLVM_PKG }} main" && \
+          add-apt-repository -y "deb ${{ env.LLVM_URL }} ${{ env.LLVM_PKG }} main" && \
               apt-get update -qq 
           export DEBIAN_FRONTEND=noninteractive && \
               apt-get install -y --no-install-recommends \
-              clang-${{ LLVM_VER }} lldb-${{ LLVM_VER }} lld-${{ LLVM_VER }} clangd-${{ LLVM_VER }} \
-              llvm-${{ LLVM_VER }}-dev libclang-${{ LLVM_VER }}-dev clang-tidy-${{ LLVM_VER }}
-          update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-tidy-${{ LLVM_VER }}) 1
-          update-alternatives --install /usr/bin/clang clang $(which clang-${{ LLVM_VER }}) 100
-          update-alternatives --install /usr/bin/clang++ clang++ $(which clang++-${{ LLVM_VER }}) 100
+              clang-${{ env.LLVM_VER }} lldb-${{ env.LLVM_VER }} lld-${{ env.LLVM_VER }} clangd-${{ env.LLVM_VER }} \
+              llvm-${{ env.LLVM_VER }}-dev libclang-${{ env.LLVM_VER }}-dev clang-tidy-${{ env.LLVM_VER }}
+          update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-tidy-${{ env.LLVM_VER }}) 1
+          update-alternatives --install /usr/bin/clang clang $(which clang-${{ env.LLVM_VER }}) 100
+          update-alternatives --install /usr/bin/clang++ clang++ $(which clang++-${{ env.LLVM_VER }}) 100
 
       - name: Linux - Setup cppcheck 2.7
         if: matrix.os == 'ubuntu-20.04' && matrix.compiler == 'llvm'
@@ -210,8 +210,8 @@ jobs:
           sudo apt-get purge --auto-remove cppcheck
           mkdir -p ${{ env.CPPCHECK_BUILD }}
           apt-get install libxml2-utils && apt-get install libz3-dev libtinyxml2-dev && apt-get install libpcre3-dev
-          git clone --branch 2.7 https://github.com/danmar/cppcheck.git ${{ CPPCHECK_SRC }}
-          CC=clang-${{ LLVM_VER }} CXX=clang++-${{ LLVM_VER }} cmake -S ${{ CPPCHECK_SRC }} -B ${{ env.CPPCHECK_BUILD }} -G "Unix Makefiles" -DHAVE_RULES=On -DBUILD_GUI=Off
+          git clone --branch 2.7 https://github.com/danmar/cppcheck.git ${{ env.CPPCHECK_SRC }}
+          CC=clang-${{ env.LLVM_VER }} CXX=clang++-${{ env.LLVM_VER }} cmake -S ${{ env.CPPCHECK_SRC }} -B ${{ env.CPPCHECK_BUILD }} -G "Unix Makefiles" -DHAVE_RULES=On -DBUILD_GUI=Off
           cmake --build ${{ env.CPPCHECK_BUILD }} -j
           cmake --install ${{ env.CPPCHECK_BUILD }}
 
