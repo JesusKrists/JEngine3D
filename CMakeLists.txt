@@ -135,7 +135,8 @@ dynamic_project_options(
   --inconclusive
   # Custom suppresses added by me
   --suppress=toomanyconfigs
-  --suppress=preprocessorErrorDirective)
+  --suppress=preprocessorErrorDirective
+  --suppress=*:*/_deps/*)
 
 target_compile_features(project_options INTERFACE cxx_std_${CMAKE_CXX_STANDARD})
 
