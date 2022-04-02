@@ -317,6 +317,13 @@ jobs:
         with:
           name: Valgrind-logs
           path: ./build/Testing
+          
+      - name: Windows - Upload Test executable
+        if: (runner.os == 'Windows' && matrix.developer_mode == 'ON' && matrix.build_type == 'Debug') && always()
+        uses: actions/upload-artifact@v3
+        with:
+          name: Valgrind-logs
+          path: ./build/test
 
       - name: Publish to codecov
         uses: codecov/codecov-action@v2
