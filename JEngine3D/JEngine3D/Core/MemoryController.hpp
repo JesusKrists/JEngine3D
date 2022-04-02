@@ -1,12 +1,12 @@
 #pragma once
 
-#include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Core/Base.hpp"
 
 #include <array>// IWYU pragma: export
 #include <utility>// IWYU pragma: export
 #include <vector>// IWYU pragma: export
 #include <memory>// IWYU pragma: export
+#include <spdlog/spdlog.h>
 
 namespace JE {
 
@@ -41,13 +41,17 @@ public:
   MemoryController();
   ~MemoryController();
 
-  static inline auto Get() -> MemoryController &
+  [[nodiscard]] static inline auto Get() -> MemoryController &
   {
-    ASSERT(s_MemoryControllerInstance, "MemoryController instance is null");
+    if (s_MemoryControllerInstance == nullptr) {
+      spdlog::error("MemoryController instance is null");
+      DEBUGBREAK();
+    }
     return *s_MemoryControllerInstance;
   }
 
-  template<typename T, MemoryTag TAG = MemoryTag::Unknown> static inline auto Allocate(size_t elementCount = 1) -> T *
+  template<typename T, MemoryTag TAG = MemoryTag::Unknown>
+  [[nodiscard]] static inline auto Allocate(size_t elementCount = 1) -> T *
   {
     auto memorySize = AlignTo(sizeof(T) * elementCount, ALIGNMENT);
     return static_cast<T *>(Get().Allocate(memorySize, TAG));
@@ -55,7 +59,10 @@ public:
 
   template<typename T, MemoryTag TAG = MemoryTag::Unknown> static inline void Deallocate(T *memory)
   {
-    ASSERT(memory, "Memory is null");
+    if (memory == nullptr) {
+      spdlog::error("Memory is null");
+      DEBUGBREAK();
+    }
     return Get().Deallocate(static_cast<void *>(memory), TAG);
   }
 

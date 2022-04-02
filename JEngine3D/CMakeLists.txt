@@ -10,7 +10,8 @@ target_link_system_libraries(
   PRIVATE
   SDL2-static
   PUBLIC
-  fmt::fmt)
+  fmt::fmt
+  spdlog)
 
 target_include_directories(JEngine3D PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
 

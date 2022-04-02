@@ -53,12 +53,12 @@ TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window sets title of underly
   auto window = JE::Window(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, nativeWindow);
 
   REQUIRE(window.Title() == TEST_WINDOW_TITLE);
-  REQUIRE(m_Backend.WindowTitle(window.GetNativeHandle()) == TEST_WINDOW_TITLE);
+  REQUIRE(m_Backend.WindowTitle(window.NativeHandle()) == TEST_WINDOW_TITLE);
 
   window.SetTitle(NEW_WINDOW_TITLE);
 
   REQUIRE(window.Title() == NEW_WINDOW_TITLE);
-  REQUIRE(m_Backend.WindowTitle(window.GetNativeHandle()) == NEW_WINDOW_TITLE);
+  REQUIRE(m_Backend.WindowTitle(window.NativeHandle()) == NEW_WINDOW_TITLE);
 }
 
 TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window sets size of underlying NativeHandle", "[JE::Window]")
@@ -67,10 +67,10 @@ TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window sets size of underlyi
   auto window = JE::Window(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, nativeWindow);
 
   REQUIRE(window.Size() == TEST_WINDOW_SIZE);
-  REQUIRE(m_Backend.WindowSize(window.GetNativeHandle()) == TEST_WINDOW_SIZE);
+  REQUIRE(m_Backend.WindowSize(window.NativeHandle()) == TEST_WINDOW_SIZE);
 
   window.SetSize(NEW_WINDOW_SIZE);
 
   REQUIRE(window.Size() == NEW_WINDOW_SIZE);
-  REQUIRE(m_Backend.WindowSize(window.GetNativeHandle()) == NEW_WINDOW_SIZE);
+  REQUIRE(m_Backend.WindowSize(window.NativeHandle()) == NEW_WINDOW_SIZE);
 }

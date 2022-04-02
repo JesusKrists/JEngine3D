@@ -1,6 +1,7 @@
 #pragma once
 
 #include "JEngine3D/Core/Base.hpp"
+#include "JEngine3D/Core/LoggerController.hpp"
 
 #include <iostream>// IWYU pragma: export
 
@@ -15,11 +16,8 @@ inline void ASSERT_([[maybe_unused]] bool check,
 {
 #ifdef JE_ENABLE_ASSERTS
   if (!check) {
-    // AllLogger::critical("Assertion '{0}' failed at {1}:{2} | {3}", assertion, file, line,
-    // std::forward<Args>(args)...); // TODO(JesusKrists) - Log asserts properly
-    std::cout << "Assertion '" << assertion << "' failed at " << file << ":" << line << " | ";
-    (std::cout << ... << args);// NOLINT
-    std::cout << "\n";
+    JE::Logger::CoreLogger().critical(
+      "Assertion '{0}' failed at {1}:{2} | {3}", assertion, file, line, std::forward<Args>(args)...);
     DEBUGBREAK();
   }
 #endif

@@ -2,6 +2,7 @@ set(UNITTEST_SOURCES
     UnitTests/Core/Application.cpp
     UnitTests/Core/Base.cpp
     UnitTests/Core/Events.cpp
+    UnitTests/Core/LoggerController.cpp
     UnitTests/Core/MemoryController.cpp
     UnitTests/Core/Types.cpp
     UnitTests/Core/WindowController.cpp

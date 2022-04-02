@@ -2,7 +2,9 @@
 
 #include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
 #include "JEngine3D/Core/Events.hpp"
+#include "JEngine3D/Core/LoggerController.hpp"// for Logger
 
+#include <exception>// for exception
 #include <cstring>// IWYU pragma: keep
 #include <SDL_events.h>// for SDL_PollEvent, SDL_Event, SDL_...
 #include <SDL_error.h>// for SDL_GetError
@@ -20,8 +22,7 @@ auto SDLPlatformBackend::Initialize() -> bool
   ASSERT(!s_Initialized, "Backend already initialized");
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
-    // TODO(JesusKrists): Log SDL error message with a proper logger
-    std::cout << "SDL Failed to initialize - " << SDL_GetError() << "\n";
+    JE::Logger::CoreLogger().error("SDL Failed to initialize - {}", SDL_GetError());
     return false;
   }
 

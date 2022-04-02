@@ -18,7 +18,7 @@ public:
   Window(const std::string_view &title, const Size2D &size, IPlatformBackend::NativeWindowHandle nativeHandle);
   ~Window();
 
-  [[nodiscard]] inline auto GetNativeHandle() const -> IPlatformBackend::NativeWindowHandle { return m_NativeHandle; }
+  [[nodiscard]] inline auto NativeHandle() const -> IPlatformBackend::NativeWindowHandle { return m_NativeHandle; }
 
   [[nodiscard]] inline auto Title() const -> const std::string & { return m_Title; }
   void SetTitle(const std::string_view &title);

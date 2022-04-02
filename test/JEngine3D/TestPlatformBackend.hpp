@@ -6,7 +6,7 @@ class TestPlatformBackend final : public JE::IPlatformBackend
 {
 
 private:
-  inline auto GetWindowIterator(NativeWindowHandle handle) -> decltype(auto)
+  [[nodiscard]] inline auto WindowIterator(NativeWindowHandle handle) -> decltype(auto)
   {
     return JE::FindIf(m_CreatedWindows, [&](const TestWindow &window) {
       return window.ID == reinterpret_cast<decltype(window.ID)>(handle);// NOLINT
@@ -28,31 +28,31 @@ public:
   }
   inline void DestroyWindow(NativeWindowHandle handle) override
   {
-    auto windowIt = GetWindowIterator(handle);
+    auto windowIt = WindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { m_CreatedWindows.erase(windowIt); }
   }
 
   [[nodiscard]] inline auto WindowSize(NativeWindowHandle handle) -> JE::Size2D override
   {
-    auto windowIt = GetWindowIterator(handle);
+    auto windowIt = WindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { return windowIt->Size; }
     return INVALID_WINDOW_SIZE;
   }
   inline void SetWindowSize(NativeWindowHandle handle, const JE::Size2D &size) override
   {
-    auto windowIt = GetWindowIterator(handle);
+    auto windowIt = WindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { windowIt->Size = size; }
   }
 
   [[nodiscard]] inline auto WindowTitle(NativeWindowHandle handle) -> std::string_view override
   {
-    auto windowIt = GetWindowIterator(handle);
+    auto windowIt = WindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { return windowIt->Title; }
     return INVALID_WINDOW_TITLE;
   }
   inline void SetWindowTitle(NativeWindowHandle handle, const std::string_view &title) override
   {
-    auto windowIt = GetWindowIterator(handle);
+    auto windowIt = WindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { windowIt->Title = title; }
   }
 

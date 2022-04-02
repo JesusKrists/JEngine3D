@@ -17,16 +17,6 @@ if(NOT MSVC AND NOT XCODE)
   disable_static_analysis(docopt_o)
 endif()
 
-########################## spdlog ######################################
-FetchContent_Declare(
-  spdlog
-  GIT_REPOSITORY https://github.com/gabime/spdlog.git
-  GIT_TAG v1.9.2)
-
-FetchContent_MakeAvailable(spdlog)
-
-disable_static_analysis(spdlog)
-
 ########################## fmt ########################################
 FetchContent_Declare(
   fmt
@@ -36,6 +26,19 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(fmt)
 
 disable_static_analysis(fmt)
+
+########################## spdlog ######################################
+set(SPDLOG_FMT_EXTERNAL
+    ON
+    CACHE BOOL "Enable external fmtlib" FORCE)
+FetchContent_Declare(
+  spdlog
+  GIT_REPOSITORY https://github.com/gabime/spdlog.git
+  GIT_TAG v1.9.2)
+
+FetchContent_MakeAvailable(spdlog)
+
+disable_static_analysis(spdlog)
 
 ########################## SDL2 ######################################
 set(SDL_SHARED_ENABLED_BY_DEFAULT
