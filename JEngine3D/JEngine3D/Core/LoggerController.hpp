@@ -33,7 +33,7 @@ public:
       DEBUGBREAK();
     }
 
-    // cppcheck-suppress(nullPointerRedundantCheck)
+    // cppcheck-suppress nullPointerRedundantCheck
     return *s_LoggerControllerInstance;// NOLINT(clang-analyzer-core.uninitialized.UndefReturn)
   }
 
