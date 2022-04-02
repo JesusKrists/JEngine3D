@@ -47,7 +47,8 @@ public:
       spdlog::error("MemoryController instance is null");
       DEBUGBREAK();
     }
-    return *s_MemoryControllerInstance;
+    // cppcheck-suppress(nullPointerRedundantCheck)
+    return *s_MemoryControllerInstance;// NOLINT(clang-analyzer-core.uninitialized.UndefReturn)
   }
 
   template<typename T, MemoryTag TAG = MemoryTag::Unknown>

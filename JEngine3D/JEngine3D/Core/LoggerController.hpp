@@ -32,7 +32,9 @@ public:
       spdlog::error("LoggerController instance is null");
       DEBUGBREAK();
     }
-    return *s_LoggerControllerInstance;
+
+    // cppcheck-suppress(nullPointerRedundantCheck)
+    return *s_LoggerControllerInstance;// NOLINT(clang-analyzer-core.uninitialized.UndefReturn)
   }
 
 private:

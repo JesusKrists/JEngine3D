@@ -4,11 +4,12 @@
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/ostream_sink.h>
 
-#include <ext/alloc_traits.h>// for __alloc_traits<>::value_type
 #include <spdlog/common.h>// for sink_ptr, trace
 #include <spdlog/logger.h>// for logger
 #include <spdlog/sinks/sink.h>// for sink
 #include <iterator>// for begin, end
+
+// IWYU pragma: no_include <ext/alloc_traits.h>
 
 namespace JE {
 
