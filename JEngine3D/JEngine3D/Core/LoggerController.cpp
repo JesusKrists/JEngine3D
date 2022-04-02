@@ -1,6 +1,11 @@
 #include "LoggerController.hpp"
 
+#if defined(JE_PLATFORM_UNIX)
 #include <spdlog/sinks/ansicolor_sink.h>
+#elif defined(JE_PLATFORM_WINDOWS)
+#include <spdlog/sinks/stdout_color_sinks.h>
+#endif
+
 #include <spdlog/sinks/basic_file_sink.h>
 #include <spdlog/sinks/ostream_sink.h>
 

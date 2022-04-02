@@ -18,10 +18,10 @@ namespace JE {
 inline void DEBUGBREAK()
 {
 #ifdef JE_DEBUG
-#if defined(JE_PLATFORM_WINDOWS)
-  __debugbreak();
-#elif defined(JE_PLATFORM_UNIX)
+#if defined(JE_PLATFORM_UNIX)
   raise(SIGTRAP);// NOLINT
+#elif defined(JE_PLATFORM_WINDOWS)
+  __debugbreak();
 #endif
 #endif
 }
