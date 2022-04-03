@@ -72,9 +72,9 @@ public:
   inline void ProcessEvent(JE::IEvent &event)
   {
     JE::EventDispatcher dispatcher{ event };
-    dispatcher.Dispatch<JE::EventType::WindowResize>([&](const JE::IEvent &e) {
+    dispatcher.Dispatch<JE::EventType::WindowResize>([&](const JE::IEvent &evnt) {
       const auto &resizeEvent =
-        static_cast<const JE::WindowResizeEvent &>(e);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+        static_cast<const JE::WindowResizeEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
       auto windowIt = WindowIterator(resizeEvent.WindowHandle());
       if (windowIt != std::end(m_CreatedWindows)) { windowIt->Size = resizeEvent.Size(); }
 

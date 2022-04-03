@@ -48,9 +48,9 @@ void WindowController::OnEvent(IEvent &event)
   if (event.Category() != EventCategory::Window) { return; }
   EventDispatcher dispatcher{ event };
 
-  dispatcher.Dispatch<EventType::WindowResize>([&](const IEvent &event) {
+  dispatcher.Dispatch<EventType::WindowResize>([&](const IEvent &evnt) {
     const auto &resizeEvent =
-      static_cast<const WindowResizeEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+      static_cast<const WindowResizeEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
     auto &window = WindowFromNativeHandle(resizeEvent.WindowHandle());
     window.m_Size = resizeEvent.Size();
