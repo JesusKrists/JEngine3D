@@ -25,7 +25,7 @@ public:
 
   void OnEvent(IEvent &event) override;
 
-  [[nodiscard]] inline auto MainWindow() -> Window & { return m_MainWindow; }
+  [[nodiscard]] inline auto MainWindow() const -> const Window & { return m_MainWindow; }
   [[nodiscard]] inline auto Running() const -> bool { return m_Running; }
 
 
