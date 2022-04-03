@@ -36,7 +36,7 @@ class EventDispatcher
 public:
   explicit EventDispatcher(IEvent &event) : m_Event(event) { ASSERT(!m_Event.Handled(), "Event already handled"); }
 
-  template<JE::EventType type, typename T> inline auto Dispatch(T func) -> bool
+  template<EventType type, typename T> inline auto Dispatch(T func) -> bool
   {
     if (!m_Event.Handled() && m_Event.Type() == type) {
       if (func(std::as_const(m_Event))) {

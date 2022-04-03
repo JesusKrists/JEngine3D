@@ -74,7 +74,7 @@ auto WindowController::WindowFromNativeHandle(IPlatformBackend::NativeWindowHand
 {
   auto windowIt =
     FindIf(m_Windows, [&](const Scope<Window, MemoryTag::App> &window) { return window->NativeHandle() == handle; });
-  ASSERT(windowIt != std::end(m_Windows), "Window not from from native handle");
+  ASSERT(windowIt != std::end(m_Windows), "Window not found from native handle");
 
   return *(*windowIt);
 }
