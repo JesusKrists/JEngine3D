@@ -1,7 +1,9 @@
 #include "WindowController.hpp"
 
 #include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
+#include "JEngine3D/Core/Base.hpp"// for FindIf
 
+#include <iterator>// for end
 
 namespace JE {
 
@@ -30,9 +32,34 @@ void Window::SetSize(const Size2D &size)
 
 //////////////////////////////////////////////////////////////////////////////////////
 
+WindowController *WindowController::s_WindowControllerInstance = nullptr;// NOLINT
+
 WindowController::WindowController()
 {
+  ASSERT(!s_WindowControllerInstance, "WindowController instance already exists");
   ASSERT(IPlatformBackend::Get().Initialized(), "Backend needs to be initialized before using this class");
+  s_WindowControllerInstance = this;
+}
+
+WindowController::~WindowController() { s_WindowControllerInstance = nullptr; }
+
+void WindowController::OnEvent(IEvent &event)
+{
+  if (event.Category() != EventCategory::Window) { return; }
+  EventDispatcher dispatcher{ event };
+
+  dispatcher.Dispatch<EventType::WindowResize>([&](const IEvent &event) {
+    const auto &resizeEvent =
+      static_cast<const WindowResizeEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    auto &window = WindowFromNativeHandle(resizeEvent.WindowHandle());
+    window.m_Size = resizeEvent.Size();
+
+    ASSERT(window.Size() == IPlatformBackend::Get().WindowSize(window.NativeHandle()),
+      "Window size and native window size mismatch");
+
+    return true;
+  });
 }
 
 auto WindowController::CreateWindow(const std::string_view &title, const Size2D &size) -> Window &
@@ -40,6 +67,16 @@ auto WindowController::CreateWindow(const std::string_view &title, const Size2D 
   m_Windows.push_back(
     CreateScope<Window, MemoryTag::App>(title, size, IPlatformBackend::Get().CreateWindow(title, size)));
   return *m_Windows.back();
+}
+
+
+auto WindowController::WindowFromNativeHandle(IPlatformBackend::NativeWindowHandle handle) -> Window &
+{
+  auto windowIt =
+    FindIf(m_Windows, [&](const Scope<Window, MemoryTag::App> &window) { return window->NativeHandle() == handle; });
+  ASSERT(windowIt != std::end(m_Windows), "Window not from from native handle");
+
+  return *(*windowIt);
 }
 
 }// namespace JE

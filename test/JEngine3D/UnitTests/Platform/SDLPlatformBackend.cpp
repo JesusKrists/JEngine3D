@@ -1,5 +1,7 @@
 #include <catch2/catch_test_macros.hpp>// for StringRef, oper...
 
+#include <JEngine3D/Core/LoggerController.hpp>// for LoggerController
+#include <JEngine3D/Core/MemoryController.hpp>// for MemoryController
 #include <JEngine3D/Platform/IPlatformBackend.hpp>// for IPlatformBackend
 #include <JEngine3D/Platform/SDLPlatformBackend.hpp>// for SDLPlatformBackend
 #include <JEngine3D/Core/Base.hpp>// for UNUSED
@@ -21,6 +23,8 @@ public:
   SDLPlatformBackendTestsFixture() { JE::UNUSED(m_Backend.Initialize()); }
 
 protected:
+  JE::MemoryController m_MemoryController;
+  JE::LoggerController m_LoggerController;
   JE::SDLPlatformBackend m_Backend;
 };
 

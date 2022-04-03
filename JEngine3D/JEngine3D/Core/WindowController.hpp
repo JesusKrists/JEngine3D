@@ -1,14 +1,18 @@
 #pragma once
 
+#include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
 #include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Platform/IPlatformBackend.hpp"
+#include "JEngine3D/Core/Events.hpp"
 
 namespace JE {
 
 
 class Window
 {
+  friend class WindowController;
+
 public:
   Window(const Window &other) = delete;
   auto operator=(const Window &other) -> Window & = delete;
@@ -32,12 +36,22 @@ private:
   Size2D m_Size;
 };
 
-class WindowController
+// NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
+class WindowController : public IEventProcessor
 {
   using WindowContainer = Vector<Scope<Window, MemoryTag::App>, MemoryTag::App>;
 
 public:
   WindowController();
+  ~WindowController() override;
+
+  [[nodiscard]] static inline auto Get() -> WindowController &
+  {
+    ASSERT(s_WindowControllerInstance, "WindowController instance is null");
+    return *s_WindowControllerInstance;
+  }
+
+  void OnEvent(IEvent &event) override;
 
   auto CreateWindow(const std::string_view &title, const Size2D &size) -> Window &;
   [[nodiscard]] inline auto Windows() const -> const WindowContainer & { return m_Windows; }
@@ -45,7 +59,11 @@ public:
   inline void DeleteAllWindows() { m_Windows.clear(); }
 
 private:
+  auto WindowFromNativeHandle(IPlatformBackend::NativeWindowHandle handle) -> Window &;
+
   WindowContainer m_Windows;
+
+  static WindowController *s_WindowControllerInstance;// NOLINT
 };
 
 }// namespace JE

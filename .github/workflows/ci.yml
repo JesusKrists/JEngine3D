@@ -92,11 +92,12 @@ jobs:
             developer_mode: OFF
             package_generator: TBZ2
 
-          - os: windows-2022
-            compiler: msvc
-            generator: "Visual Studio 17 2022"
-            build_type: Debug
-            developer_mode: ON
+          # AddressSanitizer seems to be broken currently so we disable this build
+          #- os: windows-2022
+          #  compiler: msvc
+          #  generator: "Visual Studio 17 2022"
+          #  build_type: Debug
+          #  developer_mode: ON
           - os: windows-2022
             compiler: msvc
             generator: "Visual Studio 17 2022"
@@ -315,15 +316,15 @@ jobs:
         if: (runner.os == 'Linux' && matrix.developer_mode == 'OFF') && always()
         uses: actions/upload-artifact@v3
         with:
-          name: Valgrind-logs
+          name: Valgrind-Logs-${{ matrix.build_type }}-${{ matrix.compiler }}
           path: ./build/Testing
           
-      - name: Windows - Upload Test executable
+      - name: Windows - Upload Build folder
         if: (runner.os == 'Windows' && matrix.developer_mode == 'ON' && matrix.build_type == 'Debug') && always()
         uses: actions/upload-artifact@v3
         with:
-          name: Valgrind-logs
-          path: ./build/test
+          name: Windows-Build-Debug-ASAN
+          path: ./build
 
       - name: Publish to codecov
         uses: codecov/codecov-action@v2

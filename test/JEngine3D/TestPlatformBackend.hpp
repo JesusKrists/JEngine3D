@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JEngine3D/Platform/IPlatformBackend.hpp>// for IPlatformBackend
+#include <JEngine3D/Core/Events.hpp>
 
 class TestPlatformBackend final : public JE::IPlatformBackend
 {
@@ -56,7 +57,30 @@ public:
     if (windowIt != std::end(m_CreatedWindows)) { windowIt->Title = title; }
   }
 
-  inline void PollEvents(JE::IEventProcessor &processor) override { JE::UNUSED(processor); }
+  inline void PushEvent(JE::IEvent &event) { m_EventQueue.emplace_back(event); }
+
+  inline void PollEvents(JE::IEventProcessor &processor) override
+  {
+    for (auto it = std::begin(m_EventQueue); it != std::end(m_EventQueue);) {
+      ProcessEvent(*it);
+
+      processor.OnEvent(*it);
+      it = m_EventQueue.erase(it);
+    }
+  }
+
+  inline void ProcessEvent(JE::IEvent &event)
+  {
+    JE::EventDispatcher dispatcher{ event };
+    dispatcher.Dispatch<JE::EventType::WindowResize>([&](const JE::IEvent &e) {
+      const auto &resizeEvent =
+        static_cast<const JE::WindowResizeEvent &>(e);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+      auto windowIt = WindowIterator(resizeEvent.WindowHandle());
+      if (windowIt != std::end(m_CreatedWindows)) { windowIt->Size = resizeEvent.Size(); }
+
+      return false;
+    });
+  }
 
 private:
   struct TestWindow
@@ -71,4 +95,5 @@ private:
 
   size_t m_CurrentWindowID = 0;
   std::vector<TestWindow> m_CreatedWindows;
+  std::vector<std::reference_wrapper<JE::IEvent>> m_EventQueue;
 };

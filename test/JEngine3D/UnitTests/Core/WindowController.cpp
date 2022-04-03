@@ -1,6 +1,6 @@
 #include <catch2/catch_test_macros.hpp>// for StringRef, oper...
 
-#include "TestPlatformBackend.hpp"
+#include "TestPlatformBackendFixture.hpp"
 
 #include <JEngine3D/Core/Base.hpp>// for UNUSED
 #include <JEngine3D/Core/Types.hpp>// for Size2D
@@ -9,7 +9,7 @@
 
 #include <iterator>// for end
 
-class WindowControllerTestsFixture
+class WindowControllerTestsFixture : public TestPlatformBackendFixture
 {
 public:
   static constexpr auto TEST_WINDOW_TITLE = std::string_view{ "Test Window" };
@@ -17,14 +17,6 @@ public:
 
   static constexpr auto NEW_WINDOW_TITLE = std::string_view{ "New Window Title" };
   static constexpr auto NEW_WINDOW_SIZE = JE::Size2D{ 640, 480 };
-
-
-  WindowControllerTestsFixture() { JE::UNUSED(m_Backend.Initialize()); }
-
-protected:
-  TestPlatformBackend m_Backend;
-  JE::MemoryController m_MemoryController;
-  JE::WindowController m_WindowController;
 };
 
 TEST_CASE_METHOD(WindowControllerTestsFixture,
