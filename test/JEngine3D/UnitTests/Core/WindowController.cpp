@@ -2,10 +2,12 @@
 
 #include "TestPlatformBackendFixture.hpp"
 
+
 #include <JEngine3D/Core/Base.hpp>// for UNUSED
 #include <JEngine3D/Core/Types.hpp>// for Size2D
 #include <JEngine3D/Core/MemoryController.hpp>// for Size2D
 #include <JEngine3D/Core/WindowController.hpp>// for Size2D
+#include "JEngine3D/Core/Events.hpp"// for WindowCloseEvent, Win...
 
 #include <iterator>// for end
 
@@ -33,7 +35,7 @@ TEST_CASE_METHOD(WindowControllerTestsFixture,
 
   REQUIRE(windowIt != std::end(windows));
 
-  m_WindowController.DeleteAllWindows();
+  m_WindowController.DestroyAllWindows();
   windowIt = JE::FindIf(windows, windowFindFunction);
 
   REQUIRE(windowIt == std::end(windows));
@@ -65,4 +67,32 @@ TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window sets size of underlyi
 
   REQUIRE(window.Size() == NEW_WINDOW_SIZE);
   REQUIRE(m_Backend.WindowSize(window.NativeHandle()) == NEW_WINDOW_SIZE);
+}
+
+TEST_CASE_METHOD(WindowControllerTestsFixture,
+  "JE::WindowController processes WindowResizeEvent",
+  "[JE::WindowController]")
+{
+  auto &window = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+  JE::WindowResizeEvent resizeEvent{ window.NativeHandle(), NEW_WINDOW_SIZE };
+  m_Backend.PushEvent(resizeEvent);
+  m_Backend.PollEvents(m_WindowController);
+
+  REQUIRE(window.Size() == NEW_WINDOW_SIZE);
+  REQUIRE(resizeEvent.Handled());
+}
+
+TEST_CASE_METHOD(WindowControllerTestsFixture,
+  "JE::WindowController processes WindowCloseEvent",
+  "[JE::WindowController]")
+{
+  auto &window = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+  JE::WindowCloseEvent closeEvent{ window.NativeHandle() };
+  m_Backend.PushEvent(closeEvent);
+  m_Backend.PollEvents(m_WindowController);
+
+  REQUIRE(m_WindowController.Windows().empty());
+  REQUIRE(closeEvent.Handled());
 }

@@ -7,7 +7,7 @@
 
 namespace JE {
 
-enum class EventType { Quit, WindowResize };
+enum class EventType { Quit, WindowResize, WindowClose };
 enum class EventCategory { App, Window };
 
 class IEvent
@@ -68,21 +68,38 @@ public:
   [[nodiscard]] inline auto Category() const -> EventCategory override { return EventCategory::App; }
 };
 
-
-class WindowResizeEvent final : public IEvent
+class IWindowEvent : public IEvent
 {
 public:
-  WindowResizeEvent(IPlatformBackend::NativeWindowHandle handle, const Size2D &size) : m_Handle(handle), m_Size(size) {}
+  explicit IWindowEvent(IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
 
-  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowResize; }
   [[nodiscard]] inline auto Category() const -> EventCategory override { return EventCategory::Window; }
-
   [[nodiscard]] inline auto WindowHandle() const -> IPlatformBackend::NativeWindowHandle { return m_Handle; }
-  [[nodiscard]] inline auto Size() const -> const Size2D & { return m_Size; }
 
 private:
   IPlatformBackend::NativeWindowHandle m_Handle;
+};
+
+class WindowResizeEvent final : public IWindowEvent
+{
+public:
+  WindowResizeEvent(IPlatformBackend::NativeWindowHandle handle, const Size2D &size)
+    : IWindowEvent(handle), m_Size(size)
+  {}
+
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowResize; }
+  [[nodiscard]] inline auto Size() const -> const Size2D & { return m_Size; }
+
+private:
   Size2D m_Size;
+};
+
+class WindowCloseEvent final : public IWindowEvent
+{
+  using IWindowEvent::IWindowEvent;
+
+public:
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowClose; }
 };
 
 }// namespace JE

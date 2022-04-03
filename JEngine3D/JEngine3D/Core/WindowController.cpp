@@ -60,6 +60,15 @@ void WindowController::OnEvent(IEvent &event)
 
     return true;
   });
+
+  dispatcher.Dispatch<EventType::WindowClose>([&](const IEvent &evnt) {
+    const auto &closeEvent =
+      static_cast<const WindowCloseEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    DestroyWindowFromNativeHandle(closeEvent.WindowHandle());
+
+    return true;
+  });
 }
 
 auto WindowController::CreateWindow(const std::string_view &title, const Size2D &size) -> Window &
@@ -77,6 +86,16 @@ auto WindowController::WindowFromNativeHandle(const IPlatformBackend::NativeWind
   ASSERT(windowIt != std::end(m_Windows), "Window not found from native handle");
 
   return *(*windowIt);
+}
+
+
+void WindowController::DestroyWindowFromNativeHandle(const IPlatformBackend::NativeWindowHandle handle)
+{
+  auto windowIt =
+    FindIf(m_Windows, [&](const Scope<Window, MemoryTag::App> &window) { return window->NativeHandle() == handle; });
+  ASSERT(windowIt != std::end(m_Windows), "Window not found from native handle");
+
+  m_Windows.erase(windowIt);
 }
 
 }// namespace JE

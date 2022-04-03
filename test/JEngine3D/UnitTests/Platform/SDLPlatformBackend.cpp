@@ -98,7 +98,7 @@ TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   "[JE::SDLPlatformBackend]")
 {
 
-  class SDLQUITChecker final : public JE::IEventProcessor
+  class QuitChecker final : public JE::IEventProcessor
   {
   public:
     inline void OnEvent(JE::IEvent &event) override { m_QuitEventReceived = (event.Type() == JE::EventType::Quit); }
@@ -158,6 +158,47 @@ TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
   m_Backend.PollEvents(checker);
 
   REQUIRE(checker.WindowResizeEventReceived());
+
+  m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
+  "JE::SDLPlatformBackend Polls events to EventProcessor (Fake Window Close event)",
+  "[JE::SDLPlatformBackend]")
+{
+
+  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+  class WindowResizeChecker final : public JE::IEventProcessor
+  {
+  public:
+    explicit WindowResizeChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
+
+    inline void OnEvent(JE::IEvent &event) override
+    {
+      if (event.Type() == JE::EventType::WindowClose) {
+        const auto &resizeEvent =
+          static_cast<const JE::WindowCloseEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+        if (resizeEvent.WindowHandle() == m_Handle) { m_WindowCloseEventReceived = true; }
+      }
+    }
+
+    [[nodiscard]] inline auto WindowCloseEventReceived() const -> bool { return m_WindowCloseEventReceived; }
+
+  private:
+    JE::IPlatformBackend::NativeWindowHandle m_Handle;
+    bool m_WindowCloseEventReceived = false;
+  } checker{ handle };
+
+  SDL_Event closeEvent;
+  closeEvent.type = SDL_EventType::SDL_WINDOWEVENT;
+  closeEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_CLOSE;
+  closeEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(handle));
+  SDL_PushEvent(&closeEvent);
+
+  m_Backend.PollEvents(checker);
+
+  REQUIRE(checker.WindowCloseEventReceived());
 
   m_Backend.DestroyWindow(handle);
 }

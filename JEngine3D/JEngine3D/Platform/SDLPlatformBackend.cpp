@@ -87,11 +87,19 @@ void SDLPlatformBackend::PollEvents(IEventProcessor &processor)
 
     if (nativeEvent.type == SDL_EventType::SDL_WINDOWEVENT) {
       switch (nativeEvent.window.event) {
-      case SDL_WindowEventID::SDL_WINDOWEVENT_SIZE_CHANGED:
+      case SDL_WindowEventID::SDL_WINDOWEVENT_SIZE_CHANGED: {
         WindowResizeEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID),
           { nativeEvent.window.data1, nativeEvent.window.data2 } };
         processor.OnEvent(event);
-        break;
+      } break;
+
+      case SDL_WindowEventID::SDL_WINDOWEVENT_CLOSE: {
+        WindowCloseEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID) };
+        processor.OnEvent(event);
+      } break;
+
+      default: {
+      } break;
       }
     }
   }

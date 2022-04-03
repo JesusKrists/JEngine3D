@@ -35,6 +35,7 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
 
   m_App.Run(1);
   REQUIRE(!m_App.Running());
+  REQUIRE(quitEvent.Handled());
 }
 
 TEST_CASE_METHOD(ApplicationTestsFixture,
@@ -47,4 +48,5 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
   m_App.Run(1);
 
   REQUIRE(m_App.MainWindow().Size() == NEW_SIZE);
+  REQUIRE(resizeEvent.Handled());
 }

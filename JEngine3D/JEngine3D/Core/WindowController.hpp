@@ -56,10 +56,11 @@ public:
   auto CreateWindow(const std::string_view &title, const Size2D &size) -> Window &;
   [[nodiscard]] inline auto Windows() const -> const WindowContainer & { return m_Windows; }
 
-  inline void DeleteAllWindows() { m_Windows.clear(); }
+  inline void DestroyAllWindows() { m_Windows.clear(); }
 
 private:
   auto WindowFromNativeHandle(const IPlatformBackend::NativeWindowHandle handle) -> Window &;
+  void DestroyWindowFromNativeHandle(const IPlatformBackend::NativeWindowHandle handle);
 
   WindowContainer m_Windows;
 
