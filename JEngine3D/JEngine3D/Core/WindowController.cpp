@@ -70,7 +70,7 @@ auto WindowController::CreateWindow(const std::string_view &title, const Size2D 
 }
 
 
-auto WindowController::WindowFromNativeHandle(IPlatformBackend::NativeWindowHandle handle) -> Window &
+auto WindowController::WindowFromNativeHandle(const IPlatformBackend::NativeWindowHandle handle) -> Window &
 {
   auto windowIt =
     FindIf(m_Windows, [&](const Scope<Window, MemoryTag::App> &window) { return window->NativeHandle() == handle; });

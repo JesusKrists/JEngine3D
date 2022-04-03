@@ -116,3 +116,48 @@ TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
 
   REQUIRE(checker.QuitEventReceived());
 }
+
+TEST_CASE_METHOD(SDLPlatformBackendTestsFixture,
+  "JE::SDLPlatformBackend Polls events to EventProcessor (Fake Window Size changed event)",
+  "[JE::SDLPlatformBackend]")
+{
+
+  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+  class WindowResizeChecker final : public JE::IEventProcessor
+  {
+  public:
+    explicit WindowResizeChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
+
+    inline void OnEvent(JE::IEvent &event) override
+    {
+      if (event.Type() == JE::EventType::WindowResize) {
+        const auto &resizeEvent =
+          static_cast<const JE::WindowResizeEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+        if (resizeEvent.WindowHandle() == m_Handle && resizeEvent.Size() == NEW_WINDOW_SIZE) {
+          m_WindowResizeEventReceived = true;
+        }
+      }
+    }
+
+    [[nodiscard]] inline auto WindowResizeEventReceived() const -> bool { return m_WindowResizeEventReceived; }
+
+  private:
+    JE::IPlatformBackend::NativeWindowHandle m_Handle;
+    bool m_WindowResizeEventReceived = false;
+  } checker{ handle };
+
+  SDL_Event resizeEvent;
+  resizeEvent.type = SDL_EventType::SDL_WINDOWEVENT;
+  resizeEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_SIZE_CHANGED;
+  resizeEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(handle));
+  resizeEvent.window.data1 = NEW_WINDOW_SIZE.Width;
+  resizeEvent.window.data2 = NEW_WINDOW_SIZE.Height;
+  SDL_PushEvent(&resizeEvent);
+
+  m_Backend.PollEvents(checker);
+
+  REQUIRE(checker.WindowResizeEventReceived());
+
+  m_Backend.DestroyWindow(handle);
+}

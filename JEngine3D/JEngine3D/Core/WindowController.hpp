@@ -59,7 +59,7 @@ public:
   inline void DeleteAllWindows() { m_Windows.clear(); }
 
 private:
-  auto WindowFromNativeHandle(IPlatformBackend::NativeWindowHandle handle) -> Window &;
+  auto WindowFromNativeHandle(const IPlatformBackend::NativeWindowHandle handle) -> Window &;
 
   WindowContainer m_Windows;
 
