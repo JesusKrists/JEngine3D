@@ -14,7 +14,7 @@ Checks: "*,
         -misc-non-private-member-variables-in-classes
 "
 WarningsAsErrors: ''
-HeaderFilterRegex: 'JEngine3D[/\\\\]JEngine3D|JEngine3D_Editor'
+HeaderFilterRegex: '(JEngine3D[/\\\\]JEngine3D|JEngine3D_Editor)(?!.*\/build)'
 FormatStyle:     none
 
 
