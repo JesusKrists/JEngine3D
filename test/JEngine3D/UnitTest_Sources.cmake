@@ -5,7 +5,8 @@ set(UNITTEST_SOURCES
     UnitTests/Core/LoggerController.cpp
     UnitTests/Core/MemoryController.cpp
     UnitTests/Core/Types.cpp
-    UnitTests/Core/WindowController.cpp
-    UnitTests/Platform/SDLPlatformBackend.cpp)
+    UnitTests/Core/WindowController.cpp)
+
+set(UNITTEST_PLATFORM_SOURCES UnitTests/Platform/IPlatformBackend.cpp)
 
 set(CONSTEXPR_SOURCES UnitTests/Core/Base_constexpr.cpp UnitTests/Core/Types_constexpr.cpp)

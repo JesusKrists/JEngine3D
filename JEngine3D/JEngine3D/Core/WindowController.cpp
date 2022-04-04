@@ -8,7 +8,7 @@
 namespace JE {
 
 
-Window::Window(const std::string_view &title, const Size2D &size, IPlatformBackend::NativeWindowHandle nativeHandle)
+Window::Window(const std::string_view &title, const Size2DI &size, IPlatformBackend::NativeWindowHandle nativeHandle)
   : m_NativeHandle(nativeHandle), m_Title(title), m_Size(size)
 {
   ASSERT(
@@ -24,7 +24,7 @@ void Window::SetTitle(const std::string_view &title)
   m_Title = title;
 }
 
-void Window::SetSize(const Size2D &size)
+void Window::SetSize(const Size2DI &size)
 {
   IPlatformBackend::Get().SetWindowSize(m_NativeHandle, size);
   m_Size = size;
@@ -71,7 +71,7 @@ void WindowController::OnEvent(IEvent &event)
   });
 }
 
-auto WindowController::CreateWindow(const std::string_view &title, const Size2D &size) -> Window &
+auto WindowController::CreateWindow(const std::string_view &title, const Size2DI &size) -> Window &
 {
   m_Windows.push_back(
     CreateScope<Window, MemoryTag::App>(title, size, IPlatformBackend::Get().CreateWindow(title, size)));

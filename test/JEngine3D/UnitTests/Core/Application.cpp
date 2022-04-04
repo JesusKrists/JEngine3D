@@ -12,7 +12,7 @@ class ApplicationTestsFixture : public TestPlatformBackendFixture
 {
 public:
   static constexpr auto DEFAULT_TITLE = std::string_view{ "Test App" };
-  static constexpr auto NEW_SIZE = JE::Size2D{ 640, 480 };
+  static constexpr auto NEW_SIZE = JE::Size2DI{ 640, 480 };
 
   ApplicationTestsFixture() : m_App(DEFAULT_TITLE) {}
 

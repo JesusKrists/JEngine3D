@@ -12,7 +12,7 @@ class Window;
 class Application : public IEventProcessor
 {
 public:
-  static constexpr auto DEFAULT_SIZE = Size2D{ 1280, 720 };
+  static constexpr auto DEFAULT_SIZE = Size2DI{ 1280, 720 };
 
   explicit Application(const std::string_view &title);
   ~Application() override { s_ApplicationInstance = nullptr; }

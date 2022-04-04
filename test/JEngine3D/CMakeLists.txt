@@ -2,18 +2,10 @@ list(APPEND CMAKE_MODULE_PATH ${Catch2_SOURCE_DIR}/extras)
 include(CTest)
 include(Catch)
 
-add_library(JEngine3D_catch_main OBJECT catch_main.cpp)
-target_link_system_libraries(
-  JEngine3D_catch_main
-  PUBLIC
-  Catch2::Catch2
-  SDL2-static)
-target_link_libraries(
-  JEngine3D_catch_main
-  PRIVATE project_options project_warnings
-  PUBLIC JEngine3D)
-
-target_include_directories(JEngine3D_catch_main PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+add_library(JEngine3D_catch_base INTERFACE)
+target_link_system_libraries(JEngine3D_catch_base INTERFACE Catch2WithMain)
+target_link_libraries(JEngine3D_catch_base INTERFACE JEngine3D)
+target_include_directories(JEngine3D_catch_base INTERFACE ${CMAKE_CURRENT_SOURCE_DIR})
 
 # Provide a simple smoke test to make sure that the CLI works and can display a --help message
 #add_test(NAME cli.has_help COMMAND JEngine3D_Editor_Executable --help)
@@ -28,12 +20,7 @@ target_include_directories(JEngine3D_catch_main PUBLIC ${CMAKE_CURRENT_SOURCE_DI
 include(UnitTest_Sources.cmake)
 
 add_executable(JEngine3D_tests tests.cpp ${UNITTEST_SOURCES})
-target_link_libraries(
-  JEngine3D_tests
-  PRIVATE project_warnings
-          project_options
-          Catch2WithMain
-          JEngine3D_catch_main)
+target_link_libraries(JEngine3D_tests PRIVATE project_warnings project_options JEngine3D_catch_base)
 
 # automatically discover tests that are defined in catch based test files you can modify the unittests. Set TEST_PREFIX
 # to whatever you want, or use different for different binaries
@@ -50,14 +37,28 @@ catch_discover_tests(
   OUTPUT_SUFFIX
   .xml)
 
+add_executable(JEngine3D_Platform_tests tests.cpp ${UNITTEST_PLATFORM_SOURCES})
+target_link_libraries(JEngine3D_Platform_tests PRIVATE project_warnings project_options JEngine3D_catch_base)
+target_link_system_libraries(JEngine3D_Platform_tests PRIVATE SDL2-static)
+
+# automatically discover tests that are defined in catch based test files you can modify the unittests. Set TEST_PREFIX
+# to whatever you want, or use different for different binaries
+catch_discover_tests(
+  JEngine3D_Platform_tests
+  TEST_PREFIX
+  "unittests."
+  REPORTER
+  XML
+  OUTPUT_DIR
+  .
+  OUTPUT_PREFIX
+  "unittests."
+  OUTPUT_SUFFIX
+  .xml)
+
 # Add a file containing a set of constexpr tests
 add_executable(JEngine3D_constexpr_tests ${CONSTEXPR_SOURCES})
-target_link_libraries(
-  JEngine3D_constexpr_tests
-  PRIVATE project_options
-          project_warnings
-          Catch2WithMain
-          JEngine3D_catch_main)
+target_link_libraries(JEngine3D_constexpr_tests PRIVATE project_options project_warnings JEngine3D_catch_base)
 
 catch_discover_tests(
   JEngine3D_constexpr_tests
@@ -75,12 +76,7 @@ catch_discover_tests(
 # Disable the constexpr portion of the test, and build again this allows us to have an executable that we can debug when
 # things go wrong with the constexpr testing
 add_executable(JEngine3D_relaxed_constexpr_tests ${CONSTEXPR_SOURCES})
-target_link_libraries(
-  JEngine3D_relaxed_constexpr_tests
-  PRIVATE project_options
-          project_warnings
-          Catch2WithMain
-          JEngine3D_catch_main)
+target_link_libraries(JEngine3D_relaxed_constexpr_tests PRIVATE project_options project_warnings JEngine3D_catch_base)
 target_compile_definitions(JEngine3D_relaxed_constexpr_tests PRIVATE -DCATCH_CONFIG_RUNTIME_STATIC_REQUIRE)
 
 catch_discover_tests(

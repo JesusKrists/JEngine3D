@@ -15,13 +15,13 @@ private:
   }
 
 public:
-  static constexpr auto INVALID_WINDOW_SIZE = JE::Size2D{ -1, -1 };
+  static constexpr auto INVALID_WINDOW_SIZE = JE::Size2DI{ -1, -1 };
   static constexpr auto INVALID_WINDOW_TITLE = std::string_view{ "Invalid Window" };
 
   [[nodiscard]] inline auto Initialize() -> bool override { return true; }
   [[nodiscard]] inline auto Initialized() -> bool override { return true; }
 
-  [[nodiscard]] inline auto CreateWindow(const std::string_view &title, const JE::Size2D &size)
+  [[nodiscard]] inline auto CreateWindow(const std::string_view &title, const JE::Size2DI &size)
     -> NativeWindowHandle override
   {
     auto window = m_CreatedWindows.emplace_back(++m_CurrentWindowID, title, size);
@@ -33,13 +33,19 @@ public:
     if (windowIt != std::end(m_CreatedWindows)) { m_CreatedWindows.erase(windowIt); }
   }
 
-  [[nodiscard]] inline auto WindowSize(NativeWindowHandle handle) -> JE::Size2D override
+  [[nodiscard]] inline auto ValidWindowHandle(NativeWindowHandle handle) -> bool override
+  {
+    auto windowIt = WindowIterator(handle);
+    return windowIt != std::end(m_CreatedWindows);
+  }
+
+  [[nodiscard]] inline auto WindowSize(NativeWindowHandle handle) -> JE::Size2DI override
   {
     auto windowIt = WindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { return windowIt->Size; }
     return INVALID_WINDOW_SIZE;
   }
-  inline void SetWindowSize(NativeWindowHandle handle, const JE::Size2D &size) override
+  inline void SetWindowSize(NativeWindowHandle handle, const JE::Size2DI &size) override
   {
     auto windowIt = WindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { windowIt->Size = size; }
@@ -57,7 +63,7 @@ public:
     if (windowIt != std::end(m_CreatedWindows)) { windowIt->Title = title; }
   }
 
-  inline void PushEvent(JE::IEvent &event) { m_EventQueue.emplace_back(event); }
+  inline void PushEvent(JE::IEvent &event) override { m_EventQueue.emplace_back(event); }
 
   inline void PollEvents(JE::IEventProcessor &processor) override
   {
@@ -85,12 +91,12 @@ public:
 private:
   struct TestWindow
   {
-    TestWindow(size_t windowID, const std::string_view &title, const JE::Size2D &size)
+    TestWindow(size_t windowID, const std::string_view &title, const JE::Size2DI &size)
       : ID(windowID), Title(title), Size(size)
     {}
     size_t ID;
     std::string Title;
-    JE::Size2D Size;
+    JE::Size2DI Size;
   };
 
   size_t m_CurrentWindowID = 0;

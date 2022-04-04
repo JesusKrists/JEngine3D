@@ -19,7 +19,7 @@ public:
   Window(Window &&other) = delete;
   auto operator=(Window &&other) -> Window & = delete;
 
-  Window(const std::string_view &title, const Size2D &size, IPlatformBackend::NativeWindowHandle nativeHandle);
+  Window(const std::string_view &title, const Size2DI &size, IPlatformBackend::NativeWindowHandle nativeHandle);
   ~Window();
 
   [[nodiscard]] inline auto NativeHandle() const -> IPlatformBackend::NativeWindowHandle { return m_NativeHandle; }
@@ -27,13 +27,13 @@ public:
   [[nodiscard]] inline auto Title() const -> const std::string & { return m_Title; }
   void SetTitle(const std::string_view &title);
 
-  [[nodiscard]] inline auto Size() const -> const Size2D & { return m_Size; }
-  void SetSize(const Size2D &size);
+  [[nodiscard]] inline auto Size() const -> const Size2DI & { return m_Size; }
+  void SetSize(const Size2DI &size);
 
 private:
   IPlatformBackend::NativeWindowHandle m_NativeHandle;
   std::string m_Title;
-  Size2D m_Size;
+  Size2DI m_Size;
 };
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
@@ -53,7 +53,7 @@ public:
 
   void OnEvent(IEvent &event) override;
 
-  auto CreateWindow(const std::string_view &title, const Size2D &size) -> Window &;
+  auto CreateWindow(const std::string_view &title, const Size2DI &size) -> Window &;
   [[nodiscard]] inline auto Windows() const -> const WindowContainer & { return m_Windows; }
 
   inline void DestroyAllWindows() { m_Windows.clear(); }

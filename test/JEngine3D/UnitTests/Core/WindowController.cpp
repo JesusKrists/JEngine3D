@@ -15,10 +15,10 @@ class WindowControllerTestsFixture : public TestPlatformBackendFixture
 {
 public:
   static constexpr auto TEST_WINDOW_TITLE = std::string_view{ "Test Window" };
-  static constexpr auto TEST_WINDOW_SIZE = JE::Size2D{ 1280, 720 };
+  static constexpr auto TEST_WINDOW_SIZE = JE::Size2DI{ 1280, 720 };
 
   static constexpr auto NEW_WINDOW_TITLE = std::string_view{ "New Window Title" };
-  static constexpr auto NEW_WINDOW_SIZE = JE::Size2D{ 640, 480 };
+  static constexpr auto NEW_WINDOW_SIZE = JE::Size2DI{ 640, 480 };
 };
 
 TEST_CASE_METHOD(WindowControllerTestsFixture,

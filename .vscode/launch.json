@@ -10,7 +10,7 @@
             "name": "Debug JEngine3D UnitTests",
             "program": "${workspaceFolder}/out/build/test/JEngine3D/JEngine3D_tests",
             "args": [
-                "\"JE::LoggerController creates Loggers and has ownership\\, TestLogger outputs something\""
+                "\"JE::SDLPlatformBackend Polls events to EventProcessor (Fake Key release)\""
             ],
             "cwd": "${workspaceFolder}"
         }

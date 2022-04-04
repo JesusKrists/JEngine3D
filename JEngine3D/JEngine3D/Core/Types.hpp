@@ -6,12 +6,20 @@
 
 namespace JE {
 
-struct Size2D
+struct Size2DI
 {
   int32_t Width;
   int32_t Height;
 
-  constexpr auto operator==(const Size2D &other) const -> bool = default;
+  constexpr auto operator==(const Size2DI &other) const -> bool = default;
+};
+
+struct Position2DI
+{
+  int32_t X;
+  int32_t Y;
+
+  constexpr auto operator==(const Position2DI &other) const -> bool = default;
 };
 
 }// namespace JE

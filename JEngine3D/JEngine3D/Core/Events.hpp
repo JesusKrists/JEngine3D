@@ -2,13 +2,28 @@
 
 #include "JEngine3D/Platform/IPlatformBackend.hpp"
 #include "JEngine3D/Core/Types.hpp"
+#include "JEngine3D/Core/KeyCodes.hpp"// IWYU pragma: export
+#include "JEngine3D/Core/MouseCodes.hpp"// IWYU pragma: export
 
 #include <utility>
 
 namespace JE {
 
-enum class EventType { Quit, WindowResize, WindowClose };
-enum class EventCategory { App, Window };
+enum class EventType {
+  Quit,
+
+  WindowResize,
+  WindowClose,
+
+  KeyPress,
+  KeyRelease,
+
+  MousePress,
+  MouseRelease,
+  MouseMove,
+  MouseWheel
+};
+enum class EventCategory { App, Window, Keyboard, Mouse };
 
 class IEvent
 {
@@ -83,15 +98,15 @@ private:
 class WindowResizeEvent final : public IWindowEvent
 {
 public:
-  WindowResizeEvent(IPlatformBackend::NativeWindowHandle handle, const Size2D &size)
+  WindowResizeEvent(IPlatformBackend::NativeWindowHandle handle, const Size2DI &size)
     : IWindowEvent(handle), m_Size(size)
   {}
 
   [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowResize; }
-  [[nodiscard]] inline auto Size() const -> const Size2D & { return m_Size; }
+  [[nodiscard]] inline auto Size() const -> const Size2DI & { return m_Size; }
 
 private:
-  Size2D m_Size;
+  Size2DI m_Size;
 };
 
 class WindowCloseEvent final : public IWindowEvent
@@ -100,6 +115,137 @@ class WindowCloseEvent final : public IWindowEvent
 
 public:
   [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowClose; }
+};
+
+class IKeyboardEvent : public IEvent
+{
+public:
+  explicit IKeyboardEvent(IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
+
+  [[nodiscard]] inline auto Category() const -> EventCategory override { return EventCategory::Keyboard; }
+  [[nodiscard]] inline auto WindowHandle() const -> IPlatformBackend::NativeWindowHandle { return m_Handle; }
+
+private:
+  IPlatformBackend::NativeWindowHandle m_Handle;
+};
+
+class KeyPressEvent : public IKeyboardEvent
+{
+public:
+  KeyPressEvent(IPlatformBackend::NativeWindowHandle handle, KeyCode key, int32_t repeat)
+    : IKeyboardEvent(handle), m_Key(key), m_Repeat(repeat)
+  {}
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::KeyPress; }
+
+  [[nodiscard]] inline auto Key() const -> KeyCode { return m_Key; }
+  [[nodiscard]] inline auto Repeat() const -> int32_t { return m_Repeat; }
+
+private:
+  KeyCode m_Key;
+  int32_t m_Repeat;
+};
+
+class KeyReleaseEvent : public IKeyboardEvent
+{
+public:
+  KeyReleaseEvent(IPlatformBackend::NativeWindowHandle handle, KeyCode key, int32_t repeat)
+    : IKeyboardEvent(handle), m_Key(key), m_Repeat(repeat)
+  {}
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::KeyRelease; }
+
+  [[nodiscard]] inline auto Key() const -> KeyCode { return m_Key; }
+  [[nodiscard]] inline auto Repeat() const -> int32_t { return m_Repeat; }
+
+private:
+  KeyCode m_Key;
+  int32_t m_Repeat;
+};
+
+class IMouseEvent : public IEvent
+{
+public:
+  explicit IMouseEvent(IPlatformBackend::NativeWindowHandle handle, const Position2DI &position)
+    : m_Handle(handle), m_Position(position)
+  {}
+
+  [[nodiscard]] inline auto Category() const -> EventCategory override { return EventCategory::Mouse; }
+  [[nodiscard]] inline auto WindowHandle() const -> IPlatformBackend::NativeWindowHandle { return m_Handle; }
+
+  [[nodiscard]] inline auto Position() const -> const Position2DI & { return m_Position; }
+
+private:
+  IPlatformBackend::NativeWindowHandle m_Handle;
+  Position2DI m_Position;
+};
+
+class MousePressEvent : public IMouseEvent
+{
+public:
+  MousePressEvent(IPlatformBackend::NativeWindowHandle handle,
+    const Position2DI &position,
+    MouseButton button,
+    int32_t clicks)
+    : IMouseEvent(handle, position), m_Button(button), m_Clicks(clicks)
+  {}
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::MousePress; }
+
+  [[nodiscard]] inline auto Button() const -> MouseButton { return m_Button; }
+  [[nodiscard]] inline auto Clicks() const -> int32_t { return m_Clicks; }
+
+private:
+  MouseButton m_Button;
+  int32_t m_Clicks;
+};
+
+class MouseReleaseEvent : public IMouseEvent
+{
+public:
+  MouseReleaseEvent(IPlatformBackend::NativeWindowHandle handle,
+    const Position2DI &position,
+    MouseButton button,
+    int32_t clicks)
+    : IMouseEvent(handle, position), m_Button(button), m_Clicks(clicks)
+  {}
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::MouseRelease; }
+
+  [[nodiscard]] inline auto Button() const -> MouseButton { return m_Button; }
+  [[nodiscard]] inline auto Clicks() const -> int32_t { return m_Clicks; }
+
+private:
+  MouseButton m_Button;
+  int32_t m_Clicks;
+};
+
+class MouseMoveEvent : public IMouseEvent
+{
+public:
+  MouseMoveEvent(IPlatformBackend::NativeWindowHandle handle,
+    const Position2DI &position,// NOLINT(bugprone-easily-swappable-parameters)
+    const Position2DI &relativePosition)
+    : IMouseEvent(handle, position), m_RelativePosition(relativePosition)
+  {}
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::MouseMove; }
+
+  [[nodiscard]] inline auto RelativePosition() const -> const Position2DI & { return m_RelativePosition; }
+
+private:
+  Position2DI m_RelativePosition;
+};
+
+class MouseWheelEvent : public IMouseEvent
+{
+public:
+  explicit MouseWheelEvent(IPlatformBackend::NativeWindowHandle handle,
+    int32_t scrollAmount,
+    const Position2DI &position = { 0, 0 })
+    : IMouseEvent(handle, position), m_ScrollAmount(scrollAmount)
+  {}
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::MouseWheel; }
+
+  [[nodiscard]] inline auto ScrollAmount() const -> int32_t { return m_ScrollAmount; }
+
+private:
+  int32_t m_ScrollAmount;
 };
 
 }// namespace JE
