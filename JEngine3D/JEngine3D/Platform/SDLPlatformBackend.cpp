@@ -89,13 +89,13 @@ void SDLPlatformBackend::SetWindowTitle(NativeWindowHandle handle, const std::st
 
 void SDLPlatformBackend::PollEvents(IEventProcessor &processor)
 {
-  auto ProcessWindowResizeEvent = [&](SDL_Event &nativeEvent) {
+  auto ProcessWindowResizeEvent = [&](const SDL_Event &nativeEvent) {
     WindowResizeEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID),
       { nativeEvent.window.data1, nativeEvent.window.data2 } };
     processor.OnEvent(event);
   };
 
-  auto ProcessWindowCloseEvent = [&](SDL_Event &nativeEvent) {
+  auto ProcessWindowCloseEvent = [&](const SDL_Event &nativeEvent) {
     WindowCloseEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID) };
     processor.OnEvent(event);
   };
