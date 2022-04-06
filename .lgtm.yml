@@ -9,12 +9,12 @@ extraction:
       packages:
         - g++-10
         - ccache
+        - cmake
         - xorg-dev
         - libsdl2-dev
-      script:
-        - python3 -m pip install --upgrade pip setuptools
-        - python3 -m pip install cmake
-        - source ~/.profile
+      after_prepare:    # Customizable step used by all languages.
+        - export CC=gcc-10
+        - export CXX=g++-10
     configure:
       command:
         - mkdir build
