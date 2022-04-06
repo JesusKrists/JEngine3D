@@ -37,7 +37,7 @@ private:
 };
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
-class WindowController : public IEventProcessor
+class WindowController final : public IEventProcessor
 {
   using WindowContainer = Vector<Scope<Window, MemoryTag::App>, MemoryTag::App>;
 

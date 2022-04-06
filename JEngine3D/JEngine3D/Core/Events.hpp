@@ -129,7 +129,7 @@ private:
   IPlatformBackend::NativeWindowHandle m_Handle;
 };
 
-class KeyPressEvent : public IKeyboardEvent
+class KeyPressEvent final : public IKeyboardEvent
 {
 public:
   KeyPressEvent(IPlatformBackend::NativeWindowHandle handle, KeyCode key, int32_t repeat)
@@ -145,7 +145,7 @@ private:
   int32_t m_Repeat;
 };
 
-class KeyReleaseEvent : public IKeyboardEvent
+class KeyReleaseEvent final : public IKeyboardEvent
 {
 public:
   KeyReleaseEvent(IPlatformBackend::NativeWindowHandle handle, KeyCode key, int32_t repeat)
@@ -178,7 +178,7 @@ private:
   Position2DI m_Position;
 };
 
-class MousePressEvent : public IMouseEvent
+class MousePressEvent final : public IMouseEvent
 {
 public:
   MousePressEvent(IPlatformBackend::NativeWindowHandle handle,
@@ -197,7 +197,7 @@ private:
   int32_t m_Clicks;
 };
 
-class MouseReleaseEvent : public IMouseEvent
+class MouseReleaseEvent final : public IMouseEvent
 {
 public:
   MouseReleaseEvent(IPlatformBackend::NativeWindowHandle handle,
@@ -216,7 +216,7 @@ private:
   int32_t m_Clicks;
 };
 
-class MouseMoveEvent : public IMouseEvent
+class MouseMoveEvent final : public IMouseEvent
 {
 public:
   MouseMoveEvent(IPlatformBackend::NativeWindowHandle handle,
@@ -232,7 +232,7 @@ private:
   Position2DI m_RelativePosition;
 };
 
-class MouseWheelEvent : public IMouseEvent
+class MouseWheelEvent final : public IMouseEvent
 {
 public:
   explicit MouseWheelEvent(IPlatformBackend::NativeWindowHandle handle,

@@ -15,4 +15,5 @@ protected:
   JE::LoggerController m_LoggerController;
   TestPlatformBackend m_Backend;
   JE::WindowController m_WindowController;
+  JE::InputController m_InputController;
 };

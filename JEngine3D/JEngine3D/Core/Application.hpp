@@ -9,7 +9,7 @@ namespace JE {
 class Window;
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
-class Application : public IEventProcessor
+class Application final : public IEventProcessor
 {
 public:
   static constexpr auto DEFAULT_SIZE = Size2DI{ 1280, 720 };
