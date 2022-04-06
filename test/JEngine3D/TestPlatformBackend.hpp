@@ -75,6 +75,8 @@ public:
     }
   }
 
+  inline auto MousePosition() -> JE::Position2DI override { return { 0, 0 }; }
+
   inline void ProcessEvent(JE::IEvent &event)
   {
     JE::EventDispatcher dispatcher{ event };

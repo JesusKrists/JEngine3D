@@ -19,7 +19,7 @@ target_include_directories(JEngine3D_catch_base INTERFACE ${CMAKE_CURRENT_SOURCE
 
 include(UnitTest_Sources.cmake)
 
-add_executable(JEngine3D_tests tests.cpp ${UNITTEST_SOURCES})
+add_executable(JEngine3D_tests ${UNITTEST_SOURCES})
 target_link_libraries(JEngine3D_tests PRIVATE project_warnings project_options JEngine3D_catch_base)
 
 # automatically discover tests that are defined in catch based test files you can modify the unittests. Set TEST_PREFIX
@@ -37,7 +37,7 @@ catch_discover_tests(
   OUTPUT_SUFFIX
   .xml)
 
-add_executable(JEngine3D_Platform_tests tests.cpp ${UNITTEST_PLATFORM_SOURCES})
+add_executable(JEngine3D_Platform_tests ${UNITTEST_PLATFORM_SOURCES})
 target_link_libraries(JEngine3D_Platform_tests PRIVATE project_warnings project_options JEngine3D_catch_base)
 target_link_system_libraries(JEngine3D_Platform_tests PRIVATE SDL2-static)
 

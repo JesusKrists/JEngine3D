@@ -2,6 +2,7 @@
 
 #include <JEngine3D/Core/Base.hpp>// for UNUSED
 #include <JEngine3D/Core/WindowController.hpp>
+#include <JEngine3D/Core/InputController.hpp>
 
 #include "TestPlatformBackend.hpp"// IWYU pragma: export
 

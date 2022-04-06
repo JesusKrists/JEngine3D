@@ -4,8 +4,10 @@ set(JEngine3D_HEADERS
     JEngine3D/Core/Base.hpp
     JEngine3D/Core/Events.hpp
     JEngine3D/Core/InputController.hpp
+    JEngine3D/Core/KeyCodes.hpp
     JEngine3D/Core/LoggerController.hpp
     JEngine3D/Core/MemoryController.hpp
+    JEngine3D/Core/MouseButtons.hpp
     JEngine3D/Core/Types.hpp
     JEngine3D/Core/WindowController.hpp
     JEngine3D/Platform/IPlatformBackend.hpp

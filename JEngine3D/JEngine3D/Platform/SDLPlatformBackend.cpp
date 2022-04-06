@@ -287,4 +287,12 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
   }
 }
 
+
+auto SDLPlatformBackend::MousePosition() -> Position2DI
+{
+  Position2DI position{};
+  SDL_GetMouseState(&position.X, &position.Y);
+  return position;
+}
+
 }// namespace JE

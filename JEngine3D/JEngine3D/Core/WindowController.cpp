@@ -2,6 +2,7 @@
 
 #include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
 #include "JEngine3D/Core/Base.hpp"// for FindIf
+#include "JEngine3D/Core/LoggerController.hpp"// for Logger
 
 #include <iterator>// for end
 
@@ -45,7 +46,10 @@ WindowController::~WindowController() { s_WindowControllerInstance = nullptr; }
 
 void WindowController::OnEvent(IEvent &event)
 {
-  if (event.Category() != EventCategory::Window) { return; }
+  if (event.Category() != EventCategory::Window) {
+    Logger::CoreLogger().error("WindowController received unknown event type");
+    return;
+  }
   EventDispatcher dispatcher{ event };
 
   dispatcher.Dispatch<EventType::WindowResize>([&](const IEvent &evnt) {

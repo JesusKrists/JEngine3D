@@ -11,7 +11,7 @@
 
 #include <iterator>// for end
 
-class WindowControllerTestsFixture final : public TestPlatformBackendFixture
+class WindowControllerTestsFixture : public TestPlatformBackendFixture
 {
 public:
   static constexpr auto TEST_WINDOW_TITLE = std::string_view{ "Test Window" };

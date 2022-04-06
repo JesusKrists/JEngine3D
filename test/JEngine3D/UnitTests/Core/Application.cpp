@@ -1,15 +1,15 @@
 #include <catch2/catch_test_macros.hpp>// for StringRef, oper...
 
-#include "JEngine3D/Core/KeyCodes.hpp"
 #include "TestPlatformBackendFixture.hpp"
 
 #include <JEngine3D/Core/Types.hpp>// for operator==, char_traits
 #include <JEngine3D/Core/Events.hpp>
 #include <JEngine3D/Core/WindowController.hpp>
 #include <JEngine3D/Core/Application.hpp>
+#include <JEngine3D/Core/InputController.hpp>// for InputController
 
 
-class ApplicationTestsFixture final : public TestPlatformBackendFixture
+class ApplicationTestsFixture : public TestPlatformBackendFixture
 {
 public:
   static constexpr auto DEFAULT_TITLE = std::string_view{ "Test App" };
@@ -136,7 +136,7 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
 
   m_App.Run(1);
 
-  REQUIRE(!m_InputController.MousePressed(JE::KeyCode::Middle));
+  REQUIRE(!m_InputController.MousePressed(JE::MouseButton::Middle));
   REQUIRE(mousePressEvent.Handled());
   REQUIRE(mouseReleaseEvent.Handled());
 }
@@ -166,11 +166,11 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
 {
   auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
 
-  JE::MouseWheelEvent mouseWheelEvent{ window.NativeHandle(), 5 };
+  JE::MouseWheelEvent mouseWheelEvent{ window.NativeHandle(), 3 };
   m_Backend.PushEvent(mouseWheelEvent);
 
   m_App.Run(1);
 
-  REQUIRE(m_InputController.MouseScrollAmount() == 5);
+  REQUIRE(m_InputController.MouseScrollAmount() == 3);
   REQUIRE(mouseWheelEvent.Handled());
 }

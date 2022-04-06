@@ -31,6 +31,8 @@ public:
 
   void PollEvents(IEventProcessor &processor) override;
   void PushEvent(IEvent &event) override;
+
+  auto MousePosition() -> Position2DI override;
 };
 
 }// namespace JE
