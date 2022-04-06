@@ -27,6 +27,7 @@ protected:
 TEST_CASE_METHOD(ApplicationTestsFixture, "JE::Application creates MainWindow", "[JE::Application]")
 {
   REQUIRE(m_App.MainWindow().Title() == DEFAULT_TITLE);
+  REQUIRE(m_App.MainWindow().Size() == JE::Application::DEFAULT_SIZE);
 }
 
 
@@ -46,12 +47,14 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
   "JE::Application is run and dispatches WindowResizeEvent to WindowController",
   "[JE::Application]")
 {
-  JE::WindowResizeEvent resizeEvent{ m_App.MainWindow().NativeHandle(), NEW_SIZE };
+  auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
+
+  JE::WindowResizeEvent resizeEvent{ window.NativeHandle(), NEW_SIZE };
   m_Backend.PushEvent(resizeEvent);
 
   m_App.Run(1);
 
-  REQUIRE(m_App.MainWindow().Size() == NEW_SIZE);
+  REQUIRE(window.Size() == NEW_SIZE);
   REQUIRE(resizeEvent.Handled());
 }
 
@@ -71,7 +74,7 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
   REQUIRE(closeEvent.Handled());
 }
 
-
+/*
 TEST_CASE_METHOD(ApplicationTestsFixture,
   "JE::Application is run and dispatches KeyPressEvent to InputController",
   "[JE::Application]")
@@ -128,7 +131,7 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
   REQUIRE(!m_InputController.MousePressed(JE::KeyCode::Middle));
   REQUIRE(mousePressEvent.Handled());
   REQUIRE(mouseReleaseEvent.Handled());
-}
+}*/
 
 // MouseMoveEvent
 // MouseWheelEvent

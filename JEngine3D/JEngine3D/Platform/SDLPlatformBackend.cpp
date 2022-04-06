@@ -16,7 +16,10 @@
 
 namespace JE {
 
-static auto SDLKeyCodeToJEngine3DKeyCode(SDL_Keycode keyCode) -> KeyCode { return static_cast<KeyCode>(keyCode); }
+static constexpr auto SDLKeyCodeToJEngine3DKeyCode(SDL_Keycode keyCode) -> KeyCode
+{
+  return static_cast<KeyCode>(keyCode);
+}
 
 static auto s_Initialized = false;// NOLINT
 
