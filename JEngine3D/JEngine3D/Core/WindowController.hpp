@@ -22,7 +22,8 @@ public:
   Window(const std::string_view &title, const Size2DI &size, IPlatformBackend::NativeWindowHandle nativeHandle);
   ~Window();
 
-  [[nodiscard]] inline auto NativeHandle() -> IPlatformBackend::NativeWindowHandle { return m_NativeHandle; }
+  // cppcheck-suppress functionConst
+  [[nodiscard]] inline auto NativeHandle() const -> IPlatformBackend::NativeWindowHandle { return m_NativeHandle; }
 
   [[nodiscard]] inline auto Title() const -> const std::string & { return m_Title; }
   void SetTitle(const std::string_view &title);

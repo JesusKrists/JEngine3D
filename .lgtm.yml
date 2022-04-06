@@ -9,6 +9,8 @@ extraction:
       packages:
         - g++-10
         - ccache
+        - xorg-dev
+        - libsdl2-dev
       script:
         - python3 -m pip install --upgrade pip setuptools
         - python3 -m pip install cmake
