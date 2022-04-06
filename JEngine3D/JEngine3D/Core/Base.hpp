@@ -34,7 +34,7 @@ constexpr auto AlignTo(size_t value, size_t alignment) -> size_t
 {
   if (value == 0) { return alignment; }
 
-  auto remainder = value % alignment;
+  const auto remainder = value % alignment;
   if (remainder == 0) { return value; }
 
   return value + (alignment - remainder);

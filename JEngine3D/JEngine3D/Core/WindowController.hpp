@@ -22,6 +22,7 @@ public:
   Window(const std::string_view &title, const Size2DI &size, IPlatformBackend::NativeWindowHandle nativeHandle);
   ~Window();
 
+  // cppcheck-suppress functionConst
   [[nodiscard]] inline auto NativeHandle() const -> IPlatformBackend::NativeWindowHandle { return m_NativeHandle; }
 
   [[nodiscard]] inline auto Title() const -> const std::string & { return m_Title; }
@@ -37,7 +38,7 @@ private:
 };
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
-class WindowController : public IEventProcessor
+class WindowController final : public IEventProcessor
 {
   using WindowContainer = Vector<Scope<Window, MemoryTag::App>, MemoryTag::App>;
 

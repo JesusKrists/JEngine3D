@@ -16,7 +16,10 @@
 
 namespace JE {
 
-static auto SDLKeyCodeToJEngine3DKeyCode(SDL_Keycode keyCode) -> KeyCode { return static_cast<KeyCode>(keyCode); }
+static constexpr auto SDLKeyCodeToJEngine3DKeyCode(SDL_Keycode keyCode) -> KeyCode
+{
+  return static_cast<KeyCode>(keyCode);
+}
 
 static auto s_Initialized = false;// NOLINT
 
@@ -89,13 +92,13 @@ void SDLPlatformBackend::SetWindowTitle(NativeWindowHandle handle, const std::st
 
 void SDLPlatformBackend::PollEvents(IEventProcessor &processor)
 {
-  auto ProcessWindowResizeEvent = [&](SDL_Event &nativeEvent) {
+  auto ProcessWindowResizeEvent = [&](const SDL_Event &nativeEvent) {
     WindowResizeEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID),
       { nativeEvent.window.data1, nativeEvent.window.data2 } };
     processor.OnEvent(event);
   };
 
-  auto ProcessWindowCloseEvent = [&](SDL_Event &nativeEvent) {
+  auto ProcessWindowCloseEvent = [&](const SDL_Event &nativeEvent) {
     WindowCloseEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID) };
     processor.OnEvent(event);
   };
@@ -282,6 +285,14 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
     nativeMousePressEvent.wheel.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(mouseWheelEvent.WindowHandle()));
     SDL_PushEvent(&nativeMousePressEvent);
   }
+}
+
+
+auto SDLPlatformBackend::MousePosition() -> Position2DI
+{
+  Position2DI position{};
+  SDL_GetMouseState(&position.X, &position.Y);
+  return position;
 }
 
 }// namespace JE

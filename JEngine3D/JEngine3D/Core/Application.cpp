@@ -2,6 +2,7 @@
 
 #include "JEngine3D/Core/Events.hpp"// for EventDispatcher
 #include "JEngine3D/Core/WindowController.hpp"// for WindowController
+#include "JEngine3D/Core/InputController.hpp"// for InputController
 #include "JEngine3D/Platform/IPlatformBackend.hpp"// for IPlatformBackend
 
 namespace JE {
@@ -20,6 +21,12 @@ void Application::OnEvent(IEvent &event)
 {
   if (event.Category() == EventCategory::Window) {
     WindowController::Get().OnEvent(event);
+    if (event.Handled()) { return; }
+  }
+
+
+  if (event.Category() == EventCategory::Keyboard || event.Category() == EventCategory::Mouse) {
+    InputController::Get().OnEvent(event);
     if (event.Handled()) { return; }
   }
 

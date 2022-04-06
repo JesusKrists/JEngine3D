@@ -6,13 +6,17 @@
 #include <JEngine3D/Core/Events.hpp>
 #include <JEngine3D/Core/WindowController.hpp>
 #include <JEngine3D/Core/Application.hpp>
+#include <JEngine3D/Core/InputController.hpp>// for InputController
 
 
 class ApplicationTestsFixture : public TestPlatformBackendFixture
 {
 public:
   static constexpr auto DEFAULT_TITLE = std::string_view{ "Test App" };
-  static constexpr auto NEW_SIZE = JE::Size2DI{ 640, 480 };
+
+  static constexpr auto NEW_WINDOW_TITLE = std::string_view{ "Test App Window" };
+  static constexpr auto NEW_WINDOW_SIZE = JE::Size2DI{ 320, 240 };
+  static constexpr auto NEW_WINDOW_RESIZE = JE::Size2DI{ 640, 480 };
 
   ApplicationTestsFixture() : m_App(DEFAULT_TITLE) {}
 
@@ -23,6 +27,7 @@ protected:
 TEST_CASE_METHOD(ApplicationTestsFixture, "JE::Application creates MainWindow", "[JE::Application]")
 {
   REQUIRE(m_App.MainWindow().Title() == DEFAULT_TITLE);
+  REQUIRE(m_App.MainWindow().Size() == JE::Application::DEFAULT_SIZE);
 }
 
 
@@ -42,11 +47,130 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
   "JE::Application is run and dispatches WindowResizeEvent to WindowController",
   "[JE::Application]")
 {
-  JE::WindowResizeEvent resizeEvent{ m_App.MainWindow().NativeHandle(), NEW_SIZE };
+  auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
+
+  JE::WindowResizeEvent resizeEvent{ window.NativeHandle(), NEW_WINDOW_RESIZE };
   m_Backend.PushEvent(resizeEvent);
 
   m_App.Run(1);
 
-  REQUIRE(m_App.MainWindow().Size() == NEW_SIZE);
+  REQUIRE(window.Size() == NEW_WINDOW_RESIZE);
   REQUIRE(resizeEvent.Handled());
+}
+
+
+TEST_CASE_METHOD(ApplicationTestsFixture,
+  "JE::Application is run and dispatches WindowCloseEvent to WindowController",
+  "[JE::Application]")
+{
+  auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
+
+  JE::WindowCloseEvent closeEvent{ window.NativeHandle() };
+  m_Backend.PushEvent(closeEvent);
+
+  m_App.Run(1);
+
+  REQUIRE(m_WindowController.Windows().size() == 1);
+  REQUIRE(closeEvent.Handled());
+}
+
+
+TEST_CASE_METHOD(ApplicationTestsFixture,
+  "JE::Application is run and dispatches KeyPressEvent to InputController",
+  "[JE::Application]")
+{
+  auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
+
+  JE::KeyPressEvent keyPressEvent{ window.NativeHandle(), JE::KeyCode::LShift, 0 };
+  m_Backend.PushEvent(keyPressEvent);
+
+  m_App.Run(1);
+
+  REQUIRE(m_InputController.KeyPressed(JE::KeyCode::LShift));
+  REQUIRE(keyPressEvent.Handled());
+}
+
+TEST_CASE_METHOD(ApplicationTestsFixture,
+  "JE::Application is run and dispatches KeyReleaseEvent to InputController",
+  "[JE::Application]")
+{
+  auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
+
+  JE::KeyPressEvent keyPressEvent{ window.NativeHandle(), JE::KeyCode::LShift, 0 };
+  JE::KeyReleaseEvent keyReleaseEvent{ window.NativeHandle(), JE::KeyCode::LShift, 0 };
+  m_Backend.PushEvent(keyPressEvent);
+  m_Backend.PushEvent(keyReleaseEvent);
+
+  m_App.Run(1);
+
+  REQUIRE(!m_InputController.KeyPressed(JE::KeyCode::LShift));
+  REQUIRE(keyPressEvent.Handled());
+  REQUIRE(keyReleaseEvent.Handled());
+}
+
+TEST_CASE_METHOD(ApplicationTestsFixture,
+  "JE::Application is run and dispatches MousePressEvent to InputController",
+  "[JE::Application]")
+{
+  auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
+
+  JE::MousePressEvent mousePressEvent{ window.NativeHandle(), { 0, 0 }, JE::MouseButton::Middle, 1 };
+  m_Backend.PushEvent(mousePressEvent);
+
+  m_App.Run(1);
+
+  REQUIRE(m_InputController.MousePressed(JE::MouseButton::Middle));
+  REQUIRE(mousePressEvent.Handled());
+}
+
+TEST_CASE_METHOD(ApplicationTestsFixture,
+  "JE::Application is run and dispatches MouseReleaseEvent to InputController",
+  "[JE::Application]")
+{
+  auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
+
+  JE::MousePressEvent mousePressEvent{ window.NativeHandle(), { 0, 0 }, JE::MouseButton::Middle, 1 };
+  JE::MouseReleaseEvent mouseReleaseEvent{ window.NativeHandle(), { 0, 0 }, JE::MouseButton::Middle, 0 };
+  m_Backend.PushEvent(mousePressEvent);
+  m_Backend.PushEvent(mouseReleaseEvent);
+
+  m_App.Run(1);
+
+  REQUIRE(!m_InputController.MousePressed(JE::MouseButton::Middle));
+  REQUIRE(mousePressEvent.Handled());
+  REQUIRE(mouseReleaseEvent.Handled());
+}
+
+TEST_CASE_METHOD(ApplicationTestsFixture,
+  "JE::Application is run and dispatches MouseMoveEvent to InputController",
+  "[JE::Application]")
+{
+  static constexpr auto MOUSE_POSITION = JE::Position2DI{ 375, 189 };
+  static constexpr auto RELATIVE_MOUSE_POSITION = JE::Position2DI{ 40, 40 };
+
+  auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
+
+  JE::MouseMoveEvent mouseMoveEvent{ window.NativeHandle(), MOUSE_POSITION, RELATIVE_MOUSE_POSITION };
+  m_Backend.PushEvent(mouseMoveEvent);
+
+  m_App.Run(1);
+
+  REQUIRE(m_InputController.MousePosition() == MOUSE_POSITION);
+  REQUIRE(m_InputController.RelativeMousePosition() == RELATIVE_MOUSE_POSITION);
+  REQUIRE(mouseMoveEvent.Handled());
+}
+
+TEST_CASE_METHOD(ApplicationTestsFixture,
+  "JE::Application is run and dispatches MouseWheelEvent to InputController",
+  "[JE::Application]")
+{
+  auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
+
+  JE::MouseWheelEvent mouseWheelEvent{ window.NativeHandle(), 3 };
+  m_Backend.PushEvent(mouseWheelEvent);
+
+  m_App.Run(1);
+
+  REQUIRE(m_InputController.MouseScrollAmount() == 3);
+  REQUIRE(mouseWheelEvent.Handled());
 }

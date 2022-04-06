@@ -2,6 +2,7 @@
 
 #include <JEngine3D/Core/Base.hpp>// for UNUSED
 #include <JEngine3D/Core/WindowController.hpp>
+#include <JEngine3D/Core/InputController.hpp>
 
 #include "TestPlatformBackend.hpp"// IWYU pragma: export
 
@@ -15,4 +16,5 @@ protected:
   JE::LoggerController m_LoggerController;
   TestPlatformBackend m_Backend;
   JE::WindowController m_WindowController;
+  JE::InputController m_InputController;
 };

@@ -44,6 +44,8 @@ public:
   virtual void PollEvents(IEventProcessor &processor) = 0;
   virtual void PushEvent(IEvent &event) = 0;
 
+  virtual auto MousePosition() -> Position2DI = 0;
+
 private:
   static IPlatformBackend *s_PlatformBackendInstance;// NOLINT
 };

@@ -27,8 +27,8 @@ static constexpr auto USAGE =
 // NOLINTNEXTLINE
 int main(int argc, const char **argv)
 {
-  auto versionString = fmt::format("{} {}", JEditor::cmake::project_name, JEditor::cmake::project_version);
-  auto args = std::vector<std::string>{ std::next(argv), std::next(argv, argc) };
-  auto options = docopt::docopt(USAGE, args, true, versionString);
+  const auto versionString = fmt::format("{} {}", JEditor::cmake::project_name, JEditor::cmake::project_version);
+  const auto args = std::vector<std::string>{ std::next(argv), std::next(argv, argc) };
+  const auto options = docopt::docopt(USAGE, args, true, versionString);
   JE::UNUSED(options);
 }

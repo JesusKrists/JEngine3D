@@ -24,7 +24,7 @@ public:
   [[nodiscard]] inline auto CreateWindow(const std::string_view &title, const JE::Size2DI &size)
     -> NativeWindowHandle override
   {
-    auto window = m_CreatedWindows.emplace_back(++m_CurrentWindowID, title, size);
+    const auto window = m_CreatedWindows.emplace_back(++m_CurrentWindowID, title, size);
     return reinterpret_cast<NativeWindowHandle>(window.ID);// NOLINT
   }
   inline void DestroyWindow(NativeWindowHandle handle) override
@@ -35,13 +35,13 @@ public:
 
   [[nodiscard]] inline auto ValidWindowHandle(NativeWindowHandle handle) -> bool override
   {
-    auto windowIt = WindowIterator(handle);
+    const auto windowIt = WindowIterator(handle);
     return windowIt != std::end(m_CreatedWindows);
   }
 
   [[nodiscard]] inline auto WindowSize(NativeWindowHandle handle) -> JE::Size2DI override
   {
-    auto windowIt = WindowIterator(handle);
+    const auto windowIt = WindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { return windowIt->Size; }
     return INVALID_WINDOW_SIZE;
   }
@@ -53,7 +53,7 @@ public:
 
   [[nodiscard]] inline auto WindowTitle(NativeWindowHandle handle) -> std::string_view override
   {
-    auto windowIt = WindowIterator(handle);
+    const auto windowIt = WindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { return windowIt->Title; }
     return INVALID_WINDOW_TITLE;
   }
@@ -74,6 +74,8 @@ public:
       it = m_EventQueue.erase(it);
     }
   }
+
+  inline auto MousePosition() -> JE::Position2DI override { return { 0, 0 }; }
 
   inline void ProcessEvent(JE::IEvent &event)
   {

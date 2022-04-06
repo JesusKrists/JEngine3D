@@ -34,11 +34,11 @@ set(ENABLE_PCH_USER_DEFAULT TRUE) # TODO(JesusKrists) - Create proper precompile
 set(ENABLE_UNITY_USER_DEFAULT TRUE
 )# TODO(JesusKrists) - ENABLE_UNITY does not work, have to set unity build manually on target
 
-# Add project_options v0.19.0
-# https://github.com/cpp-best-practices/project_options
+# Add project_options v0.20.0
+# https://github.com/aminya/project_options
+# Change the version in the following URL to update the package (watch the releases of the repository for future updates)
 include(FetchContent)
-FetchContent_Declare(_project_options
-                     URL https://github.com/cpp-best-practices/project_options/archive/refs/tags/v0.19.0.zip)
+FetchContent_Declare(_project_options URL https://github.com/aminya/project_options/archive/refs/tags/v0.20.0.zip)
 FetchContent_MakeAvailable(_project_options)
 include(${_project_options_SOURCE_DIR}/Index.cmake)
 include(${_project_options_SOURCE_DIR}/src/DynamicProjectOptions.cmake)
