@@ -13,6 +13,13 @@
                 "\"JE::IPlatformBackend Returns global mouse position\""
             ],
             "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug JEngine3D Editor",
+            "program": "${workspaceFolder}/out/build/JEngine3D_Editor/JEngine3D_Editor_Executable",
+            "cwd": "${workspaceFolder}"
         }
     ]
 }

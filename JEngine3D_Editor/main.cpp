@@ -34,8 +34,8 @@ int main(int argc, const char **argv)
   if (!args.empty()) {
     const auto options = docopt::docopt(USAGE, args, true, versionString);
     JE::UNUSED(options);
+  } else {
+    auto engine = JE::CreateApplication(versionString);
+    engine->Run();
   }
-
-  auto engine = JE::CreateApplication(versionString);
-  engine->Run();
 }
