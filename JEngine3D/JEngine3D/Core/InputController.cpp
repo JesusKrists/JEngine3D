@@ -16,8 +16,6 @@ InputController::InputController()
   ASSERT(!s_InputControllerInstance, "InputController instance already exists");
   ASSERT(IPlatformBackend::Get().Initialized(), "Backend needs to be initialized before using this class");
 
-  m_MousePosition = IPlatformBackend::Get().MousePosition();
-
   s_InputControllerInstance = this;
 }
 InputController::~InputController() { s_InputControllerInstance = nullptr; }

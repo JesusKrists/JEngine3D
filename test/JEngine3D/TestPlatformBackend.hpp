@@ -25,6 +25,7 @@ public:
     -> NativeWindowHandle override
   {
     const auto window = m_CreatedWindows.emplace_back(++m_CurrentWindowID, title, size);
+    m_WindowInFocus = &window;
     return reinterpret_cast<NativeWindowHandle>(window.ID);// NOLINT
   }
   inline void DestroyWindow(NativeWindowHandle handle) override
@@ -75,8 +76,6 @@ public:
     }
   }
 
-  inline auto MousePosition() -> JE::Position2DI override { return { 0, 0 }; }
-
   inline void ProcessEvent(JE::IEvent &event)
   {
     JE::EventDispatcher dispatcher{ event };
@@ -104,4 +103,5 @@ private:
   size_t m_CurrentWindowID = 0;
   std::vector<TestWindow> m_CreatedWindows;
   std::vector<std::reference_wrapper<JE::IEvent>> m_EventQueue;
+  const TestWindow *m_WindowInFocus = nullptr;
 };

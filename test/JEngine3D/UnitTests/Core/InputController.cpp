@@ -21,6 +21,7 @@ TEST_CASE_METHOD(InputControllerTestsFixture, "JE::InputController processes Key
   m_Backend.PollEvents(m_InputController);
 
   REQUIRE(m_InputController.KeyPressed(JE::KeyCode::Space));
+  REQUIRE(!m_InputController.KeyPressed(JE::KeyCode::F12));
   REQUIRE(keyPressEvent.Handled());
 }
 
@@ -44,6 +45,7 @@ TEST_CASE_METHOD(InputControllerTestsFixture, "JE::InputController processes Mou
   m_Backend.PollEvents(m_InputController);
 
   REQUIRE(m_InputController.MousePressed(JE::MouseButton::Middle));
+  REQUIRE(!m_InputController.MousePressed(JE::MouseButton::Left));
   REQUIRE(mousePressEvent.Handled());
 }
 
