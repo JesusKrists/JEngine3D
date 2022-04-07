@@ -11,7 +11,7 @@
 template<typename BackendImpl> class IPlatformBackendTestsFixture
 {
 public:
-  static constexpr auto TEST_WINDOW_SIZE = JE::Size2DI{ 1280, 720 };
+  static constexpr auto TEST_WINDOW_SIZE = JE::Size2DI{ 800, 600 };
   static constexpr auto TEST_WINDOW_TITLE = std::string_view{ "Test Window" };
 
   static constexpr auto NEW_WINDOW_SIZE = JE::Size2DI{ 640, 480 };
