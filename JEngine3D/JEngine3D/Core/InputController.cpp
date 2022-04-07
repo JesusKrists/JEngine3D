@@ -80,17 +80,14 @@ void InputController::OnEvent(IEvent &event)
 
 auto InputController::KeyPressed(KeyCode key) const -> bool
 {
-  auto keyIt = m_KeyMap.find(key);
-  if (keyIt != std::end(m_KeyMap)) { return keyIt->second; }
-
+  if (auto keyIt = m_KeyMap.find(key); keyIt != std::end(m_KeyMap)) { return keyIt->second; }
   return false;
 }
 
 auto InputController::MousePressed(MouseButton button) const -> bool
 {
-  auto buttonIt = m_MouseMap.find(button);
-  if (buttonIt != std::end(m_MouseMap)) { return buttonIt->second; }
 
+  if (auto buttonIt = m_MouseMap.find(button); buttonIt != std::end(m_MouseMap)) { return buttonIt->second; }
   return false;
 }
 
