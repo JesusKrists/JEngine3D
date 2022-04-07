@@ -2,16 +2,17 @@
 // You can modify the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>// for project_name, project_version
 
+#include <iterator>// for next
+#include <string>// for string, allocator
+#include <memory>// for unique_ptr
+#include <vector>
+
 #include <docopt.h>// for docopt
 #include <fmt/core.h>// for format
 
-#include <iterator>// for next
-#include <string>// for string, allocator
-
-#include <vector>
-
-
-#include <JEngine3D/Core/Base.hpp>
+#include <JEngine3D/Core/EntryPoint.hpp>
+#include <JEngine3D/Core/Application.hpp>// for Application
+#include <JEngine3D/Core/Base.hpp>// for UNUSED
 
 static constexpr auto USAGE =
   R"(JEngine3D Editor.
@@ -29,6 +30,12 @@ int main(int argc, const char **argv)
 {
   const auto versionString = fmt::format("{} {}", JEditor::cmake::project_name, JEditor::cmake::project_version);
   const auto args = std::vector<std::string>{ std::next(argv), std::next(argv, argc) };
-  const auto options = docopt::docopt(USAGE, args, true, versionString);
-  JE::UNUSED(options);
+
+  if (!args.empty()) {
+    const auto options = docopt::docopt(USAGE, args, true, versionString);
+    JE::UNUSED(options);
+  }
+
+  auto engine = JE::CreateApplication(versionString);
+  engine->Run();
 }

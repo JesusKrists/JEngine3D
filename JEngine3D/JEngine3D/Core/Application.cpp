@@ -42,6 +42,7 @@ void Application::ProcessMainLoop() { IPlatformBackend::Get().PollEvents(*this);
 
 void Application::Run(int32_t loopCount)
 {
+  ASSERT(!m_Running, "Engine already running");
   ASSERT(loopCount != 0, "Cannot run zero loops");
 
   m_Running = true;

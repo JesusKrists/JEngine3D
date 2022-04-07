@@ -48,7 +48,8 @@ auto SDLPlatformBackend::CreateWindow(const std::string_view &title, const Size2
     SDL_WINDOWPOS_CENTERED,// NOLINT(hicpp-signed-bitwise)
     size.Width,
     size.Height,
-    SDL_WINDOW_OPENGL);
+    SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |// NOLINT(hicpp-signed-bitwise)
+      SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS);
 }
 
 void SDLPlatformBackend::DestroyWindow(NativeWindowHandle handle)

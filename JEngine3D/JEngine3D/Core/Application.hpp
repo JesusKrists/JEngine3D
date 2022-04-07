@@ -28,11 +28,11 @@ public:
   [[nodiscard]] inline auto MainWindow() const -> const Window & { return m_MainWindow; }
   [[nodiscard]] inline auto Running() const -> bool { return m_Running; }
 
-
-  void ProcessMainLoop();
   void Run(int32_t loopCount = -1);
 
 private:
+  void ProcessMainLoop();
+
   Window &m_MainWindow;
   bool m_Running = false;
 
