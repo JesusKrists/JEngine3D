@@ -3,6 +3,8 @@ set(UNITTEST_SOURCES
     UnitTests/Core/Base.cpp
     UnitTests/Core/Events.cpp
     UnitTests/Core/InputController.cpp
+    UnitTests/Core/Layer.cpp
+    UnitTests/Core/LayerStack.cpp
     UnitTests/Core/LoggerController.cpp
     UnitTests/Core/MemoryController.cpp
     UnitTests/Core/Types.cpp

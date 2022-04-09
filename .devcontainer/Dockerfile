@@ -11,12 +11,7 @@ RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
     software-properties-common wget apt-utils file zip \
     openssh-client gpg-agent socat rsync \
     make ninja-build git \
-    python3 python3-pip pkg-config valgrind
-
-# Install conan
-RUN python3 -m pip install --upgrade pip setuptools && \
-    python3 -m pip install conan && \
-    conan --version
+    python3 python3-pip pkg-config valgrind unzip
 
 # Install packages required by SDL2
 RUN apt-get -y install xorg-dev libsdl2-dev
@@ -43,24 +38,18 @@ RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
 # Set gcc-${GCC_VER} as default gcc
 RUN update-alternatives --install /usr/bin/gcc gcc $(which gcc-${GCC_VER}) 100
 RUN update-alternatives --install /usr/bin/g++ g++ $(which g++-${GCC_VER}) 100
+RUN update-alternatives --install /usr/bin/cpp cpp $(which cpp-${GCC_VER}) 100
 
 ARG LLVM_VER="13"
-# Add clang-${LLVM_VER}
-ARG LLVM_URL="http://apt.llvm.org/${VARIANT}/"
-ARG LLVM_PKG="llvm-toolchain-${VARIANT}"
-
-RUN wget -O - https://apt.llvm.org/llvm-snapshot.gpg.key | apt-key add - 2>/dev/null
-RUN add-apt-repository -y "deb ${LLVM_URL} ${LLVM_PKG} main" && \
-    apt-get update -qq 
+RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s ${LLVM_VER}
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
-    clang-${LLVM_VER} lldb-${LLVM_VER} lld-${LLVM_VER} clangd-${LLVM_VER} \
-    llvm-${LLVM_VER}-dev libclang-${LLVM_VER}-dev clang-tidy-${LLVM_VER}
+    libclang-${LLVM_VER}-dev clang-tidy-${LLVM_VER} clang-format-${LLVM_VER}
 
-# Install clang-format
-RUN apt-get install -y clang-format-15
+
+RUN update-alternatives --install /usr/bin/clang-format clang-format $(which clang-format-${LLVM_VER}) 100
 # Set the default clang-tidy, so CMake can find it
-RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-tidy-${LLVM_VER}) 1
+RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-tidy-${LLVM_VER}) 100
 # Set clang-${LLVM_VER} as default clang
 RUN update-alternatives --install /usr/bin/clang clang $(which clang-${LLVM_VER}) 100
 RUN update-alternatives --install /usr/bin/clang++ clang++ $(which clang++-${LLVM_VER}) 100

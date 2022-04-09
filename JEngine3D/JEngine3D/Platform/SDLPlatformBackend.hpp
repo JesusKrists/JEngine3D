@@ -31,6 +31,9 @@ public:
 
   void PollEvents(IEventProcessor &processor) override;
   void PushEvent(IEvent &event) override;
+
+  auto CurrentTicks() -> uint64_t override;
+  auto TickFrequency() -> uint64_t override;
 };
 
 }// namespace JE

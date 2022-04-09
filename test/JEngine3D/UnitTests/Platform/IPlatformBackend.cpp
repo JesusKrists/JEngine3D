@@ -449,3 +449,11 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 
   m_Backend.DestroyWindow(handle);
 }
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend Returns current ticks (not 0) and tick frequency (not 0)",
+  "[JE::IPlatformBackend]")
+{
+  REQUIRE(m_Backend.CurrentTicks() != 0);
+  REQUIRE(m_Backend.TickFrequency() != 0);
+}

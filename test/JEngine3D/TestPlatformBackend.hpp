@@ -5,7 +5,6 @@
 
 class TestPlatformBackend final : public JE::IPlatformBackend
 {
-
 private:
   [[nodiscard]] inline auto WindowIterator(NativeWindowHandle handle) -> decltype(auto)
   {
@@ -17,6 +16,9 @@ private:
 public:
   static constexpr auto INVALID_WINDOW_SIZE = JE::Size2DI{ -1, -1 };
   static constexpr auto INVALID_WINDOW_TITLE = std::string_view{ "Invalid Window" };
+
+  static constexpr uint64_t TICK_INCREMENT = 1000000;
+  static constexpr uint64_t TICK_FREQUENCY = 1000000;
 
   [[nodiscard]] inline auto Initialize() -> bool override { return true; }
   [[nodiscard]] inline auto Initialized() -> bool override { return true; }
@@ -89,6 +91,14 @@ public:
     });
   }
 
+  inline auto CurrentTicks() -> uint64_t override
+  {
+    m_CurrentTicks += TICK_INCREMENT;
+    return m_CurrentTicks;
+  }
+
+  inline auto TickFrequency() -> uint64_t override { return TICK_FREQUENCY; }
+
 private:
   struct TestWindow
   {
@@ -104,4 +114,5 @@ private:
   std::vector<TestWindow> m_CreatedWindows;
   std::vector<std::reference_wrapper<JE::IEvent>> m_EventQueue;
   const TestWindow *m_WindowInFocus = nullptr;
+  uint64_t m_CurrentTicks = 0;
 };

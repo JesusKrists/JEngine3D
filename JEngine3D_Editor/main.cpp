@@ -2,17 +2,19 @@
 // You can modify the source template at `configured_files/config.hpp.in`.
 #include <internal_use_only/config.hpp>// for project_name, project_version
 
-#include <iterator>// for next
-#include <string>// for string, allocator
-#include <memory>// for unique_ptr
-#include <vector>
-
 #include <docopt.h>// for docopt
 #include <fmt/core.h>// for format
 
 #include <JEngine3D/Core/EntryPoint.hpp>
 #include <JEngine3D/Core/Application.hpp>// for Application
 #include <JEngine3D/Core/Base.hpp>// for UNUSED
+
+#include "TestLayer.hpp"
+
+#include <iterator>// for next
+#include <string>// for string, allocator
+#include <memory>// for unique_ptr
+#include <vector>
 
 static constexpr auto USAGE =
   R"(JEngine3D Editor.
@@ -35,7 +37,10 @@ int main(int argc, const char **argv)
     const auto options = docopt::docopt(USAGE, args, true, versionString);
     JE::UNUSED(options);
   } else {
+    JEditor::TestLayer testLayer;
+
     auto engine = JE::CreateApplication(versionString);
+    engine->PushLayer(testLayer);
     engine->Run();
   }
 }

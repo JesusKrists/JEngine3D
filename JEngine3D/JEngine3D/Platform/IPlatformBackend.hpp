@@ -44,6 +44,9 @@ public:
   virtual void PollEvents(IEventProcessor &processor) = 0;
   virtual void PushEvent(IEvent &event) = 0;
 
+  virtual auto CurrentTicks() -> uint64_t = 0;
+  virtual auto TickFrequency() -> uint64_t = 0;
+
 private:
   static IPlatformBackend *s_PlatformBackendInstance;// NOLINT
 };

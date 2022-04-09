@@ -2,11 +2,13 @@
 
 #include "TestPlatformBackendFixture.hpp"
 
+#include <JEngine3D/Core/Base.hpp>// for UNUSED
 #include <JEngine3D/Core/Types.hpp>// for operator==, char_traits
 #include <JEngine3D/Core/Events.hpp>
 #include <JEngine3D/Core/WindowController.hpp>
 #include <JEngine3D/Core/Application.hpp>
 #include <JEngine3D/Core/InputController.hpp>// for InputController
+#include <JEngine3D/Core/ILayer.hpp>// for InputController
 
 
 class ApplicationTestsFixture : public TestPlatformBackendFixture
@@ -173,4 +175,79 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
 
   REQUIRE(m_InputController.MouseScrollAmount() == 3);
   REQUIRE(mouseWheelEvent.Handled());
+}
+
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
+TEST_CASE_METHOD(ApplicationTestsFixture, "JE::Application can push and pop layers and overlays", "[JE::Application]")
+{
+  static constexpr auto LAYER_NAME = std::string_view{ "Layer Debug Name" };
+  static constexpr auto OVERLAY_NAME = std::string_view{ "Overlay Debug Name" };
+
+  class TestLayer : public JE::ILayer
+  {
+  public:
+    explicit TestLayer(const std::string_view &name) : ILayer(name) {}
+
+    void OnCreate() override { m_OnCreateCalled = true; }
+    void OnDestroy() override { m_OnDestroyCalled = true; }
+
+    void OnUpdate() override { m_OnUpdateCalled = true; }
+    void OnImGuiRender() override { m_OnImGuiRenderCalled = true; }
+
+    void OnEvent(JE::IEvent &event) override
+    {
+      JE::UNUSED(event);
+      m_OnEventCalled = true;
+    }
+
+    [[nodiscard]] inline auto OnCreateCalled() const -> bool { return m_OnCreateCalled; }
+    [[nodiscard]] inline auto OnDestroyCalled() const -> bool { return m_OnDestroyCalled; }
+
+    [[nodiscard]] inline auto OnUpdateCalled() const -> bool { return m_OnUpdateCalled; }
+    [[nodiscard]] inline auto OnImGuiRenderCalled() const -> bool { return m_OnImGuiRenderCalled; }
+
+    [[nodiscard]] inline auto OnEventCalled() const -> bool { return m_OnEventCalled; }
+
+  private:
+    bool m_OnCreateCalled = false;
+    bool m_OnDestroyCalled = false;
+    bool m_OnUpdateCalled = false;
+    bool m_OnImGuiRenderCalled = false;
+    bool m_OnEventCalled = false;
+
+  } testLayer{ LAYER_NAME }, testOverlay{ OVERLAY_NAME };
+
+  REQUIRE(testLayer.DebugName() == LAYER_NAME);
+  REQUIRE(testOverlay.DebugName() == OVERLAY_NAME);
+
+
+  auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
+  JE::MouseWheelEvent mouseWheelEvent{ window.NativeHandle(), 3 };
+  m_Backend.PushEvent(mouseWheelEvent);
+
+  m_App.PushLayer(testLayer);
+  m_App.PushOverlay(testOverlay);
+
+  m_App.Run(1);
+
+  REQUIRE(testLayer.OnCreateCalled());
+  REQUIRE(testOverlay.OnCreateCalled());
+  REQUIRE(testLayer.OnUpdateCalled());
+  REQUIRE(testOverlay.OnUpdateCalled());
+  REQUIRE(testLayer.OnImGuiRenderCalled());
+  REQUIRE(testOverlay.OnImGuiRenderCalled());
+  REQUIRE(testLayer.OnEventCalled());
+  REQUIRE(testOverlay.OnEventCalled());
+
+  m_App.PopLayer(testLayer);
+  m_App.PopOverlay(testOverlay);
+
+  REQUIRE(testLayer.OnDestroyCalled());
+  REQUIRE(testOverlay.OnDestroyCalled());
+}
+
+TEST_CASE_METHOD(ApplicationTestsFixture, "JE::Application updates delta time", "[JE::Application]")
+{
+  m_App.Run(2);
+  REQUIRE(m_App.DeltaTime() != 0);
 }

@@ -3,8 +3,10 @@ set(JEngine3D_HEADERS
     JEngine3D/Core/Assert.hpp
     JEngine3D/Core/Base.hpp
     JEngine3D/Core/Events.hpp
+    JEngine3D/Core/ILayer.hpp
     JEngine3D/Core/InputController.hpp
     JEngine3D/Core/KeyCodes.hpp
+    JEngine3D/Core/LayerStack.hpp
     JEngine3D/Core/LoggerController.hpp
     JEngine3D/Core/MemoryController.hpp
     JEngine3D/Core/MouseButtons.hpp
@@ -16,6 +18,7 @@ set(JEngine3D_HEADERS
 set(JEngine3D_SOURCES
     JEngine3D/Core/Application.cpp
     JEngine3D/Core/InputController.cpp
+    JEngine3D/Core/LayerStack.cpp
     JEngine3D/Core/LoggerController.cpp
     JEngine3D/Core/MemoryController.cpp
     JEngine3D/Core/WindowController.cpp

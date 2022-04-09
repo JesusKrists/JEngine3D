@@ -5,6 +5,7 @@
 #include "JEngine3D/Core/LoggerController.hpp"// for Logger
 
 #include <SDL_mouse.h>
+#include <SDL_timer.h>
 #include <exception>// for exception
 #include <cstring>// IWYU pragma: keep
 #include <SDL_events.h>// for SDL_PollEvent, SDL_Event, SDL_...
@@ -287,5 +288,9 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
     SDL_PushEvent(&nativeMousePressEvent);
   }
 }
+
+auto SDLPlatformBackend::CurrentTicks() -> uint64_t { return SDL_GetPerformanceCounter(); }
+
+auto SDLPlatformBackend::TickFrequency() -> uint64_t { return SDL_GetPerformanceFrequency(); }
 
 }// namespace JE
