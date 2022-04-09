@@ -69,3 +69,7 @@ FetchContent_MakeAvailable(SDL2)
 
 disable_static_analysis(SDL2main)
 disable_static_analysis(SDL2-static)
+
+############################## ImGui #############################################
+
+include(${CMAKE_SOURCE_DIR}/CMake/ImGuiTarget.cmake)

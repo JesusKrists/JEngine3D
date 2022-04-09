@@ -18,12 +18,14 @@ Application::Application(const std::string_view &title)
 {
   ASSERT(!s_ApplicationInstance, "Application instance already exists");
   s_ApplicationInstance = this;
+
+  PushOverlay(m_ImGuiLayer);
 }
 
 void Application::OnEvent(IEvent &event)
 {
 
-  for (auto &layer : m_LayerStack) { layer.get().OnEvent(event); }
+  for (const auto &layer : m_LayerStack) { layer.get().OnEvent(event); }
 
   if (event.Category() == EventCategory::Window) {
     WindowController::Get().OnEvent(event);
@@ -68,9 +70,9 @@ void Application::ProcessMainLoop()
 
   IPlatformBackend::Get().PollEvents(*this);
 
-  for (auto &layer : m_LayerStack) { layer.get().OnUpdate(); }
+  for (const auto &layer : m_LayerStack) { layer.get().OnUpdate(); }
 
-  for (auto &layer : m_LayerStack) { layer.get().OnImGuiRender(); }
+  for (const auto &layer : m_LayerStack) { layer.get().OnImGuiRender(); }
 }
 
 void Application::Run(int32_t loopCount)

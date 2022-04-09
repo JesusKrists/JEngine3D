@@ -4,6 +4,7 @@ set(JEngine3D_HEADERS
     JEngine3D/Core/Base.hpp
     JEngine3D/Core/Events.hpp
     JEngine3D/Core/ILayer.hpp
+    JEngine3D/Core/ImGuiLayer.hpp
     JEngine3D/Core/InputController.hpp
     JEngine3D/Core/KeyCodes.hpp
     JEngine3D/Core/LayerStack.hpp
@@ -17,6 +18,7 @@ set(JEngine3D_HEADERS
 
 set(JEngine3D_SOURCES
     JEngine3D/Core/Application.cpp
+    JEngine3D/Core/ImGuiLayer.cpp
     JEngine3D/Core/InputController.cpp
     JEngine3D/Core/LayerStack.cpp
     JEngine3D/Core/LoggerController.cpp

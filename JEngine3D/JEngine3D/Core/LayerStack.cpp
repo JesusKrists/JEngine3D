@@ -8,7 +8,7 @@ namespace JE {
 
 LayerStack::~LayerStack()
 {
-  for (auto &layer : m_Layers) { layer.get().OnDestroy(); }
+  for (const auto &layer : m_Layers) { layer.get().OnDestroy(); }
 }
 
 void LayerStack::PushLayer(ILayer &layer)
