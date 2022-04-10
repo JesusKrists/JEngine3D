@@ -39,3 +39,29 @@ inline auto operator<<(std::ostream &outStream, Position2DI const &value) -> std
 }
 
 }// namespace JE
+
+
+template<> struct fmt::formatter<JE::Size2DI>
+{
+  // cppcheck-suppress functionStatic
+  template<typename ParseContext> constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+  // cppcheck-suppress functionStatic
+  template<typename FormatContext> auto format(const JE::Size2DI &size, FormatContext &ctx)
+  {
+    return format_to(ctx.out(), "Size2DI{{ Width: {0}, Height: {1} }}", size.Width, size.Height);
+  }
+};
+
+
+template<> struct fmt::formatter<JE::Position2DI>
+{
+  // cppcheck-suppress functionStatic
+  template<typename ParseContext> constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+  // cppcheck-suppress functionStatic
+  template<typename FormatContext> auto format(const JE::Position2DI &position, FormatContext &ctx)
+  {
+    return format_to(ctx.out(), "Position2DI{{ X: {0}, Y: {1} }}", position.X, position.Y);
+  }
+};
