@@ -30,7 +30,9 @@ static auto s_Initialized = false;// NOLINT
 
 SDLPlatformBackend::~SDLPlatformBackend()
 {
-  if (m_ClipboardText != nullptr) { SDL_free(m_ClipboardText); }
+  if (m_ClipboardText != nullptr) {
+    SDL_free(m_ClipboardText);// NOLINT(cppcoreguidelines-no-malloc,hicpp-no-malloc,cppcoreguidelines-owning-memory)
+  }
   SDL_Quit();
 }
 
@@ -416,7 +418,9 @@ void SDLPlatformBackend::SetClipboardText(const std::string_view &text) { SDL_Se
 
 auto SDLPlatformBackend::ClipboardText() -> std::string_view
 {
-  if (m_ClipboardText != nullptr) { SDL_free(m_ClipboardText); }
+  if (m_ClipboardText != nullptr) {
+    SDL_free(m_ClipboardText);// NOLINT(cppcoreguidelines-no-malloc,hicpp-no-malloc,cppcoreguidelines-owning-memory)
+  }
   m_ClipboardText = SDL_GetClipboardText();
   return m_ClipboardText;
 }
