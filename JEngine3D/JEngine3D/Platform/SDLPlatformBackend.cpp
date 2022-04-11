@@ -4,15 +4,19 @@
 #include "JEngine3D/Core/Events.hpp"
 #include "JEngine3D/Core/LoggerController.hpp"// for Logger
 
-#include <SDL_mouse.h>
-#include <SDL_timer.h>
 #include <exception>// for exception
 #include <cstring>// IWYU pragma: keep
+
+#include <SDL_mouse.h>
+#include <SDL_stdinc.h>
+#include <SDL_timer.h>
 #include <SDL_events.h>// for SDL_PollEvent, SDL_Event, SDL_...
 #include <SDL_error.h>// for SDL_GetError
 #include <SDL_video.h>// for SDL_Window, SDL_CreateWindow, SDL_DestroyWindow
 #include <SDL_keyboard.h>// for SDL_Keysym
 #include <SDL_keycode.h>// for SDL_Keycode
+#include <SDL_clipboard.h>// for SDL_GetClipboardText
+#include <SDL_hints.h>// for SDL_SetHint, SDL_HINT...
 #include <SDL.h>
 
 namespace JE {
@@ -24,7 +28,11 @@ static constexpr auto SDLKeyCodeToJEngine3DKeyCode(SDL_Keycode keyCode) -> KeyCo
 
 static auto s_Initialized = false;// NOLINT
 
-SDLPlatformBackend::~SDLPlatformBackend() { SDL_Quit(); }
+SDLPlatformBackend::~SDLPlatformBackend()
+{
+  if (m_ClipboardText != nullptr) { SDL_free(m_ClipboardText); }
+  SDL_Quit();
+}
 
 auto SDLPlatformBackend::Initialize() -> bool
 {
@@ -35,22 +43,35 @@ auto SDLPlatformBackend::Initialize() -> bool
     return false;
   }
 
+  // ImGui - Required
+  // Set SDL hint to receive mouse click events on window focus, otherwise SDL doesn't emit the event.
+  // Without this, when clicking to gain focus, our widgets wouldn't activate even though they showed as hovered.
+  // (This is unfortunately a global SDL setting, so enabling it might have a side-effect on your application.
+  // It is unlikely to make a difference, but if your app absolutely needs to ignore the initial on-focus click:
+  // you can ignore SDL_MOUSEBUTTONDOWN events coming right after a SDL_WINDOWEVENT_FOCUS_GAINED)
+  SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
+
   s_Initialized = true;
   return true;
 }
 
 auto SDLPlatformBackend::Initialized() -> bool { return s_Initialized; }
 
-auto SDLPlatformBackend::CreateWindow(const std::string_view &title, const Size2DI &size) -> NativeWindowHandle
+auto SDLPlatformBackend::CreateWindow(const std::string_view &title,
+  const Size2DI &size,
+  const Position2DI &position,
+  const WindowConfiguration &config) -> NativeWindowHandle
 {
   ASSERT(size.Width > 0 && size.Height > 0, "Window size cannot be zero or negative");
   return SDL_CreateWindow(title.data(),
-    SDL_WINDOWPOS_CENTERED,// NOLINT(hicpp-signed-bitwise)
-    SDL_WINDOWPOS_CENTERED,// NOLINT(hicpp-signed-bitwise)
+    position != WINDOW_CENTER_POSITION ? position.X
+                                       : static_cast<int32_t>(SDL_WINDOWPOS_CENTERED),// NOLINT(hicpp-signed-bitwise)
+    position != WINDOW_CENTER_POSITION ? position.Y
+                                       : static_cast<int32_t>(SDL_WINDOWPOS_CENTERED),// NOLINT(hicpp-signed-bitwise)
     size.Width,
     size.Height,
     SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |// NOLINT(hicpp-signed-bitwise)
-      SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS);
+      SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | (config.Hidden ? SDL_WINDOW_HIDDEN : 0));
 }
 
 void SDLPlatformBackend::DestroyWindow(NativeWindowHandle handle)
@@ -92,24 +113,72 @@ void SDLPlatformBackend::SetWindowTitle(NativeWindowHandle handle, const std::st
   SDL_SetWindowTitle(static_cast<SDL_Window *>(handle), title.data());
 }
 
-void SDLPlatformBackend::PollEvents(IEventProcessor &processor)
+auto SDLPlatformBackend::WindowPosition(NativeWindowHandle handle) -> Position2DI
+{
+  ASSERT(handle, "Window handle is null");
+  Position2DI position{};
+  SDL_GetWindowPosition(static_cast<SDL_Window *>(handle), &position.X, &position.Y);
+  return position;
+}
+
+void SDLPlatformBackend::SetWindowPosition(NativeWindowHandle handle, const Position2DI &position)
+{
+  ASSERT(handle, "Window handle is null");
+  SDL_SetWindowPosition(static_cast<SDL_Window *>(handle), position.X, position.Y);
+}
+
+auto SDLPlatformBackend::WindowHidden(NativeWindowHandle handle) -> bool
+{
+  ASSERT(handle, "Window handle is null");
+  return (SDL_GetWindowFlags(static_cast<SDL_Window *>(handle)) & SDL_WINDOW_HIDDEN) == SDL_WINDOW_HIDDEN;
+}
+
+void SDLPlatformBackend::ShowWindow(NativeWindowHandle handle)
+{
+  ASSERT(handle, "Window handle is null");
+  SDL_ShowWindow(static_cast<SDL_Window *>(handle));
+}
+
+void SDLPlatformBackend::HideWindow(NativeWindowHandle handle)
+{
+  ASSERT(handle, "Window handle is null");
+  SDL_HideWindow(static_cast<SDL_Window *>(handle));
+}
+
+void SDLPlatformBackend::PollEvents()
 {
   auto ProcessWindowResizeEvent = [&](const SDL_Event &nativeEvent) {
     WindowResizeEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID),
       { nativeEvent.window.data1, nativeEvent.window.data2 } };
-    processor.OnEvent(event);
+    EventProcessor().OnEvent(event);
   };
 
   auto ProcessWindowCloseEvent = [&](const SDL_Event &nativeEvent) {
     WindowCloseEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID) };
-    processor.OnEvent(event);
+    EventProcessor().OnEvent(event);
+  };
+
+  auto ProcessWindowMoveEvent = [&](const SDL_Event &nativeEvent) {
+    WindowMoveEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID),
+      { nativeEvent.window.data1, nativeEvent.window.data2 } };
+    EventProcessor().OnEvent(event);
+  };
+
+  auto ProcessWindowHideEvent = [&](const SDL_Event &nativeEvent) {
+    WindowHideEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID) };
+    EventProcessor().OnEvent(event);
+  };
+
+  auto ProcessWindowShowEvent = [&](const SDL_Event &nativeEvent) {
+    WindowShowEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID) };
+    EventProcessor().OnEvent(event);
   };
 
   SDL_Event nativeEvent;
   while (SDL_PollEvent(&nativeEvent) != 0) {
     if (nativeEvent.type == SDL_EventType::SDL_QUIT) {
       QuitEvent event;
-      processor.OnEvent(event);
+      EventProcessor().OnEvent(event);
     }
 
     if (nativeEvent.type == SDL_EventType::SDL_WINDOWEVENT) {
@@ -122,6 +191,18 @@ void SDLPlatformBackend::PollEvents(IEventProcessor &processor)
         ProcessWindowCloseEvent(nativeEvent);
         break;
 
+      case SDL_WindowEventID::SDL_WINDOWEVENT_MOVED:
+        ProcessWindowMoveEvent(nativeEvent);
+        break;
+
+      case SDL_WindowEventID::SDL_WINDOWEVENT_HIDDEN:
+        ProcessWindowHideEvent(nativeEvent);
+        break;
+
+      case SDL_WindowEventID::SDL_WINDOWEVENT_SHOWN:
+        ProcessWindowShowEvent(nativeEvent);
+        break;
+
       default:
         // Nothing to do for default case
         break;
@@ -132,14 +213,14 @@ void SDLPlatformBackend::PollEvents(IEventProcessor &processor)
       KeyPressEvent event{ SDL_GetWindowFromID(nativeEvent.key.windowID),
         SDLKeyCodeToJEngine3DKeyCode(nativeEvent.key.keysym.sym),
         nativeEvent.key.repeat };
-      processor.OnEvent(event);
+      EventProcessor().OnEvent(event);
     }
 
     if (nativeEvent.type == SDL_EventType::SDL_KEYUP) {
       KeyReleaseEvent event{ SDL_GetWindowFromID(nativeEvent.key.windowID),
         SDLKeyCodeToJEngine3DKeyCode(nativeEvent.key.keysym.sym),
         nativeEvent.key.repeat };
-      processor.OnEvent(event);
+      EventProcessor().OnEvent(event);
     }
 
     if (nativeEvent.type == SDL_EventType::SDL_MOUSEBUTTONDOWN) {
@@ -147,7 +228,7 @@ void SDLPlatformBackend::PollEvents(IEventProcessor &processor)
         { nativeEvent.button.x, nativeEvent.button.y },
         static_cast<MouseButton>(nativeEvent.button.button),
         nativeEvent.button.clicks };
-      processor.OnEvent(event);
+      EventProcessor().OnEvent(event);
     }
 
     if (nativeEvent.type == SDL_EventType::SDL_MOUSEBUTTONUP) {
@@ -155,18 +236,18 @@ void SDLPlatformBackend::PollEvents(IEventProcessor &processor)
         { nativeEvent.button.x, nativeEvent.button.y },
         static_cast<MouseButton>(nativeEvent.button.button),
         nativeEvent.button.clicks };
-      processor.OnEvent(event);
+      EventProcessor().OnEvent(event);
     }
     if (nativeEvent.type == SDL_EventType::SDL_MOUSEMOTION) {
       MouseMoveEvent event{ SDL_GetWindowFromID(nativeEvent.motion.windowID),
         { nativeEvent.motion.x, nativeEvent.motion.y },
         { nativeEvent.motion.xrel, nativeEvent.motion.yrel } };
-      processor.OnEvent(event);
+      EventProcessor().OnEvent(event);
     }
     if (nativeEvent.type == SDL_EventType::SDL_MOUSEWHEEL) {
       MouseWheelEvent event{ SDL_GetWindowFromID(nativeEvent.wheel.windowID),
         nativeEvent.wheel.direction == SDL_MOUSEWHEEL_NORMAL ? nativeEvent.wheel.y : nativeEvent.wheel.y * -1 };
-      processor.OnEvent(event);
+      EventProcessor().OnEvent(event);
     }
   }
 }
@@ -202,6 +283,44 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
     nativeCloseEvent.type = SDL_EventType::SDL_WINDOWEVENT;
     nativeCloseEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_CLOSE;
     nativeCloseEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(closeEvent.WindowHandle()));
+    ASSERT(nativeCloseEvent.window.windowID != 0, "Invalid native window handle passed");
+    SDL_PushEvent(&nativeCloseEvent);
+  }
+
+  if (event.Type() == EventType::WindowMove) {
+    const auto &moveEvent =
+      static_cast<const WindowMoveEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    SDL_Event nativeCloseEvent;
+    nativeCloseEvent.type = SDL_EventType::SDL_WINDOWEVENT;
+    nativeCloseEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_MOVED;
+    nativeCloseEvent.window.data1 = moveEvent.Position().X;
+    nativeCloseEvent.window.data2 = moveEvent.Position().Y;
+    nativeCloseEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(moveEvent.WindowHandle()));
+    ASSERT(nativeCloseEvent.window.windowID != 0, "Invalid native window handle passed");
+    SDL_PushEvent(&nativeCloseEvent);
+  }
+
+  if (event.Type() == EventType::WindowHide) {
+    const auto &hideEvent =
+      static_cast<const WindowHideEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    SDL_Event nativeCloseEvent;
+    nativeCloseEvent.type = SDL_EventType::SDL_WINDOWEVENT;
+    nativeCloseEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_HIDDEN;
+    nativeCloseEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(hideEvent.WindowHandle()));
+    ASSERT(nativeCloseEvent.window.windowID != 0, "Invalid native window handle passed");
+    SDL_PushEvent(&nativeCloseEvent);
+  }
+
+  if (event.Type() == EventType::WindowShow) {
+    const auto &showEvent =
+      static_cast<const WindowShowEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    SDL_Event nativeCloseEvent;
+    nativeCloseEvent.type = SDL_EventType::SDL_WINDOWEVENT;
+    nativeCloseEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_SHOWN;
+    nativeCloseEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(showEvent.WindowHandle()));
     ASSERT(nativeCloseEvent.window.windowID != 0, "Invalid native window handle passed");
     SDL_PushEvent(&nativeCloseEvent);
   }
@@ -292,5 +411,16 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
 auto SDLPlatformBackend::CurrentTicks() -> uint64_t { return SDL_GetPerformanceCounter(); }
 
 auto SDLPlatformBackend::TickFrequency() -> uint64_t { return SDL_GetPerformanceFrequency(); }
+
+void SDLPlatformBackend::SetClipboardText(const std::string_view &text) { SDL_SetClipboardText(text.data()); }
+
+auto SDLPlatformBackend::ClipboardText() -> std::string_view
+{
+  if (m_ClipboardText != nullptr) { SDL_free(m_ClipboardText); }
+  m_ClipboardText = SDL_GetClipboardText();
+  return m_ClipboardText;
+}
+
+void SDLPlatformBackend::Delay(uint32_t milliseconds) { SDL_Delay(milliseconds); }
 
 }// namespace JE

@@ -10,7 +10,7 @@
             "name": "Debug JEngine3D Platform UnitTests",
             "program": "${workspaceFolder}/out/build/test/JEngine3D/JEngine3D_Platform_tests",
             "args": [
-                "\"JE::IPlatformBackend Returns global mouse position\""
+                "\"JE::IPlatformBackend Polls events to EventProcessor (Fake Window Move)\""
             ],
             "cwd": "${workspaceFolder}"
         },

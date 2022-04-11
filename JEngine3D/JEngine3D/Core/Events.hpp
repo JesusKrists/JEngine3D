@@ -14,6 +14,9 @@ enum class EventType {
 
   WindowResize,
   WindowClose,
+  WindowMove,
+  WindowHide,
+  WindowShow,
 
   KeyPress,
   KeyRelease,
@@ -115,6 +118,36 @@ class WindowCloseEvent final : public IWindowEvent
 
 public:
   [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowClose; }
+};
+
+class WindowMoveEvent final : public IWindowEvent
+{
+public:
+  WindowMoveEvent(IPlatformBackend::NativeWindowHandle handle, const Position2DI &position)
+    : IWindowEvent(handle), m_Position(position)
+  {}
+
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowMove; }
+  [[nodiscard]] inline auto Position() const -> const Position2DI & { return m_Position; }
+
+private:
+  Position2DI m_Position;
+};
+
+class WindowHideEvent final : public IWindowEvent
+{
+public:
+  explicit WindowHideEvent(IPlatformBackend::NativeWindowHandle handle) : IWindowEvent(handle) {}
+
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowHide; }
+};
+
+class WindowShowEvent final : public IWindowEvent
+{
+public:
+  explicit WindowShowEvent(IPlatformBackend::NativeWindowHandle handle) : IWindowEvent(handle) {}
+
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowShow; }
 };
 
 class IKeyboardEvent : public IEvent

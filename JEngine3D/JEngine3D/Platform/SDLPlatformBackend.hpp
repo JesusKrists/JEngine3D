@@ -6,7 +6,6 @@
 
 namespace JE {
 
-class IEventProcessor;
 class IEvent;
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
@@ -18,7 +17,10 @@ public:
   [[nodiscard]] auto Initialize() -> bool override;
   [[nodiscard]] auto Initialized() -> bool override;
 
-  [[nodiscard]] auto CreateWindow(const std::string_view &title, const Size2DI &size) -> NativeWindowHandle override;
+  [[nodiscard]] auto CreateWindow(const std::string_view &title,
+    const Size2DI &size,
+    const Position2DI &position = WINDOW_CENTER_POSITION,
+    const WindowConfiguration &config = WindowConfiguration{}) -> NativeWindowHandle override;
   void DestroyWindow(NativeWindowHandle handle) override;
   [[nodiscard]] auto ValidWindowHandle(NativeWindowHandle handle) -> bool override;
 
@@ -29,11 +31,26 @@ public:
   [[nodiscard]] auto WindowTitle(NativeWindowHandle handle) -> std::string_view override;
   void SetWindowTitle(NativeWindowHandle handle, const std::string_view &title) override;
 
-  void PollEvents(IEventProcessor &processor) override;
+  [[nodiscard]] auto WindowPosition(NativeWindowHandle handle) -> Position2DI override;
+  void SetWindowPosition(NativeWindowHandle handle, const Position2DI &position) override;
+
+  [[nodiscard]] auto WindowHidden(NativeWindowHandle handle) -> bool override;
+  void ShowWindow(NativeWindowHandle handle) override;
+  void HideWindow(NativeWindowHandle handle) override;
+
+  void PollEvents() override;
   void PushEvent(IEvent &event) override;
 
-  auto CurrentTicks() -> uint64_t override;
-  auto TickFrequency() -> uint64_t override;
+  [[nodiscard]] auto CurrentTicks() -> uint64_t override;
+  [[nodiscard]] auto TickFrequency() -> uint64_t override;
+
+  void SetClipboardText(const std::string_view &text) override;
+  [[nodiscard]] auto ClipboardText() -> std::string_view override;
+
+  void Delay(uint32_t milliseconds) override;
+
+private:
+  char *m_ClipboardText = nullptr;
 };
 
 }// namespace JE

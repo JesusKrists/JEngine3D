@@ -19,7 +19,11 @@ public:
   Window(Window &&other) = delete;
   auto operator=(Window &&other) -> Window & = delete;
 
-  Window(const std::string_view &title, const Size2DI &size, IPlatformBackend::NativeWindowHandle nativeHandle);
+  Window(const std::string_view &title,
+    const Size2DI &size,
+    const Position2DI &position,
+    const WindowConfiguration &config,
+    IPlatformBackend::NativeWindowHandle nativeHandle);
   ~Window();
 
   // cppcheck-suppress functionConst
@@ -31,10 +35,19 @@ public:
   [[nodiscard]] inline auto Size() const -> const Size2DI & { return m_Size; }
   void SetSize(const Size2DI &size);
 
+  [[nodiscard]] inline auto Position() const -> const Position2DI & { return m_Position; }
+  void SetPosition(const Position2DI &position);
+
+  [[nodiscard]] inline auto Shown() const -> bool { return m_Shown; }
+  void Show();
+  void Hide();
+
 private:
   IPlatformBackend::NativeWindowHandle m_NativeHandle;
   std::string m_Title;
   Size2DI m_Size;
+  Position2DI m_Position;
+  bool m_Shown;
 };
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
@@ -54,7 +67,11 @@ public:
 
   void OnEvent(IEvent &event) override;
 
-  auto CreateWindow(const std::string_view &title, const Size2DI &size) -> Window &;
+  auto CreateWindow(const std::string_view &title,
+    const Size2DI &size,
+    const Position2DI &position = JE::IPlatformBackend::WINDOW_CENTER_POSITION,
+    const WindowConfiguration &config = WindowConfiguration{}) -> Window &;
+  void DestroyWindow(Window &window);
   [[nodiscard]] inline auto Windows() const -> const WindowContainer & { return m_Windows; }
 
   inline void DestroyAllWindows() { m_Windows.clear(); }

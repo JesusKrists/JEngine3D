@@ -13,9 +13,15 @@ template<typename BackendImpl> class IPlatformBackendTestsFixture
 public:
   static constexpr auto TEST_WINDOW_SIZE = JE::Size2DI{ 800, 600 };
   static constexpr auto TEST_WINDOW_TITLE = std::string_view{ "Test Window" };
+  static constexpr auto TEST_WINDOW_POSITION = JE::Position2DI{ 100, 100 };
 
   static constexpr auto NEW_WINDOW_SIZE = JE::Size2DI{ 640, 480 };
   static constexpr auto NEW_WINDOW_TITLE = std::string_view{ "Test Window - New" };
+  static constexpr auto NEW_WINDOW_POSITION = JE::Position2DI{ 150, 150 };
+
+  static constexpr auto CLIPBOARD_TEXT = std::string_view{ "Clipboard TEXT test!" };
+
+  static constexpr auto DELAY_COUNT_MS = 1000;
 
   IPlatformBackendTestsFixture() { JE::UNUSED(m_Backend.Initialize()); }
 
@@ -35,18 +41,19 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates an SDLWindow and returns a valid WindowHandle",
+  "JE::IPlatformBackend creates an Window and returns a valid WindowHandle",
   "[JE::IPlatformBackend]")
 {
   auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
   REQUIRE(m_Backend.ValidWindowHandle(windowHandle));
+  REQUIRE(m_Backend.WindowPosition(windowHandle) != JE::IPlatformBackend::WINDOW_CENTER_POSITION);
 
   m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates an SDLWindow and can query the size",
+  "JE::IPlatformBackend creates an Window and can query the size",
   "[JE::IPlatformBackend]")
 {
   auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
@@ -57,7 +64,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates an SDLWindow and can set window size",
+  "JE::IPlatformBackend creates an Window and can set window size",
   "[JE::IPlatformBackend]")
 {
   auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
@@ -69,7 +76,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates an SDLWindow and can query window title",
+  "JE::IPlatformBackend creates an Window and can query window title",
   "[JE::IPlatformBackend]")
 {
   auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
@@ -80,7 +87,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates an SDLWindow and can set window title",
+  "JE::IPlatformBackend creates an Window and can set window title",
   "[JE::IPlatformBackend]")
 {
   auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
@@ -91,6 +98,59 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
   m_Backend.DestroyWindow(windowHandle);
 }
 
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend creates an Window and query window position",
+  "[JE::IPlatformBackend]")
+{
+  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+
+  REQUIRE(m_Backend.WindowPosition(windowHandle) == TEST_WINDOW_POSITION);
+
+  m_Backend.DestroyWindow(windowHandle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend creates an Window and can set window position",
+  "[JE::IPlatformBackend]")
+{
+  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+
+  m_Backend.SetWindowPosition(windowHandle, NEW_WINDOW_POSITION);
+
+  CHECK_NOFAIL(m_Backend.WindowPosition(windowHandle) == NEW_WINDOW_POSITION);
+
+  m_Backend.DestroyWindow(windowHandle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend creates an Window and can show window",
+  "[JE::IPlatformBackend]")
+{
+  JE::WindowConfiguration config{};
+  config.Hidden = true;
+  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION, config);
+  REQUIRE(m_Backend.WindowHidden(windowHandle));
+
+  m_Backend.ShowWindow(windowHandle);
+
+  REQUIRE(!m_Backend.WindowHidden(windowHandle));
+
+  m_Backend.DestroyWindow(windowHandle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend creates an Window and can hide window",
+  "[JE::IPlatformBackend]")
+{
+  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+  REQUIRE(!m_Backend.WindowHidden(windowHandle));
+
+  m_Backend.HideWindow(windowHandle);
+
+  REQUIRE(m_Backend.WindowHidden(windowHandle));
+
+  m_Backend.DestroyWindow(windowHandle);
+}
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
   "JE::IPlatformBackend Polls events to EventProcessor (Fake Quit)",
@@ -106,11 +166,12 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
   private:
     bool m_QuitEventReceived = false;
   } checker;
+  m_Backend.SetEventProcessor(&checker);
 
   JE::QuitEvent event;
   m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents(checker);
+  m_Backend.PollEvents();
 
   REQUIRE(checker.QuitEventReceived());
 }
@@ -144,12 +205,13 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
     JE::IPlatformBackend::NativeWindowHandle m_Handle;
     bool m_WindowResizeEventReceived = false;
   } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
 
 
   JE::WindowResizeEvent event{ handle, NEW_WINDOW_SIZE };
   m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents(checker);
+  m_Backend.PollEvents();
 
   REQUIRE(checker.WindowResizeEventReceived());
 
@@ -183,14 +245,138 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
     JE::IPlatformBackend::NativeWindowHandle m_Handle;
     bool m_WindowCloseEventReceived = false;
   } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
 
 
   JE::WindowCloseEvent event{ handle };
   m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents(checker);
+  m_Backend.PollEvents();
 
   REQUIRE(checker.WindowCloseEventReceived());
+
+  m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Move)",
+  "[JE::IPlatformBackend]")
+{
+
+  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+  class WindowMoveChecker final : public JE::IEventProcessor
+  {
+  public:
+    explicit WindowMoveChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
+
+    inline void OnEvent(JE::IEvent &event) override
+    {
+      if (event.Type() == JE::EventType::WindowMove) {
+        const auto &moveEvent =
+          static_cast<const JE::WindowMoveEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+        if (moveEvent.WindowHandle() == m_Handle && moveEvent.Position() == NEW_WINDOW_POSITION) {
+          m_WindowMoveEventReceived = true;
+        }
+      }
+    }
+
+    [[nodiscard]] inline auto WindowMoveEventReceived() const -> bool { return m_WindowMoveEventReceived; }
+
+  private:
+    JE::IPlatformBackend::NativeWindowHandle m_Handle;
+    bool m_WindowMoveEventReceived = false;
+  } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
+
+  m_Backend.PollEvents();
+
+  JE::WindowMoveEvent event{ handle, NEW_WINDOW_POSITION };
+  m_Backend.PushEvent(event);
+
+  m_Backend.PollEvents();
+
+  REQUIRE(checker.WindowMoveEventReceived());
+
+  m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Hide)",
+  "[JE::IPlatformBackend]")
+{
+
+  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+  class WindowHideChecker final : public JE::IEventProcessor
+  {
+  public:
+    explicit WindowHideChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
+
+    inline void OnEvent(JE::IEvent &event) override
+    {
+      if (event.Type() == JE::EventType::WindowHide) {
+        const auto &hideEvent =
+          static_cast<const JE::WindowHideEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+        if (hideEvent.WindowHandle() == m_Handle) { m_WindowHideEventReceived = true; }
+      }
+    }
+
+    [[nodiscard]] inline auto WindowHideEventReceived() const -> bool { return m_WindowHideEventReceived; }
+
+  private:
+    JE::IPlatformBackend::NativeWindowHandle m_Handle;
+    bool m_WindowHideEventReceived = false;
+  } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
+
+
+  JE::WindowHideEvent event{ handle };
+  m_Backend.PushEvent(event);
+
+  m_Backend.PollEvents();
+
+  REQUIRE(checker.WindowHideEventReceived());
+
+  m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Show)",
+  "[JE::IPlatformBackend]")
+{
+
+  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+  class WindowShowChecker final : public JE::IEventProcessor
+  {
+  public:
+    explicit WindowShowChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
+
+    inline void OnEvent(JE::IEvent &event) override
+    {
+      if (event.Type() == JE::EventType::WindowShow) {
+        const auto &showEvent =
+          static_cast<const JE::WindowShowEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+        if (showEvent.WindowHandle() == m_Handle) { m_WindowShowEventReceived = true; }
+      }
+    }
+
+    [[nodiscard]] inline auto WindowShowEventReceived() const -> bool { return m_WindowShowEventReceived; }
+
+  private:
+    JE::IPlatformBackend::NativeWindowHandle m_Handle;
+    bool m_WindowShowEventReceived = false;
+  } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
+
+
+  JE::WindowShowEvent event{ handle };
+  m_Backend.PushEvent(event);
+
+  m_Backend.PollEvents();
+
+  REQUIRE(checker.WindowShowEventReceived());
 
   m_Backend.DestroyWindow(handle);
 }
@@ -225,11 +411,12 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
     JE::IPlatformBackend::NativeWindowHandle m_Handle;
     bool m_KeyPressEventReceived = false;
   } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
 
   JE::KeyPressEvent event{ handle, JE::KeyCode::Mode, 1 };
   m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents(checker);
+  m_Backend.PollEvents();
 
   REQUIRE(checker.KeyPressEventReceived());
 
@@ -266,11 +453,12 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
     JE::IPlatformBackend::NativeWindowHandle m_Handle;
     bool m_KeyReleaseEventReceived = false;
   } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
 
   JE::KeyReleaseEvent event{ handle, JE::KeyCode::KeyPadXOR, 0 };
   m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents(checker);
+  m_Backend.PollEvents();
 
   REQUIRE(checker.KeyReleaseEventReceived());
 
@@ -309,11 +497,12 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
     JE::IPlatformBackend::NativeWindowHandle m_Handle;
     bool m_MousePressEventReceived = false;
   } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
 
   JE::MousePressEvent event{ handle, CLICK_POSITION, JE::MouseButton::Middle, 1 };
   m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents(checker);
+  m_Backend.PollEvents();
 
   REQUIRE(checker.MousePressEventReceived());
 
@@ -352,11 +541,12 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
     JE::IPlatformBackend::NativeWindowHandle m_Handle;
     bool m_MouseReleaseEventReceived = false;
   } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
 
   JE::MouseReleaseEvent event{ handle, CLICK_POSITION, JE::MouseButton::Left, 1 };
   m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents(checker);
+  m_Backend.PollEvents();
 
   REQUIRE(checker.MouseReleaseEventReceived());
 
@@ -397,13 +587,14 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
     JE::IPlatformBackend::NativeWindowHandle m_Handle;
     bool m_MouseMoveEventReceived = false;
   } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
 
   JE::MouseMoveEvent event{
     handle, MOVE_POSITION, JE::Position2DI{ MOVE_POSITION.X - INITIAL_POSITION.X, MOVE_POSITION.Y - INITIAL_POSITION.Y }
   };
   m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents(checker);
+  m_Backend.PollEvents();
 
   REQUIRE(checker.MouseMoveEventReceived());
 
@@ -439,11 +630,12 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
     JE::IPlatformBackend::NativeWindowHandle m_Handle;
     bool m_MouseWheelEventReceived = false;
   } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
 
   JE::MouseWheelEvent event{ handle, 1 };
   m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents(checker);
+  m_Backend.PollEvents();
 
   REQUIRE(checker.MouseWheelEventReceived());
 
@@ -456,4 +648,24 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 {
   REQUIRE(m_Backend.CurrentTicks() != 0);
   REQUIRE(m_Backend.TickFrequency() != 0);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend return clipboard text",
+  "[JE::IPlatformBackend]")
+{
+  m_Backend.SetClipboardText(CLIPBOARD_TEXT);
+  REQUIRE(m_Backend.ClipboardText() == CLIPBOARD_TEXT);
+}
+
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend blocks execution by calling delay",
+  "[JE::IPlatformBackend]")
+{
+  auto startTicks = m_Backend.CurrentTicks();
+  m_Backend.Delay(DELAY_COUNT_MS);
+  auto endTicks = m_Backend.CurrentTicks();
+
+  REQUIRE((endTicks - startTicks) >= m_Backend.TickFrequency());
 }

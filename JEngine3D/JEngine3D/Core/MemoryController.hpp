@@ -12,8 +12,6 @@ namespace JE {
 
 enum class MemoryTag {
   Unknown,
-  Logger,
-  Graphics,
   App,
   Test,
 

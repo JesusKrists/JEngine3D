@@ -20,6 +20,8 @@ Application::Application(const std::string_view &title)
   s_ApplicationInstance = this;
 
   PushOverlay(m_ImGuiLayer);
+
+  IPlatformBackend::Get().SetEventProcessor(this);
 }
 
 void Application::OnEvent(IEvent &event)
@@ -68,7 +70,7 @@ void Application::ProcessMainLoop()
 {
   UpdateDeltaTime();
 
-  IPlatformBackend::Get().PollEvents(*this);
+  IPlatformBackend::Get().PollEvents();
 
   for (const auto &layer : m_LayerStack) { layer.get().OnUpdate(); }
 
