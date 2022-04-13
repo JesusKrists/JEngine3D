@@ -42,6 +42,9 @@ public:
   void Show();
   void Hide();
 
+  [[nodiscard]] auto Focused() const -> bool;
+  void Focus();
+
 private:
   IPlatformBackend::NativeWindowHandle m_NativeHandle;
   std::string m_Title;

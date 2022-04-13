@@ -18,26 +18,23 @@ public:
 
 TEST_CASE_METHOD(InputControllerTestsFixture, "JE::InputController processes KeyPress Event", "[JE::InputController]")
 {
-  JE::KeyPressEvent keyPressEvent{ nullptr, JE::KeyCode::Space, 1 };
+  JE::KeyPressEvent keyPressEvent{ nullptr, JE::KeyCode::Space };
   m_Backend.PushEvent(keyPressEvent);
   m_Backend.PollEvents();
 
   REQUIRE(m_InputController.KeyPressed(JE::KeyCode::Space));
   REQUIRE(!m_InputController.KeyPressed(JE::KeyCode::F12));
-  REQUIRE(keyPressEvent.Handled());
 }
 
 TEST_CASE_METHOD(InputControllerTestsFixture, "JE::InputController processes KeyRelease Event", "[JE::InputController]")
 {
-  JE::KeyPressEvent keyPressEvent{ nullptr, JE::KeyCode::Space, 1 };
-  JE::KeyReleaseEvent keyReleaseEvent{ nullptr, JE::KeyCode::Space, 1 };
+  JE::KeyPressEvent keyPressEvent{ nullptr, JE::KeyCode::Space };
+  JE::KeyReleaseEvent keyReleaseEvent{ nullptr, JE::KeyCode::Space };
   m_Backend.PushEvent(keyPressEvent);
   m_Backend.PushEvent(keyReleaseEvent);
   m_Backend.PollEvents();
 
   REQUIRE(!m_InputController.KeyPressed(JE::KeyCode::Space));
-  REQUIRE(keyPressEvent.Handled());
-  REQUIRE(keyReleaseEvent.Handled());
 }
 
 TEST_CASE_METHOD(InputControllerTestsFixture, "JE::InputController processes MousePress Event", "[JE::InputController]")
@@ -48,7 +45,6 @@ TEST_CASE_METHOD(InputControllerTestsFixture, "JE::InputController processes Mou
 
   REQUIRE(m_InputController.MousePressed(JE::MouseButton::Middle));
   REQUIRE(!m_InputController.MousePressed(JE::MouseButton::Left));
-  REQUIRE(mousePressEvent.Handled());
 }
 
 TEST_CASE_METHOD(InputControllerTestsFixture,
@@ -62,8 +58,6 @@ TEST_CASE_METHOD(InputControllerTestsFixture,
   m_Backend.PollEvents();
 
   REQUIRE(!m_InputController.MousePressed(JE::MouseButton::Middle));
-  REQUIRE(mousePressEvent.Handled());
-  REQUIRE(mouseReleaseEvent.Handled());
 }
 
 TEST_CASE_METHOD(InputControllerTestsFixture, "JE::InputController processes MouseMove Event", "[JE::InputController]")
@@ -74,7 +68,6 @@ TEST_CASE_METHOD(InputControllerTestsFixture, "JE::InputController processes Mou
 
   REQUIRE(m_InputController.MousePosition() == MOUSE_POSITION);
   REQUIRE(m_InputController.RelativeMousePosition() == RELATIVE_MOUSE_POSITION);
-  REQUIRE(mouseMoveEvent.Handled());
 }
 
 TEST_CASE_METHOD(InputControllerTestsFixture, "JE::InputController processes MouseWheel Event", "[JE::InputController]")
@@ -84,5 +77,4 @@ TEST_CASE_METHOD(InputControllerTestsFixture, "JE::InputController processes Mou
   m_Backend.PollEvents();
 
   REQUIRE(m_InputController.MouseScrollAmount() == 2);
-  REQUIRE(mouseWheelEvent.Handled());
 }

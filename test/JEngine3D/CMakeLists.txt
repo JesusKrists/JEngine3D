@@ -21,6 +21,7 @@ include(UnitTest_Sources.cmake)
 
 add_executable(JEngine3D_tests ${UNITTEST_SOURCES})
 target_link_libraries(JEngine3D_tests PRIVATE project_warnings project_options JEngine3D_catch_base)
+target_compile_definitions(JEngine3D_tests PRIVATE UNITTEST_BUILD)
 
 # automatically discover tests that are defined in catch based test files you can modify the unittests. Set TEST_PREFIX
 # to whatever you want, or use different for different binaries
@@ -65,5 +66,20 @@ catch_discover_tests(
   JEngine3D_relaxed_constexpr_tests
   TEST_PREFIX
   "relaxed_constexpr."
+  REPORTER
+  console)
+
+include(IntegrationTest_Sources.cmake)
+
+add_executable(JEngine3D_Integration_tests ${INTEGRATIONTEST_SOURCES})
+target_link_libraries(JEngine3D_Integration_tests PRIVATE project_warnings project_options JEngine3D_catch_base)
+target_compile_definitions(JEngine3D_Integration_tests PRIVATE INTEGRATIONTEST_BUILD)
+
+# automatically discover tests that are defined in catch based test files you can modify the unittests. Set TEST_PREFIX
+# to whatever you want, or use different for different binaries
+catch_discover_tests(
+  JEngine3D_Integration_tests
+  TEST_PREFIX
+  "integrationtests."
   REPORTER
   console)

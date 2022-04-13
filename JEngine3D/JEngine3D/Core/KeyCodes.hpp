@@ -4,6 +4,14 @@
 
 namespace JE {
 
+struct KeyModifiers
+{
+  bool Ctrl;
+  bool Shift;
+  bool Alt;
+  bool Super;
+};
+
 
 namespace detail {
 
@@ -158,11 +166,11 @@ namespace detail {
     LCTRL = 224,
     LSHIFT = 225,
     LALT = 226, /**< alt, option */
-    LGUI = 227, /**< windows, command (apple), meta */
+    LSuper = 227, /**< windows, command (apple), meta */
     RCTRL = 228,
     RSHIFT = 229,
     RALT = 230, /**< alt gr, option */
-    RGUI = 231, /**< windows, command (apple), meta */
+    RSuper = 231, /**< windows, command (apple), meta */
 
     MODE = 257, /**< I'm not sure if this is really not covered
                  *   by any of the above, but since there's a
@@ -428,11 +436,11 @@ enum class KeyCode {
   LCtrl = detail::ScanCodeToKeyCode(detail::ScanCode::LCTRL),
   LShift = detail::ScanCodeToKeyCode(detail::ScanCode::LSHIFT),
   LAlt = detail::ScanCodeToKeyCode(detail::ScanCode::LALT),
-  LGui = detail::ScanCodeToKeyCode(detail::ScanCode::LGUI),
+  LSuper = detail::ScanCodeToKeyCode(detail::ScanCode::LSuper),
   RCtrl = detail::ScanCodeToKeyCode(detail::ScanCode::RCTRL),
   RShift = detail::ScanCodeToKeyCode(detail::ScanCode::RSHIFT),
   RAlt = detail::ScanCodeToKeyCode(detail::ScanCode::RALT),
-  RGui = detail::ScanCodeToKeyCode(detail::ScanCode::RGUI),
+  RSuper = detail::ScanCodeToKeyCode(detail::ScanCode::RSuper),
 
   Mode = detail::ScanCodeToKeyCode(detail::ScanCode::MODE),
 

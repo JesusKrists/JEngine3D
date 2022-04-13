@@ -20,7 +20,7 @@ public:
   static constexpr auto NEW_WINDOW_SIZE = JE::Size2DI{ 320, 240 };
   static constexpr auto NEW_WINDOW_RESIZE = JE::Size2DI{ 640, 480 };
 
-  ApplicationTestsFixture() : m_App(DEFAULT_TITLE) {}
+  ApplicationTestsFixture() : m_App(DEFAULT_TITLE) { m_Backend.PollEvents(); }
 
 protected:
   JE::Application m_App;
@@ -43,7 +43,6 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
 
   m_App.Run(1);
   REQUIRE(!m_App.Running());
-  REQUIRE(quitEvent.Handled());
 }
 
 TEST_CASE_METHOD(ApplicationTestsFixture,
@@ -58,7 +57,6 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
   m_App.Run(1);
 
   REQUIRE(window.Size() == NEW_WINDOW_RESIZE);
-  REQUIRE(resizeEvent.Handled());
 }
 
 
@@ -68,13 +66,14 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
 {
   auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
 
+  m_Backend.PollEvents();
+
   JE::WindowCloseEvent closeEvent{ window.NativeHandle() };
   m_Backend.PushEvent(closeEvent);
 
   m_App.Run(1);
 
   REQUIRE(m_WindowController.Windows().size() == 1);
-  REQUIRE(closeEvent.Handled());
 }
 
 
@@ -84,13 +83,12 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
 {
   auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
 
-  JE::KeyPressEvent keyPressEvent{ window.NativeHandle(), JE::KeyCode::LShift, 0 };
+  JE::KeyPressEvent keyPressEvent{ window.NativeHandle(), JE::KeyCode::LShift };
   m_Backend.PushEvent(keyPressEvent);
 
   m_App.Run(1);
 
   REQUIRE(m_InputController.KeyPressed(JE::KeyCode::LShift));
-  REQUIRE(keyPressEvent.Handled());
 }
 
 TEST_CASE_METHOD(ApplicationTestsFixture,
@@ -99,16 +97,14 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
 {
   auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
 
-  JE::KeyPressEvent keyPressEvent{ window.NativeHandle(), JE::KeyCode::LShift, 0 };
-  JE::KeyReleaseEvent keyReleaseEvent{ window.NativeHandle(), JE::KeyCode::LShift, 0 };
+  JE::KeyPressEvent keyPressEvent{ window.NativeHandle(), JE::KeyCode::LShift };
+  JE::KeyReleaseEvent keyReleaseEvent{ window.NativeHandle(), JE::KeyCode::LShift };
   m_Backend.PushEvent(keyPressEvent);
   m_Backend.PushEvent(keyReleaseEvent);
 
   m_App.Run(1);
 
   REQUIRE(!m_InputController.KeyPressed(JE::KeyCode::LShift));
-  REQUIRE(keyPressEvent.Handled());
-  REQUIRE(keyReleaseEvent.Handled());
 }
 
 TEST_CASE_METHOD(ApplicationTestsFixture,
@@ -123,7 +119,6 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
   m_App.Run(1);
 
   REQUIRE(m_InputController.MousePressed(JE::MouseButton::Middle));
-  REQUIRE(mousePressEvent.Handled());
 }
 
 TEST_CASE_METHOD(ApplicationTestsFixture,
@@ -140,8 +135,6 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
   m_App.Run(1);
 
   REQUIRE(!m_InputController.MousePressed(JE::MouseButton::Middle));
-  REQUIRE(mousePressEvent.Handled());
-  REQUIRE(mouseReleaseEvent.Handled());
 }
 
 TEST_CASE_METHOD(ApplicationTestsFixture,
@@ -160,7 +153,6 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
 
   REQUIRE(m_InputController.MousePosition() == MOUSE_POSITION);
   REQUIRE(m_InputController.RelativeMousePosition() == RELATIVE_MOUSE_POSITION);
-  REQUIRE(mouseMoveEvent.Handled());
 }
 
 TEST_CASE_METHOD(ApplicationTestsFixture,
@@ -175,7 +167,6 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
   m_App.Run(1);
 
   REQUIRE(m_InputController.MouseScrollAmount() == 3);
-  REQUIRE(mouseWheelEvent.Handled());
 }
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)

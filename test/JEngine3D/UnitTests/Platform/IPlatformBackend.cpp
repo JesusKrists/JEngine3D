@@ -4,7 +4,6 @@
 #include <JEngine3D/Core/MemoryController.hpp>// for MemoryController
 #include <JEngine3D/Platform/IPlatformBackend.hpp>// for IPlatformBackend
 #include <JEngine3D/Platform/SDLPlatformBackend.hpp>// for SDLPlatformBackend
-#include <JEngine3D/Core/Base.hpp>// for UNUSED
 #include <JEngine3D/Core/Types.hpp>// for Size2DI
 #include <JEngine3D/Core/Events.hpp>
 
@@ -20,10 +19,9 @@ public:
   static constexpr auto NEW_WINDOW_POSITION = JE::Position2DI{ 150, 150 };
 
   static constexpr auto CLIPBOARD_TEXT = std::string_view{ "Clipboard TEXT test!" };
+  static constexpr auto TEXT_INPUT_TEXT = std::string_view{ "Text input text!" };
 
-  static constexpr auto DELAY_COUNT_MS = 1000;
-
-  IPlatformBackendTestsFixture() { JE::UNUSED(m_Backend.Initialize()); }
+  static constexpr auto DELAY_COUNT_MS = 1100;
 
 protected:
   JE::MemoryController m_MemoryController;
@@ -193,7 +191,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
       if (event.Type() == JE::EventType::WindowResize) {
         const auto &resizeEvent =
           static_cast<const JE::WindowResizeEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (resizeEvent.WindowHandle() == m_Handle && resizeEvent.Size() == NEW_WINDOW_SIZE) {
+        if (resizeEvent.NativeWindowHandle() == m_Handle && resizeEvent.Size() == NEW_WINDOW_SIZE) {
           m_WindowResizeEventReceived = true;
         }
       }
@@ -235,7 +233,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
       if (event.Type() == JE::EventType::WindowClose) {
         const auto &resizeEvent =
           static_cast<const JE::WindowCloseEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (resizeEvent.WindowHandle() == m_Handle) { m_WindowCloseEventReceived = true; }
+        if (resizeEvent.NativeWindowHandle() == m_Handle) { m_WindowCloseEventReceived = true; }
       }
     }
 
@@ -275,7 +273,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
       if (event.Type() == JE::EventType::WindowMove) {
         const auto &moveEvent =
           static_cast<const JE::WindowMoveEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (moveEvent.WindowHandle() == m_Handle && moveEvent.Position() == NEW_WINDOW_POSITION) {
+        if (moveEvent.NativeWindowHandle() == m_Handle && moveEvent.Position() == NEW_WINDOW_POSITION) {
           m_WindowMoveEventReceived = true;
         }
       }
@@ -318,7 +316,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
       if (event.Type() == JE::EventType::WindowHide) {
         const auto &hideEvent =
           static_cast<const JE::WindowHideEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (hideEvent.WindowHandle() == m_Handle) { m_WindowHideEventReceived = true; }
+        if (hideEvent.NativeWindowHandle() == m_Handle) { m_WindowHideEventReceived = true; }
       }
     }
 
@@ -358,7 +356,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
       if (event.Type() == JE::EventType::WindowShow) {
         const auto &showEvent =
           static_cast<const JE::WindowShowEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (showEvent.WindowHandle() == m_Handle) { m_WindowShowEventReceived = true; }
+        if (showEvent.NativeWindowHandle() == m_Handle) { m_WindowShowEventReceived = true; }
       }
     }
 
@@ -382,6 +380,90 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Focus Gained)",
+  "[JE::IPlatformBackend]")
+{
+  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+  class WindowFocusGainedChecker final : public JE::IEventProcessor
+  {
+  public:
+    explicit WindowFocusGainedChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
+
+    inline void OnEvent(JE::IEvent &event) override
+    {
+      if (event.Type() == JE::EventType::WindowFocusGained) {
+        const auto &focusEvent =
+          static_cast<const JE::WindowFocusGainedEvent &>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+            event);
+        if (focusEvent.NativeWindowHandle() == m_Handle) { m_WindowFocusGainedEventReceived = true; }
+      }
+    }
+
+    [[nodiscard]] inline auto WindowFocusGainedEventReceived() const -> bool
+    {
+      return m_WindowFocusGainedEventReceived;
+    }
+
+  private:
+    JE::IPlatformBackend::NativeWindowHandle m_Handle;
+    bool m_WindowFocusGainedEventReceived = false;
+  } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
+
+
+  JE::WindowFocusGainedEvent event{ handle };
+  m_Backend.PushEvent(event);
+
+  m_Backend.PollEvents();
+
+  REQUIRE(checker.WindowFocusGainedEventReceived());
+
+  m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Focus Lost)",
+  "[JE::IPlatformBackend]")
+{
+
+  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+  class WindowFocusLostChecker final : public JE::IEventProcessor
+  {
+  public:
+    explicit WindowFocusLostChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
+
+    inline void OnEvent(JE::IEvent &event) override
+    {
+      if (event.Type() == JE::EventType::WindowFocusLost) {
+        const auto &focusEvent =
+          static_cast<const JE::WindowFocusLostEvent &>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+            event);
+        if (focusEvent.NativeWindowHandle() == m_Handle) { m_WindowFocusLostEventReceived = true; }
+      }
+    }
+
+    [[nodiscard]] inline auto WindowFocusLostEventReceived() const -> bool { return m_WindowFocusLostEventReceived; }
+
+  private:
+    JE::IPlatformBackend::NativeWindowHandle m_Handle;
+    bool m_WindowFocusLostEventReceived = false;
+  } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
+
+
+  JE::WindowFocusLostEvent event{ handle };
+  m_Backend.PushEvent(event);
+
+  m_Backend.PollEvents();
+
+  REQUIRE(checker.WindowFocusLostEventReceived());
+
+  m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
   "JE::IPlatformBackend Polls events to EventProcessor (Fake Key press)",
   "[JE::IPlatformBackend]")
 {
@@ -400,7 +482,10 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
           static_cast<const JE::KeyPressEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
         if (keyPressEvent.WindowHandle() == m_Handle && keyPressEvent.Key() == JE::KeyCode::Mode
             && keyPressEvent.Repeat() == 1) {
-          m_KeyPressEventReceived = true;
+          if (keyPressEvent.Modifiers().Ctrl && keyPressEvent.Modifiers().Shift && keyPressEvent.Modifiers().Alt
+              && !keyPressEvent.Modifiers().Super) {
+            m_KeyPressEventReceived = true;
+          }
         }
       }
     }
@@ -413,7 +498,8 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
   } checker{ handle };
   m_Backend.SetEventProcessor(&checker);
 
-  JE::KeyPressEvent event{ handle, JE::KeyCode::Mode, 1 };
+  JE::KeyModifiers modifiers = { true, true, true, false };
+  JE::KeyPressEvent event{ handle, JE::KeyCode::Mode, modifiers, 1 };
   m_Backend.PushEvent(event);
 
   m_Backend.PollEvents();
@@ -442,7 +528,10 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
           static_cast<const JE::KeyReleaseEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
         if (keyReleaseEvent.WindowHandle() == m_Handle && keyReleaseEvent.Key() == JE::KeyCode::KeyPadXOR
             && keyReleaseEvent.Repeat() == 0) {
-          m_KeyReleaseEventReceived = true;
+          if (keyReleaseEvent.Modifiers().Ctrl && !keyReleaseEvent.Modifiers().Shift && keyReleaseEvent.Modifiers().Alt
+              && keyReleaseEvent.Modifiers().Super) {
+            m_KeyReleaseEventReceived = true;
+          }
         }
       }
     }
@@ -455,12 +544,54 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
   } checker{ handle };
   m_Backend.SetEventProcessor(&checker);
 
-  JE::KeyReleaseEvent event{ handle, JE::KeyCode::KeyPadXOR, 0 };
+  JE::KeyModifiers modifiers = { true, false, true, true };
+  JE::KeyReleaseEvent event{ handle, JE::KeyCode::KeyPadXOR, modifiers, 0 };
   m_Backend.PushEvent(event);
 
   m_Backend.PollEvents();
 
   REQUIRE(checker.KeyReleaseEventReceived());
+
+  m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend Polls events to EventProcessor (Fake Text input)",
+  "[JE::IPlatformBackend]")
+{
+
+  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+  class TextInputChecker final : public JE::IEventProcessor
+  {
+  public:
+    explicit TextInputChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
+
+    inline void OnEvent(JE::IEvent &event) override
+    {
+      if (event.Type() == JE::EventType::TextInput) {
+        const auto &textInputEvent =
+          static_cast<const JE::TextInputEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+        if (textInputEvent.WindowHandle() == m_Handle && textInputEvent.Text() == TEXT_INPUT_TEXT) {
+          m_TextInputEventReceived = true;
+        }
+      }
+    }
+
+    [[nodiscard]] inline auto TextInputEventReceived() const -> bool { return m_TextInputEventReceived; }
+
+  private:
+    JE::IPlatformBackend::NativeWindowHandle m_Handle;
+    bool m_TextInputEventReceived = false;
+  } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
+
+  JE::TextInputEvent event{ handle, TEXT_INPUT_TEXT };
+  m_Backend.PushEvent(event);
+
+  m_Backend.PollEvents();
+
+  REQUIRE(checker.TextInputEventReceived());
 
   m_Backend.DestroyWindow(handle);
 }

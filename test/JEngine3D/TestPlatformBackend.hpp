@@ -32,7 +32,7 @@ public:
     const JE::WindowConfiguration &config = JE::WindowConfiguration{}) -> NativeWindowHandle override
   {
     const auto window = m_CreatedWindows.emplace_back(++m_CurrentWindowID, title, size, position, config);
-    m_WindowInFocus = &window;
+    if (!config.Hidden) { FocusWindow(window.NativeHandle()); }
     return reinterpret_cast<NativeWindowHandle>(window.ID);// NOLINT
   }
   inline void DestroyWindow(NativeWindowHandle handle) override
@@ -103,6 +103,23 @@ public:
     if (windowIt != std::end(m_CreatedWindows)) { windowIt->Shown = false; }
   }
 
+  inline auto WindowFocused(NativeWindowHandle handle) -> bool override
+  {
+    auto windowIt = WindowIterator(handle);
+    if (windowIt != std::end(m_CreatedWindows)) { return windowIt->Focused; }
+    return false;
+  }
+
+  inline void FocusWindow(NativeWindowHandle handle) override
+  {
+    auto windowIt = WindowIterator(handle);
+    if (windowIt != std::end(m_CreatedWindows)) { windowIt->Focused = true; }
+
+    for (auto windowIter = std::begin(m_CreatedWindows); windowIter != std::end(m_CreatedWindows); ++windowIter) {
+      if (windowIter != windowIt) { windowIter->Focused = false; }
+    }
+  }
+
   inline void PushEvent(JE::IEvent &event) override { m_EventQueue.emplace_back(event); }
 
   inline void PollEvents() override
@@ -121,7 +138,7 @@ public:
     dispatcher.Dispatch<JE::EventType::WindowResize>([&](const JE::IEvent &evnt) {
       const auto &resizeEvent =
         static_cast<const JE::WindowResizeEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-      auto windowIt = WindowIterator(resizeEvent.WindowHandle());
+      auto windowIt = WindowIterator(resizeEvent.NativeWindowHandle());
       if (windowIt != std::end(m_CreatedWindows)) { windowIt->Size = resizeEvent.Size(); }
 
       return false;
@@ -130,7 +147,7 @@ public:
     dispatcher.Dispatch<JE::EventType::WindowMove>([&](const JE::IEvent &evnt) {
       const auto &moveEvent =
         static_cast<const JE::WindowMoveEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-      auto windowIt = WindowIterator(moveEvent.WindowHandle());
+      auto windowIt = WindowIterator(moveEvent.NativeWindowHandle());
       if (windowIt != std::end(m_CreatedWindows)) { windowIt->Position = moveEvent.Position(); }
 
       return false;
@@ -139,7 +156,7 @@ public:
     dispatcher.Dispatch<JE::EventType::WindowHide>([&](const JE::IEvent &evnt) {
       const auto &hideEvent =
         static_cast<const JE::WindowHideEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-      auto windowIt = WindowIterator(hideEvent.WindowHandle());
+      auto windowIt = WindowIterator(hideEvent.NativeWindowHandle());
       if (windowIt != std::end(m_CreatedWindows)) { windowIt->Shown = false; }
 
       return false;
@@ -148,8 +165,25 @@ public:
     dispatcher.Dispatch<JE::EventType::WindowShow>([&](const JE::IEvent &evnt) {
       const auto &showEvent =
         static_cast<const JE::WindowShowEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-      auto windowIt = WindowIterator(showEvent.WindowHandle());
+      auto windowIt = WindowIterator(showEvent.NativeWindowHandle());
       if (windowIt != std::end(m_CreatedWindows)) { windowIt->Shown = true; }
+
+      return false;
+    });
+
+    dispatcher.Dispatch<JE::EventType::WindowFocusGained>([&](const JE::IEvent &evnt) {
+      const auto &focusEvent =
+        static_cast<const JE::WindowFocusGainedEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+      FocusWindow(focusEvent.NativeWindowHandle());
+
+      return false;
+    });
+
+    dispatcher.Dispatch<JE::EventType::WindowFocusLost>([&](const JE::IEvent &evnt) {
+      const auto &focusEvent =
+        static_cast<const JE::WindowFocusLostEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+      auto windowIt = WindowIterator(focusEvent.NativeWindowHandle());
+      if (windowIt != std::end(m_CreatedWindows)) { windowIt->Focused = false; }
 
       return false;
     });
@@ -165,7 +199,7 @@ public:
 
   inline void SetClipboardText(const std::string_view &text) override { m_ClipboardText = text; }
 
-  [[nodiscard]] inline auto ClipboardText() -> std::string_view override { return m_ClipboardText; }
+  [[nodiscard]] inline auto ClipboardText() -> const char * override { return m_ClipboardText.c_str(); }
 
   inline void Delay(uint32_t milliseconds) override { JE::UNUSED(milliseconds); }
 
@@ -177,19 +211,25 @@ private:
       const JE::Size2DI &size,
       const JE::Position2DI &position,
       const JE::WindowConfiguration &config)
-      : ID(windowID), Title(title), Size(size), Position(position), Shown(!config.Hidden)
+      : ID(windowID), Title(title), Size(size), Position(position), Shown(!config.Hidden), Focused(!config.Hidden)
     {}
+
+    [[nodiscard]] inline auto NativeHandle() const -> NativeWindowHandle
+    {
+      return reinterpret_cast<NativeWindowHandle>(ID);// NOLINT
+    }
+
     size_t ID;
     std::string Title;
     JE::Size2DI Size;
     JE::Position2DI Position;
     bool Shown;
+    bool Focused = true;
   };
 
   size_t m_CurrentWindowID = 0;
   std::vector<TestWindow> m_CreatedWindows;
   std::vector<std::reference_wrapper<JE::IEvent>> m_EventQueue;
-  const TestWindow *m_WindowInFocus = nullptr;
   uint64_t m_CurrentTicks = 0;
 
   std::string m_ClipboardText;

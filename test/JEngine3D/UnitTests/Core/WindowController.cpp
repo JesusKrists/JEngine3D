@@ -23,7 +23,7 @@ public:
 
   static constexpr auto NEW_WINDOW_TITLE = std::string_view{ "New Window Title" };
   static constexpr auto NEW_WINDOW_SIZE = JE::Size2DI{ 640, 480 };
-  static constexpr auto NEW_WINDOW_POSITION = JE::Position2DI{ 500, 500 };
+  static constexpr auto NEW_WINDOW_POSITION = JE::Position2DI{ 150, 150 };
 };
 
 TEST_CASE_METHOD(WindowControllerTestsFixture,
@@ -31,7 +31,6 @@ TEST_CASE_METHOD(WindowControllerTestsFixture,
   "[JE::WindowController]")
 {
   auto &window = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-  REQUIRE(window.Position() == JE::IPlatformBackend::WINDOW_CENTER_POSITION);
 
   auto windowFindFunction = [&](const JE::Scope<JE::Window, JE::MemoryTag::App> &windowEntry) {
     return windowEntry.get() == &window;
@@ -86,7 +85,6 @@ TEST_CASE_METHOD(WindowControllerTestsFixture,
   m_Backend.PollEvents();
 
   REQUIRE(window.Size() == NEW_WINDOW_SIZE);
-  REQUIRE(resizeEvent.Handled());
 }
 
 TEST_CASE_METHOD(WindowControllerTestsFixture,
@@ -95,12 +93,13 @@ TEST_CASE_METHOD(WindowControllerTestsFixture,
 {
   auto &window = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
+  m_Backend.PollEvents();
+
   JE::WindowCloseEvent closeEvent{ window.NativeHandle() };
   m_Backend.PushEvent(closeEvent);
   m_Backend.PollEvents();
 
   REQUIRE(m_WindowController.Windows().empty());
-  REQUIRE(closeEvent.Handled());
 }
 
 TEST_CASE_METHOD(WindowControllerTestsFixture,
@@ -109,12 +108,13 @@ TEST_CASE_METHOD(WindowControllerTestsFixture,
 {
   auto &window = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
 
+  m_Backend.PollEvents();
+
   JE::WindowMoveEvent moveEvent{ window.NativeHandle(), NEW_WINDOW_POSITION };
   m_Backend.PushEvent(moveEvent);
   m_Backend.PollEvents();
 
   REQUIRE(window.Position() == NEW_WINDOW_POSITION);
-  REQUIRE(moveEvent.Handled());
 }
 
 TEST_CASE_METHOD(WindowControllerTestsFixture,
@@ -123,6 +123,8 @@ TEST_CASE_METHOD(WindowControllerTestsFixture,
 {
   auto &window = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
+  m_Backend.PollEvents();
+
   REQUIRE(window.Shown());
 
   JE::WindowHideEvent hideEvent{ window.NativeHandle() };
@@ -130,7 +132,6 @@ TEST_CASE_METHOD(WindowControllerTestsFixture,
   m_Backend.PollEvents();
 
   REQUIRE(!window.Shown());
-  REQUIRE(hideEvent.Handled());
 }
 
 TEST_CASE_METHOD(WindowControllerTestsFixture,
@@ -141,6 +142,8 @@ TEST_CASE_METHOD(WindowControllerTestsFixture,
   config.Hidden = true;
   auto &window = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION, config);
 
+  m_Backend.PollEvents();
+
   REQUIRE(!window.Shown());
 
   JE::WindowShowEvent showEvent{ window.NativeHandle() };
@@ -148,7 +151,47 @@ TEST_CASE_METHOD(WindowControllerTestsFixture,
   m_Backend.PollEvents();
 
   REQUIRE(window.Shown());
-  REQUIRE(showEvent.Handled());
+}
+
+
+TEST_CASE_METHOD(WindowControllerTestsFixture,
+  "JE::WindowController processes WindowFocusGainedEvent",
+  "[JE::WindowController]")
+{
+  JE::WindowConfiguration config{};
+  config.Hidden = true;
+  auto &window = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION, config);
+  auto &window2 = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+  JE::UNUSED(window2);
+
+  m_Backend.PollEvents();
+
+  REQUIRE(!window.Focused());
+
+  JE::WindowFocusGainedEvent focusEvent{ window.NativeHandle() };
+  m_Backend.PushEvent(focusEvent);
+  m_Backend.PollEvents();
+
+  REQUIRE(window.Focused());
+}
+
+TEST_CASE_METHOD(WindowControllerTestsFixture,
+  "JE::WindowController processes WindowFocusLostEvent",
+  "[JE::WindowController]")
+{
+  auto &window = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+  m_Backend.PollEvents();
+  REQUIRE(window.Focused());
+
+  auto &window2 = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+  m_Backend.PollEvents();
+  REQUIRE(window2.Focused());
+
+  JE::WindowFocusLostEvent focusEvent{ window.NativeHandle() };
+  m_Backend.PushEvent(focusEvent);
+  m_Backend.PollEvents();
+
+  REQUIRE(!window.Focused());
 }
 
 TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window sets title of underlying NativeHandle", "[JE::Window]")
@@ -193,7 +236,7 @@ TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window sets position of unde
   window.SetPosition(NEW_WINDOW_POSITION);
 
   REQUIRE(window.Position() == NEW_WINDOW_POSITION);
-  REQUIRE(m_Backend.WindowPosition(window.NativeHandle()) == NEW_WINDOW_POSITION);
+  CHECK_NOFAIL(m_Backend.WindowPosition(window.NativeHandle()) == NEW_WINDOW_POSITION);
 }
 
 TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window shows and hides underlying NativeHandle", "[JE::Window]")
@@ -211,4 +254,24 @@ TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window shows and hides under
   window.Show();
 
   REQUIRE(window.Shown() == true);
+}
+
+
+TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window Focuses window and unfocuses other windows", "[JE::Window]")
+{
+  auto &window = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+  m_Backend.PollEvents();
+  auto &window2 = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+  m_Backend.PollEvents();
+
+  REQUIRE(!window.Focused());
+  REQUIRE(window2.Focused());
+
+  window2.Hide();
+  window.Focus();
+
+  m_Backend.PollEvents();
+
+  REQUIRE(window.Focused());
+  REQUIRE(!window2.Focused());
 }

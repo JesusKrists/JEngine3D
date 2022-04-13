@@ -19,7 +19,6 @@ inline auto CreateApplication(const std::string_view &title) -> Scope<Applicatio
   static LoggerController s_LoggerController;
 
   static SDLPlatformBackend s_SDLPlatformBackend;
-  JE::UNUSED(s_SDLPlatformBackend.Initialize());
 
   static WindowController s_WindowController;
   static InputController s_InputController;

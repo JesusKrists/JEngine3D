@@ -60,6 +60,14 @@ void Window::Hide()
   m_Shown = false;
 }
 
+void Window::Focus()
+{
+  Show();
+  IPlatformBackend::Get().FocusWindow(m_NativeHandle);
+}
+
+auto Window::Focused() const -> bool { return IPlatformBackend::Get().WindowFocused(m_NativeHandle); }
+
 //////////////////////////////////////////////////////////////////////////////////////
 
 WindowController *WindowController::s_WindowControllerInstance = nullptr;// NOLINT
@@ -85,7 +93,7 @@ void WindowController::OnEvent(IEvent &event)
     const auto &resizeEvent =
       static_cast<const WindowResizeEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    auto &window = WindowFromNativeHandle(resizeEvent.WindowHandle());
+    auto &window = WindowFromNativeHandle(resizeEvent.NativeWindowHandle());
     window.m_Size = resizeEvent.Size();
 
     ASSERT(window.Size() == IPlatformBackend::Get().WindowSize(window.NativeHandle()),
@@ -94,15 +102,25 @@ void WindowController::OnEvent(IEvent &event)
     return true;
   });
 
+  dispatcher.Dispatch<EventType::WindowClose>([&](const IEvent &evnt) {
+    const auto &closeEvent =
+      static_cast<const WindowCloseEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    DestroyWindowFromNativeHandle(closeEvent.NativeWindowHandle());
+
+    return true;
+  });
+
   dispatcher.Dispatch<EventType::WindowMove>([&](const IEvent &evnt) {
     const auto &moveEvent =
       static_cast<const WindowMoveEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    auto &window = WindowFromNativeHandle(moveEvent.WindowHandle());
+    auto &window = WindowFromNativeHandle(moveEvent.NativeWindowHandle());
     window.m_Position = moveEvent.Position();
 
-    ASSERT(window.Position() == IPlatformBackend::Get().WindowPosition(window.NativeHandle()),
-      "Window position and native window position mismatch");
+    // TODO(JesusKrists): Make a no debugbreak assert since this one is very annoying and no fix is possible really
+    // ASSERT(window.Position() == IPlatformBackend::Get().WindowPosition(window.NativeHandle()),
+    //   "Window position and native window position mismatch");
 
     return true;
   });
@@ -111,7 +129,7 @@ void WindowController::OnEvent(IEvent &event)
     const auto &hideEvent =
       static_cast<const WindowHideEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    auto &window = WindowFromNativeHandle(hideEvent.WindowHandle());
+    auto &window = WindowFromNativeHandle(hideEvent.NativeWindowHandle());
     window.m_Shown = false;
 
     ASSERT(IPlatformBackend::Get().WindowHidden(window.NativeHandle()), "Window and Native window hidden mismatch");
@@ -123,7 +141,7 @@ void WindowController::OnEvent(IEvent &event)
     const auto &showEvent =
       static_cast<const WindowShowEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    auto &window = WindowFromNativeHandle(showEvent.WindowHandle());
+    auto &window = WindowFromNativeHandle(showEvent.NativeWindowHandle());
     window.m_Shown = true;
 
     ASSERT(!IPlatformBackend::Get().WindowHidden(window.NativeHandle()), "Window and Native window hidden mismatch");
@@ -131,11 +149,22 @@ void WindowController::OnEvent(IEvent &event)
     return true;
   });
 
-  dispatcher.Dispatch<EventType::WindowClose>([&](const IEvent &evnt) {
-    const auto &closeEvent =
-      static_cast<const WindowCloseEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+  dispatcher.Dispatch<EventType::WindowFocusGained>([&](const IEvent &evnt) {
+    const auto &focusEvent =
+      static_cast<const WindowFocusGainedEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    DestroyWindowFromNativeHandle(closeEvent.WindowHandle());
+    const auto &window = WindowFromNativeHandle(focusEvent.NativeWindowHandle());
+    ASSERT(IPlatformBackend::Get().WindowFocused(window.NativeHandle()), "Window and Native window focus mismatch");
+
+    return true;
+  });
+
+  dispatcher.Dispatch<EventType::WindowFocusLost>([&](const IEvent &evnt) {
+    const auto &focusEvent =
+      static_cast<const WindowFocusLostEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    const auto &window = WindowFromNativeHandle(focusEvent.NativeWindowHandle());
+    ASSERT(!IPlatformBackend::Get().WindowFocused(window.NativeHandle()), "Window and Native window focus mismatch");
 
     return true;
   });

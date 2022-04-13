@@ -69,6 +69,9 @@ public:
   virtual void ShowWindow(NativeWindowHandle handle) = 0;
   virtual void HideWindow(NativeWindowHandle handle) = 0;
 
+  [[nodiscard]] virtual auto WindowFocused(NativeWindowHandle handle) -> bool = 0;
+  virtual void FocusWindow(NativeWindowHandle handle) = 0;
+
   virtual void PollEvents() = 0;
   virtual void PushEvent(IEvent &event) = 0;
 
@@ -76,7 +79,7 @@ public:
   [[nodiscard]] virtual auto TickFrequency() -> uint64_t = 0;
 
   virtual void SetClipboardText(const std::string_view &text) = 0;
-  [[nodiscard]] virtual auto ClipboardText() -> std::string_view = 0;
+  [[nodiscard]] virtual auto ClipboardText() -> const char * = 0;
 
   virtual void Delay(uint32_t milliseconds) = 0;
 

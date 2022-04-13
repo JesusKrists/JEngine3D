@@ -17,9 +17,12 @@ enum class EventType {
   WindowMove,
   WindowHide,
   WindowShow,
+  WindowFocusGained,
+  WindowFocusLost,
 
   KeyPress,
   KeyRelease,
+  TextInput,
 
   MousePress,
   MouseRelease,
@@ -92,7 +95,7 @@ public:
   explicit IWindowEvent(IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
 
   [[nodiscard]] inline auto Category() const -> EventCategory override { return EventCategory::Window; }
-  [[nodiscard]] inline auto WindowHandle() const -> IPlatformBackend::NativeWindowHandle { return m_Handle; }
+  [[nodiscard]] inline auto NativeWindowHandle() const -> IPlatformBackend::NativeWindowHandle { return m_Handle; }
 
 private:
   IPlatformBackend::NativeWindowHandle m_Handle;
@@ -136,18 +139,34 @@ private:
 
 class WindowHideEvent final : public IWindowEvent
 {
-public:
-  explicit WindowHideEvent(IPlatformBackend::NativeWindowHandle handle) : IWindowEvent(handle) {}
+  using IWindowEvent::IWindowEvent;
 
+public:
   [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowHide; }
 };
 
 class WindowShowEvent final : public IWindowEvent
 {
-public:
-  explicit WindowShowEvent(IPlatformBackend::NativeWindowHandle handle) : IWindowEvent(handle) {}
+  using IWindowEvent::IWindowEvent;
 
+public:
   [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowShow; }
+};
+
+class WindowFocusGainedEvent final : public IWindowEvent
+{
+  using IWindowEvent::IWindowEvent;
+
+public:
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowFocusGained; }
+};
+
+class WindowFocusLostEvent final : public IWindowEvent
+{
+  using IWindowEvent::IWindowEvent;
+
+public:
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowFocusLost; }
 };
 
 class IKeyboardEvent : public IEvent
@@ -165,33 +184,57 @@ private:
 class KeyPressEvent final : public IKeyboardEvent
 {
 public:
-  KeyPressEvent(IPlatformBackend::NativeWindowHandle handle, KeyCode key, int32_t repeat)
-    : IKeyboardEvent(handle), m_Key(key), m_Repeat(repeat)
+  KeyPressEvent(IPlatformBackend::NativeWindowHandle handle,
+    KeyCode key,
+    const KeyModifiers &modifiers = KeyModifiers{},
+    int32_t repeat = 0)
+    : IKeyboardEvent(handle), m_Key(key), m_Modifiers(modifiers), m_Repeat(repeat)
   {}
   [[nodiscard]] inline auto Type() const -> EventType override { return EventType::KeyPress; }
 
   [[nodiscard]] inline auto Key() const -> KeyCode { return m_Key; }
+  [[nodiscard]] inline auto Modifiers() const -> const KeyModifiers & { return m_Modifiers; }
   [[nodiscard]] inline auto Repeat() const -> int32_t { return m_Repeat; }
 
 private:
   KeyCode m_Key;
+  KeyModifiers m_Modifiers;
   int32_t m_Repeat;
 };
 
 class KeyReleaseEvent final : public IKeyboardEvent
 {
 public:
-  KeyReleaseEvent(IPlatformBackend::NativeWindowHandle handle, KeyCode key, int32_t repeat)
-    : IKeyboardEvent(handle), m_Key(key), m_Repeat(repeat)
+  KeyReleaseEvent(IPlatformBackend::NativeWindowHandle handle,
+    KeyCode key,
+    const KeyModifiers &modifiers = KeyModifiers{},
+    int32_t repeat = 0)
+    : IKeyboardEvent(handle), m_Key(key), m_Modifiers(modifiers), m_Repeat(repeat)
   {}
   [[nodiscard]] inline auto Type() const -> EventType override { return EventType::KeyRelease; }
 
   [[nodiscard]] inline auto Key() const -> KeyCode { return m_Key; }
+  [[nodiscard]] inline auto Modifiers() const -> const KeyModifiers & { return m_Modifiers; }
   [[nodiscard]] inline auto Repeat() const -> int32_t { return m_Repeat; }
 
 private:
   KeyCode m_Key;
+  KeyModifiers m_Modifiers;
   int32_t m_Repeat;
+};
+
+class TextInputEvent final : public IKeyboardEvent
+{
+public:
+  TextInputEvent(IPlatformBackend::NativeWindowHandle handle, const std::string_view &text)
+    : IKeyboardEvent(handle), m_Text(text)
+  {}
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::TextInput; }
+
+  [[nodiscard]] inline auto Text() const -> const std::string_view & { return m_Text; }
+
+private:
+  std::string_view m_Text;
 };
 
 class IMouseEvent : public IEvent

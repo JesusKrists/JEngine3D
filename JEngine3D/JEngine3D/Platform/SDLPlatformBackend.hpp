@@ -12,6 +12,7 @@ class IEvent;
 class SDLPlatformBackend final : public IPlatformBackend
 {
 public:
+  SDLPlatformBackend();
   ~SDLPlatformBackend() override;
 
   [[nodiscard]] auto Initialize() -> bool override;
@@ -38,6 +39,9 @@ public:
   void ShowWindow(NativeWindowHandle handle) override;
   void HideWindow(NativeWindowHandle handle) override;
 
+  [[nodiscard]] auto WindowFocused(NativeWindowHandle handle) -> bool override;
+  void FocusWindow(NativeWindowHandle handle) override;
+
   void PollEvents() override;
   void PushEvent(IEvent &event) override;
 
@@ -45,7 +49,7 @@ public:
   [[nodiscard]] auto TickFrequency() -> uint64_t override;
 
   void SetClipboardText(const std::string_view &text) override;
-  [[nodiscard]] auto ClipboardText() -> std::string_view override;
+  [[nodiscard]] auto ClipboardText() -> const char * override;
 
   void Delay(uint32_t milliseconds) override;
 

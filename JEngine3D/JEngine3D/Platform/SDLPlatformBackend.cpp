@@ -3,6 +3,7 @@
 #include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
 #include "JEngine3D/Core/Events.hpp"
 #include "JEngine3D/Core/LoggerController.hpp"// for Logger
+#include "JEngine3D/Core/Base.hpp"// for UNUSED
 
 #include <exception>// for exception
 #include <cstring>// IWYU pragma: keep
@@ -27,6 +28,8 @@ static constexpr auto SDLKeyCodeToJEngine3DKeyCode(SDL_Keycode keyCode) -> KeyCo
 }
 
 static auto s_Initialized = false;// NOLINT
+
+SDLPlatformBackend::SDLPlatformBackend() { JE::UNUSED(Initialize()); }
 
 SDLPlatformBackend::~SDLPlatformBackend()
 {
@@ -65,7 +68,7 @@ auto SDLPlatformBackend::CreateWindow(const std::string_view &title,
   const WindowConfiguration &config) -> NativeWindowHandle
 {
   ASSERT(size.Width > 0 && size.Height > 0, "Window size cannot be zero or negative");
-  return SDL_CreateWindow(title.data(),
+  return SDL_CreateWindow(std::string(title).c_str(),
     position != WINDOW_CENTER_POSITION ? position.X
                                        : static_cast<int32_t>(SDL_WINDOWPOS_CENTERED),// NOLINT(hicpp-signed-bitwise)
     position != WINDOW_CENTER_POSITION ? position.Y
@@ -73,7 +76,7 @@ auto SDLPlatformBackend::CreateWindow(const std::string_view &title,
     size.Width,
     size.Height,
     SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |// NOLINT(hicpp-signed-bitwise)
-      SDL_WINDOW_INPUT_FOCUS | SDL_WINDOW_MOUSE_FOCUS | (config.Hidden ? SDL_WINDOW_HIDDEN : 0));
+      SDL_WINDOW_INPUT_FOCUS | (config.Hidden ? SDL_WINDOW_HIDDEN : 0));
 }
 
 void SDLPlatformBackend::DestroyWindow(NativeWindowHandle handle)
@@ -112,7 +115,7 @@ auto SDLPlatformBackend::WindowTitle(NativeWindowHandle handle) -> std::string_v
 void SDLPlatformBackend::SetWindowTitle(NativeWindowHandle handle, const std::string_view &title)
 {
   ASSERT(handle, "Window handle is null");
-  SDL_SetWindowTitle(static_cast<SDL_Window *>(handle), title.data());
+  SDL_SetWindowTitle(static_cast<SDL_Window *>(handle), std::string(title).c_str());
 }
 
 auto SDLPlatformBackend::WindowPosition(NativeWindowHandle handle) -> Position2DI
@@ -147,6 +150,19 @@ void SDLPlatformBackend::HideWindow(NativeWindowHandle handle)
   SDL_HideWindow(static_cast<SDL_Window *>(handle));
 }
 
+auto SDLPlatformBackend::WindowFocused(NativeWindowHandle handle) -> bool
+{
+  ASSERT(handle, "Window handle is null");
+  return (SDL_GetWindowFlags(static_cast<SDL_Window *>(handle)) & SDL_WINDOW_INPUT_FOCUS) == SDL_WINDOW_INPUT_FOCUS;
+}
+
+void SDLPlatformBackend::FocusWindow(NativeWindowHandle handle)
+{
+  ASSERT(handle, "Window handle is null");
+  SDL_RaiseWindow(static_cast<SDL_Window *>(handle));
+  SDL_SetWindowInputFocus(static_cast<SDL_Window *>(handle));
+}
+
 void SDLPlatformBackend::PollEvents()
 {
   auto ProcessWindowResizeEvent = [&](const SDL_Event &nativeEvent) {
@@ -173,6 +189,16 @@ void SDLPlatformBackend::PollEvents()
 
   auto ProcessWindowShowEvent = [&](const SDL_Event &nativeEvent) {
     WindowShowEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID) };
+    EventProcessor().OnEvent(event);
+  };
+
+  auto ProcessWindowFocusGainedEvent = [&](const SDL_Event &nativeEvent) {
+    WindowFocusGainedEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID) };
+    EventProcessor().OnEvent(event);
+  };
+
+  auto ProcessWindowFocusLostEvent = [&](const SDL_Event &nativeEvent) {
+    WindowFocusLostEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID) };
     EventProcessor().OnEvent(event);
   };
 
@@ -205,6 +231,14 @@ void SDLPlatformBackend::PollEvents()
         ProcessWindowShowEvent(nativeEvent);
         break;
 
+      case SDL_WindowEventID::SDL_WINDOWEVENT_FOCUS_GAINED:
+        ProcessWindowFocusGainedEvent(nativeEvent);
+        break;
+
+      case SDL_WindowEventID::SDL_WINDOWEVENT_FOCUS_LOST:
+        ProcessWindowFocusLostEvent(nativeEvent);
+        break;
+
       default:
         // Nothing to do for default case
         break;
@@ -212,16 +246,34 @@ void SDLPlatformBackend::PollEvents()
     }
 
     if (nativeEvent.type == SDL_EventType::SDL_KEYDOWN) {
+      KeyModifiers modifiers = { (nativeEvent.key.keysym.mod & KMOD_CTRL) != 0,
+        (nativeEvent.key.keysym.mod & KMOD_SHIFT) != 0,
+        (nativeEvent.key.keysym.mod & KMOD_ALT) != 0,
+        (nativeEvent.key.keysym.mod & KMOD_GUI) != 0 };
+
       KeyPressEvent event{ SDL_GetWindowFromID(nativeEvent.key.windowID),
         SDLKeyCodeToJEngine3DKeyCode(nativeEvent.key.keysym.sym),
+        modifiers,
         nativeEvent.key.repeat };
       EventProcessor().OnEvent(event);
     }
 
     if (nativeEvent.type == SDL_EventType::SDL_KEYUP) {
+      KeyModifiers modifiers = { (nativeEvent.key.keysym.mod & KMOD_CTRL) != 0,
+        (nativeEvent.key.keysym.mod & KMOD_SHIFT) != 0,
+        (nativeEvent.key.keysym.mod & KMOD_ALT) != 0,
+        (nativeEvent.key.keysym.mod & KMOD_GUI) != 0 };
+
       KeyReleaseEvent event{ SDL_GetWindowFromID(nativeEvent.key.windowID),
         SDLKeyCodeToJEngine3DKeyCode(nativeEvent.key.keysym.sym),
+        modifiers,
         nativeEvent.key.repeat };
+      EventProcessor().OnEvent(event);
+    }
+
+    if (nativeEvent.type == SDL_EventType::SDL_TEXTINPUT) {
+      TextInputEvent event{ SDL_GetWindowFromID(nativeEvent.text.windowID),
+        static_cast<char *>(nativeEvent.text.text) };
       EventProcessor().OnEvent(event);
     }
 
@@ -254,7 +306,7 @@ void SDLPlatformBackend::PollEvents()
   }
 }
 
-
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void SDLPlatformBackend::PushEvent(IEvent &event)
 {
   if (event.Type() == EventType::Quit) {
@@ -267,14 +319,18 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
     const auto &resizeEvent =
       static_cast<const WindowResizeEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
+    auto *window = static_cast<SDL_Window *>(resizeEvent.NativeWindowHandle());
+
     SDL_Event nativeResizeEvent;
     nativeResizeEvent.type = SDL_EventType::SDL_WINDOWEVENT;
     nativeResizeEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_SIZE_CHANGED;
     nativeResizeEvent.window.data1 = resizeEvent.Size().Width;
     nativeResizeEvent.window.data2 = resizeEvent.Size().Height;
-    nativeResizeEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(resizeEvent.WindowHandle()));
+    nativeResizeEvent.window.windowID = SDL_GetWindowID(window);
     ASSERT(nativeResizeEvent.window.windowID != 0, "Invalid native window handle passed");
     SDL_PushEvent(&nativeResizeEvent);
+
+    SDL_SetWindowSize(window, resizeEvent.Size().Width, resizeEvent.Size().Height);
   }
 
   if (event.Type() == EventType::WindowClose) {
@@ -284,7 +340,7 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
     SDL_Event nativeCloseEvent;
     nativeCloseEvent.type = SDL_EventType::SDL_WINDOWEVENT;
     nativeCloseEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_CLOSE;
-    nativeCloseEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(closeEvent.WindowHandle()));
+    nativeCloseEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(closeEvent.NativeWindowHandle()));
     ASSERT(nativeCloseEvent.window.windowID != 0, "Invalid native window handle passed");
     SDL_PushEvent(&nativeCloseEvent);
   }
@@ -293,47 +349,96 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
     const auto &moveEvent =
       static_cast<const WindowMoveEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    SDL_Event nativeCloseEvent;
-    nativeCloseEvent.type = SDL_EventType::SDL_WINDOWEVENT;
-    nativeCloseEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_MOVED;
-    nativeCloseEvent.window.data1 = moveEvent.Position().X;
-    nativeCloseEvent.window.data2 = moveEvent.Position().Y;
-    nativeCloseEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(moveEvent.WindowHandle()));
-    ASSERT(nativeCloseEvent.window.windowID != 0, "Invalid native window handle passed");
-    SDL_PushEvent(&nativeCloseEvent);
+    auto *window = static_cast<SDL_Window *>(moveEvent.NativeWindowHandle());
+
+    SDL_Event nativeMoveEvent;
+    nativeMoveEvent.type = SDL_EventType::SDL_WINDOWEVENT;
+    nativeMoveEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_MOVED;
+    nativeMoveEvent.window.data1 = moveEvent.Position().X;
+    nativeMoveEvent.window.data2 = moveEvent.Position().Y;
+    nativeMoveEvent.window.windowID = SDL_GetWindowID(window);
+    ASSERT(nativeMoveEvent.window.windowID != 0, "Invalid native window handle passed");
+    SDL_PushEvent(&nativeMoveEvent);
+
+    SDL_SetWindowPosition(window, moveEvent.Position().X, moveEvent.Position().Y);
   }
 
   if (event.Type() == EventType::WindowHide) {
     const auto &hideEvent =
       static_cast<const WindowHideEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    SDL_Event nativeCloseEvent;
-    nativeCloseEvent.type = SDL_EventType::SDL_WINDOWEVENT;
-    nativeCloseEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_HIDDEN;
-    nativeCloseEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(hideEvent.WindowHandle()));
-    ASSERT(nativeCloseEvent.window.windowID != 0, "Invalid native window handle passed");
-    SDL_PushEvent(&nativeCloseEvent);
+    auto *window = static_cast<SDL_Window *>(hideEvent.NativeWindowHandle());
+
+    SDL_Event nativeHideEvent;
+    nativeHideEvent.type = SDL_EventType::SDL_WINDOWEVENT;
+    nativeHideEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_HIDDEN;
+    nativeHideEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(hideEvent.NativeWindowHandle()));
+    ASSERT(nativeHideEvent.window.windowID != 0, "Invalid native window handle passed");
+    SDL_PushEvent(&nativeHideEvent);
+
+    SDL_HideWindow(window);
   }
 
   if (event.Type() == EventType::WindowShow) {
     const auto &showEvent =
       static_cast<const WindowShowEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    SDL_Event nativeCloseEvent;
-    nativeCloseEvent.type = SDL_EventType::SDL_WINDOWEVENT;
-    nativeCloseEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_SHOWN;
-    nativeCloseEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(showEvent.WindowHandle()));
-    ASSERT(nativeCloseEvent.window.windowID != 0, "Invalid native window handle passed");
-    SDL_PushEvent(&nativeCloseEvent);
+    auto *window = static_cast<SDL_Window *>(showEvent.NativeWindowHandle());
+
+    SDL_Event nativeShowEvent;
+    nativeShowEvent.type = SDL_EventType::SDL_WINDOWEVENT;
+    nativeShowEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_SHOWN;
+    nativeShowEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(showEvent.NativeWindowHandle()));
+    ASSERT(nativeShowEvent.window.windowID != 0, "Invalid native window handle passed");
+    SDL_PushEvent(&nativeShowEvent);
+
+    SDL_ShowWindow(window);
+  }
+
+  if (event.Type() == EventType::WindowFocusGained) {
+    const auto &focusEvent =
+      static_cast<const WindowFocusGainedEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    auto *window = static_cast<SDL_Window *>(focusEvent.NativeWindowHandle());
+
+    SDL_Event nativeFocusEvent;
+    nativeFocusEvent.type = SDL_EventType::SDL_WINDOWEVENT;
+    nativeFocusEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_FOCUS_GAINED;
+    nativeFocusEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(focusEvent.NativeWindowHandle()));
+    ASSERT(nativeFocusEvent.window.windowID != 0, "Invalid native window handle passed");
+    SDL_PushEvent(&nativeFocusEvent);
+
+    SDL_ShowWindow(window);
+    SDL_RaiseWindow(window);
+    SDL_SetWindowInputFocus(window);
+  }
+
+  if (event.Type() == EventType::WindowFocusLost) {
+    const auto &focusEvent =
+      static_cast<const WindowFocusLostEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    SDL_Event nativeFocusEvent;
+    nativeFocusEvent.type = SDL_EventType::SDL_WINDOWEVENT;
+    nativeFocusEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_FOCUS_LOST;
+    nativeFocusEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(focusEvent.NativeWindowHandle()));
+    ASSERT(nativeFocusEvent.window.windowID != 0, "Invalid native window handle passed");
+    SDL_PushEvent(&nativeFocusEvent);
   }
 
   if (event.Type() == EventType::KeyPress) {
     const auto &keyPressEvent =
       static_cast<const KeyPressEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
+    uint16_t sdlModifiers = 0;
+    sdlModifiers |= keyPressEvent.Modifiers().Ctrl ? static_cast<uint16_t>(KMOD_CTRL) : static_cast<uint16_t>(0);
+    sdlModifiers |= keyPressEvent.Modifiers().Shift ? static_cast<uint16_t>(KMOD_SHIFT) : static_cast<uint16_t>(0);
+    sdlModifiers |= keyPressEvent.Modifiers().Alt ? static_cast<uint16_t>(KMOD_ALT) : static_cast<uint16_t>(0);
+    sdlModifiers |= keyPressEvent.Modifiers().Super ? static_cast<uint16_t>(KMOD_GUI) : static_cast<uint16_t>(0);
+
     SDL_Event nativeKeyPressEvent;
     nativeKeyPressEvent.type = SDL_EventType::SDL_KEYDOWN;
     nativeKeyPressEvent.key.keysym.sym = static_cast<SDL_Keycode>(keyPressEvent.Key());
+    nativeKeyPressEvent.key.keysym.mod = sdlModifiers;
     nativeKeyPressEvent.key.repeat = static_cast<uint8_t>(keyPressEvent.Repeat());
     nativeKeyPressEvent.key.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(keyPressEvent.WindowHandle()));
     SDL_PushEvent(&nativeKeyPressEvent);
@@ -343,12 +448,34 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
     const auto &keyReleaseEvent =
       static_cast<const KeyReleaseEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
+
+    uint16_t sdlModifiers = 0;
+    sdlModifiers |= keyReleaseEvent.Modifiers().Ctrl ? static_cast<uint16_t>(KMOD_CTRL) : static_cast<uint16_t>(0);
+    sdlModifiers |= keyReleaseEvent.Modifiers().Shift ? static_cast<uint16_t>(KMOD_SHIFT) : static_cast<uint16_t>(0);
+    sdlModifiers |= keyReleaseEvent.Modifiers().Alt ? static_cast<uint16_t>(KMOD_ALT) : static_cast<uint16_t>(0);
+    sdlModifiers |= keyReleaseEvent.Modifiers().Super ? static_cast<uint16_t>(KMOD_GUI) : static_cast<uint16_t>(0);
+
     SDL_Event nativeKeyReleaseEvent;
     nativeKeyReleaseEvent.type = SDL_EventType::SDL_KEYUP;
     nativeKeyReleaseEvent.key.keysym.sym = static_cast<SDL_Keycode>(keyReleaseEvent.Key());
+    nativeKeyReleaseEvent.key.keysym.mod = sdlModifiers;
     nativeKeyReleaseEvent.key.repeat = static_cast<uint8_t>(keyReleaseEvent.Repeat());
     nativeKeyReleaseEvent.key.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(keyReleaseEvent.WindowHandle()));
     SDL_PushEvent(&nativeKeyReleaseEvent);
+  }
+
+  if (event.Type() == EventType::TextInput) {
+    const auto &textInputEvent =
+      static_cast<const TextInputEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    SDL_Event nativeTextInputEvent;
+    nativeTextInputEvent.type = SDL_EventType::SDL_TEXTINPUT;
+    ASSERT(textInputEvent.Text().length() < sizeof(nativeTextInputEvent.text.text), "Text string too long");
+    textInputEvent.Text().copy(
+      static_cast<char *>(nativeTextInputEvent.text.text), sizeof(nativeTextInputEvent.text.text));
+    nativeTextInputEvent.text.text[textInputEvent.Text().length()] = '\0';// NOLINT
+    nativeTextInputEvent.text.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(textInputEvent.WindowHandle()));
+    SDL_PushEvent(&nativeTextInputEvent);
   }
 
   if (event.Type() == EventType::MousePress) {
@@ -369,44 +496,44 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
     const auto &mouseReleaseEvent =
       static_cast<const MouseReleaseEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    SDL_Event nativeMousePressEvent;
-    nativeMousePressEvent.type = SDL_EventType::SDL_MOUSEBUTTONUP;
-    nativeMousePressEvent.button.button = static_cast<uint8_t>(mouseReleaseEvent.Button());
-    nativeMousePressEvent.button.clicks = static_cast<uint8_t>(mouseReleaseEvent.Clicks());
-    nativeMousePressEvent.button.x = mouseReleaseEvent.Position().X;
-    nativeMousePressEvent.button.y = mouseReleaseEvent.Position().Y;
-    nativeMousePressEvent.button.windowID =
+    SDL_Event nativeMouseReleaseEvent;
+    nativeMouseReleaseEvent.type = SDL_EventType::SDL_MOUSEBUTTONUP;
+    nativeMouseReleaseEvent.button.button = static_cast<uint8_t>(mouseReleaseEvent.Button());
+    nativeMouseReleaseEvent.button.clicks = static_cast<uint8_t>(mouseReleaseEvent.Clicks());
+    nativeMouseReleaseEvent.button.x = mouseReleaseEvent.Position().X;
+    nativeMouseReleaseEvent.button.y = mouseReleaseEvent.Position().Y;
+    nativeMouseReleaseEvent.button.windowID =
       SDL_GetWindowID(static_cast<SDL_Window *>(mouseReleaseEvent.WindowHandle()));
-    SDL_PushEvent(&nativeMousePressEvent);
+    SDL_PushEvent(&nativeMouseReleaseEvent);
   }
 
   if (event.Type() == EventType::MouseMove) {
     const auto &mouseMoveEvent =
       static_cast<const MouseMoveEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    SDL_Event nativeMousePressEvent;
-    nativeMousePressEvent.type = SDL_EventType::SDL_MOUSEMOTION;
-    nativeMousePressEvent.motion.x = mouseMoveEvent.Position().X;
-    nativeMousePressEvent.motion.y = mouseMoveEvent.Position().Y;
-    nativeMousePressEvent.motion.xrel = mouseMoveEvent.RelativePosition().X;
-    nativeMousePressEvent.motion.yrel = mouseMoveEvent.RelativePosition().Y;
-    nativeMousePressEvent.motion.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(mouseMoveEvent.WindowHandle()));
-    SDL_PushEvent(&nativeMousePressEvent);
+    SDL_Event nativeMouseMoveEvent;
+    nativeMouseMoveEvent.type = SDL_EventType::SDL_MOUSEMOTION;
+    nativeMouseMoveEvent.motion.x = mouseMoveEvent.Position().X;
+    nativeMouseMoveEvent.motion.y = mouseMoveEvent.Position().Y;
+    nativeMouseMoveEvent.motion.xrel = mouseMoveEvent.RelativePosition().X;
+    nativeMouseMoveEvent.motion.yrel = mouseMoveEvent.RelativePosition().Y;
+    nativeMouseMoveEvent.motion.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(mouseMoveEvent.WindowHandle()));
+    SDL_PushEvent(&nativeMouseMoveEvent);
   }
 
   if (event.Type() == EventType::MouseWheel) {
     const auto &mouseWheelEvent =
       static_cast<const MouseWheelEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    SDL_Event nativeMousePressEvent;
-    nativeMousePressEvent.type = SDL_EventType::SDL_MOUSEWHEEL;
-    nativeMousePressEvent.wheel.x = 0;
-    nativeMousePressEvent.wheel.y = mouseWheelEvent.ScrollAmount();
-    nativeMousePressEvent.wheel.preciseX = 0;
-    nativeMousePressEvent.wheel.preciseY = static_cast<float>(mouseWheelEvent.ScrollAmount());
-    nativeMousePressEvent.wheel.direction = SDL_MOUSEWHEEL_NORMAL;
-    nativeMousePressEvent.wheel.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(mouseWheelEvent.WindowHandle()));
-    SDL_PushEvent(&nativeMousePressEvent);
+    SDL_Event nativeMouseWheelEvent;
+    nativeMouseWheelEvent.type = SDL_EventType::SDL_MOUSEWHEEL;
+    nativeMouseWheelEvent.wheel.x = 0;
+    nativeMouseWheelEvent.wheel.y = mouseWheelEvent.ScrollAmount();
+    nativeMouseWheelEvent.wheel.preciseX = 0;
+    nativeMouseWheelEvent.wheel.preciseY = static_cast<float>(mouseWheelEvent.ScrollAmount());
+    nativeMouseWheelEvent.wheel.direction = SDL_MOUSEWHEEL_NORMAL;
+    nativeMouseWheelEvent.wheel.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(mouseWheelEvent.WindowHandle()));
+    SDL_PushEvent(&nativeMouseWheelEvent);
   }
 }
 
@@ -414,9 +541,12 @@ auto SDLPlatformBackend::CurrentTicks() -> uint64_t { return SDL_GetPerformanceC
 
 auto SDLPlatformBackend::TickFrequency() -> uint64_t { return SDL_GetPerformanceFrequency(); }
 
-void SDLPlatformBackend::SetClipboardText(const std::string_view &text) { SDL_SetClipboardText(text.data()); }
+void SDLPlatformBackend::SetClipboardText(const std::string_view &text)
+{
+  SDL_SetClipboardText(std::string(text).c_str());
+}
 
-auto SDLPlatformBackend::ClipboardText() -> std::string_view
+auto SDLPlatformBackend::ClipboardText() -> const char *
 {
   if (m_ClipboardText != nullptr) {
     SDL_free(m_ClipboardText);// NOLINT(cppcoreguidelines-no-malloc,hicpp-no-malloc,cppcoreguidelines-owning-memory)
