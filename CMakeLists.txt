@@ -8,6 +8,8 @@ set(MEMORYCHECK_COMMAND_OPTIONS
     "--leak-check=full --show-leak-kinds=definite,indirect,possible --error-exitcode=1 --errors-for-leak-kinds=definite,indirect,possible --track-origins=yes"
     CACHE STRING "valgrind command line options")
 
+set(ENABLE_DEBUG_BREAK TRUE CACHE BOOL "Enable DEBUGBREAK to break in debugger")
+
 # Not ideal to use this global variable, but necessary to make sure
 # that tooling and projects use the same version
 set(CMAKE_CXX_STANDARD 20)

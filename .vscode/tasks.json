@@ -9,7 +9,7 @@
             "options": {
                 "cwd": "${workspaceFolder}/out/build"
             },
-            "command": "ctest -C Debug -D NightlyMemCheck --output-on-failure --stop-on-failure"
+            "command": "ctest -C Debug -D NightlyMemCheck --verbose --stop-on-failure"
         }
     ]
 }

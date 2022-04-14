@@ -1,6 +1,6 @@
 #pragma once
 
-#ifdef JE_DEBUG
+#if defined(JE_DEBUG)
 #if defined(JE_PLATFORM_UNIX)
 #include <csignal>// IWYU pragma: export
 #endif
@@ -17,7 +17,7 @@ namespace JE {
 
 inline void DEBUGBREAK()
 {
-#ifdef JE_DEBUG
+#if defined(JE_DEBUG) && defined(JE_ENABLE_DEBUGBREAK)
 #if defined(JE_PLATFORM_UNIX)
   raise(SIGTRAP);// NOLINT
 #elif defined(JE_PLATFORM_WINDOWS)

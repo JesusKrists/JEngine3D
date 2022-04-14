@@ -75,7 +75,7 @@ auto SDLPlatformBackend::CreateWindow(const std::string_view &title,
                                        : static_cast<int32_t>(SDL_WINDOWPOS_CENTERED),// NOLINT(hicpp-signed-bitwise)
     size.Width,
     size.Height,
-    SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE |// NOLINT(hicpp-signed-bitwise)
+    SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI |// NOLINT(hicpp-signed-bitwise)
       SDL_WINDOW_INPUT_FOCUS | (config.Hidden ? SDL_WINDOW_HIDDEN : 0));
 }
 
@@ -372,7 +372,7 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
     SDL_Event nativeHideEvent;
     nativeHideEvent.type = SDL_EventType::SDL_WINDOWEVENT;
     nativeHideEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_HIDDEN;
-    nativeHideEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(hideEvent.NativeWindowHandle()));
+    nativeHideEvent.window.windowID = SDL_GetWindowID(window);
     ASSERT(nativeHideEvent.window.windowID != 0, "Invalid native window handle passed");
     SDL_PushEvent(&nativeHideEvent);
 
@@ -388,7 +388,7 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
     SDL_Event nativeShowEvent;
     nativeShowEvent.type = SDL_EventType::SDL_WINDOWEVENT;
     nativeShowEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_SHOWN;
-    nativeShowEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(showEvent.NativeWindowHandle()));
+    nativeShowEvent.window.windowID = SDL_GetWindowID(window);
     ASSERT(nativeShowEvent.window.windowID != 0, "Invalid native window handle passed");
     SDL_PushEvent(&nativeShowEvent);
 
@@ -404,7 +404,7 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
     SDL_Event nativeFocusEvent;
     nativeFocusEvent.type = SDL_EventType::SDL_WINDOWEVENT;
     nativeFocusEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_FOCUS_GAINED;
-    nativeFocusEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(focusEvent.NativeWindowHandle()));
+    nativeFocusEvent.window.windowID = SDL_GetWindowID(window);
     ASSERT(nativeFocusEvent.window.windowID != 0, "Invalid native window handle passed");
     SDL_PushEvent(&nativeFocusEvent);
 
@@ -511,14 +511,18 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
     const auto &mouseMoveEvent =
       static_cast<const MouseMoveEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
+    auto *window = static_cast<SDL_Window *>(mouseMoveEvent.WindowHandle());
+
     SDL_Event nativeMouseMoveEvent;
     nativeMouseMoveEvent.type = SDL_EventType::SDL_MOUSEMOTION;
     nativeMouseMoveEvent.motion.x = mouseMoveEvent.Position().X;
     nativeMouseMoveEvent.motion.y = mouseMoveEvent.Position().Y;
     nativeMouseMoveEvent.motion.xrel = mouseMoveEvent.RelativePosition().X;
     nativeMouseMoveEvent.motion.yrel = mouseMoveEvent.RelativePosition().Y;
-    nativeMouseMoveEvent.motion.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(mouseMoveEvent.WindowHandle()));
+    nativeMouseMoveEvent.motion.windowID = SDL_GetWindowID(window);
     SDL_PushEvent(&nativeMouseMoveEvent);
+
+    SDL_WarpMouseInWindow(window, mouseMoveEvent.Position().X, mouseMoveEvent.Position().Y);
   }
 
   if (event.Type() == EventType::MouseWheel) {

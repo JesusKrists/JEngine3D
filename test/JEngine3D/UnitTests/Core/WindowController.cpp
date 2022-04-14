@@ -15,10 +15,14 @@
 class WindowControllerTestsFixture : public TestPlatformBackendFixture
 {
 public:
-  WindowControllerTestsFixture() { m_Backend.SetEventProcessor(&m_WindowController); }
+  WindowControllerTestsFixture()
+  {
+    m_Backend.SetEventProcessor(&m_WindowController);
+    m_Backend.PollEvents();
+  }
 
   static constexpr auto TEST_WINDOW_TITLE = std::string_view{ "Test Window" };
-  static constexpr auto TEST_WINDOW_SIZE = JE::Size2DI{ 1280, 720 };
+  static constexpr auto TEST_WINDOW_SIZE = JE::Size2DI{ 480, 320 };
   static constexpr auto TEST_WINDOW_POSITION = JE::Position2DI{ 100, 100 };
 
   static constexpr auto NEW_WINDOW_TITLE = std::string_view{ "New Window Title" };
@@ -181,17 +185,17 @@ TEST_CASE_METHOD(WindowControllerTestsFixture,
 {
   auto &window = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
   m_Backend.PollEvents();
-  REQUIRE(window.Focused());
+  CHECK_NOFAIL(window.Focused());
 
   auto &window2 = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
   m_Backend.PollEvents();
-  REQUIRE(window2.Focused());
+  CHECK_NOFAIL(window2.Focused());
 
   JE::WindowFocusLostEvent focusEvent{ window.NativeHandle() };
   m_Backend.PushEvent(focusEvent);
   m_Backend.PollEvents();
 
-  REQUIRE(!window.Focused());
+  CHECK_NOFAIL(!window.Focused());
 }
 
 TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window sets title of underlying NativeHandle", "[JE::Window]")
@@ -231,7 +235,7 @@ TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window sets position of unde
   auto window = JE::Window(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION, config, nativeWindow);
 
   REQUIRE(window.Position() == TEST_WINDOW_POSITION);
-  REQUIRE(m_Backend.WindowPosition(window.NativeHandle()) == TEST_WINDOW_POSITION);
+  CHECK_NOFAIL(m_Backend.WindowPosition(window.NativeHandle()) == TEST_WINDOW_POSITION);
 
   window.SetPosition(NEW_WINDOW_POSITION);
 

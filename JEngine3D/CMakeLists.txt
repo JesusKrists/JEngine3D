@@ -28,4 +28,8 @@ elseif(UNIX)
   set(JEngine3D_DEFINITIONS ${JEngine3D_DEFINITIONS} JE_PLATFORM_UNIX)
 endif()
 
+if(ENABLE_DEBUG_BREAK)
+  set(JEngine3D_DEFINITIONS ${JEngine3D_DEFINITIONS} JE_ENABLE_DEBUGBREAK)
+endif()
+
 target_compile_definitions(JEngine3D PUBLIC ${JEngine3D_DEFINITIONS})

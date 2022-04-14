@@ -14,7 +14,7 @@ inline void ASSERT_([[maybe_unused]] bool check,
   [[maybe_unused]] int line,
   [[maybe_unused]] Args &&...args)
 {
-#ifdef JE_ENABLE_ASSERTS
+#if defined(JE_ENABLE_ASSERTS)
   if (!check) {
     JE::Logger::CoreLogger().critical(
       "Assertion '{0}' failed at {1}:{2} | {3}", assertion, file, line, std::forward<Args>(args)...);

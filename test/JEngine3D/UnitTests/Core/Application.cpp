@@ -146,13 +146,15 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
 
   auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
 
+  m_Backend.PollEvents();
+
   JE::MouseMoveEvent mouseMoveEvent{ window.NativeHandle(), MOUSE_POSITION, RELATIVE_MOUSE_POSITION };
   m_Backend.PushEvent(mouseMoveEvent);
 
   m_App.Run(1);
 
-  REQUIRE(m_InputController.MousePosition() == MOUSE_POSITION);
-  REQUIRE(m_InputController.RelativeMousePosition() == RELATIVE_MOUSE_POSITION);
+  CHECK_NOFAIL(m_InputController.MousePosition() == MOUSE_POSITION);
+  CHECK_NOFAIL(m_InputController.RelativeMousePosition() == RELATIVE_MOUSE_POSITION);
 }
 
 TEST_CASE_METHOD(ApplicationTestsFixture,

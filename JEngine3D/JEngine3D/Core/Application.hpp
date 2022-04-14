@@ -16,7 +16,7 @@ class ILayer;
 class Application final : public IEventProcessor
 {
 public:
-  static constexpr auto DEFAULT_SIZE = Size2DI{ 1280, 720 };
+  static constexpr auto DEFAULT_SIZE = Size2DI{ 640, 480 };
 
   explicit Application(const std::string_view &title);
   ~Application() override { s_ApplicationInstance = nullptr; }

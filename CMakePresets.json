@@ -154,7 +154,8 @@
             "description": "Test CMake settings that apply to all configurations",
             "hidden": true,
             "output": {
-                "outputOnFailure": true
+                "outputOnFailure": true,
+                "verbosity": "verbose"
             },
             "execution": {
                 "noTestsAction": "error",

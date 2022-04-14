@@ -232,13 +232,13 @@ jobs:
       - name: Configure CMake - Regular
         if: runner.os != 'Linux' || (runner.os == 'Linux' && matrix.compiler == 'gcc')
         run: |
-          cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DOPT_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF' }} -DGIT_SHA:STRING=${{ github.sha }} -DOPT_ENABLE_INCLUDE_WHAT_YOU_USE:BOOL=OFF
+          cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DOPT_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF' }} -DGIT_SHA:STRING=${{ github.sha }} -DOPT_ENABLE_INCLUDE_WHAT_YOU_USE:BOOL=OFF -DENABLE_DEBUG_BREAK:BOOL=OFF
       
       
       - name: Configure CMake - Linux clang
         if: runner.os == 'Linux' && matrix.compiler == 'llvm'
         run: |
-          CC=clang-${{ env.LLVM_VER }} CXX=clang++-${{ env.LLVM_VER }} cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DOPT_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF' }} -DGIT_SHA:STRING=${{ github.sha }} -DOPT_ENABLE_INCLUDE_WHAT_YOU_USE:BOOL=OFF
+          CC=clang-${{ env.LLVM_VER }} CXX=clang++-${{ env.LLVM_VER }} cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DOPT_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF' }} -DGIT_SHA:STRING=${{ github.sha }} -DOPT_ENABLE_INCLUDE_WHAT_YOU_USE:BOOL=OFF -DENABLE_DEBUG_BREAK:BOOL=OFF
                     
 
       - name: Build (Regular)
@@ -258,13 +258,11 @@ jobs:
         env:
           ASAN_OPTIONS: fast_unwind_on_malloc=0
           LSAN_OPTIONS: print_suppressions=false:suppressions=${{ github.workspace }}/LSAN.supp
-        # Execute tests defined by the CMake configuration.
-        # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
         uses: GabrielBB/xvfb-action@v1
         with:
           working-directory: ./build
           run: |
-            ctest -C ${{matrix.build_type}} --output-on-failure
+            ctest -C ${{matrix.build_type}} --verbose
 
       - name: Unix - Get Test coverage
         if: runner.os != 'Windows'
@@ -277,19 +275,17 @@ jobs:
         env:
           ASAN_OPTIONS: fast_unwind_on_malloc=0
           LSAN_OPTIONS: print_suppressions=false:suppressions=${{ github.workspace }}/LSAN.supp
-        # Execute tests defined by the CMake configuration.
-        # See https://cmake.org/cmake/help/latest/manual/ctest.1.html for more detail
         uses: GabrielBB/xvfb-action@v1
         with:
           working-directory: ./build
           run: |
-            ctest -C ${{matrix.build_type}} -D NightlyMemCheck --output-on-failure
+            ctest -C ${{matrix.build_type}} -D NightlyMemCheck --verbose
           
       - name: Windows - Test and coverage
         if: runner.os == 'Windows'
         working-directory: ./build
         run: |
-          OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest -C ${{matrix.build_type}} --output-on-failure
+          OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest -C ${{matrix.build_type}} --verbose
 
       - name: Run sonar-scanner
         if: matrix.sonarcloud_build == 'ON'
