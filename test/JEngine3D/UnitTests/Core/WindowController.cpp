@@ -268,14 +268,14 @@ TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window Focuses window and un
   auto &window2 = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
   m_Backend.PollEvents();
 
-  REQUIRE(!window.Focused());
-  REQUIRE(window2.Focused());
+  CHECK_NOFAIL(!window.Focused());
+  CHECK_NOFAIL(window2.Focused());
 
   window2.Hide();
   window.Focus();
 
   m_Backend.PollEvents();
 
-  REQUIRE(window.Focused());
-  REQUIRE(!window2.Focused());
+  CHECK_NOFAIL(window.Focused());
+  CHECK_NOFAIL(!window2.Focused());
 }
