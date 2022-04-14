@@ -3,7 +3,7 @@
 #include <JEngine3D/Core/LoggerController.hpp>// for LoggerController
 #include <JEngine3D/Core/MemoryController.hpp>// for MemoryController
 #include <JEngine3D/Platform/IPlatformBackend.hpp>// for IPlatformBackend
-#include <JEngine3D/Platform/SDLPlatformBackend.hpp>// for SDLPlatformBackend
+#include <JEngine3D/Platform/SDL/SDLPlatformBackend.hpp>// for SDLPlatformBackend
 #include <JEngine3D/Core/Types.hpp>// for Size2DI
 #include <JEngine3D/Core/Events.hpp>
 

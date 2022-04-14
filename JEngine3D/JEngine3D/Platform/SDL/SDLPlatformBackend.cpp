@@ -48,6 +48,11 @@ auto SDLPlatformBackend::Initialize() -> bool
     return false;
   }
 
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
   // ImGui - Required
   // Set SDL hint to receive mouse click events on window focus, otherwise SDL doesn't emit the event.
   // Without this, when clicking to gain focus, our widgets wouldn't activate even though they showed as hovered.

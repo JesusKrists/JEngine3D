@@ -5,229 +5,15 @@
 #include "JEngine3D/Core/Base.hpp"
 #include "JEngine3D/Core/Types.hpp"// for int32_t, basic_st...
 #include "JEngine3D/Platform/IPlatformBackend.hpp"// for IPlatformBackend
+#include "JEngine3D/Platform/IGraphicsContext.hpp"// for IPlatformBackend
 #include "JEngine3D/Core/Events.hpp"// for MousePressEvent
+#include "JEngine3D/Core/WindowController.hpp"// for MousePressEvent
+#include "JEngine3D/Core/ImGuiSupport.hpp"
 
 #include <imgui.h>
 
 namespace JE {
 
-static auto JEngine3DKeyCodeToImGuiCode(KeyCode code) -> ImGuiKey
-{
-  switch (code) {
-  case KeyCode::Tab:
-    return ImGuiKey_Tab;
-  case KeyCode::Left:
-    return ImGuiKey_LeftArrow;
-  case KeyCode::Right:
-    return ImGuiKey_RightArrow;
-  case KeyCode::Up:
-    return ImGuiKey_UpArrow;
-  case KeyCode::Down:
-    return ImGuiKey_DownArrow;
-  case KeyCode::PageUp:
-    return ImGuiKey_PageUp;
-  case KeyCode::PageDown:
-    return ImGuiKey_PageDown;
-  case KeyCode::Home:
-    return ImGuiKey_Home;
-  case KeyCode::End:
-    return ImGuiKey_End;
-  case KeyCode::Insert:
-    return ImGuiKey_Insert;
-  case KeyCode::Delete:
-    return ImGuiKey_Delete;
-  case KeyCode::Backspace:
-    return ImGuiKey_Backspace;
-  case KeyCode::Space:
-    return ImGuiKey_Space;
-  case KeyCode::Return:
-    return ImGuiKey_Enter;
-  case KeyCode::Escape:
-    return ImGuiKey_Escape;
-  case KeyCode::Quote:
-    return ImGuiKey_Apostrophe;
-  case KeyCode::Comma:
-    return ImGuiKey_Comma;
-  case KeyCode::Minus:
-    return ImGuiKey_Minus;
-  case KeyCode::Period:
-    return ImGuiKey_Period;
-  case KeyCode::Slash:
-    return ImGuiKey_Slash;
-  case KeyCode::Semicolon:
-    return ImGuiKey_Semicolon;
-  case KeyCode::Equals:
-    return ImGuiKey_Equal;
-  case KeyCode::Leftbracket:
-    return ImGuiKey_LeftBracket;
-  case KeyCode::Backslash:
-    return ImGuiKey_Backslash;
-  case KeyCode::Rightbracket:
-    return ImGuiKey_RightBracket;
-  case KeyCode::Backquote:
-    return ImGuiKey_GraveAccent;
-  case KeyCode::Capslock:
-    return ImGuiKey_CapsLock;
-  case KeyCode::ScrollLock:
-    return ImGuiKey_ScrollLock;
-  case KeyCode::NumLockClear:
-    return ImGuiKey_NumLock;
-  case KeyCode::PrintScreen:
-    return ImGuiKey_PrintScreen;
-  case KeyCode::Pause:
-    return ImGuiKey_Pause;
-  case KeyCode::KeyPad0:
-    return ImGuiKey_Keypad0;
-  case KeyCode::KeyPad1:
-    return ImGuiKey_Keypad1;
-  case KeyCode::KeyPad2:
-    return ImGuiKey_Keypad2;
-  case KeyCode::KeyPad3:
-    return ImGuiKey_Keypad3;
-  case KeyCode::KeyPad4:
-    return ImGuiKey_Keypad4;
-  case KeyCode::KeyPad5:
-    return ImGuiKey_Keypad5;
-  case KeyCode::KeyPad6:
-    return ImGuiKey_Keypad6;
-  case KeyCode::KeyPad7:
-    return ImGuiKey_Keypad7;
-  case KeyCode::KeyPad8:
-    return ImGuiKey_Keypad8;
-  case KeyCode::KeyPad9:
-    return ImGuiKey_Keypad9;
-  case KeyCode::KeyPadPeriod:
-    return ImGuiKey_KeypadDecimal;
-  case KeyCode::KeyPadDivide:
-    return ImGuiKey_KeypadDivide;
-  case KeyCode::KeyPadMultiply:
-    return ImGuiKey_KeypadMultiply;
-  case KeyCode::KeyPadMinus:
-    return ImGuiKey_KeypadSubtract;
-  case KeyCode::KeyPadPlus:
-    return ImGuiKey_KeypadAdd;
-  case KeyCode::KeyPadEnter:
-    return ImGuiKey_KeypadEnter;
-  case KeyCode::KeyPadEquals:
-    return ImGuiKey_KeypadEqual;
-  case KeyCode::LCtrl:
-    return ImGuiKey_LeftCtrl;
-  case KeyCode::LShift:
-    return ImGuiKey_LeftShift;
-  case KeyCode::LAlt:
-    return ImGuiKey_LeftAlt;
-  case KeyCode::LSuper:
-    return ImGuiKey_LeftSuper;
-  case KeyCode::RCtrl:
-    return ImGuiKey_RightCtrl;
-  case KeyCode::RShift:
-    return ImGuiKey_RightShift;
-  case KeyCode::RAlt:
-    return ImGuiKey_RightAlt;
-  case KeyCode::RSuper:
-    return ImGuiKey_RightSuper;
-  case KeyCode::Application:
-    return ImGuiKey_Menu;
-  case KeyCode::Zero:
-    return ImGuiKey_0;
-  case KeyCode::One:
-    return ImGuiKey_1;
-  case KeyCode::Two:
-    return ImGuiKey_2;
-  case KeyCode::Three:
-    return ImGuiKey_3;
-  case KeyCode::Four:
-    return ImGuiKey_4;
-  case KeyCode::Five:
-    return ImGuiKey_5;
-  case KeyCode::Six:
-    return ImGuiKey_6;
-  case KeyCode::Seven:
-    return ImGuiKey_7;
-  case KeyCode::Eight:
-    return ImGuiKey_8;
-  case KeyCode::Nine:
-    return ImGuiKey_9;
-  case KeyCode::a:
-    return ImGuiKey_A;
-  case KeyCode::b:
-    return ImGuiKey_B;
-  case KeyCode::c:
-    return ImGuiKey_C;
-  case KeyCode::d:
-    return ImGuiKey_D;
-  case KeyCode::e:
-    return ImGuiKey_E;
-  case KeyCode::f:
-    return ImGuiKey_F;
-  case KeyCode::g:
-    return ImGuiKey_G;
-  case KeyCode::h:
-    return ImGuiKey_H;
-  case KeyCode::i:
-    return ImGuiKey_I;
-  case KeyCode::j:
-    return ImGuiKey_J;
-  case KeyCode::k:
-    return ImGuiKey_K;
-  case KeyCode::l:
-    return ImGuiKey_L;
-  case KeyCode::m:
-    return ImGuiKey_M;
-  case KeyCode::n:
-    return ImGuiKey_N;
-  case KeyCode::o:
-    return ImGuiKey_O;
-  case KeyCode::p:
-    return ImGuiKey_P;
-  case KeyCode::q:
-    return ImGuiKey_Q;
-  case KeyCode::r:
-    return ImGuiKey_R;
-  case KeyCode::s:
-    return ImGuiKey_S;
-  case KeyCode::t:
-    return ImGuiKey_T;
-  case KeyCode::u:
-    return ImGuiKey_U;
-  case KeyCode::v:
-    return ImGuiKey_V;
-  case KeyCode::w:
-    return ImGuiKey_W;
-  case KeyCode::x:
-    return ImGuiKey_X;
-  case KeyCode::y:
-    return ImGuiKey_Y;
-  case KeyCode::z:
-    return ImGuiKey_Z;
-  case KeyCode::F1:
-    return ImGuiKey_F1;
-  case KeyCode::F2:
-    return ImGuiKey_F2;
-  case KeyCode::F3:
-    return ImGuiKey_F3;
-  case KeyCode::F4:
-    return ImGuiKey_F4;
-  case KeyCode::F5:
-    return ImGuiKey_F5;
-  case KeyCode::F6:
-    return ImGuiKey_F6;
-  case KeyCode::F7:
-    return ImGuiKey_F7;
-  case KeyCode::F8:
-    return ImGuiKey_F8;
-  case KeyCode::F9:
-    return ImGuiKey_F9;
-  case KeyCode::F10:
-    return ImGuiKey_F10;
-  case KeyCode::F11:
-    return ImGuiKey_F11;
-  case KeyCode::F12:
-    return ImGuiKey_F12;
-  default:
-    return ImGuiKey_None;
-  }
-}
 
 /*static void JEngine3DImGuiCreateWindow(ImGuiViewport *viewport)
 {
@@ -286,7 +72,7 @@ static void InitializeImGuiForJEngine3D()
   ASSERT(imguiIO.BackendPlatformUserData == nullptr, "Already initialized a platform backend!");
 
   // Setup backend capabilities flags
-  imguiIO.BackendPlatformUserData = static_cast<void *>(&JE::Application::Get());
+  imguiIO.BackendPlatformUserData = static_cast<void *>(&Application::Get());
   imguiIO.BackendPlatformName = "JEngine3D Backend";
   // imguiIO.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;// We can honor GetMouseCursor() values (optional)
   // imguiIO.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;// We can honor io.WantSetMousePos requests (optional,
@@ -371,15 +157,28 @@ void ImGuiLayer::OnCreate()
 }
 void ImGuiLayer::OnDestroy() {}
 
-void ImGuiLayer::OnUpdate() {}
+void ImGuiLayer::OnUpdate()
+{
+  auto &mainWindow = Application::Get().MainWindow();
+  auto &graphicsContext = mainWindow.GraphicsContext();
+
+  ImGuiIO &imguiIO = ImGui::GetIO();
+  imguiIO.DisplaySize =
+    ImVec2{ static_cast<float>(mainWindow.Size().Width), static_cast<float>(mainWindow.Size().Height) };
+
+  imguiIO.DisplayFramebufferScale =
+    ImVec2(static_cast<float>(graphicsContext.DrawableSize().Width) / imguiIO.DisplaySize.x,
+      static_cast<float>(graphicsContext.DrawableSize().Height) / imguiIO.DisplaySize.y);
+  imguiIO.DeltaTime = static_cast<float>(Application::Get().DeltaTime());
+}
 void ImGuiLayer::OnImGuiRender() {}
 
-void ImGuiLayer::OnEvent(JE::IEvent &event)
+void ImGuiLayer::OnEvent(IEvent &event)
 {
 
   ImGuiIO &imguiIO = ImGui::GetIO();
 
-  auto MouseButtonToImGuiButton = [&](MouseButton button) {
+  auto MouseButtonToImGuiButton = [](MouseButton button) {
     if (button == MouseButton::Left) { return 0; }
     if (button == MouseButton::Right) { return 1; }
     if (button == MouseButton::Middle) { return 2; }
@@ -389,55 +188,60 @@ void ImGuiLayer::OnEvent(JE::IEvent &event)
     return -1;
   };
 
-
   EventDispatcher dispatcher{ event };
-  dispatcher.Dispatch<EventType::MouseMove>([&](const IEvent &evnt) {
-    const auto &moveEvent =
-      static_cast<const MouseMoveEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    imguiIO.AddMousePosEvent(static_cast<float>(moveEvent.Position().X), static_cast<float>(moveEvent.Position().Y));
+  dispatcher.Dispatch<EventType::WindowResize>([&](const IEvent &evnt) {
+    const auto &windowResizeEvent =
+      static_cast<const WindowResizeEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    return imguiIO.WantCaptureMouse;// When true we don't capture event in app
+    const auto &window = WindowController::Get().WindowFromNativeHandle(windowResizeEvent.NativeWindowHandle());
+    if (ImGuiViewport *viewport =
+          ImGui::FindViewportByPlatformHandle(const_cast<void *>(// NOLINT(cppcoreguidelines-pro-type-const-cast)
+            static_cast<const void *>(&window)))) {
+      viewport->PlatformRequestResize = true;
+    }
+
+    return false;
   });
 
-  dispatcher.Dispatch<EventType::MouseWheel>([&](const IEvent &evnt) {
-    const auto &wheelEvent =
-      static_cast<const MouseWheelEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+  dispatcher.Dispatch<EventType::WindowClose>([&](const IEvent &evnt) {
+    const auto &windowCloseEvent =
+      static_cast<const WindowCloseEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    imguiIO.AddMouseWheelEvent(0, static_cast<float>(wheelEvent.ScrollAmount()));
+    const auto &window = WindowController::Get().WindowFromNativeHandle(windowCloseEvent.NativeWindowHandle());
+    if (ImGuiViewport *viewport =
+          ImGui::FindViewportByPlatformHandle(const_cast<void *>(// NOLINT(cppcoreguidelines-pro-type-const-cast)
+            static_cast<const void *>(&window)))) {
+      viewport->PlatformRequestClose = true;
+    }
 
-    return imguiIO.WantCaptureMouse;// When true we don't capture event in app
+    return false;
   });
 
-  dispatcher.Dispatch<EventType::MousePress>([&](const IEvent &evnt) {
-    const auto &pressEvent =
-      static_cast<const MousePressEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+  dispatcher.Dispatch<EventType::WindowMove>([&](const IEvent &evnt) {
+    const auto &windowMoveEvent =
+      static_cast<const WindowMoveEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    const auto button = MouseButtonToImGuiButton(pressEvent.Button());
+    const auto &window = WindowController::Get().WindowFromNativeHandle(windowMoveEvent.NativeWindowHandle());
+    if (ImGuiViewport *viewport =
+          ImGui::FindViewportByPlatformHandle(const_cast<void *>(// NOLINT(cppcoreguidelines-pro-type-const-cast)
+            static_cast<const void *>(&window)))) {
+      viewport->PlatformRequestMove = true;
+    }
 
-    imguiIO.AddMouseButtonEvent(button, true);
-
-    return imguiIO.WantCaptureMouse;// When true we don't capture event in app
+    return false;
   });
 
-  dispatcher.Dispatch<EventType::MouseRelease>([&](const IEvent &evnt) {
-    const auto &releaseEvent =
-      static_cast<const MouseReleaseEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-
-    const auto button = MouseButtonToImGuiButton(releaseEvent.Button());
-
-    imguiIO.AddMouseButtonEvent(button, false);
-
-    return imguiIO.WantCaptureMouse;// When true we don't capture event in app
+  dispatcher.Dispatch<EventType::WindowFocusGained>([&](const IEvent &evnt) {
+    JE::UNUSED(evnt);
+    imguiIO.AddFocusEvent(true);
+    return false;
   });
 
-  dispatcher.Dispatch<EventType::TextInput>([&](const IEvent &evnt) {
-    const auto &textInputEvent =
-      static_cast<const TextInputEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-
-    imguiIO.AddInputCharactersUTF8(std::string(textInputEvent.Text()).c_str());
-
-    return imguiIO.WantCaptureKeyboard;// When true we don't capture event in app
+  dispatcher.Dispatch<EventType::WindowFocusLost>([&](const IEvent &evnt) {
+    JE::UNUSED(evnt);
+    imguiIO.AddFocusEvent(false);
+    return false;
   });
 
   dispatcher.Dispatch<EventType::KeyPress>([&](const IEvent &evnt) {
@@ -468,16 +272,53 @@ void ImGuiLayer::OnEvent(JE::IEvent &event)
     return imguiIO.WantCaptureKeyboard;// When true we don't capture event in app
   });
 
-  dispatcher.Dispatch<EventType::WindowFocusGained>([&](const IEvent &evnt) {
-    JE::UNUSED(evnt);
-    imguiIO.AddFocusEvent(true);
-    return false;
+  dispatcher.Dispatch<EventType::TextInput>([&](const IEvent &evnt) {
+    const auto &textInputEvent =
+      static_cast<const TextInputEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    imguiIO.AddInputCharactersUTF8(std::string(textInputEvent.Text()).c_str());
+
+    return imguiIO.WantCaptureKeyboard;// When true we don't capture event in app
   });
 
-  dispatcher.Dispatch<EventType::WindowFocusLost>([&](const IEvent &evnt) {
-    JE::UNUSED(evnt);
-    imguiIO.AddFocusEvent(false);
-    return false;
+  dispatcher.Dispatch<EventType::MousePress>([&](const IEvent &evnt) {
+    const auto &pressEvent =
+      static_cast<const MousePressEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    const auto button = MouseButtonToImGuiButton(pressEvent.Button());
+
+    imguiIO.AddMouseButtonEvent(button, true);
+
+    return imguiIO.WantCaptureMouse;// When true we don't capture event in app
+  });
+
+  dispatcher.Dispatch<EventType::MouseRelease>([&](const IEvent &evnt) {
+    const auto &releaseEvent =
+      static_cast<const MouseReleaseEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    const auto button = MouseButtonToImGuiButton(releaseEvent.Button());
+
+    imguiIO.AddMouseButtonEvent(button, false);
+
+    return imguiIO.WantCaptureMouse;// When true we don't capture event in app
+  });
+
+  dispatcher.Dispatch<EventType::MouseMove>([&](const IEvent &evnt) {
+    const auto &moveEvent =
+      static_cast<const MouseMoveEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    imguiIO.AddMousePosEvent(static_cast<float>(moveEvent.Position().X), static_cast<float>(moveEvent.Position().Y));
+
+    return imguiIO.WantCaptureMouse;// When true we don't capture event in app
+  });
+
+  dispatcher.Dispatch<EventType::MouseWheel>([&](const IEvent &evnt) {
+    const auto &wheelEvent =
+      static_cast<const MouseWheelEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    imguiIO.AddMouseWheelEvent(0, static_cast<float>(wheelEvent.ScrollAmount()));
+
+    return imguiIO.WantCaptureMouse;// When true we don't capture event in app
   });
 }
 

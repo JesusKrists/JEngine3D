@@ -4,7 +4,8 @@
 #include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Core/LoggerController.hpp"
-#include "JEngine3D/Platform/SDLPlatformBackend.hpp"
+#include "JEngine3D/Platform/SDL/SDLPlatformBackend.hpp"
+#include "JEngine3D/Platform/SDL/SDLGLGraphicsContextCreator.hpp"
 #include "JEngine3D/Core/WindowController.hpp"
 #include "JEngine3D/Core/InputController.hpp"
 
@@ -19,6 +20,7 @@ inline auto CreateApplication(const std::string_view &title) -> Scope<Applicatio
   static LoggerController s_LoggerController;
 
   static SDLPlatformBackend s_SDLPlatformBackend;
+  static SDLGLGraphicsContextCreator s_SDLGLGraphicsContextCreator;
 
   static WindowController s_WindowController;
   static InputController s_InputController;

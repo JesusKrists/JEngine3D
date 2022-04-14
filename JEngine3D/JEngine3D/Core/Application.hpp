@@ -36,7 +36,7 @@ public:
 
   void Run(int32_t loopCount = -1);
 
-  [[nodiscard]] inline auto MainWindow() const -> const Window & { return m_MainWindow; }
+  [[nodiscard]] inline auto MainWindow() -> Window & { return m_MainWindow; }
   [[nodiscard]] inline auto Running() const -> bool { return m_Running; }
   [[nodiscard]] inline auto DeltaTime() const -> double { return m_DeltaTime; }
 

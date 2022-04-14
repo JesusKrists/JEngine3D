@@ -9,6 +9,7 @@ target_link_system_libraries(
   JEngine3D
   PRIVATE
   SDL2-static
+  libglew_static
   PUBLIC
   fmt::fmt
   spdlog

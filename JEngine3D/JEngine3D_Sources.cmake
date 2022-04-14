@@ -5,6 +5,7 @@ set(JEngine3D_HEADERS
     JEngine3D/Core/Events.hpp
     JEngine3D/Core/ILayer.hpp
     JEngine3D/Core/ImGuiLayer.hpp
+    JEngine3D/Core/ImGuiSupport.hpp
     JEngine3D/Core/InputController.hpp
     JEngine3D/Core/KeyCodes.hpp
     JEngine3D/Core/LayerStack.hpp
@@ -13,8 +14,12 @@ set(JEngine3D_HEADERS
     JEngine3D/Core/MouseButtons.hpp
     JEngine3D/Core/Types.hpp
     JEngine3D/Core/WindowController.hpp
+    JEngine3D/Platform/IGraphicsContext.hpp
+    JEngine3D/Platform/IGraphicsContextCreator.hpp
     JEngine3D/Platform/IPlatformBackend.hpp
-    JEngine3D/Platform/SDLPlatformBackend.hpp)
+    JEngine3D/Platform/SDL/SDLGLGraphicsContextCreator.hpp
+    JEngine3D/Platform/SDL/SDLGLGraphicsContext.hpp
+    JEngine3D/Platform/SDL/SDLPlatformBackend.hpp)
 
 set(JEngine3D_SOURCES
     JEngine3D/Core/Application.cpp
@@ -24,5 +29,8 @@ set(JEngine3D_SOURCES
     JEngine3D/Core/LoggerController.cpp
     JEngine3D/Core/MemoryController.cpp
     JEngine3D/Core/WindowController.cpp
+    JEngine3D/Platform/IGraphicsContextCreator.cpp
     JEngine3D/Platform/IPlatformBackend.cpp
-    JEngine3D/Platform/SDLPlatformBackend.cpp)
+    JEngine3D/Platform/SDL/SDLGLGraphicsContextCreator.cpp
+    JEngine3D/Platform/SDL/SDLGLGraphicsContext.cpp
+    JEngine3D/Platform/SDL/SDLPlatformBackend.cpp)

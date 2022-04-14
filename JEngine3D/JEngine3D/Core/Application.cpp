@@ -5,9 +5,12 @@
 #include "JEngine3D/Core/WindowController.hpp"// for WindowController
 #include "JEngine3D/Core/InputController.hpp"// for InputController
 #include "JEngine3D/Platform/IPlatformBackend.hpp"// for IPlatformBackend
+#include "JEngine3D/Platform/IGraphicsContext.hpp"
 
 #include <functional>// for reference_wrapper
 #include <vector>// for vector
+
+#include <GL/glew.h>
 
 namespace JE {
 
@@ -71,10 +74,17 @@ void Application::ProcessMainLoop()
   UpdateDeltaTime();
 
   IPlatformBackend::Get().PollEvents();
+  if (!m_Running) { return; }
+
+  glClearColor(1.0F, 0.0F, 1.0F, 1.0F);
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// NOLINT(hicpp-signed-bitwise)
 
   for (const auto &layer : m_LayerStack) { layer.get().OnUpdate(); }
 
   for (const auto &layer : m_LayerStack) { layer.get().OnImGuiRender(); }
+
+  m_MainWindow.GraphicsContext().MakeCurrent();
+  m_MainWindow.GraphicsContext().SwapBuffers();
 }
 
 void Application::Run(int32_t loopCount)

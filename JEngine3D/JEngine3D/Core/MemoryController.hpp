@@ -114,6 +114,12 @@ inline auto CreateScope(Args &&...args) -> Scope<T, TAG>
   return Scope<T, TAG>(new (MemoryController::Allocate<T, TAG>(1)) T(std::forward<Args>(args)...));
 }
 
+template<typename T, MemoryTag TAG = MemoryTag::Unknown, typename BaseType, typename... Args>
+inline auto CreatePolymorphicScope(Args &&...args) -> Scope<BaseType, TAG>
+{
+  return Scope<BaseType, TAG>(new (MemoryController::Allocate<T, TAG>(1)) T(std::forward<Args>(args)...));
+}
+
 template<typename T, MemoryTag TAG = MemoryTag::Unknown> using Ref = std::shared_ptr<T>;
 
 template<typename T, MemoryTag TAG = MemoryTag::Unknown, typename... Args>

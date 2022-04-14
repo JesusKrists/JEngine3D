@@ -3,6 +3,8 @@
 #include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
 #include "JEngine3D/Core/Base.hpp"// for FindIf
 #include "JEngine3D/Core/LoggerController.hpp"// for Logger
+#include "JEngine3D/Platform/IGraphicsContext.hpp"
+#include "JEngine3D/Platform/IGraphicsContextCreator.hpp"
 
 #include <iterator>// for end
 
@@ -14,7 +16,8 @@ Window::Window(const std::string_view &title,
   const Position2DI &position,
   const WindowConfiguration &config,
   IPlatformBackend::NativeWindowHandle nativeHandle)
-  : m_NativeHandle(nativeHandle), m_Title(title), m_Size(size), m_Position(position), m_Shown(!config.Hidden)
+  : m_NativeHandle(nativeHandle), m_GraphicsContext(IGraphicsContextCreator::Get().CreateContext(m_NativeHandle)),
+    m_Title(title), m_Size(size), m_Position(position), m_Shown(!config.Hidden)
 {
   ASSERT(
     m_Title == IPlatformBackend::Get().WindowTitle(m_NativeHandle), "Window title mismatch with native window title");
@@ -33,7 +36,11 @@ Window::Window(const std::string_view &title,
   ASSERT(m_Shown == !IPlatformBackend::Get().WindowHidden(m_NativeHandle), "Window mismatch with native window hidden");
 }
 
-Window::~Window() { IPlatformBackend::Get().DestroyWindow(m_NativeHandle); }
+Window::~Window()
+{
+  m_GraphicsContext->Destroy();
+  IPlatformBackend::Get().DestroyWindow(m_NativeHandle);
+}
 
 void Window::SetTitle(const std::string_view &title)
 {
@@ -194,7 +201,7 @@ void WindowController::DestroyWindow(Window &window)
   m_Windows.erase(windowIt);
 }
 
-auto WindowController::WindowFromNativeHandle(const IPlatformBackend::NativeWindowHandle handle) -> Window &
+auto WindowController::WindowFromNativeHandle(IPlatformBackend::NativeWindowHandle handle) -> Window &
 {
   auto windowIt =
     FindIf(m_Windows, [&](const Scope<Window, MemoryTag::App> &window) { return window->NativeHandle() == handle; });
@@ -203,7 +210,7 @@ auto WindowController::WindowFromNativeHandle(const IPlatformBackend::NativeWind
   return *(*windowIt);
 }
 
-void WindowController::DestroyWindowFromNativeHandle(const IPlatformBackend::NativeWindowHandle handle)
+void WindowController::DestroyWindowFromNativeHandle(IPlatformBackend::NativeWindowHandle handle)
 {
   auto windowIt =
     FindIf(m_Windows, [&](const Scope<Window, MemoryTag::App> &window) { return window->NativeHandle() == handle; });

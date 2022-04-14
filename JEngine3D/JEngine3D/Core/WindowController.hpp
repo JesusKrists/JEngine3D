@@ -8,6 +8,7 @@
 
 namespace JE {
 
+class IGraphicsContext;
 
 class Window
 {
@@ -26,8 +27,9 @@ public:
     IPlatformBackend::NativeWindowHandle nativeHandle);
   ~Window();
 
-  // cppcheck-suppress functionConst
   [[nodiscard]] inline auto NativeHandle() const -> IPlatformBackend::NativeWindowHandle { return m_NativeHandle; }
+
+  [[nodiscard]] inline auto GraphicsContext() -> IGraphicsContext & { return *m_GraphicsContext; }
 
   [[nodiscard]] inline auto Title() const -> const std::string & { return m_Title; }
   void SetTitle(const std::string_view &title);
@@ -47,6 +49,8 @@ public:
 
 private:
   IPlatformBackend::NativeWindowHandle m_NativeHandle;
+  Scope<IGraphicsContext, MemoryTag::App> m_GraphicsContext;
+
   std::string m_Title;
   Size2DI m_Size;
   Position2DI m_Position;
@@ -72,16 +76,16 @@ public:
 
   auto CreateWindow(const std::string_view &title,
     const Size2DI &size,
-    const Position2DI &position = JE::IPlatformBackend::WINDOW_CENTER_POSITION,
+    const Position2DI &position = IPlatformBackend::WINDOW_CENTER_POSITION,
     const WindowConfiguration &config = WindowConfiguration{}) -> Window &;
   void DestroyWindow(Window &window);
   [[nodiscard]] inline auto Windows() const -> const WindowContainer & { return m_Windows; }
+  [[nodiscard]] auto WindowFromNativeHandle(IPlatformBackend::NativeWindowHandle handle) -> Window &;
 
   inline void DestroyAllWindows() { m_Windows.clear(); }
 
 private:
-  auto WindowFromNativeHandle(const IPlatformBackend::NativeWindowHandle handle) -> Window &;
-  void DestroyWindowFromNativeHandle(const IPlatformBackend::NativeWindowHandle handle);
+  void DestroyWindowFromNativeHandle(IPlatformBackend::NativeWindowHandle handle);
 
   WindowContainer m_Windows;
 

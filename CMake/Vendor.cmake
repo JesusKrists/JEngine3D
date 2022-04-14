@@ -73,3 +73,15 @@ disable_static_analysis(SDL2-static)
 ############################## ImGui #############################################
 
 include(${CMAKE_SOURCE_DIR}/CMake/ImGuiTarget.cmake)
+
+############################## glew #############################################
+
+FetchContent_Declare(
+  glew
+  GIT_REPOSITORY https://github.com/Perlmint/glew-cmake.git
+  GIT_TAG glew-cmake-2.2.0)
+
+FetchContent_MakeAvailable(glew)
+
+disable_static_analysis(libglew_static)
+disable_static_analysis(libglew_shared)

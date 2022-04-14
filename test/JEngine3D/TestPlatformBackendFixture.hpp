@@ -4,7 +4,7 @@
 #include <JEngine3D/Core/WindowController.hpp>
 #include <JEngine3D/Core/InputController.hpp>
 
-#include <JEngine3D/Platform/SDLPlatformBackend.hpp>
+#include <JEngine3D/Platform/SDL/SDLPlatformBackend.hpp>
 #include "TestPlatformBackend.hpp"// IWYU pragma: export
 
 #if defined(UNITTEST_BUILD)
