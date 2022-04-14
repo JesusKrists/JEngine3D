@@ -10,7 +10,7 @@ class SDLGLGraphicsContext : public IGraphicsContext
   using IGraphicsContext::IGraphicsContext;
 
 public:
-  auto DrawableSize() -> Size2DI override;
+  [[nodiscard]] auto DrawableSize() -> Size2DI override;
 
   void MakeCurrent() override;
   void SwapBuffers() override;

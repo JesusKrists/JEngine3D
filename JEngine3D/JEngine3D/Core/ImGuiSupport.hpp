@@ -1,9 +1,21 @@
 #pragma once
 
 #include "JEngine3D/Core/KeyCodes.hpp"
+#include "JEngine3D/Core/MouseButtons.hpp"
 #include <imgui.h>
 
 namespace JE {
+
+inline auto MouseButtonToImGuiButton(MouseButton button) -> int
+{
+  if (button == MouseButton::Left) { return 0; }
+  if (button == MouseButton::Right) { return 1; }
+  if (button == MouseButton::Middle) { return 2; }
+  if (button == MouseButton::X1) { return 3; }
+  if (button == MouseButton::X2) { return 4; }
+
+  return -1;
+};
 
 
 inline auto JEngine3DKeyCodeToImGuiCode(KeyCode code) -> ImGuiKey

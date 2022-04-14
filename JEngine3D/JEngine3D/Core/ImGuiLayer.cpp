@@ -178,16 +178,6 @@ void ImGuiLayer::OnEvent(IEvent &event)
 
   ImGuiIO &imguiIO = ImGui::GetIO();
 
-  auto MouseButtonToImGuiButton = [](MouseButton button) {
-    if (button == MouseButton::Left) { return 0; }
-    if (button == MouseButton::Right) { return 1; }
-    if (button == MouseButton::Middle) { return 2; }
-    if (button == MouseButton::X1) { return 3; }
-    if (button == MouseButton::X2) { return 4; }
-
-    return -1;
-  };
-
   EventDispatcher dispatcher{ event };
 
   dispatcher.Dispatch<EventType::WindowResize>([&](const IEvent &evnt) {

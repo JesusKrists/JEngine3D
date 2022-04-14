@@ -25,7 +25,7 @@ public:
 
   virtual ~IGraphicsContext() = default;
 
-  virtual auto DrawableSize() -> Size2DI = 0;
+  [[nodiscard]] virtual auto DrawableSize() -> Size2DI = 0;
 
   virtual void MakeCurrent() = 0;
   virtual void SwapBuffers() = 0;
