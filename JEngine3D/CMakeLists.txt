@@ -48,6 +48,7 @@ target_link_libraries(
   ImGui_Reference_App
   PRIVATE project_options
           SDL2-static
+          SDL2main
           ImGuiLibrary
           libglew_static)
 disable_static_analysis(ImGui_Reference_App)

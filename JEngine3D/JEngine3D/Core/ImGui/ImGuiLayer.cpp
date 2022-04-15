@@ -9,7 +9,7 @@
 #include "JEngine3D/Core/Events.hpp"// for MousePressEvent
 #include "JEngine3D/Core/WindowController.hpp"// for MousePressEvent
 #include "JEngine3D/Core/ImGui/ImGuiSupport.hpp"
-#include "JEngine3D/Core/ImGui/ImGuiSoftwareRenderer.hpp"
+#include "JEngine3D/Core/ImGui/ImGuiSoftwareRenderer.hpp"// IWYU pragma: keep
 
 #include <imgui.h>
 
@@ -159,6 +159,11 @@ void ImGuiLayer::OnCreate()
 #if defined(JE_SOFTWARE_CONTEXT)
   ImGuiSoftwareRenderer::Initialize();
 #endif
+
+  uint8_t *tex_data = nullptr;
+  int font_width = 0;
+  int font_height = 0;
+  imguiIO.Fonts->GetTexDataAsAlpha8(&tex_data, &font_width, &font_height);
 }
 void ImGuiLayer::OnDestroy()
 {
