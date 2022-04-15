@@ -10,8 +10,6 @@
 #include <functional>// for reference_wrapper
 #include <vector>// for vector
 
-#include <GL/glew.h>
-
 namespace JE {
 
 Application *Application::s_ApplicationInstance = nullptr;// NOLINT
@@ -25,6 +23,8 @@ Application::Application(const std::string_view &title)
   PushOverlay(m_ImGuiLayer);
 
   IPlatformBackend::Get().SetEventProcessor(this);
+
+  m_MainWindow.GraphicsContext().MakeCurrent();
 }
 
 void Application::OnEvent(IEvent &event)
@@ -76,12 +76,11 @@ void Application::ProcessMainLoop()
   IPlatformBackend::Get().PollEvents();
   if (!m_Running) { return; }
 
-  glClearColor(1.0F, 0.0F, 1.0F, 1.0F);
-  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// NOLINT(hicpp-signed-bitwise)
-
   for (const auto &layer : m_LayerStack) { layer.get().OnUpdate(); }
 
+  m_ImGuiLayer.Begin();
   for (const auto &layer : m_LayerStack) { layer.get().OnImGuiRender(); }
+  m_ImGuiLayer.End();
 
   m_MainWindow.GraphicsContext().MakeCurrent();
   m_MainWindow.GraphicsContext().SwapBuffers();

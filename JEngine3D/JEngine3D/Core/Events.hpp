@@ -55,7 +55,7 @@ private:
 class EventDispatcher
 {
 public:
-  explicit EventDispatcher(IEvent &event) : m_Event(event) { ASSERT(!m_Event.Handled(), "Event already handled"); }
+  explicit EventDispatcher(IEvent &event) : m_Event(event) {}
 
   template<EventType type, typename T> inline auto Dispatch(T func) -> bool
   {

@@ -27,7 +27,9 @@ auto SDLGLGraphicsContextCreator::CreateContext(IPlatformBackend::NativeWindowHa
     glewExperimental = GL_TRUE;
     auto success = glewInit();
     if (success != GLEW_OK) {
-      Logger::CoreLogger().error("GLEW failed to initialize - {}", glewGetErrorString(success));
+      Logger::CoreLogger().error("GLEW failed to initialize - {}",
+        reinterpret_cast<const char *>(// NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
+          glewGetErrorString(success)));
     }
 
     s_GlEWInitialized = true;

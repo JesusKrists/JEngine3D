@@ -137,6 +137,18 @@
             }
         },
         {
+            "name": "linux-clang-debug-SW",
+            "displayName": "clang Debug SW Context",
+            "description": "Target Linux with the clang compiler, debug build type",
+            "inherits": "conf-linux-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "USE_SDL_SOFTWARE_CONTEXT": "TRUE"
+            }
+        },
+        {
             "name": "linux-clang-release",
             "displayName": "clang Release",
             "description": "Target Linux with the clang compiler, release build type",
@@ -145,6 +157,18 @@
                 "CMAKE_C_COMPILER": "clang",
                 "CMAKE_CXX_COMPILER": "clang++",
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "linux-clang-release-SW",
+            "displayName": "clang Release SW Context",
+            "description": "Target Linux with the clang compiler, release build type",
+            "inherits": "conf-linux-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "USE_SDL_SOFTWARE_CONTEXT": "TRUE"
             }
         }
     ],
@@ -212,11 +236,25 @@
             "configurePreset": "linux-clang-debug"
         },
         {
+            "name": "test-linux-clang-debug-SW",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "linux-clang-debug-SW"
+        },
+        {
             "name": "test-linux-clang-release",
             "displayName": "Strict",
             "description": "Enable output and stop on failure",
             "inherits": "test-common",
             "configurePreset": "linux-clang-release"
+        },
+        {
+            "name": "test-linux-clang-release-SW",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "linux-clang-release-SW"
         }
     ]
 }

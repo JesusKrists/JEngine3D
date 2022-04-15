@@ -8,7 +8,8 @@
 #include "JEngine3D/Platform/IGraphicsContext.hpp"// for IPlatformBackend
 #include "JEngine3D/Core/Events.hpp"// for MousePressEvent
 #include "JEngine3D/Core/WindowController.hpp"// for MousePressEvent
-#include "JEngine3D/Core/ImGuiSupport.hpp"
+#include "JEngine3D/Core/ImGui/ImGuiSupport.hpp"
+#include "JEngine3D/Core/ImGui/ImGuiSoftwareRenderer.hpp"
 
 #include <imgui.h>
 
@@ -145,7 +146,7 @@ void ImGuiLayer::OnCreate()
   // imguiIO.ConfigViewportsNoDecoration = false;
 
 
-  // ImGui::StyleColorsDark();
+  ImGui::StyleColorsDark();
 
   // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular
   // ones. ImGuiStyle &style = ImGui::GetStyle(); if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
@@ -154,8 +155,20 @@ void ImGuiLayer::OnCreate()
   // }
 
   InitializeImGuiForJEngine3D();
+
+#if defined(JE_SOFTWARE_CONTEXT)
+  ImGuiSoftwareRenderer::Initialize();
+#endif
 }
-void ImGuiLayer::OnDestroy() {}
+void ImGuiLayer::OnDestroy()
+{
+
+#if defined(JE_SOFTWARE_CONTEXT)
+  ImGuiSoftwareRenderer::Destroy();
+#endif
+
+  ImGui::DestroyContext();
+}
 
 void ImGuiLayer::OnUpdate()
 {
@@ -310,6 +323,19 @@ void ImGuiLayer::OnEvent(IEvent &event)
 
     return imguiIO.WantCaptureMouse;// When true we don't capture event in app
   });
+}
+
+
+void ImGuiLayer::Begin() { ImGui::NewFrame(); }// NOLINT(readability-convert-member-functions-to-static)
+
+void ImGuiLayer::End()// NOLINT(readability-convert-member-functions-to-static)
+{
+  ImGui::Render();
+
+
+#if defined(JE_SOFTWARE_CONTEXT)
+  ImGuiSoftwareRenderer::RenderImGui(Application::Get().MainWindow().GraphicsContext());
+#endif
 }
 
 

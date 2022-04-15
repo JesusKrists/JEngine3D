@@ -10,6 +10,7 @@ target_link_system_libraries(
   PRIVATE
   SDL2-static
   libglew_static
+  ImGui_SWLibrary
   PUBLIC
   fmt::fmt
   spdlog
@@ -33,4 +34,20 @@ if(ENABLE_DEBUG_BREAK)
   set(JEngine3D_DEFINITIONS ${JEngine3D_DEFINITIONS} JE_ENABLE_DEBUGBREAK)
 endif()
 
+if(USE_SDL_SOFTWARE_CONTEXT)
+  set(JEngine3D_DEFINITIONS ${JEngine3D_DEFINITIONS} JE_SOFTWARE_CONTEXT)
+endif()
+
 target_compile_definitions(JEngine3D PUBLIC ${JEngine3D_DEFINITIONS})
+
+#############################################################################################
+include(${CMAKE_SOURCE_DIR}/CMake/DisableStaticAnalysis.cmake)
+
+add_executable(ImGui_Reference_App JEngine3D/Core/ImGui/SDL_Opengl_Reference_App.cpp)
+target_link_libraries(
+  ImGui_Reference_App
+  PRIVATE project_options
+          SDL2-static
+          ImGuiLibrary
+          libglew_static)
+disable_static_analysis(ImGui_Reference_App)

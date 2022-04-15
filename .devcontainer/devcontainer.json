@@ -23,7 +23,7 @@
 	"remoteEnv": {
 		"DISPLAY": "${localEnv:DISPLAY}",
 		"XAUTHORITY": "${localEnv:XAUTHORITY}",
-		"ASAN_OPTIONS": "fast_unwind_on_malloc=0",
+		"ASAN_OPTIONS": "fast_unwind_on_malloc=0:suppressions=${workspaceFolder}/ASAN.supp",
 		"LSAN_OPTIONS": "print_suppressions=false:suppressions=${workspaceFolder}/LSAN.supp"
 	},
 	// Set *default* container specific settings.json values on container create.

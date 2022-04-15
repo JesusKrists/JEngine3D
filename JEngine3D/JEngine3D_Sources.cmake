@@ -1,11 +1,12 @@
 set(JEngine3D_HEADERS
+    JEngine3D/Core/ImGui/ImGuiLayer.hpp
+    JEngine3D/Core/ImGui/ImGuiSoftwareRenderer.hpp
+    JEngine3D/Core/ImGui/ImGuiSupport.hpp
     JEngine3D/Core/Application.hpp
     JEngine3D/Core/Assert.hpp
     JEngine3D/Core/Base.hpp
     JEngine3D/Core/Events.hpp
     JEngine3D/Core/ILayer.hpp
-    JEngine3D/Core/ImGuiLayer.hpp
-    JEngine3D/Core/ImGuiSupport.hpp
     JEngine3D/Core/InputController.hpp
     JEngine3D/Core/KeyCodes.hpp
     JEngine3D/Core/LayerStack.hpp
@@ -17,13 +18,16 @@ set(JEngine3D_HEADERS
     JEngine3D/Platform/IGraphicsContext.hpp
     JEngine3D/Platform/IGraphicsContextCreator.hpp
     JEngine3D/Platform/IPlatformBackend.hpp
-    JEngine3D/Platform/SDL/SDLGLGraphicsContextCreator.hpp
     JEngine3D/Platform/SDL/SDLGLGraphicsContext.hpp
-    JEngine3D/Platform/SDL/SDLPlatformBackend.hpp)
+    JEngine3D/Platform/SDL/SDLGLGraphicsContextCreator.hpp
+    JEngine3D/Platform/SDL/SDLPlatformBackend.hpp
+    JEngine3D/Platform/SDL/SDLSoftwareGraphicsContext.hpp
+    JEngine3D/Platform/SDL/SDLSoftwareGraphicsContextCreator.hpp)
 
 set(JEngine3D_SOURCES
+    JEngine3D/Core/ImGui/ImGuiLayer.cpp
+    JEngine3D/Core/ImGui/ImGuiSoftwareRenderer.cpp
     JEngine3D/Core/Application.cpp
-    JEngine3D/Core/ImGuiLayer.cpp
     JEngine3D/Core/InputController.cpp
     JEngine3D/Core/LayerStack.cpp
     JEngine3D/Core/LoggerController.cpp
@@ -31,6 +35,8 @@ set(JEngine3D_SOURCES
     JEngine3D/Core/WindowController.cpp
     JEngine3D/Platform/IGraphicsContextCreator.cpp
     JEngine3D/Platform/IPlatformBackend.cpp
-    JEngine3D/Platform/SDL/SDLGLGraphicsContextCreator.cpp
     JEngine3D/Platform/SDL/SDLGLGraphicsContext.cpp
-    JEngine3D/Platform/SDL/SDLPlatformBackend.cpp)
+    JEngine3D/Platform/SDL/SDLGLGraphicsContextCreator.cpp
+    JEngine3D/Platform/SDL/SDLPlatformBackend.cpp
+    JEngine3D/Platform/SDL/SDLSoftwareGraphicsContext.cpp
+    JEngine3D/Platform/SDL/SDLSoftwareGraphicsContextCreator.cpp)

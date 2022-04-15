@@ -4,7 +4,7 @@
 #include "JEngine3D/Core/LayerStack.hpp"
 #include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
 #include "JEngine3D/Core/Types.hpp"// for Size2D, int32_t, string_view
-#include "JEngine3D/Core/ImGuiLayer.hpp"
+#include "JEngine3D/Core/ImGui/ImGuiLayer.hpp"
 
 namespace JE {
 

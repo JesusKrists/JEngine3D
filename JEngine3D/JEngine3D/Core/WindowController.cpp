@@ -111,6 +111,8 @@ void WindowController::OnEvent(IEvent &event)
     ASSERT(window.Size() == IPlatformBackend::Get().WindowSize(window.NativeHandle()),
       "Window size and native window size mismatch");
 
+    window.GraphicsContext().Resize(resizeEvent.Size());
+
     return true;
   });
 
@@ -144,7 +146,8 @@ void WindowController::OnEvent(IEvent &event)
     auto &window = WindowFromNativeHandle(hideEvent.NativeWindowHandle());
     window.m_Shown = false;
 
-    ASSERT(IPlatformBackend::Get().WindowHidden(window.NativeHandle()), "Window and Native window hidden mismatch");
+    // TODO(JesusKrists): Make no debugbreak assert
+    // ASSERT(IPlatformBackend::Get().WindowHidden(window.NativeHandle()), "Window and Native window hidden mismatch");
 
     return true;
   });

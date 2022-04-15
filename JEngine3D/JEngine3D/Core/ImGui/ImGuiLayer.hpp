@@ -19,6 +19,11 @@ public:
   void OnImGuiRender() override;
 
   void OnEvent(JE::IEvent &event) override;
+
+  // cppcheck-suppress functionStatic
+  void Begin();
+  // cppcheck-suppress functionStatic
+  void End();
 };
 
 }// namespace JE

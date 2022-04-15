@@ -6,6 +6,8 @@
 
 #include <exception>// for exception
 
+#include <imgui.h>
+
 namespace JE {
 class IEvent;
 }
@@ -21,7 +23,7 @@ void TestLayer::OnUpdate()
 {
   JE::Logger::ClientLogger().info("App delta time - {}", JE::Application::Get().DeltaTime() * MILISECONDS);
 }
-void TestLayer::OnImGuiRender() {}
+void TestLayer::OnImGuiRender() { ImGui::ShowDemoWindow(); }
 
 void TestLayer::OnEvent(JE::IEvent &event) { JE::UNUSED(event); }
 

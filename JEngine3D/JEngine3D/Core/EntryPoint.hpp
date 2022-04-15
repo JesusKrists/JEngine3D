@@ -6,10 +6,17 @@
 #include "JEngine3D/Core/LoggerController.hpp"
 #include "JEngine3D/Platform/SDL/SDLPlatformBackend.hpp"
 #include "JEngine3D/Platform/SDL/SDLGLGraphicsContextCreator.hpp"
+#include "JEngine3D/Platform/SDL/SDLSoftwareGraphicsContextCreator.hpp"
 #include "JEngine3D/Core/WindowController.hpp"
 #include "JEngine3D/Core/InputController.hpp"
 
 namespace JE {
+
+#if defined(JE_SOFTWARE_CONTEXT)
+using GraphicsContextCreator = SDLSoftwareGraphicsContextCreator;
+#else
+using GraphicsContextCreator = SDLGLGraphicsContextCreator;
+#endif
 
 inline auto CreateApplication(const std::string_view &title) -> Scope<Application, MemoryTag::App>
 {
@@ -20,7 +27,7 @@ inline auto CreateApplication(const std::string_view &title) -> Scope<Applicatio
   static LoggerController s_LoggerController;
 
   static SDLPlatformBackend s_SDLPlatformBackend;
-  static SDLGLGraphicsContextCreator s_SDLGLGraphicsContextCreator;
+  static GraphicsContextCreator s_GraphicsContextCreator;
 
   static WindowController s_WindowController;
   static InputController s_InputController;
