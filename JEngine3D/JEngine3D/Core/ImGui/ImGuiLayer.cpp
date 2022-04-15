@@ -159,15 +159,14 @@ void ImGuiLayer::OnCreate()
   InitializeImGuiForJEngine3D();
 
   // Load default font
-  ImFontConfig fontConfig;
+  /*ImFontConfig fontConfig;
   fontConfig.FontDataOwnedByAtlas = false;
-  fontConfig.GlyphOffset = ImVec2{ 2, 0 };
   ImFont *robotoFont =
     imguiIO.Fonts->AddFontFromMemoryTTF(const_cast<void *>(reinterpret_cast<const void *>(ROBOTO_REGULAR)),// NOLINT
       sizeof(ROBOTO_REGULAR),
       ROBOTO_FONT_PIXEL_SIZE,
       &fontConfig);
-  imguiIO.FontDefault = robotoFont;
+  imguiIO.FontDefault = robotoFont;*/
 
 #if defined(JE_SOFTWARE_CONTEXT)
   ImGuiSoftwareRenderer::Initialize();

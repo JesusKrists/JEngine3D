@@ -15,11 +15,10 @@ auto SDLGLGraphicsContext::DrawableSize() -> Size2DI
 
 void SDLGLGraphicsContext::MakeCurrent()
 {
-  SDL_GL_MakeCurrent(
-    static_cast<SDL_Window *>(NativeWindowHandle()), static_cast<SDL_GLContext>(NativeContextHandle()));
+  SDL_GL_MakeCurrent(static_cast<SDL_Window *>(NativeWindowHandle()), NativeContextHandle());
 }
 void SDLGLGraphicsContext::SwapBuffers() { SDL_GL_SwapWindow(static_cast<SDL_Window *>(NativeWindowHandle())); }
 
-void SDLGLGraphicsContext::Destroy() { SDL_GL_DeleteContext(static_cast<SDL_GLContext>(NativeContextHandle())); }
+void SDLGLGraphicsContext::Destroy() { SDL_GL_DeleteContext(NativeContextHandle()); }
 
 }// namespace JE

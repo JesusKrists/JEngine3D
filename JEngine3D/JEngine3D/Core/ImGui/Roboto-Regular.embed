@@ -1,4 +1,4 @@
-constexpr auto ROBOTO_FONT_PIXEL_SIZE = 12.0F;
+constexpr auto ROBOTO_FONT_PIXEL_SIZE = 16.0F;
 
 constexpr uint8_t ROBOTO_REGULAR[] =
 {
