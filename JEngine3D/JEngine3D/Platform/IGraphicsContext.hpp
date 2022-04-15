@@ -17,7 +17,10 @@ public:
     IGraphicsContextCreator::NativeContextHandle contextHandle)
     : m_WindowHandle(windowHandle), m_ContextHandle(contextHandle)
   {}
+
+  // cppcheck-suppress functionConst
   [[nodiscard]] auto inline NativeWindowHandle() -> IPlatformBackend::NativeWindowHandle { return m_WindowHandle; }
+  // cppcheck-suppress functionConst
   [[nodiscard]] auto inline NativeContextHandle() -> IGraphicsContextCreator::NativeContextHandle
   {
     return m_ContextHandle;

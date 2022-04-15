@@ -11,6 +11,8 @@
 #include "JEngine3D/Core/ImGui/ImGuiSupport.hpp"
 #include "JEngine3D/Core/ImGui/ImGuiSoftwareRenderer.hpp"// IWYU pragma: keep
 
+#include "Roboto-Regular.embed"
+
 #include <imgui.h>
 
 namespace JE {
@@ -156,14 +158,25 @@ void ImGuiLayer::OnCreate()
 
   InitializeImGuiForJEngine3D();
 
+  // Load default font
+  ImFontConfig fontConfig;
+  fontConfig.FontDataOwnedByAtlas = false;
+  fontConfig.GlyphOffset = ImVec2{ 2, 0 };
+  ImFont *robotoFont =
+    imguiIO.Fonts->AddFontFromMemoryTTF(const_cast<void *>(reinterpret_cast<const void *>(ROBOTO_REGULAR)),// NOLINT
+      sizeof(ROBOTO_REGULAR),
+      ROBOTO_FONT_PIXEL_SIZE,
+      &fontConfig);
+  imguiIO.FontDefault = robotoFont;
+
 #if defined(JE_SOFTWARE_CONTEXT)
   ImGuiSoftwareRenderer::Initialize();
-#endif
-
+#else
   uint8_t *tex_data = nullptr;
   int font_width = 0;
   int font_height = 0;
   imguiIO.Fonts->GetTexDataAsAlpha8(&tex_data, &font_width, &font_height);
+#endif
 }
 void ImGuiLayer::OnDestroy()
 {

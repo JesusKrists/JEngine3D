@@ -36,6 +36,7 @@ public:
 
   void Run(int32_t loopCount = -1);
 
+  // cppcheck-suppress functionConst
   [[nodiscard]] inline auto MainWindow() -> Window & { return m_MainWindow; }
   [[nodiscard]] inline auto Running() const -> bool { return m_Running; }
   [[nodiscard]] inline auto DeltaTime() const -> double { return m_DeltaTime; }

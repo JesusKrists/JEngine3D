@@ -23,6 +23,12 @@
    ...
    fun:glewInit
 }
+{
+   glxewInitFalsePositives
+   Memcheck:Leak
+   ...
+   fun:glxewInit
+}
 ################################################################################
 {
    DLInitFalsePositives

@@ -12,7 +12,7 @@ namespace JE {
 class IEvent;
 }
 
-static constexpr auto MILISECONDS = 1000;
+// static constexpr auto MILISECONDS = 1000;
 
 namespace JEditor {
 
@@ -21,7 +21,7 @@ void TestLayer::OnDestroy() {}
 
 void TestLayer::OnUpdate()
 {
-  JE::Logger::ClientLogger().info("App delta time - {}", JE::Application::Get().DeltaTime() * MILISECONDS);
+  // JE::Logger::ClientLogger().info("App delta time - {}", JE::Application::Get().DeltaTime() * MILISECONDS);
 }
 void TestLayer::OnImGuiRender() { ImGui::ShowDemoWindow(); }
 

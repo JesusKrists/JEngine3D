@@ -30,7 +30,10 @@ Application::Application(const std::string_view &title)
 void Application::OnEvent(IEvent &event)
 {
 
-  for (const auto &layer : m_LayerStack) { layer.get().OnEvent(event); }
+  for (auto layerIt = std::rbegin(m_LayerStack); layerIt != std::rend(m_LayerStack); ++layerIt) {
+    layerIt->get().OnEvent(event);
+    if (event.Handled()) { return; }
+  }
 
   if (event.Category() == EventCategory::Window) {
     WindowController::Get().OnEvent(event);
