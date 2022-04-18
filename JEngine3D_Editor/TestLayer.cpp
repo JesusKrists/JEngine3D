@@ -1,10 +1,6 @@
 #include "TestLayer.hpp"
 
-#include <JEngine3D/Core/Application.hpp>
 #include <JEngine3D/Core/Base.hpp>
-#include <JEngine3D/Core/LoggerController.hpp>// for Logger
-
-#include <exception>// for exception
 
 #include <imgui.h>
 

@@ -41,6 +41,19 @@ public:
 
   [[nodiscard]] auto WindowFocused(NativeWindowHandle handle) -> bool override;
   void FocusWindow(NativeWindowHandle handle) override;
+  [[nodiscard]] auto FocusedWindow() -> NativeWindowHandle override;
+
+  [[nodiscard]] auto WindowMinimized(NativeWindowHandle handle) -> bool override;
+  void MinimizeWindow(NativeWindowHandle handle) override;
+  void MaximizeWindow(NativeWindowHandle handle) override;
+
+  [[nodiscard]] auto GetMonitorCount() -> int32_t override;
+  [[nodiscard]] auto GetDisplayBounds(int32_t displayIndex) -> RectangleI override;
+  [[nodiscard]] auto GetDisplayUsableBounds(int32_t displayIndex) -> RectangleI override;
+  [[nodiscard]] auto GetDisplayDPI(int32_t displayIndex) -> float override;
+
+  void CaptureMouse() override;
+  void ReleaseMouse() override;
 
   void PollEvents() override;
   void PushEvent(IEvent &event) override;

@@ -170,6 +170,18 @@
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo",
                 "USE_SDL_SOFTWARE_CONTEXT": "TRUE"
             }
+        },
+        {
+            "name": "linux-clang-dist-SW",
+            "displayName": "clang Dist SW Context",
+            "description": "Target Linux with the clang compiler, release build type",
+            "inherits": "conf-linux-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_BUILD_TYPE": "Release",
+                "USE_SDL_SOFTWARE_CONTEXT": "TRUE"
+            }
         }
     ],
     "testPresets": [
@@ -255,6 +267,13 @@
             "description": "Enable output and stop on failure",
             "inherits": "test-common",
             "configurePreset": "linux-clang-release-SW"
+        },
+        {
+            "name": "test-linux-clang-dist-SW",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "linux-clang-dist-SW"
         }
     ]
 }

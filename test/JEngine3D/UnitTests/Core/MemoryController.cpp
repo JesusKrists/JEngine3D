@@ -4,6 +4,7 @@
 #include <JEngine3D/Core/Base.hpp>// for FindIf
 
 #include <iterator>// for end
+#include <cstddef>// for size_t
 
 class MemoryControllerTestsFixture
 {

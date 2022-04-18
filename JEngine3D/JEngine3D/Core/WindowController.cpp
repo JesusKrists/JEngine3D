@@ -17,7 +17,8 @@ Window::Window(const std::string_view &title,
   const WindowConfiguration &config,
   IPlatformBackend::NativeWindowHandle nativeHandle)
   : m_NativeHandle(nativeHandle), m_GraphicsContext(IGraphicsContextCreator::Get().CreateContext(m_NativeHandle)),
-    m_Title(title), m_Size(size), m_Position(position), m_Shown(!config.Hidden)
+    m_Title(title), m_Size(size), m_Position(position), m_Shown(!config.Hidden), m_Focused(true),
+    m_Minimized(config.Minimized)
 {
   ASSERT(
     m_Title == IPlatformBackend::Get().WindowTitle(m_NativeHandle), "Window title mismatch with native window title");
@@ -34,6 +35,9 @@ Window::Window(const std::string_view &title,
     m_Position = IPlatformBackend::Get().WindowPosition(m_NativeHandle);
   }
   ASSERT(m_Shown == !IPlatformBackend::Get().WindowHidden(m_NativeHandle), "Window mismatch with native window hidden");
+  m_Focused = IPlatformBackend::Get().WindowFocused(m_NativeHandle);
+  ASSERT(m_Minimized == IPlatformBackend::Get().WindowMinimized(m_NativeHandle),
+    "Window mismatch with native window minimize");
 }
 
 Window::~Window()
@@ -76,9 +80,20 @@ void Window::Focus()
 {
   Show();
   IPlatformBackend::Get().FocusWindow(m_NativeHandle);
+  m_Focused = true;
 }
 
-auto Window::Focused() const -> bool { return IPlatformBackend::Get().WindowFocused(m_NativeHandle); }
+void Window::Minimize()
+{
+  IPlatformBackend::Get().MinimizeWindow(m_NativeHandle);
+  m_Minimized = true;
+}
+
+void Window::Maximize()
+{
+  IPlatformBackend::Get().MaximizeWindow(m_NativeHandle);
+  m_Minimized = false;
+}
 
 //////////////////////////////////////////////////////////////////////////////////////
 
@@ -168,8 +183,10 @@ void WindowController::OnEvent(IEvent &event)
     const auto &focusEvent =
       static_cast<const WindowFocusGainedEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    const auto &window = WindowFromNativeHandle(focusEvent.NativeWindowHandle());
-    ASSERT(IPlatformBackend::Get().WindowFocused(window.NativeHandle()), "Window and Native window focus mismatch");
+    auto &window = WindowFromNativeHandle(focusEvent.NativeWindowHandle());
+    window.m_Focused = true;
+
+    // ASSERT(IPlatformBackend::Get().WindowFocused(window.NativeHandle()), "Window and Native window focus mismatch");
 
     return true;
   });
@@ -178,8 +195,36 @@ void WindowController::OnEvent(IEvent &event)
     const auto &focusEvent =
       static_cast<const WindowFocusLostEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    const auto &window = WindowFromNativeHandle(focusEvent.NativeWindowHandle());
+    auto &window = WindowFromNativeHandle(focusEvent.NativeWindowHandle());
+    window.m_Focused = false;
+
     ASSERT(!IPlatformBackend::Get().WindowFocused(window.NativeHandle()), "Window and Native window focus mismatch");
+
+    return true;
+  });
+
+  dispatcher.Dispatch<EventType::WindowMinimized>([&](const IEvent &evnt) {
+    const auto &minimizeEvent =
+      static_cast<const WindowMinimizedEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    auto &window = WindowFromNativeHandle(minimizeEvent.NativeWindowHandle());
+    window.m_Minimized = true;
+
+    ASSERT(
+      IPlatformBackend::Get().WindowMinimized(window.NativeHandle()), "Window and Native window minimized mismatch");
+
+    return true;
+  });
+
+  dispatcher.Dispatch<EventType::WindowMaximized>([&](const IEvent &evnt) {
+    const auto &maximizeEvent =
+      static_cast<const WindowMaximizedEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    auto &window = WindowFromNativeHandle(maximizeEvent.NativeWindowHandle());
+    window.m_Minimized = false;
+
+    ASSERT(
+      !IPlatformBackend::Get().WindowMinimized(window.NativeHandle()), "Window and Native window minimized mismatch");
 
     return true;
   });

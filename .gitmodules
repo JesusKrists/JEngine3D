@@ -1,0 +1,24 @@
+[submodule "Catch2"]
+    path = out/build/_deps/catch2-src
+    url = dummy_string_to_satisfy_vscode
+[submodule "docopt"]
+    path = out/build/_deps/docopt-src
+    url = dummy_string_to_satisfy_vscode
+[submodule "fmt"]
+    path = out/build/_deps/fmt-src
+    url = dummy_string_to_satisfy_vscode
+[submodule "glew"]
+    path = out/build/_deps/glew-src
+    url = dummy_string_to_satisfy_vscode
+[submodule "ImGui_SW"]
+    path = out/build/_deps/imgui_sw-src
+    url = dummy_string_to_satisfy_vscode
+[submodule "ImGui"]
+    path = out/build/_deps/imgui-src
+    url = dummy_string_to_satisfy_vscode
+[submodule "SDL2"]
+    path = out/build/_deps/sdl2-src
+    url = dummy_string_to_satisfy_vscode
+[submodule "spdlog"]
+    path = out/build/_deps/spdlog-src
+    url = dummy_string_to_satisfy_vscode

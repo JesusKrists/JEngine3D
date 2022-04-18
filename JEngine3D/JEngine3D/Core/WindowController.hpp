@@ -45,8 +45,12 @@ public:
   void Show();
   void Hide();
 
-  [[nodiscard]] auto Focused() const -> bool;
+  [[nodiscard]] inline auto Focused() const -> bool { return m_Focused; }
   void Focus();
+
+  [[nodiscard]] inline auto Minimized() const -> bool { return m_Minimized; }
+  void Minimize();
+  void Maximize();
 
 private:
   IPlatformBackend::NativeWindowHandle m_NativeHandle;
@@ -56,6 +60,8 @@ private:
   Size2DI m_Size;
   Position2DI m_Position;
   bool m_Shown;
+  bool m_Focused;
+  bool m_Minimized;
 };
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)

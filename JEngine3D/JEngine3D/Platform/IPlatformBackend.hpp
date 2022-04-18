@@ -12,6 +12,8 @@ class IEvent;
 struct WindowConfiguration
 {
   bool Hidden = false;
+  bool Minimized = false;
+  bool Decorated = true;
 };
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
@@ -71,6 +73,19 @@ public:
 
   [[nodiscard]] virtual auto WindowFocused(NativeWindowHandle handle) -> bool = 0;
   virtual void FocusWindow(NativeWindowHandle handle) = 0;
+  [[nodiscard]] virtual auto FocusedWindow() -> NativeWindowHandle = 0;
+
+  [[nodiscard]] virtual auto WindowMinimized(NativeWindowHandle handle) -> bool = 0;
+  virtual void MinimizeWindow(NativeWindowHandle handle) = 0;
+  virtual void MaximizeWindow(NativeWindowHandle handle) = 0;
+
+  [[nodiscard]] virtual auto GetMonitorCount() -> int32_t = 0;
+  [[nodiscard]] virtual auto GetDisplayBounds(int32_t displayIndex) -> RectangleI = 0;
+  [[nodiscard]] virtual auto GetDisplayUsableBounds(int32_t displayIndex) -> RectangleI = 0;
+  [[nodiscard]] virtual auto GetDisplayDPI(int32_t displayIndex) -> float = 0;
+
+  virtual void CaptureMouse() = 0;
+  virtual void ReleaseMouse() = 0;
 
   virtual void PollEvents() = 0;
   virtual void PushEvent(IEvent &event) = 0;

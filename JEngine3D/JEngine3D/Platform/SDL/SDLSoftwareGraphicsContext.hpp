@@ -8,7 +8,7 @@
 
 namespace JE {
 
-class SDLSoftwareGraphicsContext : public IGraphicsContext
+class SDLSoftwareGraphicsContext final : public IGraphicsContext
 {
 public:
   using NativeTextureHandle = void *;
@@ -24,12 +24,16 @@ public:
 
   void Destroy() override;
 
+  void Clear();
+
   [[nodiscard]] inline auto PixelPtr() -> void *
   {
     ASSERT(m_PixelPtr, "Context not set to current");
     return m_PixelPtr;
   }
   [[nodiscard]] inline auto Pitch() const -> int32_t { return m_Pitch; }
+
+  [[nodiscard]] auto RendererSize() -> Size2DI;
 
 private:
   NativeTextureHandle m_Texture;

@@ -6,7 +6,7 @@
 
 namespace JE {
 
-class SDLGLGraphicsContext : public IGraphicsContext
+class SDLGLGraphicsContext final : public IGraphicsContext
 {
   using IGraphicsContext::IGraphicsContext;
 

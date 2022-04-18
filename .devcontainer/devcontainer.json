@@ -23,8 +23,8 @@
 	"remoteEnv": {
 		"DISPLAY": "${localEnv:DISPLAY}",
 		"XAUTHORITY": "${localEnv:XAUTHORITY}",
-		"ASAN_OPTIONS": "fast_unwind_on_malloc=0:suppressions=${workspaceFolder}/ASAN.supp",
-		"LSAN_OPTIONS": "print_suppressions=false:suppressions=${workspaceFolder}/LSAN.supp"
+		"ASAN_OPTIONS": "fast_unwind_on_malloc=0:suppressions=/workspaces/JEngine3D/ASAN.supp",
+		"LSAN_OPTIONS": "print_suppressions=false:suppressions=/workspaces/JEngine3D/LSAN.supp"
 	},
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
@@ -34,7 +34,7 @@
 		"cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
 		"editor.formatOnSave": true,
 		"workbench.iconTheme": "vscode-icons",
-		"workbench.colorTheme": "Default Dark+",
+		"workbench.colorTheme": "Ayu Dark Bordered",
 		"editor.fontFamily": "Source Code Pro, Consolas, 'Courier New', monospace",
 		"tabnine.experimentalAutoImports": true,
 		"files.exclude": {
@@ -65,7 +65,8 @@
 		"TabNine.tabnine-vscode",
 		"vscode-icons-team.vscode-icons",
 		"cheshirekow.cmake-format",
-		"Guyutongxue.cpp-reference"
+		"Guyutongxue.cpp-reference",
+		"teabyii.ayu"
 	],
 	"mounts": [
 		"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",

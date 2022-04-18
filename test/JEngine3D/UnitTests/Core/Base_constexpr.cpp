@@ -2,6 +2,8 @@
 
 #include <JEngine3D/Core/Base.hpp>
 
+#include <cstddef>// for size_t
+
 TEST_CASE("JE::BIT returns shifted bit from bit index", "[JE::BIT]")
 {
   static constexpr auto firstBit = JE::BIT(0);

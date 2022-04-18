@@ -9,6 +9,7 @@
 
 #include <functional>// for reference_wrapper
 #include <vector>// for vector
+#include <iterator>// for rbegin, rend
 
 namespace JE {
 
@@ -36,6 +37,13 @@ void Application::OnEvent(IEvent &event)
   }
 
   if (event.Category() == EventCategory::Window) {
+    EventDispatcher dispatcher{ event };
+    dispatcher.Dispatch<EventType::WindowClose>([&](const IEvent &evnt) {
+      const auto &closeEvent = static_cast<const WindowCloseEvent &>(evnt);// NOLINT(cppcoreguidelines-pro
+      if (closeEvent.NativeWindowHandle() == m_MainWindow.NativeHandle()) { m_Running = false; }
+      return false;
+    });
+
     WindowController::Get().OnEvent(event);
     if (event.Handled()) { return; }
   }
@@ -61,6 +69,12 @@ void Application::PopLayer(ILayer &layer) { m_LayerStack.PopLayer(layer); }
 
 void Application::PopOverlay(ILayer &layer) { m_LayerStack.PopOverlay(layer); }
 
+void Application::UpdateAppFocus()
+{
+  auto *focusedNativeWindow = IPlatformBackend::Get().FocusedWindow();
+  m_Focused = focusedNativeWindow != nullptr;
+}
+
 void Application::UpdateDeltaTime()
 {
   static auto s_LastFrameTicks = IPlatformBackend::Get().CurrentTicks();
@@ -74,6 +88,10 @@ void Application::UpdateDeltaTime()
 
 void Application::ProcessMainLoop()
 {
+  ++m_ProcessCount;
+
+  UpdateAppFocus();
+
   UpdateDeltaTime();
 
   IPlatformBackend::Get().PollEvents();

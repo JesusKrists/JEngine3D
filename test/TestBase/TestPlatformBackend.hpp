@@ -23,6 +23,10 @@ public:
   static constexpr uint64_t TICK_INCREMENT = 1000000;
   static constexpr uint64_t TICK_FREQUENCY = 1000000;
 
+  static constexpr auto DISPLAY_BOUNDS = JE::RectangleI{ { 0, 0 }, { 640, 480 } };
+  static constexpr auto DISPLAY_USABLE_BOUNDS = JE::RectangleI{ { 0, 0 }, { 600, 480 } };
+  static constexpr float DISPLAY_DPI = 100;
+
   [[nodiscard]] inline auto Initialize() -> bool override { return true; }
   [[nodiscard]] inline auto Initialized() -> bool override { return true; }
 
@@ -84,7 +88,7 @@ public:
     if (windowIt != std::end(m_CreatedWindows)) { windowIt->Position = position; }
   }
 
-  inline auto WindowHidden(NativeWindowHandle handle) -> bool override
+  [[nodiscard]] inline auto WindowHidden(NativeWindowHandle handle) -> bool override
   {
     auto windowIt = WindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { return !windowIt->Shown; }
@@ -103,7 +107,7 @@ public:
     if (windowIt != std::end(m_CreatedWindows)) { windowIt->Shown = false; }
   }
 
-  inline auto WindowFocused(NativeWindowHandle handle) -> bool override
+  [[nodiscard]] inline auto WindowFocused(NativeWindowHandle handle) -> bool override
   {
     auto windowIt = WindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { return windowIt->Focused; }
@@ -119,6 +123,58 @@ public:
       if (windowIter != windowIt) { windowIter->Focused = false; }
     }
   }
+
+  [[nodiscard]] inline auto FocusedWindow() -> NativeWindowHandle override
+  {
+    for (const auto &window : m_CreatedWindows) {
+      if (window.Focused) { return window.NativeHandle(); }
+    }
+
+    return nullptr;
+  }
+
+  [[nodiscard]] inline auto WindowMinimized(NativeWindowHandle handle) -> bool override
+  {
+    auto windowIt = WindowIterator(handle);
+    if (windowIt != std::end(m_CreatedWindows)) { return windowIt->Minimized; }
+    return false;
+  }
+
+  inline void MinimizeWindow(NativeWindowHandle handle) override
+  {
+    auto windowIt = WindowIterator(handle);
+    if (windowIt != std::end(m_CreatedWindows)) { windowIt->Minimized = true; }
+  }
+
+  inline void MaximizeWindow(NativeWindowHandle handle) override
+  {
+    auto windowIt = WindowIterator(handle);
+    if (windowIt != std::end(m_CreatedWindows)) { windowIt->Minimized = false; }
+  }
+
+  [[nodiscard]] inline auto GetMonitorCount() -> int32_t override { return 1; }
+
+  [[nodiscard]] inline auto GetDisplayBounds(int32_t displayIndex) -> JE::RectangleI override
+  {
+    if (displayIndex == 0) { return DISPLAY_BOUNDS; }
+    return JE::RectangleI{ { 0, 0 }, { 0, 0 } };
+  }
+
+  [[nodiscard]] inline auto GetDisplayUsableBounds(int32_t displayIndex) -> JE::RectangleI override
+  {
+    if (displayIndex == 0) { return DISPLAY_USABLE_BOUNDS; }
+    return JE::RectangleI{ { 0, 0 }, { 0, 0 } };
+  }
+
+  [[nodiscard]] inline auto GetDisplayDPI(int32_t displayIndex) -> float override
+  {
+    if (displayIndex == 0) { return DISPLAY_DPI; }
+    return 0;
+  }
+
+  inline void CaptureMouse() override {}
+
+  inline void ReleaseMouse() override {}
 
   inline void PushEvent(JE::IEvent &event) override { m_EventQueue.emplace_back(event); }
 
@@ -187,6 +243,24 @@ public:
 
       return false;
     });
+
+    dispatcher.Dispatch<JE::EventType::WindowMinimized>([&](const JE::IEvent &evnt) {
+      const auto &minimizeEvent =
+        static_cast<const JE::WindowMinimizedEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+      auto windowIt = WindowIterator(minimizeEvent.NativeWindowHandle());
+      if (windowIt != std::end(m_CreatedWindows)) { windowIt->Minimized = true; }
+
+      return false;
+    });
+
+    dispatcher.Dispatch<JE::EventType::WindowMaximized>([&](const JE::IEvent &evnt) {
+      const auto &maximizeEvent =
+        static_cast<const JE::WindowMinimizedEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+      auto windowIt = WindowIterator(maximizeEvent.NativeWindowHandle());
+      if (windowIt != std::end(m_CreatedWindows)) { windowIt->Minimized = false; }
+
+      return false;
+    });
   }
 
   inline auto CurrentTicks() -> uint64_t override
@@ -195,7 +269,7 @@ public:
     return m_CurrentTicks;
   }
 
-  inline auto TickFrequency() -> uint64_t override { return TICK_FREQUENCY; }
+  [[nodiscard]] inline auto TickFrequency() -> uint64_t override { return TICK_FREQUENCY; }
 
   inline void SetClipboardText(const std::string_view &text) override { m_ClipboardText = text; }
 
@@ -211,7 +285,8 @@ private:
       const JE::Size2DI &size,
       const JE::Position2DI &position,
       const JE::WindowConfiguration &config)
-      : ID(windowID), Title(title), Size(size), Position(position), Shown(!config.Hidden), Focused(!config.Hidden)
+      : ID(windowID), Title(title), Size(size), Position(position), Shown(!config.Hidden), Focused(!config.Hidden),
+        Minimized(config.Minimized)
     {}
 
     [[nodiscard]] inline auto NativeHandle() const -> NativeWindowHandle
@@ -224,7 +299,8 @@ private:
     JE::Size2DI Size;
     JE::Position2DI Position;
     bool Shown;
-    bool Focused = true;
+    bool Focused;
+    bool Minimized;
   };
 
   size_t m_CurrentWindowID = 0;

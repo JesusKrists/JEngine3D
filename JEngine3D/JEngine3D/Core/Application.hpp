@@ -19,7 +19,7 @@ public:
   static constexpr auto DEFAULT_SIZE = Size2DI{ 640, 480 };
 
   explicit Application(const std::string_view &title);
-  ~Application() override { s_ApplicationInstance = nullptr; }
+  ~Application() override = default;
 
   [[nodiscard]] static inline auto Get() -> Application &
   {
@@ -35,13 +35,16 @@ public:
   void PopOverlay(ILayer &layer);
 
   void Run(int32_t loopCount = -1);
+  inline void Stop() { m_Running = false; }
 
   // cppcheck-suppress functionConst
   [[nodiscard]] inline auto MainWindow() -> Window & { return m_MainWindow; }
   [[nodiscard]] inline auto Running() const -> bool { return m_Running; }
   [[nodiscard]] inline auto DeltaTime() const -> double { return m_DeltaTime; }
+  [[nodiscard]] inline auto Focused() const -> bool { return m_Focused; }
 
 private:
+  void UpdateAppFocus();
   void UpdateDeltaTime();
   void ProcessMainLoop();
 
@@ -51,6 +54,8 @@ private:
 
   bool m_Running = false;
   double m_DeltaTime = 0;
+  bool m_Focused = false;
+  int64_t m_ProcessCount = 0;
 
   static Application *s_ApplicationInstance;// NOLINT
 };

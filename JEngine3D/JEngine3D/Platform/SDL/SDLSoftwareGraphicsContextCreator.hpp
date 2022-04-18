@@ -8,7 +8,7 @@ namespace JE {
 
 class IGraphicsContext;
 
-class SDLSoftwareGraphicsContextCreator : public IGraphicsContextCreator
+class SDLSoftwareGraphicsContextCreator final : public IGraphicsContextCreator
 {
 public:
   [[nodiscard]] auto CreateContext(IPlatformBackend::NativeWindowHandle handle)

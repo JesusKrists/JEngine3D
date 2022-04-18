@@ -6,7 +6,7 @@ class IEvent;
 
 namespace JEditor {
 
-class TestLayer : public JE::ILayer
+class TestLayer final : public JE::ILayer
 {
 public:
   TestLayer() : JE::ILayer("JEditor Test Layer") {}

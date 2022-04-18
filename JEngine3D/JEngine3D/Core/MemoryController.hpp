@@ -2,6 +2,7 @@
 
 #include "JEngine3D/Core/Base.hpp"
 
+#include <cstddef>// for size_t
 #include <array>// IWYU pragma: export
 #include <utility>// IWYU pragma: export
 #include <vector>// IWYU pragma: export

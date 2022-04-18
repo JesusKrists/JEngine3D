@@ -4,6 +4,7 @@
 #include "JEngine3D/Core/Events.hpp"
 #include "JEngine3D/Core/LoggerController.hpp"// for Logger
 #include "JEngine3D/Core/Base.hpp"// for UNUSED
+#include "JEngine3D/Core/Types.hpp"
 
 #include <exception>// for exception
 #include <cstring>// IWYU pragma: keep
@@ -18,6 +19,7 @@
 #include <SDL_keycode.h>// for SDL_Keycode
 #include <SDL_clipboard.h>// for SDL_GetClipboardText
 #include <SDL_hints.h>// for SDL_SetHint, SDL_HINT...
+#include <SDL_rect.h>
 #include <SDL.h>
 
 namespace JE {
@@ -73,6 +75,16 @@ auto SDLPlatformBackend::CreateWindow(const std::string_view &title,
   const WindowConfiguration &config) -> NativeWindowHandle
 {
   ASSERT(size.Width > 0 && size.Height > 0, "Window size cannot be zero or negative");
+
+  uint32_t sdlFlags = 0;
+  sdlFlags |= SDL_WINDOW_OPENGL;
+  sdlFlags |= (config.Decorated ? SDL_WINDOW_RESIZABLE : 0);// NOLINT
+  sdlFlags |= (!config.Decorated ? SDL_WINDOW_BORDERLESS : 0);// NOLINT
+  sdlFlags |= SDL_WINDOW_ALLOW_HIGHDPI;
+  sdlFlags |= (config.Minimized ? 0 : SDL_WINDOW_INPUT_FOCUS);// NOLINT
+  sdlFlags |= (config.Minimized ? SDL_WINDOW_MINIMIZED : 0);// NOLINT
+  sdlFlags |= (config.Hidden ? SDL_WINDOW_HIDDEN : 0);// NOLINT
+
   return SDL_CreateWindow(std::string(title).c_str(),
     position != WINDOW_CENTER_POSITION ? position.X
                                        : static_cast<int32_t>(SDL_WINDOWPOS_CENTERED),// NOLINT(hicpp-signed-bitwise)
@@ -80,8 +92,7 @@ auto SDLPlatformBackend::CreateWindow(const std::string_view &title,
                                        : static_cast<int32_t>(SDL_WINDOWPOS_CENTERED),// NOLINT(hicpp-signed-bitwise)
     size.Width,
     size.Height,
-    SDL_WINDOW_OPENGL | SDL_WINDOW_RESIZABLE | SDL_WINDOW_ALLOW_HIGHDPI |// NOLINT(hicpp-signed-bitwise)
-      SDL_WINDOW_INPUT_FOCUS | (config.Hidden ? SDL_WINDOW_HIDDEN : 0));
+    sdlFlags);
 }
 
 void SDLPlatformBackend::DestroyWindow(NativeWindowHandle handle)
@@ -168,7 +179,62 @@ void SDLPlatformBackend::FocusWindow(NativeWindowHandle handle)
   SDL_SetWindowInputFocus(static_cast<SDL_Window *>(handle));
 }
 
-void SDLPlatformBackend::PollEvents()
+auto SDLPlatformBackend::FocusedWindow() -> NativeWindowHandle { return SDL_GetKeyboardFocus(); }
+
+auto SDLPlatformBackend::WindowMinimized(NativeWindowHandle handle) -> bool
+{
+  ASSERT(handle, "Window handle is null");
+  return (SDL_GetWindowFlags(static_cast<SDL_Window *>(handle)) & SDL_WINDOW_MINIMIZED) == SDL_WINDOW_MINIMIZED;
+}
+
+void SDLPlatformBackend::MinimizeWindow(NativeWindowHandle handle)
+{
+  SDL_MinimizeWindow(static_cast<SDL_Window *>(handle));
+}
+
+void SDLPlatformBackend::MaximizeWindow(NativeWindowHandle handle)
+{
+  SDL_RestoreWindow(static_cast<SDL_Window *>(handle));
+}
+
+auto SDLPlatformBackend::GetMonitorCount() -> int32_t { return SDL_GetNumVideoDisplays(); }
+
+auto SDLPlatformBackend::GetDisplayBounds(int32_t displayIndex) -> RectangleI
+{
+  SDL_Rect sdlRect;
+  RectangleI rect{};
+  SDL_GetDisplayBounds(displayIndex, &sdlRect);
+  rect.Position.X = sdlRect.x;
+  rect.Position.Y = sdlRect.y;
+  rect.Size.Width = sdlRect.w;
+  rect.Size.Height = sdlRect.h;
+  return rect;
+}
+
+auto SDLPlatformBackend::GetDisplayUsableBounds(int32_t displayIndex) -> RectangleI
+{
+  SDL_Rect sdlRect;
+  RectangleI rect{};
+  SDL_GetDisplayUsableBounds(displayIndex, &sdlRect);
+  rect.Position.X = sdlRect.x;
+  rect.Position.Y = sdlRect.y;
+  rect.Size.Width = sdlRect.w;
+  rect.Size.Height = sdlRect.h;
+  return rect;
+}
+
+auto SDLPlatformBackend::GetDisplayDPI(int32_t displayIndex) -> float
+{
+  float dpi = 0;
+  SDL_GetDisplayDPI(displayIndex, &dpi, nullptr, nullptr);
+  return dpi;
+}
+
+void SDLPlatformBackend::CaptureMouse() { SDL_CaptureMouse(SDL_TRUE); }
+
+void SDLPlatformBackend::ReleaseMouse() { SDL_CaptureMouse(SDL_FALSE); }
+
+void SDLPlatformBackend::PollEvents()// NOLINT(readability-function-cognitive-complexity)
 {
   auto ProcessWindowResizeEvent = [&](const SDL_Event &nativeEvent) {
     WindowResizeEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID),
@@ -215,38 +281,43 @@ void SDLPlatformBackend::PollEvents()
     }
 
     if (nativeEvent.type == SDL_EventType::SDL_WINDOWEVENT) {
-      switch (nativeEvent.window.event) {
-      case SDL_WindowEventID::SDL_WINDOWEVENT_SIZE_CHANGED:
-        ProcessWindowResizeEvent(nativeEvent);
-        break;
 
-      case SDL_WindowEventID::SDL_WINDOWEVENT_CLOSE:
-        ProcessWindowCloseEvent(nativeEvent);
-        break;
+      auto *window = SDL_GetWindowFromID(nativeEvent.window.windowID);
+      if (window != nullptr) {
 
-      case SDL_WindowEventID::SDL_WINDOWEVENT_MOVED:
-        ProcessWindowMoveEvent(nativeEvent);
-        break;
+        switch (nativeEvent.window.event) {
+        case SDL_WindowEventID::SDL_WINDOWEVENT_SIZE_CHANGED:
+          ProcessWindowResizeEvent(nativeEvent);
+          break;
 
-      case SDL_WindowEventID::SDL_WINDOWEVENT_HIDDEN:
-        ProcessWindowHideEvent(nativeEvent);
-        break;
+        case SDL_WindowEventID::SDL_WINDOWEVENT_CLOSE:
+          ProcessWindowCloseEvent(nativeEvent);
+          break;
 
-      case SDL_WindowEventID::SDL_WINDOWEVENT_SHOWN:
-        ProcessWindowShowEvent(nativeEvent);
-        break;
+        case SDL_WindowEventID::SDL_WINDOWEVENT_MOVED:
+          ProcessWindowMoveEvent(nativeEvent);
+          break;
 
-      case SDL_WindowEventID::SDL_WINDOWEVENT_FOCUS_GAINED:
-        ProcessWindowFocusGainedEvent(nativeEvent);
-        break;
+        case SDL_WindowEventID::SDL_WINDOWEVENT_HIDDEN:
+          ProcessWindowHideEvent(nativeEvent);
+          break;
 
-      case SDL_WindowEventID::SDL_WINDOWEVENT_FOCUS_LOST:
-        ProcessWindowFocusLostEvent(nativeEvent);
-        break;
+        case SDL_WindowEventID::SDL_WINDOWEVENT_SHOWN:
+          ProcessWindowShowEvent(nativeEvent);
+          break;
 
-      default:
-        // Nothing to do for default case
-        break;
+        case SDL_WindowEventID::SDL_WINDOWEVENT_FOCUS_GAINED:
+          ProcessWindowFocusGainedEvent(nativeEvent);
+          break;
+
+        case SDL_WindowEventID::SDL_WINDOWEVENT_FOCUS_LOST:
+          ProcessWindowFocusLostEvent(nativeEvent);
+          break;
+
+        default:
+          // Nothing to do for default case
+          break;
+        }
       }
     }
 

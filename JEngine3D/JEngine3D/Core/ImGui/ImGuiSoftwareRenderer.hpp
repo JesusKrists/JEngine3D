@@ -1,16 +1,17 @@
 #pragma once
 
 
+class ImDrawData;
 namespace JE {
 
-class IGraphicsContext;
+class Window;
 
 class ImGuiSoftwareRenderer
 {
 public:
   static void Initialize();
 
-  static void RenderImGui(IGraphicsContext &context);
+  static void RenderImGui(Window &window, ImDrawData *drawData);
 
   static void Destroy();
 };

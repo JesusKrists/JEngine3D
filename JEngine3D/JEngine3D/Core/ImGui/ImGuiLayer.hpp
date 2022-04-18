@@ -7,7 +7,7 @@ namespace JE {
 
 class IEvent;
 
-class ImGuiLayer : public ILayer
+class ImGuiLayer final : public ILayer
 {
 public:
   ImGuiLayer() : ILayer("JEngine ImGuiLayer") {}

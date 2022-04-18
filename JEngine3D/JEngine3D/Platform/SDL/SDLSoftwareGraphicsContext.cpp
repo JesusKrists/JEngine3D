@@ -7,22 +7,24 @@
 
 namespace JE {
 
-static constexpr auto CLEAR_COLOR = 0x00FF00FF;
+static constexpr auto CLEAR_COLOR = 0xFF111111;
 
 SDLSoftwareGraphicsContext::SDLSoftwareGraphicsContext(IPlatformBackend::NativeWindowHandle windowHandle,
   IGraphicsContextCreator::NativeContextHandle contextHandle)
-  : IGraphicsContext(windowHandle, contextHandle),
-    m_Texture(static_cast<void *>(SDL_CreateTexture(static_cast<SDL_Renderer *>(NativeContextHandle()),
-      SDL_PIXELFORMAT_ABGR8888,
-      SDL_TEXTUREACCESS_STREAMING,
-      SDLSoftwareGraphicsContext::DrawableSize().Width,
-      SDLSoftwareGraphicsContext::DrawableSize().Height)))
-{}
+  : IGraphicsContext(windowHandle, contextHandle), m_Texture(nullptr)
+{
+  auto size = RendererSize();
+  m_Texture = static_cast<void *>(SDL_CreateTexture(static_cast<SDL_Renderer *>(NativeContextHandle()),
+    SDL_PIXELFORMAT_ABGR8888,
+    SDL_TEXTUREACCESS_STREAMING,
+    size.Width,
+    size.Height));
+}
 
 auto SDLSoftwareGraphicsContext::DrawableSize() -> Size2DI
 {
   Size2DI size{};
-  SDL_GetRendererOutputSize(static_cast<SDL_Renderer *>(NativeContextHandle()), &size.Width, &size.Height);
+  SDL_QueryTexture(static_cast<SDL_Texture *>(m_Texture), nullptr, nullptr, &size.Width, &size.Height);
   return size;
 }
 
@@ -31,19 +33,18 @@ void SDLSoftwareGraphicsContext::Resize(const Size2DI &size)
   JE::UNUSED(size);
   ASSERT(m_PixelPtr == nullptr, "Can't resize current context");
   SDL_DestroyTexture(static_cast<SDL_Texture *>(m_Texture));
+
+  auto rendererSize = RendererSize();
   m_Texture = static_cast<void *>(SDL_CreateTexture(static_cast<SDL_Renderer *>(NativeContextHandle()),
     SDL_PIXELFORMAT_ABGR8888,
     SDL_TEXTUREACCESS_STREAMING,
-    SDLSoftwareGraphicsContext::DrawableSize().Width,
-    SDLSoftwareGraphicsContext::DrawableSize().Height));
+    rendererSize.Width,
+    rendererSize.Height));
 }
 
 void SDLSoftwareGraphicsContext::MakeCurrent()
 {
-  if (m_PixelPtr == nullptr) {
-    SDL_LockTexture(static_cast<SDL_Texture *>(m_Texture), nullptr, &m_PixelPtr, &m_Pitch);
-    std::fill_n(static_cast<uint32_t *>(m_PixelPtr), DrawableSize().Width * DrawableSize().Height, CLEAR_COLOR);
-  }
+  if (m_PixelPtr == nullptr) { SDL_LockTexture(static_cast<SDL_Texture *>(m_Texture), nullptr, &m_PixelPtr, &m_Pitch); }
 }
 void SDLSoftwareGraphicsContext::SwapBuffers()
 {
@@ -61,5 +62,17 @@ void SDLSoftwareGraphicsContext::Destroy()
   SDL_DestroyRenderer(renderer);
 }
 
+void SDLSoftwareGraphicsContext::Clear()
+{
+  ASSERT(m_PixelPtr != nullptr, "Not current context");
+  std::fill_n(static_cast<uint32_t *>(m_PixelPtr), DrawableSize().Width * DrawableSize().Height, CLEAR_COLOR);
+}
+
+auto SDLSoftwareGraphicsContext::RendererSize() -> Size2DI
+{
+  Size2DI size{};
+  SDL_GetRendererOutputSize(static_cast<SDL_Renderer *>(NativeContextHandle()), &size.Width, &size.Height);
+  return size;
+}
 
 }// namespace JE

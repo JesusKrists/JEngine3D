@@ -11,45 +11,47 @@
 #include "JEngine3D/Core/ImGui/ImGuiSupport.hpp"
 #include "JEngine3D/Core/ImGui/ImGuiSoftwareRenderer.hpp"// IWYU pragma: keep
 
-#include "Roboto-Regular.embed"
+
+// #include "Roboto-Regular.embed"
 
 #include <imgui.h>
-
+#include <array>
+#include <cstddef>// for size_t
 namespace JE {
 
+static std::array<bool, static_cast<size_t>(MouseButton::TAG_COUNT)> s_MouseButtonsPressed{};// NOLINT
 
-/*static void JEngine3DImGuiCreateWindow(ImGuiViewport *viewport)
+static auto MouseButtonsPressed() -> bool
 {
-  ImGuiViewport *mainViewport = ImGui::GetMainViewport();
-  auto &mainWindow = *static_cast<Window *>(mainViewport->PlatformHandle);
-  JE::UNUSED(mainWindow);
+  for (auto button : s_MouseButtonsPressed) {// NOLINT(readability-use-anyofallof)
+    // cppcheck-suppress useStlAlgorithm
+    if (button) { return true; }
+  }
 
-  // Share GL resources with main context
-  // SDL_GLContext backup_context = NULL;
-  // backup_context = SDL_GL_GetCurrentContext();
-  // SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
-  // SDL_GL_MakeCurrent(main_viewport_data->Window, main_viewport_data->GLContext);
+  return false;
+}
 
+static void JEngine3DImGuiCreateWindow(ImGuiViewport *viewport)
+{
+  WindowConfiguration config{};
+  config.Decorated = (viewport->Flags & ImGuiViewportFlags_NoDecoration)// NOLINT(hicpp-signed-bitwise)
+                     != ImGuiViewportFlags_NoDecoration;
   auto &window = WindowController::Get().CreateWindow("Temporary ImGui Window Title",
-    Size2DI{ static_cast<int32_t>(viewport->Size.x), static_cast<int32_t>(viewport->Size.y) });
-  SDL_CreateWindow("No Title Yet",
-    (int)viewport->Pos.x,
-    (int)viewport->Pos.y,
-    (int)viewport->Size.x,
-    (int)viewport->Size.y,
-    sdl_flags);
+    Size2DI{ static_cast<int32_t>(viewport->Size.x), static_cast<int32_t>(viewport->Size.y) },
+    Position2DI{ static_cast<int32_t>(viewport->Pos.x), static_cast<int32_t>(viewport->Pos.y) },
+    config);
 
-// GLContext = SDL_GL_CreateContext(Window);
-// SDL_GL_SetSwapInterval(0);
-
-// SDL_GL_MakeCurrent(Window, backup_context);
-
-viewport->PlatformHandle = static_cast<void *>(&window);
-viewport->PlatformUserData = nullptr;
+  viewport->PlatformHandle = static_cast<void *>(&window);
+  viewport->PlatformUserData = nullptr;
 }
 
 static void JEngine3DImGuiDestroyWindow(ImGuiViewport *viewport)
 {
+  if (viewport->PlatformUserData != nullptr) {
+    viewport->PlatformUserData = viewport->PlatformHandle = nullptr;
+    return;// If PlatformUserData is set, then it is the main window, which our Application owns
+  }
+
   auto &window = *static_cast<Window *>(viewport->PlatformHandle);
   ASSERT(&window != &JE::Application::Get().MainWindow(), "Cannot destroy MainWindow");
 
@@ -67,7 +69,75 @@ static void JEngine3DImGuiSetWindowPosition(ImGuiViewport *viewport, ImVec2 pos)
 {
   auto &window = *static_cast<Window *>(viewport->PlatformHandle);
   window.SetPosition(Position2DI{ static_cast<int32_t>(pos.x), static_cast<int32_t>(pos.y) });
-}*/
+}
+
+static auto JEngine3DImGuiGetWindowPosition(ImGuiViewport *viewport) -> ImVec2
+{
+  auto &window = *static_cast<Window *>(viewport->PlatformHandle);
+  const auto &pos = window.Position();
+  return ImVec2{ static_cast<float>(pos.X), static_cast<float>(pos.Y) };
+}
+
+static void JEngine3DImGuiSetWindowSize(ImGuiViewport *viewport, ImVec2 size)
+{
+  auto &window = *static_cast<Window *>(viewport->PlatformHandle);
+  window.SetSize(Size2DI{ static_cast<int32_t>(size.x), static_cast<int32_t>(size.y) });
+}
+
+static auto JEngine3DImGuiGetWindowSize(ImGuiViewport *viewport) -> ImVec2
+{
+  auto &window = *static_cast<Window *>(viewport->PlatformHandle);
+  const auto &size = window.Size();
+  return ImVec2{ static_cast<float>(size.Width), static_cast<float>(size.Height) };
+}
+
+static void JEngine3DImGuiSetWindowFocus(ImGuiViewport *viewport)
+{
+  auto &window = *static_cast<Window *>(viewport->PlatformHandle);
+  window.Focus();
+}
+
+static auto JEngine3DImGuiGetWindowFocus(ImGuiViewport *viewport) -> bool
+{
+  auto &window = *static_cast<Window *>(viewport->PlatformHandle);
+  return window.Focused();
+}
+
+static auto JEngine3DImGuiGetWindowMinimized(ImGuiViewport *viewport) -> bool
+{
+  auto &window = *static_cast<Window *>(viewport->PlatformHandle);
+  return window.Minimized();
+}
+
+static void JEngine3DImGuiSetWindowTitle(ImGuiViewport *viewport, const char *title)
+{
+  auto &window = *static_cast<Window *>(viewport->PlatformHandle);
+  window.SetTitle(title);
+}
+
+static void JEngine3DImGuiPlatformRenderWindow(ImGuiViewport *viewport,
+  void *)// NOLINT(readability-named-parameter, hicpp-named-parameter)
+{
+  auto &window = *static_cast<Window *>(viewport->PlatformHandle);
+  window.GraphicsContext().MakeCurrent();
+}
+
+static void JEngine3DImGuiSwapBuffers(ImGuiViewport *viewport,
+  void *)// NOLINT(readability-named-parameter, hicpp-named-parameter)
+{
+  auto &window = *static_cast<Window *>(viewport->PlatformHandle);
+  window.GraphicsContext().MakeCurrent();
+  window.GraphicsContext().SwapBuffers();
+}
+
+
+static void JEngine3DImGuiRendererRenderWindow(ImGuiViewport *viewport,
+  void *)// NOLINT(readability-named-parameter, hicpp-named-parameter)
+{
+#if defined(JE_SOFTWARE_CONTEXT)
+  ImGuiSoftwareRenderer::RenderImGui(*static_cast<Window *>(viewport->PlatformHandle), viewport->DrawData);
+#endif
+}
 
 static void InitializeImGuiForJEngine3D()
 {
@@ -77,19 +147,14 @@ static void InitializeImGuiForJEngine3D()
   // Setup backend capabilities flags
   imguiIO.BackendPlatformUserData = static_cast<void *>(&Application::Get());
   imguiIO.BackendPlatformName = "JEngine3D Backend";
+  imguiIO.BackendRendererName = "JEngine3D Renderer";
   // imguiIO.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;// We can honor GetMouseCursor() values (optional)
-  // imguiIO.BackendFlags |= ImGuiBackendFlags_HasSetMousePos;// We can honor io.WantSetMousePos requests (optional,
-  // rarely used) if (mouse_can_use_global_state)
-  //   imguiIO.BackendFlags |=
-  //     ImGuiBackendFlags_PlatformHasViewports;// We can create multi-viewports on the Platform side (optional)
-
-  // SDL on Linux/OSX doesn't report events for unfocused windows (see https://github.com/ocornut/imgui/issues/4960)
-  // #ifndef __APPLE__
-  //   if (mouse_can_use_global_state)
-  //     imguiIO.BackendFlags |=
-  //       ImGuiBackendFlags_HasMouseHoveredViewport;// We can call io.AddMouseViewportEvent() with correct data
-  //       (optional)
-  // #endif
+  imguiIO.BackendFlags |=// NOLINT(hicpp-signed-bitwise)
+    ImGuiBackendFlags_PlatformHasViewports;// We can create multi-viewports on the Platform side (optional)
+  // imguiIO.BackendFlags |=// NOLINT(hicpp-signed-bitwise)
+  //   ImGuiBackendFlags_RendererHasVtxOffset;// We can honor the ImDrawCmd::VtxOffset field, allowing for large meshes.
+  imguiIO.BackendFlags |=// NOLINT(hicpp-signed-bitwise)
+    ImGuiBackendFlags_RendererHasViewports;// We can create multi-viewports on the Renderer side (optional)
 
   imguiIO.SetClipboardTextFn = [](void *, const char *text) { IPlatformBackend::Get().SetClipboardText(text); };
   imguiIO.GetClipboardTextFn = [](void *) { return IPlatformBackend::Get().ClipboardText(); };
@@ -108,28 +173,43 @@ static void InitializeImGuiForJEngine3D()
   // Set platform dependent data in viewport
   // Our mouse update function expect PlatformHandle to be filled for the main viewport
   ImGuiViewport *mainViewport = ImGui::GetMainViewport();
-  mainViewport->PlatformHandle = const_cast<void *>(// NOLINT(cppcoreguidelines-pro-type-const-cast)
-    static_cast<const void *>(&Application::Get().MainWindow()));
-  mainViewport->PlatformUserData = nullptr;
+  mainViewport->PlatformHandle = static_cast<void *>(&Application::Get().MainWindow());
+  mainViewport->PlatformUserData = static_cast<void *>(&Application::Get().MainWindow());
 
-
-  // ImGui_ImplSDL2_UpdateMonitors();
 
   // Register platform interface (will be coupled with a renderer interface)
-  /*ImGuiPlatformIO &platformIO = ImGui::GetPlatformIO();
+  ImGuiPlatformIO &platformIO = ImGui::GetPlatformIO();
+
+  platformIO.Monitors.resize(0);
+  int monitorCount = IPlatformBackend::Get().GetMonitorCount();
+  for (int i = 0; i < monitorCount; i++) {
+    auto bounds = IPlatformBackend::Get().GetDisplayBounds(i);
+    auto usableBounds = IPlatformBackend::Get().GetDisplayUsableBounds(i);
+
+    ImGuiPlatformMonitor monitor;
+    monitor.MainPos = ImVec2(static_cast<float>(bounds.Position.X), static_cast<float>(bounds.Position.Y));
+    monitor.MainSize = ImVec2(static_cast<float>(bounds.Size.Width), static_cast<float>(bounds.Size.Height));
+    monitor.WorkPos = ImVec2(static_cast<float>(usableBounds.Position.X), static_cast<float>(usableBounds.Position.Y));
+    monitor.WorkSize =
+      ImVec2(static_cast<float>(usableBounds.Size.Width), static_cast<float>(usableBounds.Size.Height));
+    monitor.DpiScale = IPlatformBackend::Get().GetDisplayDPI(i) / 96;// NOLINT
+    platformIO.Monitors.push_back(monitor);
+  }
+
   platformIO.Platform_CreateWindow = JEngine3DImGuiCreateWindow;
   platformIO.Platform_DestroyWindow = JEngine3DImGuiDestroyWindow;
   platformIO.Platform_ShowWindow = JEngine3DImGuiShowWindow;
   platformIO.Platform_SetWindowPos = JEngine3DImGuiSetWindowPosition;
-  platformIO.Platform_GetWindowPos = ImGui_ImplSDL2_GetWindowPos;
-  platformIO.Platform_SetWindowSize = ImGui_ImplSDL2_SetWindowSize;
-  platformIO.Platform_GetWindowSize = ImGui_ImplSDL2_GetWindowSize;
-  platformIO.Platform_SetWindowFocus = ImGui_ImplSDL2_SetWindowFocus;
-  platformIO.Platform_GetWindowFocus = ImGui_ImplSDL2_GetWindowFocus;
-  platformIO.Platform_GetWindowMinimized = ImGui_ImplSDL2_GetWindowMinimized;
-  platformIO.Platform_SetWindowTitle = ImGui_ImplSDL2_SetWindowTitle;
-  platformIO.Platform_RenderWindow = ImGui_ImplSDL2_RenderWindow;
-  platformIO.Platform_SwapBuffers = ImGui_ImplSDL2_SwapBuffers;*/
+  platformIO.Platform_GetWindowPos = JEngine3DImGuiGetWindowPosition;
+  platformIO.Platform_SetWindowSize = JEngine3DImGuiSetWindowSize;
+  platformIO.Platform_GetWindowSize = JEngine3DImGuiGetWindowSize;
+  platformIO.Platform_SetWindowFocus = JEngine3DImGuiSetWindowFocus;
+  platformIO.Platform_GetWindowFocus = JEngine3DImGuiGetWindowFocus;
+  platformIO.Platform_GetWindowMinimized = JEngine3DImGuiGetWindowMinimized;
+  platformIO.Platform_SetWindowTitle = JEngine3DImGuiSetWindowTitle;
+  platformIO.Platform_RenderWindow = JEngine3DImGuiPlatformRenderWindow;
+  platformIO.Platform_SwapBuffers = JEngine3DImGuiSwapBuffers;
+  platformIO.Renderer_RenderWindow = JEngine3DImGuiRendererRenderWindow;
 }
 
 void ImGuiLayer::OnCreate()
@@ -141,20 +221,24 @@ void ImGuiLayer::OnCreate()
   imguiIO.ConfigFlags |= ImGuiConfigFlags_NavEnableKeyboard;// NOLINT(hicpp-signed-bitwise) Enable Keyboard Controls
   // io.ConfigFlags |= ImGuiConfigFlags_NavEnableGamepad;      // Enable Gamepad Controls
   imguiIO.ConfigFlags |= ImGuiConfigFlags_DockingEnable;// NOLINT(hicpp-signed-bitwise) Enable Docking
-  // imguiIO.ConfigFlags |= ImGuiConfigFlags_ViewportsEnable;// Enable Multi-Viewport / Platform Windows
+  imguiIO.ConfigFlags |=// NOLINT(hicpp-signed-bitwise)
+    ImGuiConfigFlags_ViewportsEnable;// Enable Multi-Viewport / Platform Windows
 
   // imguiIO.ConfigViewportsNoAutoMerge = true;
-  // imguiIO.ConfigViewportsNoTaskBarIcon = true;
-  // imguiIO.ConfigViewportsNoDecoration = false;
+  //   imguiIO.ConfigViewportsNoTaskBarIcon = true;
+  // imguiIO.ConfigViewportsNoDecoration = true;
+  // imguiIO.ConfigViewportsNoDefaultParent = true;
 
 
   ImGui::StyleColorsDark();
 
-  // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular
-  // ones. ImGuiStyle &style = ImGui::GetStyle(); if (io.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {
-  //  style.WindowRounding = 0.0f;
-  //  style.Colors[ImGuiCol_WindowBg].w = 1.0f;
-  // }
+  // When viewports are enabled we tweak WindowRounding/WindowBg so platform windows can look identical to regular ones.
+  ImGuiStyle &style = ImGui::GetStyle();
+  if ((imguiIO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)// NOLINT(hicpp-signed-bitwise)
+      == ImGuiConfigFlags_ViewportsEnable) {
+    style.WindowRounding = 0.0F;
+    style.Colors[ImGuiCol_WindowBg].w = 1.0F;
+  }
 
   InitializeImGuiForJEngine3D();
 
@@ -191,15 +275,27 @@ void ImGuiLayer::OnUpdate()
 {
   auto &mainWindow = Application::Get().MainWindow();
   auto &graphicsContext = mainWindow.GraphicsContext();
+  auto windowMinimized = mainWindow.Minimized();
 
   ImGuiIO &imguiIO = ImGui::GetIO();
-  imguiIO.DisplaySize =
-    ImVec2{ static_cast<float>(mainWindow.Size().Width), static_cast<float>(mainWindow.Size().Height) };
+  if (!windowMinimized) {
+    imguiIO.DisplaySize =
+      ImVec2{ static_cast<float>(mainWindow.Size().Width), static_cast<float>(mainWindow.Size().Height) };
 
-  imguiIO.DisplayFramebufferScale =
-    ImVec2(static_cast<float>(graphicsContext.DrawableSize().Width) / imguiIO.DisplaySize.x,
-      static_cast<float>(graphicsContext.DrawableSize().Height) / imguiIO.DisplaySize.y);
+    imguiIO.DisplayFramebufferScale =
+      ImVec2(static_cast<float>(graphicsContext.DrawableSize().Width) / imguiIO.DisplaySize.x,
+        static_cast<float>(graphicsContext.DrawableSize().Height) / imguiIO.DisplaySize.y);
+  } else {
+    imguiIO.DisplaySize = ImVec2{ 0, 0 };
+  }
+
   imguiIO.DeltaTime = static_cast<float>(Application::Get().DeltaTime());
+
+  if (MouseButtonsPressed()) {
+    IPlatformBackend::Get().CaptureMouse();
+  } else {
+    IPlatformBackend::Get().ReleaseMouse();
+  }
 }
 void ImGuiLayer::OnImGuiRender() {}
 
@@ -214,10 +310,8 @@ void ImGuiLayer::OnEvent(IEvent &event)
     const auto &windowResizeEvent =
       static_cast<const WindowResizeEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    const auto &window = WindowController::Get().WindowFromNativeHandle(windowResizeEvent.NativeWindowHandle());
-    if (ImGuiViewport *viewport =
-          ImGui::FindViewportByPlatformHandle(const_cast<void *>(// NOLINT(cppcoreguidelines-pro-type-const-cast)
-            static_cast<const void *>(&window)))) {
+    auto &window = WindowController::Get().WindowFromNativeHandle(windowResizeEvent.NativeWindowHandle());
+    if (ImGuiViewport *viewport = ImGui::FindViewportByPlatformHandle(static_cast<void *>(&window))) {
       viewport->PlatformRequestResize = true;
     }
 
@@ -228,10 +322,8 @@ void ImGuiLayer::OnEvent(IEvent &event)
     const auto &windowCloseEvent =
       static_cast<const WindowCloseEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    const auto &window = WindowController::Get().WindowFromNativeHandle(windowCloseEvent.NativeWindowHandle());
-    if (ImGuiViewport *viewport =
-          ImGui::FindViewportByPlatformHandle(const_cast<void *>(// NOLINT(cppcoreguidelines-pro-type-const-cast)
-            static_cast<const void *>(&window)))) {
+    auto &window = WindowController::Get().WindowFromNativeHandle(windowCloseEvent.NativeWindowHandle());
+    if (ImGuiViewport *viewport = ImGui::FindViewportByPlatformHandle(static_cast<void *>(&window))) {
       viewport->PlatformRequestClose = true;
     }
 
@@ -242,10 +334,8 @@ void ImGuiLayer::OnEvent(IEvent &event)
     const auto &windowMoveEvent =
       static_cast<const WindowMoveEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    const auto &window = WindowController::Get().WindowFromNativeHandle(windowMoveEvent.NativeWindowHandle());
-    if (ImGuiViewport *viewport =
-          ImGui::FindViewportByPlatformHandle(const_cast<void *>(// NOLINT(cppcoreguidelines-pro-type-const-cast)
-            static_cast<const void *>(&window)))) {
+    auto &window = WindowController::Get().WindowFromNativeHandle(windowMoveEvent.NativeWindowHandle());
+    if (ImGuiViewport *viewport = ImGui::FindViewportByPlatformHandle(static_cast<void *>(&window))) {
       viewport->PlatformRequestMove = true;
     }
 
@@ -309,6 +399,8 @@ void ImGuiLayer::OnEvent(IEvent &event)
 
     imguiIO.AddMouseButtonEvent(button, true);
 
+    s_MouseButtonsPressed[static_cast<size_t>(pressEvent.Button())] = true;// NOLINT
+
     return imguiIO.WantCaptureMouse;// When true we don't capture event in app
   });
 
@@ -320,6 +412,8 @@ void ImGuiLayer::OnEvent(IEvent &event)
 
     imguiIO.AddMouseButtonEvent(button, false);
 
+    s_MouseButtonsPressed[static_cast<size_t>(releaseEvent.Button())] = false;// NOLINT
+
     return imguiIO.WantCaptureMouse;// When true we don't capture event in app
   });
 
@@ -327,7 +421,17 @@ void ImGuiLayer::OnEvent(IEvent &event)
     const auto &moveEvent =
       static_cast<const MouseMoveEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    imguiIO.AddMousePosEvent(static_cast<float>(moveEvent.Position().X), static_cast<float>(moveEvent.Position().Y));
+    ImGuiIO &imguiIO = ImGui::GetIO();
+
+    Position2DI mousePos = moveEvent.Position();
+    if (imguiIO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {// NOLINT
+      auto &window = WindowController::Get().WindowFromNativeHandle(moveEvent.WindowHandle());
+      const auto &windowPosition = window.Position();
+      mousePos.X += windowPosition.X;
+      mousePos.Y += windowPosition.Y;
+    }
+
+    imguiIO.AddMousePosEvent(static_cast<float>(mousePos.X), static_cast<float>(mousePos.Y));
 
     return imguiIO.WantCaptureMouse;// When true we don't capture event in app
   });
@@ -347,12 +451,24 @@ void ImGuiLayer::Begin() { ImGui::NewFrame(); }// NOLINT(readability-convert-mem
 
 void ImGuiLayer::End()// NOLINT(readability-convert-member-functions-to-static)
 {
+  ImGuiIO &imguiIO = ImGui::GetIO();
+
   ImGui::Render();
 
 
+  Application::Get().MainWindow().GraphicsContext().MakeCurrent();
 #if defined(JE_SOFTWARE_CONTEXT)
-  ImGuiSoftwareRenderer::RenderImGui(Application::Get().MainWindow().GraphicsContext());
+  if (!Application::Get().MainWindow().Minimized()) {
+    ImGuiSoftwareRenderer::RenderImGui(Application::Get().MainWindow(), ImGui::GetDrawData());
+  }
 #endif
+
+  if ((imguiIO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)// NOLINT(hicpp-signed-bitwise)
+      == ImGuiConfigFlags_ViewportsEnable) {
+    ImGui::UpdatePlatformWindows();
+    ImGui::RenderPlatformWindowsDefault();
+    Application::Get().MainWindow().GraphicsContext().MakeCurrent();
+  }
 }
 
 

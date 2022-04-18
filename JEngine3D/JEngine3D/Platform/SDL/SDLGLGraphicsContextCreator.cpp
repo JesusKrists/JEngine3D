@@ -12,7 +12,7 @@
 
 namespace JE {
 
-static bool s_GlEWInitialized = false;// NOLINT
+static bool s_GLEWInitialized = false;// NOLINT
 
 auto SDLGLGraphicsContextCreator::CreateContext(IPlatformBackend::NativeWindowHandle handle)
   -> Scope<IGraphicsContext, MemoryTag::App>
@@ -23,7 +23,7 @@ auto SDLGLGraphicsContextCreator::CreateContext(IPlatformBackend::NativeWindowHa
   SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
   auto *context = SDL_GL_CreateContext(static_cast<SDL_Window *>(handle));
 
-  if (!s_GlEWInitialized) {
+  if (!s_GLEWInitialized) {
     glewExperimental = GL_TRUE;
     auto success = glewInit();
     if (success != GLEW_OK) {
@@ -32,7 +32,7 @@ auto SDLGLGraphicsContextCreator::CreateContext(IPlatformBackend::NativeWindowHa
           glewGetErrorString(success)));
     }
 
-    s_GlEWInitialized = true;
+    s_GLEWInitialized = true;
   }
 
   SDL_GL_MakeCurrent(currentWindow, currentContext);
