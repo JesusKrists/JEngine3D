@@ -40,7 +40,7 @@ set(ENABLE_DEVELOPER_MODE
 
 # Change this to false if you want to disable warnings_as_errors in developer mode
 set(WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT TRUE)
-set(ENABLE_INCLUDE_WHAT_YOU_USE_DEVELOPER_DEFAULT TRUE)
+set(ENABLE_INCLUDE_WHAT_YOU_USE_DEVELOPER_DEFAULT FALSE)
 
 set(ENABLE_PCH_USER_DEFAULT TRUE) # TODO(JesusKrists) - Create proper precompiled headers for JEngine3D targets
 set(ENABLE_UNITY_USER_DEFAULT TRUE

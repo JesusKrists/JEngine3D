@@ -1,3 +1,4 @@
 leak:SDL_DBus_Init
 leak:X11_GL_LoadLibrary
 leak:X11_VideoInit
+leak:libGLX_nvidia.so
