@@ -29,3 +29,4 @@ ehthumbs.db
 Thumbs.db
 compile_commands.json
 .cache/
+imgui.ini

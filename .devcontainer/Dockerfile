@@ -11,29 +11,20 @@ RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
     software-properties-common wget apt-utils file zip \
     openssh-client gpg-agent socat rsync \
     make ninja-build git \
-    python3 python3-pip pkg-config valgrind unzip
+    python3 python3-pip pkg-config valgrind unzip curl
 
 # Install packages required by SDL2
 RUN apt-get -y install xorg-dev libsdl2-dev
 
-# By default, anything you run in Docker is done as superuser.
-# Conan runs some install commands as superuser, and will prepend `sudo` to
-# these commands, unless `CONAN_SYSREQUIRES_SUDO=0` is in your env variables.
-ENV CONAN_SYSREQUIRES_SUDO 0
-# Some packages request that Conan use the system package manager to install
-# a few dependencies. This flag allows Conan to proceed with these installations;
-# leaving this flag undefined can cause some installation failures.
-ENV CONAN_SYSREQUIRES_MODE enabled
-
-# User-settable versions:
-# This Dockerfile should support gcc-[7, 8, 9, 10, 11] and clang-[10, 11, 12, 13]
-# Earlier versions of clang will require significant modifications to the IWYU section
 ARG GCC_VER="11"
-# Add gcc-${GCC_VER}
 RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
-    gcc-${GCC_VER} g++-${GCC_VER} gdb
+    gcc-11 g++-11 gdb \
+    gcc-10 g++-10 \
+    gcc-9 g++-9 \
+    gcc-8 g++-8 \
+    gcc-7 g++-7
 
 # Set gcc-${GCC_VER} as default gcc
 RUN update-alternatives --install /usr/bin/gcc gcc $(which gcc-${GCC_VER}) 100
@@ -41,20 +32,40 @@ RUN update-alternatives --install /usr/bin/g++ g++ $(which g++-${GCC_VER}) 100
 RUN update-alternatives --install /usr/bin/cpp cpp $(which cpp-${GCC_VER}) 100
 
 ARG LLVM_VER="13"
-RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s ${LLVM_VER}
+RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s 15
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
-    libclang-${LLVM_VER}-dev clang-tidy-${LLVM_VER} clang-format-${LLVM_VER}
+    libclang-15-dev clang-tidy-15 clang-format-15
 
 RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s 14
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
     libclang-14-dev clang-tidy-14 clang-format-14
 
+RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s 13
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y --no-install-recommends \
+    libclang-13-dev clang-tidy-13 clang-format-13
 
-RUN update-alternatives --install /usr/bin/clang-format clang-format $(which clang-format-${LLVM_VER}) 100
+RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s 12
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y --no-install-recommends \
+    libclang-12-dev clang-tidy-12 clang-format-12
+
+RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s 11
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y --no-install-recommends \
+    libclang-11-dev clang-tidy-11 clang-format-11
+
+RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s 10
+RUN export DEBIAN_FRONTEND=noninteractive && \
+    apt-get install -y --no-install-recommends \
+    libclang-10-dev clang-tidy-10 clang-format-10
+
+
+RUN update-alternatives --install /usr/bin/clang-format clang-format $(which clang-format-15) 100
 # Set the default clang-tidy, so CMake can find it
-RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-tidy-${LLVM_VER}) 100
+RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-tidy-15) 100
 # Set clang-${LLVM_VER} as default clang
 RUN update-alternatives --install /usr/bin/clang clang $(which clang-${LLVM_VER}) 100
 RUN update-alternatives --install /usr/bin/clang++ clang++ $(which clang++-${LLVM_VER}) 100
@@ -88,7 +99,7 @@ ENV CPPCHECK_SRC ${CPPCHECK}/cppcheck-src
 RUN mkdir -p ${CPPCHECK_BUILD}
 RUN apt-get install libxml2-utils && apt-get install libz3-dev libtinyxml2-dev && apt-get install libpcre3-dev
 RUN git clone --branch 2.7 https://github.com/danmar/cppcheck.git ${CPPCHECK_SRC}
-RUN CC=clang-${LLVM_VER} CXX=clang++-${LLVM_VER} cmake -S ${CPPCHECK_SRC} -B ${CPPCHECK_BUILD} -G "Unix Makefiles" -DHAVE_RULES=On -DBUILD_GUI=Off
+RUN CC=clang-15 CXX=clang++-15 cmake -S ${CPPCHECK_SRC} -B ${CPPCHECK_BUILD} -G "Unix Makefiles" -DHAVE_RULES=On -DBUILD_GUI=Off
 RUN cmake --build ${CPPCHECK_BUILD} -j
 RUN cmake --install ${CPPCHECK_BUILD}
 
