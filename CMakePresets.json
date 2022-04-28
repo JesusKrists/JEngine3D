@@ -126,6 +126,18 @@
             }
         },
         {
+            "name": "linux-gcc-debug-SW",
+            "displayName": "gcc Debug SW Context",
+            "description": "Target Linux with the gcc compiler, debug build type",
+            "inherits": "conf-linux-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc-11",
+                "CMAKE_CXX_COMPILER": "g++-11",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "USE_SDL_SOFTWARE_CONTEXT": "TRUE"
+            }
+        },
+        {
             "name": "linux-clang-debug",
             "displayName": "clang Debug",
             "description": "Target Linux with the clang compiler, debug build type",
@@ -239,6 +251,13 @@
             "description": "Enable output and stop on failure",
             "inherits": "test-common",
             "configurePreset": "linux-gcc-release"
+        },
+        {
+            "name": "test-linux-gcc-debug-SW",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "linux-gcc-debug-SW"
         },
         {
             "name": "test-linux-clang-debug",
