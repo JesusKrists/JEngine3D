@@ -25,6 +25,8 @@ set(ENABLE_DEVELOPER_MODE
     TRUE
     CACHE BOOL "Enable 'developer mode'")
 
+####################################################################################
+
 # Set the project name and language
 project(
   JEngine3D

@@ -12,6 +12,8 @@
 
 namespace JE {
 
+using Backend = SDLPlatformBackend;
+
 #if defined(JE_SOFTWARE_CONTEXT)
 using GraphicsContextCreator = SDLSoftwareGraphicsContextCreator;
 #else
@@ -26,7 +28,7 @@ inline auto CreateApplication(const std::string_view &title) -> Scope<Applicatio
   static MemoryController s_MemoryController;
   static LoggerController s_LoggerController;
 
-  static SDLPlatformBackend s_SDLPlatformBackend;
+  static Backend s_PlatformBackend;
   static GraphicsContextCreator s_GraphicsContextCreator;
 
   static WindowController s_WindowController;

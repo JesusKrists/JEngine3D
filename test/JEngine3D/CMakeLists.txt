@@ -7,16 +7,6 @@ target_link_system_libraries(JEngine3D_catch_base INTERFACE Catch2WithMain)
 target_link_libraries(JEngine3D_catch_base INTERFACE JEngine3D)
 target_include_directories(JEngine3D_catch_base INTERFACE ${CMAKE_SOURCE_DIR}/test)
 
-# Provide a simple smoke test to make sure that the CLI works and can display a --help message
-#add_test(NAME cli.has_help COMMAND JEngine3D_Editor_Executable --help)
-
-# Provide a test to verify that the version being reported from the application
-# matches the version given to CMake. This will be important once you package
-# your program. Real world shows that this is the kind of simple mistake that is easy
-# to make, but also easy to test for.
-#add_test(NAME cli.version_matches COMMAND JEngine3D_Editor_Executable --version)
-#set_tests_properties(cli.version_matches PROPERTIES PASS_REGULAR_EXPRESSION "${PROJECT_VERSION}")
-
 include(UnitTest_Sources.cmake)
 
 add_executable(JEngine3D_tests ${UNITTEST_SOURCES})

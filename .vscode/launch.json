@@ -30,7 +30,7 @@
             "name": "Debug JEngine3D IntegrationTests",
             "program": "${workspaceFolder}/out/build/test/JEngine3D/JEngine3D_Integration_tests",
             "args": [
-                "\"JE::Window Focuses window and unfocuses other windows\""
+                "\"JE::Application is run and dispatches WindowResizeEvent to WindowController\""
             ],
             "cwd": "${workspaceFolder}"
         },

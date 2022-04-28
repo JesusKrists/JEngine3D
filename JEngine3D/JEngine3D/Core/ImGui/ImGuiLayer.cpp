@@ -131,7 +131,7 @@ static void JEngine3DImGuiSwapBuffers(ImGuiViewport *viewport,
 }
 
 
-static void JEngine3DImGuiRendererRenderWindow(ImGuiViewport *viewport,
+static void JEngine3DImGuiRendererRenderWindow([[maybe_unused]] ImGuiViewport *viewport,
   void *)// NOLINT(readability-named-parameter, hicpp-named-parameter)
 {
 #if defined(JE_SOFTWARE_CONTEXT)
@@ -192,7 +192,7 @@ static void InitializeImGuiForJEngine3D()
     monitor.WorkPos = ImVec2(static_cast<float>(usableBounds.Position.X), static_cast<float>(usableBounds.Position.Y));
     monitor.WorkSize =
       ImVec2(static_cast<float>(usableBounds.Size.Width), static_cast<float>(usableBounds.Size.Height));
-    monitor.DpiScale = IPlatformBackend::Get().GetDisplayDPI(i) / 96;// NOLINT
+    monitor.DpiScale = IPlatformBackend::Get().GetDisplayDPI(i) / 96.0F;// NOLINT
     platformIO.Monitors.push_back(monitor);
   }
 
@@ -420,8 +420,6 @@ void ImGuiLayer::OnEvent(IEvent &event)
   dispatcher.Dispatch<EventType::MouseMove>([&](const IEvent &evnt) {
     const auto &moveEvent =
       static_cast<const MouseMoveEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-
-    ImGuiIO &imguiIO = ImGui::GetIO();
 
     Position2DI mousePos = moveEvent.Position();
     if (imguiIO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {// NOLINT

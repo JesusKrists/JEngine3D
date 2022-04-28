@@ -227,6 +227,8 @@ auto SDLPlatformBackend::GetDisplayDPI(int32_t displayIndex) -> float
 {
   float dpi = 0;
   SDL_GetDisplayDPI(displayIndex, &dpi, nullptr, nullptr);
+  if (dpi == 0) return 96.0F;// NOLINT
+
   return dpi;
 }
 
