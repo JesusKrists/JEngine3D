@@ -193,6 +193,7 @@ static void InitializeImGuiForJEngine3D()
     monitor.WorkSize =
       ImVec2(static_cast<float>(usableBounds.Size.Width), static_cast<float>(usableBounds.Size.Height));
     monitor.DpiScale = IPlatformBackend::Get().GetDisplayDPI(i) / 96.0F;// NOLINT
+    if (monitor.DpiScale == 0) { monitor.DpiScale = 96.0F; }// NOLINT
     platformIO.Monitors.push_back(monitor);
   }
 

@@ -93,11 +93,11 @@ jobs:
             package_generator: TBZ2
 
           # AddressSanitizer seems to be broken currently so we disable this build
-          - os: windows-2022
-            compiler: msvc
-            generator: "Visual Studio 17 2022"
-            build_type: Debug
-            developer_mode: ON
+          #- os: windows-2022
+          #  compiler: msvc
+          #  generator: "Visual Studio 17 2022"
+          #  build_type: Debug
+          #  developer_mode: ON
           - os: windows-2022
             compiler: msvc
             generator: "Visual Studio 17 2022"

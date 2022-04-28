@@ -39,19 +39,21 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates an Window and returns a valid WindowHandle",
+  "JE::IPlatformBackend creates a Window and returns a valid WindowHandle",
   "[JE::IPlatformBackend]")
 {
   auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
   REQUIRE(m_Backend.ValidWindowHandle(windowHandle));
   REQUIRE(m_Backend.WindowPosition(windowHandle) != JE::IPlatformBackend::WINDOW_CENTER_POSITION);
+  REQUIRE(!m_Backend.WindowMinimized(windowHandle));
+  REQUIRE(!m_Backend.WindowHidden(windowHandle));
 
   m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates an Window and can query the size",
+  "JE::IPlatformBackend creates a Window and can query the size",
   "[JE::IPlatformBackend]")
 {
   auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
@@ -62,7 +64,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates an Window and can set window size",
+  "JE::IPlatformBackend creates a Window and can set window size",
   "[JE::IPlatformBackend]")
 {
   auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
@@ -74,7 +76,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates an Window and can query window title",
+  "JE::IPlatformBackend creates a Window and can query window title",
   "[JE::IPlatformBackend]")
 {
   auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
@@ -85,7 +87,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates an Window and can set window title",
+  "JE::IPlatformBackend creates a Window and can set window title",
   "[JE::IPlatformBackend]")
 {
   auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
@@ -97,7 +99,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates an Window and query window position",
+  "JE::IPlatformBackend creates a Window and query window position",
   "[JE::IPlatformBackend]")
 {
   auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
@@ -108,7 +110,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates an Window and can set window position",
+  "JE::IPlatformBackend creates a Window and can set window position",
   "[JE::IPlatformBackend]")
 {
   auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
@@ -121,7 +123,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates an Window and can show window",
+  "JE::IPlatformBackend creates a Window and can show window",
   "[JE::IPlatformBackend]")
 {
   JE::WindowConfiguration config{};
@@ -137,7 +139,7 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates an Window and can hide window",
+  "JE::IPlatformBackend creates a Window and can hide window",
   "[JE::IPlatformBackend]")
 {
   auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
@@ -146,6 +148,41 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
   m_Backend.HideWindow(windowHandle);
 
   REQUIRE(m_Backend.WindowHidden(windowHandle));
+
+  m_Backend.DestroyWindow(windowHandle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend creates a Window and can focus window",
+  "[JE::IPlatformBackend]")
+{
+  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+  auto *windowHandle2 = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+  CHECK_NOFAIL(m_Backend.WindowFocused(windowHandle2));
+
+  m_Backend.FocusWindow(windowHandle);
+
+  CHECK_NOFAIL(m_Backend.WindowFocused(windowHandle));
+  CHECK_NOFAIL(m_Backend.FocusedWindow() == windowHandle);
+
+  m_Backend.DestroyWindow(windowHandle);
+  m_Backend.DestroyWindow(windowHandle2);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend creates a Window and can Minimize and Maximize",
+  "[JE::IPlatformBackend]")
+{
+  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+  CHECK_NOFAIL(!m_Backend.WindowMinimized(windowHandle));
+
+  m_Backend.MinimizeWindow(windowHandle);
+
+  CHECK_NOFAIL(m_Backend.WindowMinimized(windowHandle));
+
+  m_Backend.MaximizeWindow(windowHandle);
+
+  CHECK_NOFAIL(!m_Backend.WindowMinimized(windowHandle));
 
   m_Backend.DestroyWindow(windowHandle);
 }
@@ -459,6 +496,88 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
   m_Backend.PollEvents();
 
   REQUIRE(checker.WindowFocusLostEventReceived());
+
+  m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Minimized)",
+  "[JE::IPlatformBackend]")
+{
+
+  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+  class WindowMinimizedChecker final : public JE::IEventProcessor
+  {
+  public:
+    explicit WindowMinimizedChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
+
+    inline void OnEvent(JE::IEvent &event) override
+    {
+      if (event.Type() == JE::EventType::WindowMinimized) {
+        const auto &minimizeEvent =
+          static_cast<const JE::WindowMinimizedEvent &>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+            event);
+        if (minimizeEvent.NativeWindowHandle() == m_Handle) { m_WindowMinimizedEventReceived = true; }
+      }
+    }
+
+    [[nodiscard]] inline auto WindowMinimizedEventReceived() const -> bool { return m_WindowMinimizedEventReceived; }
+
+  private:
+    JE::IPlatformBackend::NativeWindowHandle m_Handle;
+    bool m_WindowMinimizedEventReceived = false;
+  } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
+
+
+  JE::WindowMinimizedEvent event{ handle };
+  m_Backend.PushEvent(event);
+
+  m_Backend.PollEvents();
+
+  REQUIRE(checker.WindowMinimizedEventReceived());
+
+  m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Maximized)",
+  "[JE::IPlatformBackend]")
+{
+
+  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+  class WindowMaximizedChecker final : public JE::IEventProcessor
+  {
+  public:
+    explicit WindowMaximizedChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
+
+    inline void OnEvent(JE::IEvent &event) override
+    {
+      if (event.Type() == JE::EventType::WindowMaximized) {
+        const auto &maximizeEvent =
+          static_cast<const JE::WindowMaximizedEvent &>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+            event);
+        if (maximizeEvent.NativeWindowHandle() == m_Handle) { m_WindowMaximizedEventReceived = true; }
+      }
+    }
+
+    [[nodiscard]] inline auto WindowMaximizedEventReceived() const -> bool { return m_WindowMaximizedEventReceived; }
+
+  private:
+    JE::IPlatformBackend::NativeWindowHandle m_Handle;
+    bool m_WindowMaximizedEventReceived = false;
+  } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
+
+
+  JE::WindowMaximizedEvent event{ handle };
+  m_Backend.PushEvent(event);
+
+  m_Backend.PollEvents();
+
+  REQUIRE(checker.WindowMaximizedEventReceived());
 
   m_Backend.DestroyWindow(handle);
 }

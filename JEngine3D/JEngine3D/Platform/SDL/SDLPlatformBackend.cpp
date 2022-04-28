@@ -227,8 +227,6 @@ auto SDLPlatformBackend::GetDisplayDPI(int32_t displayIndex) -> float
 {
   float dpi = 0;
   SDL_GetDisplayDPI(displayIndex, &dpi, nullptr, nullptr);
-  if (dpi == 0) return 96.0F;// NOLINT
-
   return dpi;
 }
 
@@ -275,6 +273,16 @@ void SDLPlatformBackend::PollEvents()// NOLINT(readability-function-cognitive-co
     EventProcessor().OnEvent(event);
   };
 
+  auto ProcessWindowMinimizedEvent = [&](const SDL_Event &nativeEvent) {
+    WindowMinimizedEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID) };
+    EventProcessor().OnEvent(event);
+  };
+
+  auto ProcessWindowMaximizedEvent = [&](const SDL_Event &nativeEvent) {
+    WindowMaximizedEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID) };
+    EventProcessor().OnEvent(event);
+  };
+
   SDL_Event nativeEvent;
   while (SDL_PollEvent(&nativeEvent) != 0) {
     if (nativeEvent.type == SDL_EventType::SDL_QUIT) {
@@ -314,6 +322,14 @@ void SDLPlatformBackend::PollEvents()// NOLINT(readability-function-cognitive-co
 
         case SDL_WindowEventID::SDL_WINDOWEVENT_FOCUS_LOST:
           ProcessWindowFocusLostEvent(nativeEvent);
+          break;
+
+        case SDL_WindowEventID::SDL_WINDOWEVENT_MINIMIZED:
+          ProcessWindowMinimizedEvent(nativeEvent);
+          break;
+
+        case SDL_WindowEventID::SDL_WINDOWEVENT_MAXIMIZED:
+          ProcessWindowMaximizedEvent(nativeEvent);
           break;
 
         default:
@@ -501,6 +517,38 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
     nativeFocusEvent.window.windowID = SDL_GetWindowID(static_cast<SDL_Window *>(focusEvent.NativeWindowHandle()));
     ASSERT(nativeFocusEvent.window.windowID != 0, "Invalid native window handle passed");
     SDL_PushEvent(&nativeFocusEvent);
+  }
+
+  if (event.Type() == EventType::WindowMinimized) {
+    const auto &minimizeEvent =
+      static_cast<const WindowMinimizedEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    auto *window = static_cast<SDL_Window *>(minimizeEvent.NativeWindowHandle());
+
+    SDL_Event nativeMinimizeEvent;
+    nativeMinimizeEvent.type = SDL_EventType::SDL_WINDOWEVENT;
+    nativeMinimizeEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_MINIMIZED;
+    nativeMinimizeEvent.window.windowID = SDL_GetWindowID(window);
+    ASSERT(nativeMinimizeEvent.window.windowID != 0, "Invalid native window handle passed");
+    SDL_PushEvent(&nativeMinimizeEvent);
+
+    SDL_MinimizeWindow(window);
+  }
+
+  if (event.Type() == EventType::WindowMaximized) {
+    const auto &maximizeEvent =
+      static_cast<const WindowMaximizedEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    auto *window = static_cast<SDL_Window *>(maximizeEvent.NativeWindowHandle());
+
+    SDL_Event nativeMaximizeEvent;
+    nativeMaximizeEvent.type = SDL_EventType::SDL_WINDOWEVENT;
+    nativeMaximizeEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_MAXIMIZED;
+    nativeMaximizeEvent.window.windowID = SDL_GetWindowID(window);
+    ASSERT(nativeMaximizeEvent.window.windowID != 0, "Invalid native window handle passed");
+    SDL_PushEvent(&nativeMaximizeEvent);
+
+    SDL_RestoreWindow(window);
   }
 
   if (event.Type() == EventType::KeyPress) {

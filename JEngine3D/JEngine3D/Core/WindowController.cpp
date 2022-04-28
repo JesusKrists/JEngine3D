@@ -210,8 +210,8 @@ void WindowController::OnEvent(IEvent &event)
     auto &window = WindowFromNativeHandle(minimizeEvent.NativeWindowHandle());
     window.m_Minimized = true;
 
-    ASSERT(
-      IPlatformBackend::Get().WindowMinimized(window.NativeHandle()), "Window and Native window minimized mismatch");
+    // ASSERT(
+    //   IPlatformBackend::Get().WindowMinimized(window.NativeHandle()), "Window and Native window minimized mismatch");
 
     return true;
   });
@@ -223,8 +223,9 @@ void WindowController::OnEvent(IEvent &event)
     auto &window = WindowFromNativeHandle(maximizeEvent.NativeWindowHandle());
     window.m_Minimized = false;
 
-    ASSERT(
-      !IPlatformBackend::Get().WindowMinimized(window.NativeHandle()), "Window and Native window minimized mismatch");
+    // ASSERT(
+    //   !IPlatformBackend::Get().WindowMinimized(window.NativeHandle()), "Window and Native window minimized
+    //   mismatch");
 
     return true;
   });

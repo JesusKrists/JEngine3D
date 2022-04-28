@@ -198,6 +198,36 @@ TEST_CASE_METHOD(WindowControllerTestsFixture,
   CHECK_NOFAIL(!window.Focused());
 }
 
+TEST_CASE_METHOD(WindowControllerTestsFixture,
+  "JE::WindowController processes WindowMinimizedEvent",
+  "[JE::WindowController]")
+{
+  auto &window = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+  m_Backend.PollEvents();
+  REQUIRE(!window.Minimized());
+
+  JE::WindowMinimizedEvent minimizeEvent{ window.NativeHandle() };
+  m_Backend.PushEvent(minimizeEvent);
+  m_Backend.PollEvents();
+  REQUIRE(window.Minimized());
+}
+
+TEST_CASE_METHOD(WindowControllerTestsFixture,
+  "JE::WindowController processes WindowMaximizedEvent",
+  "[JE::WindowController]")
+{
+  auto &window = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+  m_Backend.PollEvents();
+  window.Minimize();
+  m_Backend.PollEvents();
+  REQUIRE(window.Minimized());
+
+  JE::WindowMaximizedEvent maximizeEvent{ window.NativeHandle() };
+  m_Backend.PushEvent(maximizeEvent);
+  m_Backend.PollEvents();
+  REQUIRE(!window.Minimized());
+}
+
 TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window sets title of underlying NativeHandle", "[JE::Window]")
 {
   JE::WindowConfiguration config{};
@@ -278,4 +308,19 @@ TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window Focuses window and un
 
   CHECK_NOFAIL(window.Focused());
   CHECK_NOFAIL(!window2.Focused());
+}
+
+TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window Minimizes and Maximizes", "[JE::Window]")
+{
+  JE::WindowConfiguration config{};
+  auto *nativeWindow = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION, config);
+  auto window = JE::Window(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION, config, nativeWindow);
+
+  REQUIRE(!window.Minimized());
+
+  window.Minimize();
+  REQUIRE(window.Minimized());
+
+  window.Maximize();
+  REQUIRE(!window.Minimized());
 }

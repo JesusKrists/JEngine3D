@@ -30,7 +30,7 @@
             "name": "Debug JEngine3D IntegrationTests",
             "program": "${workspaceFolder}/out/build/test/JEngine3D/JEngine3D_Integration_tests",
             "args": [
-                "\"JE::Application is run and dispatches WindowResizeEvent to WindowController\""
+                "\"JE::WindowController processes WindowMaximizedEvent\""
             ],
             "cwd": "${workspaceFolder}"
         },

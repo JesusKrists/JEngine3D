@@ -16,6 +16,99 @@
    ...
    fun:X11_VideoInit
 }
+{
+   X11_CreateDeviceFalsePositives
+   Memcheck:Leak
+   ...
+   fun:X11_CreateDevice
+}
+{
+   X11_InitKeyboardFalsePositives
+   Memcheck:Leak
+   ...
+   fun:X11_InitKeyboard
+}
+{
+   UnknownFalsePositives
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+}
+{
+   UnknownFalsePositives2
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:malloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+}
+{
+   UnknownFalsePositives3
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:strdup
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+}
+{
+   UnknownFalsePositives4
+   Memcheck:Leak
+   match-leak-kinds: definite
+   fun:calloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+}
+{
+   NvidiaFalsePositives
+   Memcheck:Leak
+   ...
+   obj:*libGLX_nvidia.so*
+}
+{
+   NvidiaFalsePositives2
+   Memcheck:Param
+   sendmsg(msg.msg_iov[0])
+   ...
+   obj:*libGLX_nvidia.so*
+}
 ################################################################################
 {
    glewInitFalsePositives

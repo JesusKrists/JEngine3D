@@ -15,17 +15,19 @@ void ImGuiSoftwareRenderer::Initialize() { imgui_sw::bind_imgui_painting(); }
 
 void ImGuiSoftwareRenderer::RenderImGui(Window &window, ImDrawData *drawData)
 {
-  auto *swContext = static_cast<SDLSoftwareGraphicsContext *>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-    &window.GraphicsContext());
+  auto *swContext =
+    dynamic_cast<SDLSoftwareGraphicsContext *>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+      &window.GraphicsContext());
 
-
-  auto drawableSize = swContext->DrawableSize();
-  if ((static_cast<float>(drawableSize.Width) != drawData->DisplaySize.x)
-      || (static_cast<float>(drawableSize.Height) != drawData->DisplaySize.y)) {
-    drawData->DisplaySize = ImVec2{ static_cast<float>(drawableSize.Width), static_cast<float>(drawableSize.Height) };
+  if (swContext != nullptr) {
+    auto drawableSize = swContext->DrawableSize();
+    if ((static_cast<float>(drawableSize.Width) != drawData->DisplaySize.x)
+        || (static_cast<float>(drawableSize.Height) != drawData->DisplaySize.y)) {
+      drawData->DisplaySize = ImVec2{ static_cast<float>(drawableSize.Width), static_cast<float>(drawableSize.Height) };
+    }
+    if (&window == &Application::Get().MainWindow()) { swContext->Clear(); }
+    imgui_sw::paint_imgui(static_cast<uint32_t *>(swContext->PixelPtr()), drawData);
   }
-  if (&window == &Application::Get().MainWindow()) { swContext->Clear(); }
-  imgui_sw::paint_imgui(static_cast<uint32_t *>(swContext->PixelPtr()), drawData);
 }
 
 void ImGuiSoftwareRenderer::Destroy() { imgui_sw::unbind_imgui_painting(); }
