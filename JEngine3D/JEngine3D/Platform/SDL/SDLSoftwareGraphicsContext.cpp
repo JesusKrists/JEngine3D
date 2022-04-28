@@ -11,7 +11,7 @@ static constexpr auto CLEAR_COLOR = 0xFF111111;
 
 SDLSoftwareGraphicsContext::SDLSoftwareGraphicsContext(IPlatformBackend::NativeWindowHandle windowHandle,
   IGraphicsContextCreator::NativeContextHandle contextHandle)
-  : IGraphicsContext(windowHandle, contextHandle), m_Texture(nullptr)
+  : IGraphicsContext(windowHandle, contextHandle)
 {
   auto size = RendererSize();
   m_Texture = static_cast<void *>(SDL_CreateTexture(static_cast<SDL_Renderer *>(NativeContextHandle()),

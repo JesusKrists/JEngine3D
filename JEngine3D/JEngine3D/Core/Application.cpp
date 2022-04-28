@@ -26,6 +26,7 @@ Application::Application(const std::string_view &title)
   IPlatformBackend::Get().SetEventProcessor(this);
 
   m_MainWindow.GraphicsContext().MakeCurrent();
+  m_MainWindow.Focus();
 }
 
 void Application::OnEvent(IEvent &event)

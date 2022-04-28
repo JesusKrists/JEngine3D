@@ -21,6 +21,7 @@ enum class EventType {
   WindowFocusLost,
   WindowMinimized,
   WindowMaximized,
+  WindowRestored,
 
   KeyPress,
   KeyRelease,
@@ -185,6 +186,14 @@ class WindowMaximizedEvent final : public IWindowEvent
 
 public:
   [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowMaximized; }
+};
+
+class WindowRestoredEvent final : public IWindowEvent
+{
+  using IWindowEvent::IWindowEvent;
+
+public:
+  [[nodiscard]] inline auto Type() const -> EventType override { return EventType::WindowRestored; }
 };
 
 class IKeyboardEvent : public IEvent

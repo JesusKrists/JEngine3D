@@ -5,12 +5,12 @@ namespace JE {
 enum class MouseButton {
 
   Left = 1,
-  Middle = 2,
-  Right = 3,
-  X1 = 4,
-  X2 = 5,
+  Middle,
+  Right,
+  X1,
+  X2,
 
-  TAG_COUNT
+  TAG_COUNT_PLUS_ONE
 };
 
 }

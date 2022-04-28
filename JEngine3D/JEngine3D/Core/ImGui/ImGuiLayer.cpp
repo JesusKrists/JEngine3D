@@ -19,7 +19,7 @@
 #include <cstddef>// for size_t
 namespace JE {
 
-static std::array<bool, static_cast<size_t>(MouseButton::TAG_COUNT)> s_MouseButtonsPressed{};// NOLINT
+static std::array<bool, static_cast<size_t>(MouseButton::TAG_COUNT_PLUS_ONE) - 1> s_MouseButtonsPressed{};// NOLINT
 
 static auto MouseButtonsPressed() -> bool
 {
@@ -73,7 +73,7 @@ static void JEngine3DImGuiSetWindowPosition(ImGuiViewport *viewport, ImVec2 pos)
 
 static auto JEngine3DImGuiGetWindowPosition(ImGuiViewport *viewport) -> ImVec2
 {
-  auto &window = *static_cast<Window *>(viewport->PlatformHandle);
+  const auto &window = *static_cast<const Window *>(viewport->PlatformHandle);
   const auto &pos = window.Position();
   return ImVec2{ static_cast<float>(pos.X), static_cast<float>(pos.Y) };
 }
@@ -86,7 +86,7 @@ static void JEngine3DImGuiSetWindowSize(ImGuiViewport *viewport, ImVec2 size)
 
 static auto JEngine3DImGuiGetWindowSize(ImGuiViewport *viewport) -> ImVec2
 {
-  auto &window = *static_cast<Window *>(viewport->PlatformHandle);
+  const auto &window = *static_cast<const Window *>(viewport->PlatformHandle);
   const auto &size = window.Size();
   return ImVec2{ static_cast<float>(size.Width), static_cast<float>(size.Height) };
 }
@@ -99,13 +99,13 @@ static void JEngine3DImGuiSetWindowFocus(ImGuiViewport *viewport)
 
 static auto JEngine3DImGuiGetWindowFocus(ImGuiViewport *viewport) -> bool
 {
-  auto &window = *static_cast<Window *>(viewport->PlatformHandle);
+  const auto &window = *static_cast<const Window *>(viewport->PlatformHandle);
   return window.Focused();
 }
 
 static auto JEngine3DImGuiGetWindowMinimized(ImGuiViewport *viewport) -> bool
 {
-  auto &window = *static_cast<Window *>(viewport->PlatformHandle);
+  const auto &window = *static_cast<const Window *>(viewport->PlatformHandle);
   return window.Minimized();
 }
 
@@ -298,7 +298,10 @@ void ImGuiLayer::OnUpdate()
     IPlatformBackend::Get().ReleaseMouse();
   }
 }
-void ImGuiLayer::OnImGuiRender() {}
+void ImGuiLayer::OnImGuiRender()
+{
+  // ImGui layer itself won't render anything
+}
 
 void ImGuiLayer::OnEvent(IEvent &event)
 {
@@ -424,7 +427,7 @@ void ImGuiLayer::OnEvent(IEvent &event)
 
     Position2DI mousePos = moveEvent.Position();
     if (imguiIO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {// NOLINT
-      auto &window = WindowController::Get().WindowFromNativeHandle(moveEvent.WindowHandle());
+      const auto &window = WindowController::Get().WindowFromNativeHandle(moveEvent.WindowHandle());
       const auto &windowPosition = window.Position();
       mousePos.X += windowPosition.X;
       mousePos.Y += windowPosition.Y;
@@ -450,7 +453,7 @@ void ImGuiLayer::Begin() { ImGui::NewFrame(); }// NOLINT(readability-convert-mem
 
 void ImGuiLayer::End()// NOLINT(readability-convert-member-functions-to-static)
 {
-  ImGuiIO &imguiIO = ImGui::GetIO();
+  const ImGuiIO &imguiIO = ImGui::GetIO();
 
   ImGui::Render();
 

@@ -60,7 +60,7 @@ private:
   Size2DI m_Size;
   Position2DI m_Position;
   bool m_Shown;
-  bool m_Focused;
+  bool m_Focused = true;
   bool m_Minimized;
 };
 

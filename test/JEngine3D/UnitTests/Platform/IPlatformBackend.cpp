@@ -583,6 +583,47 @@ TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Restored)",
+  "[JE::IPlatformBackend]")
+{
+
+  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+  class WindowRestoredChecker final : public JE::IEventProcessor
+  {
+  public:
+    explicit WindowRestoredChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
+
+    inline void OnEvent(JE::IEvent &event) override
+    {
+      if (event.Type() == JE::EventType::WindowRestored) {
+        const auto &restoreEvent =
+          static_cast<const JE::WindowRestoredEvent &>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+            event);
+        if (restoreEvent.NativeWindowHandle() == m_Handle) { m_WindowRestoredEventReceived = true; }
+      }
+    }
+
+    [[nodiscard]] inline auto WindowRestoredEventReceived() const -> bool { return m_WindowRestoredEventReceived; }
+
+  private:
+    JE::IPlatformBackend::NativeWindowHandle m_Handle;
+    bool m_WindowRestoredEventReceived = false;
+  } checker{ handle };
+  m_Backend.SetEventProcessor(&checker);
+
+
+  JE::WindowRestoredEvent event{ handle };
+  m_Backend.PushEvent(event);
+
+  m_Backend.PollEvents();
+
+  REQUIRE(checker.WindowRestoredEventReceived());
+
+  m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
   "JE::IPlatformBackend Polls events to EventProcessor (Fake Key press)",
   "[JE::IPlatformBackend]")
 {

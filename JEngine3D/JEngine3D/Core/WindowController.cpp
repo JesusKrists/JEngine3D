@@ -17,8 +17,7 @@ Window::Window(const std::string_view &title,
   const WindowConfiguration &config,
   IPlatformBackend::NativeWindowHandle nativeHandle)
   : m_NativeHandle(nativeHandle), m_GraphicsContext(IGraphicsContextCreator::Get().CreateContext(m_NativeHandle)),
-    m_Title(title), m_Size(size), m_Position(position), m_Shown(!config.Hidden), m_Focused(true),
-    m_Minimized(config.Minimized)
+    m_Title(title), m_Size(size), m_Position(position), m_Shown(!config.Hidden), m_Minimized(config.Minimized)
 {
   ASSERT(
     m_Title == IPlatformBackend::Get().WindowTitle(m_NativeHandle), "Window title mismatch with native window title");
@@ -221,6 +220,21 @@ void WindowController::OnEvent(IEvent &event)
       static_cast<const WindowMaximizedEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
     auto &window = WindowFromNativeHandle(maximizeEvent.NativeWindowHandle());
+    window.m_Minimized = false;
+
+    // ASSERT(
+    //   !IPlatformBackend::Get().WindowMinimized(window.NativeHandle()), "Window and Native window minimized
+    //   mismatch");
+
+    return true;
+  });
+
+
+  dispatcher.Dispatch<EventType::WindowRestored>([&](const IEvent &evnt) {
+    const auto &restoreEvent =
+      static_cast<const WindowRestoredEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    auto &window = WindowFromNativeHandle(restoreEvent.NativeWindowHandle());
     window.m_Minimized = false;
 
     // ASSERT(

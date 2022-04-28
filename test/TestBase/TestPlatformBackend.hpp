@@ -255,8 +255,17 @@ public:
 
     dispatcher.Dispatch<JE::EventType::WindowMaximized>([&](const JE::IEvent &evnt) {
       const auto &maximizeEvent =
-        static_cast<const JE::WindowMinimizedEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+        static_cast<const JE::WindowMaximizedEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
       auto windowIt = WindowIterator(maximizeEvent.NativeWindowHandle());
+      if (windowIt != std::end(m_CreatedWindows)) { windowIt->Minimized = false; }
+
+      return false;
+    });
+
+    dispatcher.Dispatch<JE::EventType::WindowRestored>([&](const JE::IEvent &evnt) {
+      const auto &restoredEvent =
+        static_cast<const JE::WindowRestoredEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+      auto windowIt = WindowIterator(restoredEvent.NativeWindowHandle());
       if (windowIt != std::end(m_CreatedWindows)) { windowIt->Minimized = false; }
 
       return false;

@@ -228,6 +228,22 @@ TEST_CASE_METHOD(WindowControllerTestsFixture,
   REQUIRE(!window.Minimized());
 }
 
+TEST_CASE_METHOD(WindowControllerTestsFixture,
+  "JE::WindowController processes WindowRestoredEvent",
+  "[JE::WindowController]")
+{
+  auto &window = m_WindowController.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+  m_Backend.PollEvents();
+  window.Minimize();
+  m_Backend.PollEvents();
+  REQUIRE(window.Minimized());
+
+  JE::WindowRestoredEvent maximizeEvent{ window.NativeHandle() };
+  m_Backend.PushEvent(maximizeEvent);
+  m_Backend.PollEvents();
+  REQUIRE(!window.Minimized());
+}
+
 TEST_CASE_METHOD(WindowControllerTestsFixture, "JE::Window sets title of underlying NativeHandle", "[JE::Window]")
 {
   JE::WindowConfiguration config{};

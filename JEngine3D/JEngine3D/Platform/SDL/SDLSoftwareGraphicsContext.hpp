@@ -36,7 +36,7 @@ public:
   [[nodiscard]] auto RendererSize() -> Size2DI;
 
 private:
-  NativeTextureHandle m_Texture;
+  NativeTextureHandle m_Texture = nullptr;
   void *m_PixelPtr = nullptr;
   int32_t m_Pitch = 0;
 };

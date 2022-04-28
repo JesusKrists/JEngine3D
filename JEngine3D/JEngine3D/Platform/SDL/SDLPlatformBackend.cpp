@@ -283,6 +283,11 @@ void SDLPlatformBackend::PollEvents()// NOLINT(readability-function-cognitive-co
     EventProcessor().OnEvent(event);
   };
 
+  auto ProcessWindowRestoredEvent = [&](const SDL_Event &nativeEvent) {
+    WindowRestoredEvent event{ SDL_GetWindowFromID(nativeEvent.window.windowID) };
+    EventProcessor().OnEvent(event);
+  };
+
   SDL_Event nativeEvent;
   while (SDL_PollEvent(&nativeEvent) != 0) {
     if (nativeEvent.type == SDL_EventType::SDL_QUIT) {
@@ -330,6 +335,10 @@ void SDLPlatformBackend::PollEvents()// NOLINT(readability-function-cognitive-co
 
         case SDL_WindowEventID::SDL_WINDOWEVENT_MAXIMIZED:
           ProcessWindowMaximizedEvent(nativeEvent);
+          break;
+
+        case SDL_WindowEventID::SDL_WINDOWEVENT_RESTORED:
+          ProcessWindowRestoredEvent(nativeEvent);
           break;
 
         default:
@@ -547,6 +556,23 @@ void SDLPlatformBackend::PushEvent(IEvent &event)
     nativeMaximizeEvent.window.windowID = SDL_GetWindowID(window);
     ASSERT(nativeMaximizeEvent.window.windowID != 0, "Invalid native window handle passed");
     SDL_PushEvent(&nativeMaximizeEvent);
+
+    SDL_RestoreWindow(window);
+    SDL_MaximizeWindow(window);
+  }
+
+  if (event.Type() == EventType::WindowRestored) {
+    const auto &restoredEvent =
+      static_cast<const WindowRestoredEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+
+    auto *window = static_cast<SDL_Window *>(restoredEvent.NativeWindowHandle());
+
+    SDL_Event nativeRestoreEvent;
+    nativeRestoreEvent.type = SDL_EventType::SDL_WINDOWEVENT;
+    nativeRestoreEvent.window.event = SDL_WindowEventID::SDL_WINDOWEVENT_RESTORED;
+    nativeRestoreEvent.window.windowID = SDL_GetWindowID(window);
+    ASSERT(nativeRestoreEvent.window.windowID != 0, "Invalid native window handle passed");
+    SDL_PushEvent(&nativeRestoreEvent);
 
     SDL_RestoreWindow(window);
   }
