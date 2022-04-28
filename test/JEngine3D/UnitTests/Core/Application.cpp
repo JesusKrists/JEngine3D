@@ -33,7 +33,7 @@ TEST_CASE_METHOD(ApplicationTestsFixture, "JE::Application creates MainWindow an
   REQUIRE(m_App.MainWindow().Size() == JE::Application::DEFAULT_SIZE);
 
   m_App.Run(1);
-  REQUIRE(m_App.Focused());
+  CHECK_NOFAIL(m_App.Focused());
 }
 
 
