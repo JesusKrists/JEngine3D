@@ -3,7 +3,7 @@
 #include <JEngine3D/Core/Base.hpp>
 
 #include <initializer_list>// for end, initializer_list
-#include <cstddef>// for size_t
+#include <cstddef>// IWYU pragma: keep
 
 TEST_CASE("JE::BIT returns shifted bit from bit index", "[JE::BIT]")
 {

@@ -16,7 +16,8 @@
 
 #include <imgui.h>
 #include <array>
-#include <cstddef>// for size_t
+#include <cstddef>// IWYU pragma: keep
+
 namespace JE {
 
 static std::array<bool, static_cast<size_t>(MouseButton::TAG_COUNT_PLUS_ONE) - 1> s_MouseButtonsPressed{};// NOLINT
