@@ -15,6 +15,8 @@ set(JEngine3D_HEADERS
     JEngine3D/Core/MouseButtons.hpp
     JEngine3D/Core/Types.hpp
     JEngine3D/Core/WindowController.hpp
+    JEngine3D/Debug/View/IImGuiDebugView.hpp
+    JEngine3D/Debug/View/WindowControllerDebugView.hpp
     JEngine3D/Platform/IGraphicsContext.hpp
     JEngine3D/Platform/IGraphicsContextCreator.hpp
     JEngine3D/Platform/IPlatformBackend.hpp
@@ -33,6 +35,7 @@ set(JEngine3D_SOURCES
     JEngine3D/Core/LoggerController.cpp
     JEngine3D/Core/MemoryController.cpp
     JEngine3D/Core/WindowController.cpp
+    JEngine3D/Debug/View/WindowControllerDebugView.cpp
     JEngine3D/Platform/IGraphicsContextCreator.cpp
     JEngine3D/Platform/IPlatformBackend.cpp
     JEngine3D/Platform/SDL/SDLGLGraphicsContext.cpp

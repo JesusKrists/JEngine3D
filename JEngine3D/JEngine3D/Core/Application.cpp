@@ -7,8 +7,8 @@
 #include "JEngine3D/Platform/IPlatformBackend.hpp"// for IPlatformBackend
 #include "JEngine3D/Platform/IGraphicsContext.hpp"
 
-#include <functional>// for reference_wrapper
-#include <vector>// for vector
+#include "JEngine3D/Debug/View/IImGuiDebugView.hpp"
+
 #include <iterator>// for rbegin, rend
 
 namespace JE {
@@ -22,6 +22,9 @@ Application::Application(const std::string_view &title)
   s_ApplicationInstance = this;
 
   PushOverlay(m_ImGuiLayer);
+
+  m_InternalDebugViews.windowControllerDebugView.Open();
+  AddDebugView(m_InternalDebugViews.windowControllerDebugView);
 
   IPlatformBackend::Get().SetEventProcessor(this);
 
@@ -70,6 +73,8 @@ void Application::PopLayer(ILayer &layer) { m_LayerStack.PopLayer(layer); }
 
 void Application::PopOverlay(ILayer &layer) { m_LayerStack.PopOverlay(layer); }
 
+void Application::AddDebugView(IImGuiDebugView &view) { m_DebugViewContainer.push_back(view); }
+
 void Application::UpdateAppFocus()
 {
   auto *focusedNativeWindow = IPlatformBackend::Get().FocusedWindow();
@@ -102,6 +107,9 @@ void Application::ProcessMainLoop()
 
   m_ImGuiLayer.Begin();
   for (const auto &layer : m_LayerStack) { layer.get().OnImGuiRender(); }
+  for (const auto &view : m_DebugViewContainer) {
+    if (view.get().IsOpen()) { view.get().OnImGuiRender(); }
+  }
   m_ImGuiLayer.End();
 
   m_MainWindow.GraphicsContext().MakeCurrent();
