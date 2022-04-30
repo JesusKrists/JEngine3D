@@ -73,7 +73,7 @@ void Application::PopLayer(ILayer &layer) { m_LayerStack.PopLayer(layer); }
 
 void Application::PopOverlay(ILayer &layer) { m_LayerStack.PopOverlay(layer); }
 
-void Application::AddDebugView(IImGuiDebugView &view) { m_DebugViewContainer.push_back(view); }
+void Application::AddDebugView(IImGuiDebugView &view) { m_DebugViewContainer.emplace_back(view); }
 
 void Application::UpdateAppFocus()
 {
