@@ -26,6 +26,7 @@ Application::Application(const std::string_view &title)
 
   PushOverlay(m_ImGuiLayer);
 
+  AddDebugView(m_InternalDebugViews.applicationDebugView);
   AddDebugView(m_InternalDebugViews.windowControllerDebugView);
 
   IPlatformBackend::Get().SetEventProcessor(this);

@@ -44,7 +44,7 @@ void WindowControllerDebugView::OnImGuiRender()
     ImGui::EndChild();
     ImGui::SameLine();
 
-    ImGui::BeginChild("WindowParameters");
+    ImGui::BeginGroup();
     if (s_SelectedWindow != nullptr) {
       ImGui::TextUnformatted("Window Parameters");
       ImGui::Indent();
@@ -59,7 +59,7 @@ void WindowControllerDebugView::OnImGuiRender()
 
       ImGui::Unindent();
     }
-    ImGui::EndChild();
+    ImGui::EndGroup();
   }
   ImGui::End();
 }

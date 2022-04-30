@@ -7,6 +7,7 @@
 #include "JEngine3D/Core/Types.hpp"// for Size2D, int32_t, string_view
 #include "JEngine3D/Core/ImGui/ImGuiLayer.hpp"
 
+#include "JEngine3D/Debug/View/ApplicationDebugView.hpp"
 #include "JEngine3D/Debug/View/WindowControllerDebugView.hpp"
 #include "JEngine3D/Platform/IPlatformBackend.hpp"
 
@@ -25,6 +26,7 @@ class Application final : public IEventProcessor
 {
   struct InternalDebugViews
   {
+    ApplicationDebugView applicationDebugView;
     WindowControllerDebugView windowControllerDebugView;
   };
 
@@ -58,12 +60,15 @@ public:
   // cppcheck-suppress functionConst
   [[nodiscard]] inline auto MainWindow() -> Window & { return m_MainWindow; }
   // cppcheck-suppress functionConst
+  [[nodiscard]] inline auto Layers() -> LayerStack & { return m_LayerStack; }
+  // cppcheck-suppress functionConst
   [[nodiscard]] inline auto DebugViews() -> DebugViewContainer & { return m_DebugViewContainer; }
 
 
   [[nodiscard]] inline auto Running() const -> bool { return m_Running; }
   [[nodiscard]] inline auto DeltaTime() const -> double { return m_DeltaTime; }
   [[nodiscard]] inline auto Focused() const -> bool { return m_Focused; }
+  [[nodiscard]] inline auto TotalFrameCount() const -> int64_t { return m_ProcessCount; }
 
 private:
   void UpdateAppFocus();
