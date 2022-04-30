@@ -8,6 +8,7 @@
 #include "JEngine3D/Core/ImGui/ImGuiLayer.hpp"
 
 #include "JEngine3D/Debug/View/WindowControllerDebugView.hpp"
+#include "JEngine3D/Platform/IPlatformBackend.hpp"
 
 #include <functional>// for reference_wrapper
 
@@ -31,6 +32,7 @@ class Application final : public IEventProcessor
 
 public:
   static constexpr auto DEFAULT_SIZE = Size2DI{ 640, 480 };
+  static constexpr auto MAIN_WINDOW_CONFIG = WindowConfiguration{ true };
 
   explicit Application(const std::string_view &title);
   ~Application() override = default;
@@ -55,7 +57,8 @@ public:
 
   // cppcheck-suppress functionConst
   [[nodiscard]] inline auto MainWindow() -> Window & { return m_MainWindow; }
-  [[nodiscard]] inline auto DebugViews() const -> const DebugViewContainer & { return m_DebugViewContainer; }
+  // cppcheck-suppress functionConst
+  [[nodiscard]] inline auto DebugViews() -> DebugViewContainer & { return m_DebugViewContainer; }
 
 
   [[nodiscard]] inline auto Running() const -> bool { return m_Running; }

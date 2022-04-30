@@ -16,20 +16,19 @@ namespace JE {
 Application *Application::s_ApplicationInstance = nullptr;// NOLINT
 
 Application::Application(const std::string_view &title)
-  : m_MainWindow(WindowController::Get().CreateWindow(title, DEFAULT_SIZE))
+  : m_MainWindow(WindowController::Get().CreateWindow(title,
+    DEFAULT_SIZE,
+    IPlatformBackend::WINDOW_CENTER_POSITION,
+    MAIN_WINDOW_CONFIG))
 {
   ASSERT(!s_ApplicationInstance, "Application instance already exists");
   s_ApplicationInstance = this;
 
   PushOverlay(m_ImGuiLayer);
 
-  m_InternalDebugViews.windowControllerDebugView.Open();
   AddDebugView(m_InternalDebugViews.windowControllerDebugView);
 
   IPlatformBackend::Get().SetEventProcessor(this);
-
-  m_MainWindow.GraphicsContext().MakeCurrent();
-  m_MainWindow.Focus();
 }
 
 void Application::OnEvent(IEvent &event)
@@ -103,13 +102,13 @@ void Application::ProcessMainLoop()
   IPlatformBackend::Get().PollEvents();
   if (!m_Running) { return; }
 
-  for (const auto &layer : m_LayerStack) { layer.get().OnUpdate(); }
+  ForEach(m_LayerStack, [&](ILayer &layer) { layer.OnUpdate(); });
 
   m_ImGuiLayer.Begin();
-  for (const auto &layer : m_LayerStack) { layer.get().OnImGuiRender(); }
-  for (const auto &view : m_DebugViewContainer) {
-    if (view.get().IsOpen()) { view.get().OnImGuiRender(); }
-  }
+  ForEach(m_LayerStack, [&](ILayer &layer) { layer.OnImGuiRender(); });
+  ForEach(m_DebugViewContainer, [&](IImGuiDebugView &view) {
+    if (view.IsOpen()) { view.OnImGuiRender(); }
+  });
   m_ImGuiLayer.End();
 
   m_MainWindow.GraphicsContext().MakeCurrent();
@@ -122,6 +121,8 @@ void Application::Run(int32_t loopCount)
   ASSERT(loopCount != 0, "Cannot run zero loops");
 
   m_Running = true;
+
+  m_MainWindow.Focus();
 
   if (loopCount < 0) {
     while (m_Running) { ProcessMainLoop(); }

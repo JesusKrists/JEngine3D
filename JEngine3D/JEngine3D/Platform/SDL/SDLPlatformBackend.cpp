@@ -145,7 +145,11 @@ auto SDLPlatformBackend::WindowPosition(NativeWindowHandle handle) -> Position2D
 void SDLPlatformBackend::SetWindowPosition(NativeWindowHandle handle, const Position2DI &position)
 {
   ASSERT(handle, "Window handle is null");
-  SDL_SetWindowPosition(static_cast<SDL_Window *>(handle), position.X, position.Y);
+  SDL_SetWindowPosition(static_cast<SDL_Window *>(handle),
+    position != WINDOW_CENTER_POSITION ? position.X
+                                       : static_cast<int32_t>(SDL_WINDOWPOS_CENTERED),// NOLINT(hicpp-signed-bitwise)
+    position != WINDOW_CENTER_POSITION ? position.Y
+                                       : static_cast<int32_t>(SDL_WINDOWPOS_CENTERED));// NOLINT(hicpp-signed-bitwise)
 }
 
 auto SDLPlatformBackend::WindowHidden(NativeWindowHandle handle) -> bool

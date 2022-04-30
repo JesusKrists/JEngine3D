@@ -119,9 +119,9 @@ public:
     auto windowIt = WindowIterator(handle);
     if (windowIt != std::end(m_CreatedWindows)) { windowIt->Focused = true; }
 
-    for (auto windowIter = std::begin(m_CreatedWindows); windowIter != std::end(m_CreatedWindows); ++windowIter) {
-      if (windowIter != windowIt) { windowIter->Focused = false; }
-    }
+    JE::ForEach(m_CreatedWindows, [&](auto &window) {
+      if (&window != &(*windowIt)) { window.Focused = false; }
+    });
   }
 
   [[nodiscard]] inline auto FocusedWindow() -> NativeWindowHandle override
@@ -180,12 +180,12 @@ public:
 
   inline void PollEvents() override
   {
-    for (auto it = std::begin(m_EventQueue); it != std::end(m_EventQueue);) {
-      ProcessEvent(*it);
+    JE::ForEach(m_EventQueue, [&](auto &event) {
+      ProcessEvent(event);
+      EventProcessor().OnEvent(event);
+    });
 
-      EventProcessor().OnEvent(*it);
-      it = m_EventQueue.erase(it);
-    }
+    m_EventQueue.clear();
   }
 
   inline void ProcessEvent(JE::IEvent &event)

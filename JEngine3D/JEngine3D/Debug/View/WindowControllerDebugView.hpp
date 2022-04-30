@@ -5,7 +5,7 @@
 
 namespace JE {
 
-class WindowControllerDebugView : public IImGuiDebugView
+class WindowControllerDebugView final : public IImGuiDebugView
 {
 public:
   WindowControllerDebugView() : IImGuiDebugView("WindowControllerDebugView") {}

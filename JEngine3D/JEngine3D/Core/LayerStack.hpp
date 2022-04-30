@@ -12,6 +12,9 @@ class ILayer;
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
 class LayerStack
 {
+
+  using LayerContainer = Vector<std::reference_wrapper<ILayer>, MemoryTag::App>;
+
 public:
   ~LayerStack();
 
@@ -22,47 +25,21 @@ public:
   void PopOverlay(ILayer &layer);
 
 
-  inline auto begin() -> Vector<std::reference_wrapper<ILayer>, MemoryTag::App>::iterator
-  {
-    return std::begin(m_Layers);
-  }
-  inline auto end() -> Vector<std::reference_wrapper<ILayer>, MemoryTag::App>::iterator { return std::end(m_Layers); }
-  inline auto rbegin() -> Vector<std::reference_wrapper<ILayer>, MemoryTag::App>::reverse_iterator
-  {
-    return std::rbegin(m_Layers);
-  }
-  inline auto rend() -> Vector<std::reference_wrapper<ILayer>, MemoryTag::App>::reverse_iterator
-  {
-    return std::rend(m_Layers);
-  }
+  inline auto begin() -> LayerContainer::iterator { return std::begin(m_Layers); }
+  inline auto end() -> LayerContainer::iterator { return std::end(m_Layers); }
+  inline auto rbegin() -> LayerContainer::reverse_iterator { return std::rbegin(m_Layers); }
+  inline auto rend() -> LayerContainer::reverse_iterator { return std::rend(m_Layers); }
 
 
-  [[nodiscard]] inline auto begin() const -> Vector<std::reference_wrapper<ILayer>, MemoryTag::App>::const_iterator
-  {
-    return std::begin(m_Layers);
-  }
-  [[nodiscard]] inline auto end() const -> Vector<std::reference_wrapper<ILayer>, MemoryTag::App>::const_iterator
-  {
-    return std::end(m_Layers);
-  }
-  [[nodiscard]] inline auto rbegin() const
-    -> Vector<std::reference_wrapper<ILayer>, MemoryTag::App>::const_reverse_iterator
-  {
-    return std::rbegin(m_Layers);
-  }
-  [[nodiscard]] inline auto rend() const
-    -> Vector<std::reference_wrapper<ILayer>, MemoryTag::App>::const_reverse_iterator
-  {
-    return std::rend(m_Layers);
-  }
+  [[nodiscard]] inline auto begin() const -> LayerContainer::const_iterator { return std::begin(m_Layers); }
+  [[nodiscard]] inline auto end() const -> LayerContainer::const_iterator { return std::end(m_Layers); }
+  [[nodiscard]] inline auto rbegin() const -> LayerContainer::const_reverse_iterator { return std::rbegin(m_Layers); }
+  [[nodiscard]] inline auto rend() const -> LayerContainer::const_reverse_iterator { return std::rend(m_Layers); }
 
-  [[nodiscard]] inline auto Layers() const -> const Vector<std::reference_wrapper<ILayer>, MemoryTag::App> &
-  {
-    return m_Layers;
-  }
+  [[nodiscard]] inline auto Layers() const -> const LayerContainer & { return m_Layers; }
 
 private:
-  Vector<std::reference_wrapper<ILayer>, MemoryTag::App> m_Layers;
+  LayerContainer m_Layers;
   uint32_t m_LayerInsertIndex = 0;
 };
 

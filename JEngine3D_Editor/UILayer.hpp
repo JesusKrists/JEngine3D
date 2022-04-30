@@ -6,10 +6,10 @@ class IEvent;
 
 namespace JEditor {
 
-class TestLayer final : public JE::ILayer
+class UILayer final : public JE::ILayer
 {
 public:
-  TestLayer() : JE::ILayer("JEditor Test Layer") {}
+  UILayer() : JE::ILayer("JEditor Test Layer") {}
 
   void OnCreate() override;
   void OnDestroy() override;
@@ -18,6 +18,10 @@ public:
   void OnImGuiRender() override;
 
   void OnEvent(JE::IEvent &event) override;
+
+private:
+  // cppcheck-suppress functionStatic
+  void RenderMainMenuBar();
 };
 
 }// namespace JEditor

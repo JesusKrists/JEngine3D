@@ -109,8 +109,8 @@
             "description": "Target Linux with the gcc compiler, debug build type",
             "inherits": "conf-linux-common",
             "cacheVariables": {
-                "CMAKE_C_COMPILER": "gcc-11",
-                "CMAKE_CXX_COMPILER": "g++-11",
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
                 "CMAKE_BUILD_TYPE": "Debug"
             }
         },
@@ -120,8 +120,8 @@
             "description": "Target Linux with the gcc compiler, release build type",
             "inherits": "conf-linux-common",
             "cacheVariables": {
-                "CMAKE_C_COMPILER": "gcc-11",
-                "CMAKE_CXX_COMPILER": "g++-11",
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo"
             }
         },
@@ -131,8 +131,8 @@
             "description": "Target Linux with the gcc compiler, debug build type",
             "inherits": "conf-linux-common",
             "cacheVariables": {
-                "CMAKE_C_COMPILER": "gcc-11",
-                "CMAKE_CXX_COMPILER": "g++-11",
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
                 "CMAKE_BUILD_TYPE": "Debug",
                 "USE_SDL_SOFTWARE_CONTEXT": "TRUE"
             }
