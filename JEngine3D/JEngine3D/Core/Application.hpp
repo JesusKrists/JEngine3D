@@ -8,6 +8,7 @@
 #include "JEngine3D/Core/ImGui/ImGuiLayer.hpp"
 
 #include "JEngine3D/Debug/View/ApplicationDebugView.hpp"
+#include "JEngine3D/Debug/View/InputControllerDebugView.hpp"
 #include "JEngine3D/Debug/View/WindowControllerDebugView.hpp"
 #include "JEngine3D/Platform/IPlatformBackend.hpp"
 
@@ -27,6 +28,7 @@ class Application final : public IEventProcessor
   struct InternalDebugViews
   {
     ApplicationDebugView applicationDebugView;
+    InputControllerDebugView inputControllerDebugView;
     WindowControllerDebugView windowControllerDebugView;
   };
 

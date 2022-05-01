@@ -404,7 +404,7 @@ void ImGuiLayer::OnEvent(IEvent &event)
 
     imguiIO.AddMouseButtonEvent(button, true);
 
-    s_MouseButtonsPressed[static_cast<size_t>(pressEvent.Button())] = true;// NOLINT
+    s_MouseButtonsPressed[static_cast<size_t>(pressEvent.Button()) - 1] = true;// NOLINT
 
     return imguiIO.WantCaptureMouse;// When true we don't capture event in app
   });
@@ -417,7 +417,7 @@ void ImGuiLayer::OnEvent(IEvent &event)
 
     imguiIO.AddMouseButtonEvent(button, false);
 
-    s_MouseButtonsPressed[static_cast<size_t>(releaseEvent.Button())] = false;// NOLINT
+    s_MouseButtonsPressed[static_cast<size_t>(releaseEvent.Button()) - 1] = false;// NOLINT
 
     return imguiIO.WantCaptureMouse;// When true we don't capture event in app
   });

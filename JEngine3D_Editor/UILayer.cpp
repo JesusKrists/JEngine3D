@@ -4,6 +4,8 @@
 #include <JEngine3D/Core/Application.hpp>
 #include <JEngine3D/Debug/View/IImGuiDebugView.hpp>
 
+#include <string>
+
 #include <imgui.h>
 
 namespace JE {
@@ -14,7 +16,10 @@ class IEvent;
 
 namespace JEditor {
 
-void UILayer::OnCreate() {}
+void UILayer::OnCreate()
+{
+  JE::ForEach(JE::Application::Get().DebugViews(), [](JE::IImGuiDebugView &view) { view.Open(); });
+}
 void UILayer::OnDestroy() {}
 
 void UILayer::OnUpdate()

@@ -1,5 +1,6 @@
 #include "InputController.hpp"
 
+#include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Platform/IPlatformBackend.hpp"// for IPlatformBackend
 #include "JEngine3D/Core/LoggerController.hpp"// for Logger
 
@@ -76,6 +77,12 @@ void InputController::OnEvent(IEvent &event)
 
     return true;
   });
+}
+
+void InputController::NewFrame()
+{
+  m_RelativeMousePosition = Position2DI{ 0, 0 };
+  m_ScrollAmount = 0;
 }
 
 auto InputController::KeyPressed(KeyCode key) const -> bool

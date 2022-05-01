@@ -17,6 +17,7 @@ set(JEngine3D_HEADERS
     JEngine3D/Core/WindowController.hpp
     JEngine3D/Debug/View/ApplicationDebugView.hpp
     JEngine3D/Debug/View/IImGuiDebugView.hpp
+    JEngine3D/Debug/View/InputControllerDebugView.hpp
     JEngine3D/Debug/View/WindowControllerDebugView.hpp
     JEngine3D/Platform/IGraphicsContext.hpp
     JEngine3D/Platform/IGraphicsContextCreator.hpp
@@ -37,6 +38,7 @@ set(JEngine3D_SOURCES
     JEngine3D/Core/MemoryController.cpp
     JEngine3D/Core/WindowController.cpp
     JEngine3D/Debug/View/ApplicationDebugView.cpp
+    JEngine3D/Debug/View/InputControllerDebugView.cpp
     JEngine3D/Debug/View/WindowControllerDebugView.cpp
     JEngine3D/Platform/IGraphicsContextCreator.cpp
     JEngine3D/Platform/IPlatformBackend.cpp

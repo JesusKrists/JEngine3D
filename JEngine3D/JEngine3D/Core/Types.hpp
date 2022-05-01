@@ -35,19 +35,19 @@ struct RectangleI
 
 inline auto operator<<(std::ostream &outStream, Size2DI const &value) -> std::ostream &
 {
-  outStream << fmt::format(fmt::runtime("Size2DI{{ Width: {0}, Height: {1} }}"), value.Width, value.Height);
+  outStream << fmt::format("Size2DI{{ Width: {0}, Height: {1} }}", value.Width, value.Height);
   return outStream;
 }
 
 inline auto operator<<(std::ostream &outStream, Position2DI const &value) -> std::ostream &
 {
-  outStream << fmt::format(fmt::runtime("Position2DI{{ X: {0}, Y: {1} }}"), value.X, value.Y);
+  outStream << fmt::format("Position2DI{{ X: {0}, Y: {1} }}", value.X, value.Y);
   return outStream;
 }
 
 inline auto operator<<(std::ostream &outStream, RectangleI const &value) -> std::ostream &
 {
-  outStream << fmt::format(fmt::runtime("RectangleI{{ X: {0}, Y: {1}, X2: {2}, Y2: {3} }}"),
+  outStream << fmt::format("RectangleI{{ X: {0}, Y: {1}, X2: {2}, Y2: {3} }}",
     value.Position.X,
     value.Position.Y,
     value.Position.X + value.Size.Width,

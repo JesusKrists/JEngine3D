@@ -23,12 +23,17 @@ public:
 
   void OnEvent(IEvent &event) override;
 
+  void NewFrame();
+
   [[nodiscard]] auto KeyPressed(KeyCode key) const -> bool;
   [[nodiscard]] auto MousePressed(MouseButton button) const -> bool;
 
   [[nodiscard]] inline auto MousePosition() const -> const Position2DI & { return m_MousePosition; }
   [[nodiscard]] inline auto RelativeMousePosition() const -> const Position2DI & { return m_RelativeMousePosition; }
   [[nodiscard]] inline auto MouseScrollAmount() const -> int32_t { return m_ScrollAmount; }
+
+  [[nodiscard]] inline auto KeyMap() const -> const std::unordered_map<KeyCode, bool> & { return m_KeyMap; }
+  [[nodiscard]] inline auto MouseMap() const -> const std::unordered_map<MouseButton, bool> & { return m_MouseMap; }
 
 private:
   std::unordered_map<KeyCode, bool> m_KeyMap;

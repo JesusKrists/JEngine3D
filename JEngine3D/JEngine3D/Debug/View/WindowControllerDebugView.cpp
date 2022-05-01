@@ -2,15 +2,17 @@
 
 #include "JEngine3D/Core/WindowController.hpp"
 #include "JEngine3D/Platform/IGraphicsContext.hpp"
+#include "JEngine3D/Core/Base.hpp"// for FindIf, ForEach
+#include "JEngine3D/Core/MemoryController.hpp"// for Scope, MemoryTag
 
-#include <imgui.h>
-
-#include <imgui_internal.h>
 #include <string>
+#include <iterator>// for end
+
+#include <fmt/core.h>// for format
+#include <imgui.h>
 
 namespace JE {
 
-static constexpr auto WINDOW_PARAMETER_COLOR = ImVec4{ 1, 1, 0, 1 };
 static constexpr auto WINDOW_PARAMETER_ALIGNMENT_START = 128;
 
 
@@ -18,15 +20,14 @@ void WindowControllerDebugView::OnImGuiRender()
 {
   if (ImGui::Begin(Name().c_str(), &m_Open)) {
 
-    auto RenderWindowParameter = [](const std::string &label,
-                                   const std::string &parameter,
-                                   const ImVec4 &parameterColor = WINDOW_PARAMETER_COLOR) {
-      auto labelSize = ImGui::CalcTextSize(label.c_str());
+    auto RenderWindowParameter =
+      [](const std::string &label, const std::string &parameter, const ImVec4 &parameterColor = PARAMETER_COLOR) {
+        auto labelSize = ImGui::CalcTextSize(label.c_str());
 
-      ImGui::TextUnformatted(label.c_str());
-      ImGui::SameLine(0, WINDOW_PARAMETER_ALIGNMENT_START - labelSize.x);
-      ImGui::TextColored(parameterColor, "%s", parameter.c_str());// NOLINT
-    };
+        ImGui::TextUnformatted(label.c_str());
+        ImGui::SameLine(0, WINDOW_PARAMETER_ALIGNMENT_START - labelSize.x);
+        ImGui::TextColored(parameterColor, "%s", parameter.c_str());// NOLINT
+      };
 
     const auto &windows = WindowController::Get().Windows();
 
@@ -46,16 +47,21 @@ void WindowControllerDebugView::OnImGuiRender()
 
     ImGui::BeginGroup();
     if (s_SelectedWindow != nullptr) {
-      ImGui::TextUnformatted("Window Parameters");
+      ImGui::TextUnformatted("Window Properties");
       ImGui::Indent();
 
       RenderWindowParameter("Title:", s_SelectedWindow->Title(), { 1, 1, 1, 1 });
       RenderWindowParameter("Size:", fmt::format("{}", s_SelectedWindow->Size()));
       RenderWindowParameter("Drawable Size:", fmt::format("{}", s_SelectedWindow->GraphicsContext().DrawableSize()));
       RenderWindowParameter("Position:", fmt::format("{}", s_SelectedWindow->Position()));
-      RenderWindowParameter("Visible:", fmt::format("{}", s_SelectedWindow->Shown()));
-      RenderWindowParameter("Focused:", fmt::format("{}", s_SelectedWindow->Focused()));
-      RenderWindowParameter("Minimized:", fmt::format("{}", s_SelectedWindow->Minimized()));
+      RenderWindowParameter(
+        "Visible:", fmt::format("{}", s_SelectedWindow->Shown()), s_SelectedWindow->Shown() ? TRUE_COLOR : FALSE_COLOR);
+      RenderWindowParameter("Focused:",
+        fmt::format("{}", s_SelectedWindow->Focused()),
+        s_SelectedWindow->Focused() ? TRUE_COLOR : FALSE_COLOR);
+      RenderWindowParameter("Minimized:",
+        fmt::format("{}", s_SelectedWindow->Minimized()),
+        s_SelectedWindow->Minimized() ? TRUE_COLOR : FALSE_COLOR);
 
       ImGui::Unindent();
     }

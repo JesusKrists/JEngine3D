@@ -1,7 +1,7 @@
 #include "LayerStack.hpp"
 
+#include "JEngine3D/Core/Base.hpp"// for find_if, ForEach
 #include "JEngine3D/Core/ILayer.hpp"// for ILayer
-#include <algorithm>// for find_if
 
 namespace JE {
 

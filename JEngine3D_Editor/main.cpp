@@ -9,11 +9,12 @@
 #include <JEngine3D/Core/Application.hpp>// for Application
 #include <JEngine3D/Core/Base.hpp>// for UNUSED
 #include <JEngine3D/Platform/IPlatformBackend.hpp>
+#include <JEngine3D/Core/Types.hpp>// for string, basic_string
+#include <JEngine3D/Core/WindowController.hpp>// for Window
 
 #include "UILayer.hpp"
 
 #include <iterator>// for next
-#include <string>// for string, allocator
 #include <memory>// for unique_ptr
 #include <vector>
 

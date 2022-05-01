@@ -9,7 +9,7 @@ namespace JEditor {
 class UILayer final : public JE::ILayer
 {
 public:
-  UILayer() : JE::ILayer("JEditor Test Layer") {}
+  UILayer() : JE::ILayer("JEditor UI Layer") {}
 
   void OnCreate() override;
   void OnDestroy() override;

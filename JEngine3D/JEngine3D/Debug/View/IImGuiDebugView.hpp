@@ -2,12 +2,18 @@
 
 #include <string>
 
+#include <imgui.h>
+
 namespace JE {
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
 class IImGuiDebugView
 {
 public:
+  static constexpr auto PARAMETER_COLOR = ImVec4{ 1, 1, 0, 1 };
+  static constexpr auto TRUE_COLOR = ImVec4{ 0, 1, 0, 1 };
+  static constexpr auto FALSE_COLOR = ImVec4{ 1, 0, 0, 1 };
+
   explicit IImGuiDebugView(const std::string_view &name) : m_Name(name) {}
   virtual ~IImGuiDebugView() = default;
 

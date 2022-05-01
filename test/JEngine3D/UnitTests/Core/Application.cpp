@@ -158,6 +158,10 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
 
   CHECK_NOFAIL(m_InputController.MousePosition() == MOUSE_POSITION);
   CHECK_NOFAIL(m_InputController.RelativeMousePosition() == RELATIVE_MOUSE_POSITION);
+
+  m_App.Run(1);
+
+  REQUIRE(m_InputController.RelativeMousePosition() == JE::Position2DI{ 0, 0 });
 }
 
 TEST_CASE_METHOD(ApplicationTestsFixture,
@@ -172,6 +176,10 @@ TEST_CASE_METHOD(ApplicationTestsFixture,
   m_App.Run(1);
 
   REQUIRE(m_InputController.MouseScrollAmount() == 3);
+
+  m_App.Run(1);
+
+  REQUIRE(m_InputController.MouseScrollAmount() == 0);
 }
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)

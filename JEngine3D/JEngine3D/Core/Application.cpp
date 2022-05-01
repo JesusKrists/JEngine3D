@@ -1,5 +1,6 @@
 #include "Application.hpp"
 
+#include "JEngine3D/Core/Base.hpp"// for ForEach
 #include "JEngine3D/Core/Events.hpp"// for EventDispatcher
 #include "JEngine3D/Core/ILayer.hpp"// for EventDispatcher
 #include "JEngine3D/Core/WindowController.hpp"// for WindowController
@@ -27,6 +28,7 @@ Application::Application(const std::string_view &title)
   PushOverlay(m_ImGuiLayer);
 
   AddDebugView(m_InternalDebugViews.applicationDebugView);
+  AddDebugView(m_InternalDebugViews.inputControllerDebugView);
   AddDebugView(m_InternalDebugViews.windowControllerDebugView);
 
   IPlatformBackend::Get().SetEventProcessor(this);
@@ -100,6 +102,8 @@ void Application::ProcessMainLoop()
 
   UpdateDeltaTime();
 
+  InputController::Get().NewFrame();
+
   IPlatformBackend::Get().PollEvents();
   if (!m_Running) { return; }
 
@@ -130,6 +134,8 @@ void Application::Run(int32_t loopCount)
   } else {
     while (m_Running && ((loopCount--) != 0)) { ProcessMainLoop(); }
   }
+
+  m_Running = false;
 }
 
 }// namespace JE
