@@ -65,7 +65,7 @@ void InputController::OnEvent(IEvent &event)
     const auto &mouseMoveEvent =
       static_cast<const MouseMoveEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
     m_MousePosition = mouseMoveEvent.Position();
-    m_RelativeMousePosition = mouseMoveEvent.RelativePosition();
+    m_RelativeMousePosition += mouseMoveEvent.RelativePosition();
 
     return true;
   });
@@ -73,7 +73,7 @@ void InputController::OnEvent(IEvent &event)
   dispatcher.Dispatch<EventType::MouseWheel>([&](const IEvent &evnt) {
     const auto &mouseWheelEvent =
       static_cast<const MouseWheelEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-    m_ScrollAmount = mouseWheelEvent.ScrollAmount();
+    m_ScrollAmount += mouseWheelEvent.ScrollAmount();
 
     return true;
   });

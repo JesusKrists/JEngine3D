@@ -21,6 +21,12 @@ struct Position2DI
   int32_t Y;
 
   constexpr auto operator==(const Position2DI &other) const -> bool = default;
+  constexpr auto operator+=(const Position2DI &other) -> Position2DI &
+  {
+    this->X += other.X;
+    this->Y += other.Y;
+    return *this;
+  }
 };
 
 struct RectangleI

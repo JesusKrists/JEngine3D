@@ -36,7 +36,8 @@ void WindowControllerDebugView::OnImGuiRender()
 
   ImGui::BeginChild("WindowList", { 200, 0 }, true);// NOLINT
   ForEach(windows, [](const Scope<Window, MemoryTag::App> &window) {
-    if (ImGui::Selectable(window->Title().c_str(), s_SelectedWindow == window.get())) {
+    const auto *title = window->Title().c_str();
+    if (ImGui::Selectable(title[0] == '\0' ? "Unknown Window" : title, s_SelectedWindow == window.get())) {// NOLINT
       s_SelectedWindow = window.get();
     }
   });

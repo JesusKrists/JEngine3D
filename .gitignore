@@ -30,3 +30,4 @@ Thumbs.db
 compile_commands.json
 .cache/
 imgui.ini
+perf.data
