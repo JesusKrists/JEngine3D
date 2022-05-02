@@ -7,6 +7,7 @@
 #include <utility>// IWYU pragma: export
 #include <vector>// IWYU pragma: export
 #include <memory>// IWYU pragma: export
+#include <cstdint>
 #include <spdlog/spdlog.h>
 
 namespace JE {
@@ -53,6 +54,7 @@ public:
   template<typename T, MemoryTag TAG = MemoryTag::Unknown>
   [[nodiscard]] static inline auto Allocate(size_t elementCount = 1) -> T *
   {
+    Get().m_TotalAllocationCount++;
     auto memorySize = AlignTo(sizeof(T) * elementCount, ALIGNMENT);
     return static_cast<T *>(Get().Allocate(memorySize, TAG));
   }
@@ -63,10 +65,13 @@ public:
       spdlog::error("Memory is null");
       DEBUGBREAK();
     }
+    Get().m_TotalDeallocationCount++;
     return Get().Deallocate(static_cast<void *>(memory), TAG);
   }
 
   [[nodiscard]] inline auto MemoryEntries() const -> const MemoryEntryContainer & { return m_MemoryEntries; }
+  [[nodiscard]] inline auto TotalAllocCount() const -> int64_t { return m_TotalAllocationCount; }
+  [[nodiscard]] inline auto TotalDeallocCount() const -> int64_t { return m_TotalDeallocationCount; }
 
 private:
   auto Allocate(size_t byteCount, MemoryTag tag) -> void *;
@@ -79,6 +84,8 @@ private:
   }
 
   MemoryEntryContainer m_MemoryEntries;
+  int64_t m_TotalAllocationCount = 0;
+  int64_t m_TotalDeallocationCount = 0;
 
   static MemoryController *s_MemoryControllerInstance;// NOLINT
 };

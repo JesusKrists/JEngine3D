@@ -12,11 +12,14 @@ protected:
   JE::MemoryController m_MemoryController;
 };
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST_CASE_METHOD(MemoryControllerTestsFixture,
   "JE::MemoryController allocates and deallocates memory with a tag attached",
   "[JE::MemoryController]")
 {
+  REQUIRE(JE::MemoryController::Get().TotalAllocCount() == 0);
   auto *intPtr = JE::MemoryController::Allocate<int, JE::MemoryTag::Test>();
+  REQUIRE(JE::MemoryController::Get().TotalAllocCount() != 0);
 
   REQUIRE(intPtr != nullptr);
 
@@ -28,7 +31,9 @@ TEST_CASE_METHOD(MemoryControllerTestsFixture,
   REQUIRE(entryIt != std::end(testMemoryEntries));
   REQUIRE(entryIt->Tag == JE::MemoryTag::Test);
 
+  REQUIRE(JE::MemoryController::Get().TotalDeallocCount() == 0);
   JE::MemoryController::Deallocate<int, JE::MemoryTag::Test>(intPtr);
+  REQUIRE(JE::MemoryController::Get().TotalDeallocCount() != 0);
 
   entryIt = JE::FindIf(
     testMemoryEntries, [&](const JE::MemoryController::MemoryEntry &entry) { return entry.Memory == intPtr; });

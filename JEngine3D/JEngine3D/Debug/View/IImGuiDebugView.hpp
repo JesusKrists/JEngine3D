@@ -17,9 +17,11 @@ public:
   explicit IImGuiDebugView(const std::string_view &name) : m_Name(name) {}
   virtual ~IImGuiDebugView() = default;
 
-
-  virtual void OnImGuiRender() = 0;
-
+  void Render()
+  {
+    if (ImGui::Begin(Name().c_str(), &m_Open)) { OnImGuiRender(); }
+    ImGui::End();
+  }
 
   [[nodiscard]] inline auto Name() const -> const std::string & { return m_Name; }
 
@@ -27,11 +29,11 @@ public:
   inline void Close() { m_Open = false; };
   [[nodiscard]] inline auto IsOpen() const -> bool { return m_Open; }
 
-protected:
-  bool m_Open = false;
-
 private:
+  virtual void OnImGuiRender() = 0;
+
   const std::string m_Name;
+  bool m_Open = false;
 };
 
 }// namespace JE

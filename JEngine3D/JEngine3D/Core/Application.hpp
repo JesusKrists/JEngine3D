@@ -9,6 +9,7 @@
 
 #include "JEngine3D/Debug/View/ApplicationDebugView.hpp"
 #include "JEngine3D/Debug/View/InputControllerDebugView.hpp"
+#include "JEngine3D/Debug/View/MemoryControllerDebugView.hpp"
 #include "JEngine3D/Debug/View/WindowControllerDebugView.hpp"
 #include "JEngine3D/Platform/IPlatformBackend.hpp"
 
@@ -29,6 +30,7 @@ class Application final : public IEventProcessor
   {
     ApplicationDebugView applicationDebugView;
     InputControllerDebugView inputControllerDebugView;
+    MemoryControllerDebugView memoryControllerDebugView;
     WindowControllerDebugView windowControllerDebugView;
   };
 
@@ -73,6 +75,7 @@ public:
   [[nodiscard]] inline auto TotalFrameCount() const -> int64_t { return m_ProcessCount; }
 
 private:
+  void AddInternalDebugViews();
   void UpdateAppFocus();
   void UpdateDeltaTime();
   void ProcessMainLoop();

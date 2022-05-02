@@ -27,9 +27,7 @@ Application::Application(const std::string_view &title)
 
   PushOverlay(m_ImGuiLayer);
 
-  AddDebugView(m_InternalDebugViews.applicationDebugView);
-  AddDebugView(m_InternalDebugViews.inputControllerDebugView);
-  AddDebugView(m_InternalDebugViews.windowControllerDebugView);
+  AddInternalDebugViews();
 
   IPlatformBackend::Get().SetEventProcessor(this);
 }
@@ -77,6 +75,14 @@ void Application::PopOverlay(ILayer &layer) { m_LayerStack.PopOverlay(layer); }
 
 void Application::AddDebugView(IImGuiDebugView &view) { m_DebugViewContainer.emplace_back(view); }
 
+void Application::AddInternalDebugViews()
+{
+  AddDebugView(m_InternalDebugViews.applicationDebugView);
+  AddDebugView(m_InternalDebugViews.inputControllerDebugView);
+  AddDebugView(m_InternalDebugViews.memoryControllerDebugView);
+  AddDebugView(m_InternalDebugViews.windowControllerDebugView);
+}
+
 void Application::UpdateAppFocus()
 {
   auto *focusedNativeWindow = IPlatformBackend::Get().FocusedWindow();
@@ -107,12 +113,12 @@ void Application::ProcessMainLoop()
   IPlatformBackend::Get().PollEvents();
   if (!m_Running) { return; }
 
-  ForEach(m_LayerStack, [&](ILayer &layer) { layer.OnUpdate(); });
+  ForEach(m_LayerStack, [](ILayer &layer) { layer.OnUpdate(); });
 
   m_ImGuiLayer.Begin();
-  ForEach(m_LayerStack, [&](ILayer &layer) { layer.OnImGuiRender(); });
-  ForEach(m_DebugViewContainer, [&](IImGuiDebugView &view) {
-    if (view.IsOpen()) { view.OnImGuiRender(); }
+  ForEach(m_LayerStack, [](ILayer &layer) { layer.OnImGuiRender(); });
+  ForEach(m_DebugViewContainer, [](IImGuiDebugView &view) {
+    if (view.IsOpen()) { view.Render(); }
   });
   m_ImGuiLayer.End();
 

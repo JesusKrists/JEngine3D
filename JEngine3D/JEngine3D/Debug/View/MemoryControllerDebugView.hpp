@@ -4,10 +4,10 @@
 
 namespace JE {
 
-class InputControllerDebugView : public IImGuiDebugView
+class MemoryControllerDebugView final : public IImGuiDebugView
 {
 public:
-  InputControllerDebugView() : IImGuiDebugView("InputControllerDebugView") {}
+  MemoryControllerDebugView() : IImGuiDebugView("MemoryControllerDebugView") {}
 
 private:
   void OnImGuiRender() override;

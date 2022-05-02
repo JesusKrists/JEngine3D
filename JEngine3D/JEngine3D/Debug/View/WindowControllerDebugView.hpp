@@ -9,6 +9,8 @@ class WindowControllerDebugView final : public IImGuiDebugView
 {
 public:
   WindowControllerDebugView() : IImGuiDebugView("WindowControllerDebugView") {}
+
+private:
   void OnImGuiRender() override;
 };
 
