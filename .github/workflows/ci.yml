@@ -256,7 +256,7 @@ jobs:
       - name: Unix - Test
         if: runner.os != 'Windows'
         env:
-          ASAN_OPTIONS: fast_unwind_on_malloc=0:suppressions=${{ github.workspace }}/ASAN.supp
+          ASAN_OPTIONS: detect_invalid_pointer_pairs=1:strict_string_checks=true:detect_stack_use_after_return=true:check_initialization_order=true:fast_unwind_on_malloc=false:suppressions=${{ github.workspace }}/ASAN.supp
           LSAN_OPTIONS: print_suppressions=false:suppressions=${{ github.workspace }}/LSAN.supp
         uses: GabrielBB/xvfb-action@v1
         with:
@@ -273,7 +273,7 @@ jobs:
       - name: Linux - Run tests with valgrind
         if: runner.os == 'Linux' && matrix.developer_mode == 'OFF'
         env:
-          ASAN_OPTIONS: fast_unwind_on_malloc=0:suppressions=${{ github.workspace }}/ASAN.supp
+          ASAN_OPTIONS: detect_invalid_pointer_pairs=1:strict_string_checks=true:detect_stack_use_after_return=true:check_initialization_order=true:fast_unwind_on_malloc=false:suppressions=${{ github.workspace }}/ASAN.supp
           LSAN_OPTIONS: print_suppressions=false:suppressions=${{ github.workspace }}/LSAN.supp
         uses: GabrielBB/xvfb-action@v1
         with:

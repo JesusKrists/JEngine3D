@@ -23,7 +23,7 @@
 	"remoteEnv": {
 		"DISPLAY": "${localEnv:DISPLAY}",
 		"XAUTHORITY": "${localEnv:XAUTHORITY}",
-		"ASAN_OPTIONS": "fast_unwind_on_malloc=0:suppressions=/workspaces/JEngine3D/ASAN.supp",
+		"ASAN_OPTIONS": "detect_invalid_pointer_pairs=1:strict_string_checks=true:detect_stack_use_after_return=true:check_initialization_order=true:fast_unwind_on_malloc=false:suppressions=/workspaces/JEngine3D/ASAN.supp",
 		"LSAN_OPTIONS": "print_suppressions=false:suppressions=/workspaces/JEngine3D/LSAN.supp"
 	},
 	// Set *default* container specific settings.json values on container create.
