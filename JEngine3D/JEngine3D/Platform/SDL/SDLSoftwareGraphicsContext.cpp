@@ -1,13 +1,13 @@
 #include "SDLSoftwareGraphicsContext.hpp"
 #include "JEngine3D/Core/Base.hpp"
 
+#include "JEngine3D/Renderer/SoftwareRasterizer.hpp"
+
 #include <SDL_pixels.h>
 #include <cstring>// IWYU pragma: keep
 #include <SDL_render.h>
 
 namespace JE {
-
-static constexpr auto CLEAR_COLOR = 0xFF111111;
 
 SDLSoftwareGraphicsContext::SDLSoftwareGraphicsContext(IPlatformBackend::NativeWindowHandle windowHandle,
   IGraphicsContextCreator::NativeContextHandle contextHandle)
@@ -58,15 +58,26 @@ void SDLSoftwareGraphicsContext::SwapBuffers()
 
 void SDLSoftwareGraphicsContext::Destroy()
 {
+  ASSERT(m_PixelPtr == nullptr, "Context still current");
+
+  SDL_DestroyTexture(static_cast<SDL_Texture *>(m_Texture));
   auto *renderer = static_cast<SDL_Renderer *>(NativeContextHandle());
   SDL_DestroyRenderer(renderer);
 }
 
-void SDLSoftwareGraphicsContext::Clear()
+void SDLSoftwareGraphicsContext::Clear(const Color &clearColor)
 {
-  ASSERT(m_PixelPtr != nullptr, "Not current context");
-  std::fill_n(static_cast<uint32_t *>(m_PixelPtr), DrawableSize().Width * DrawableSize().Height, CLEAR_COLOR);
+  SoftwareRasterizer::Clear(clearColor, static_cast<uint32_t *>(m_PixelPtr), DrawableSize());
 }
+
+void SDLSoftwareGraphicsContext::DrawVerticesIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
+  const Vector<uint32_t, MemoryTag::Renderer> &indices)
+{
+  UNUSED(vertices);
+  UNUSED(indices);
+}
+
+void SDLSoftwareGraphicsContext::DrawVertices(const Vector<Vertex, MemoryTag::Renderer> &vertices) { UNUSED(vertices); }
 
 auto SDLSoftwareGraphicsContext::RendererSize() -> Size2DI
 {

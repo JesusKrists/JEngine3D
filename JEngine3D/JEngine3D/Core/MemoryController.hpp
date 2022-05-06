@@ -15,6 +15,7 @@ namespace JE {
 enum class MemoryTag {
   Unknown,
   App,
+  Renderer,
   Test,
 
   TAG_COUNT

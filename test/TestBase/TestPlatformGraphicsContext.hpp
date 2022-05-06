@@ -16,4 +16,15 @@ public:
   inline void SwapBuffers() override {}
 
   inline void Destroy() override {}
+
+
+  void Clear(const JE::Color &clearColor) override { UNUSED(clearColor); }
+
+  void DrawVerticesIndexed(const JE::Vector<JE::Vertex, JE::MemoryTag::Renderer> &vertices,
+    const JE::Vector<uint32_t, JE::MemoryTag::Renderer> &indices) override
+  {
+    UNUSED(vertices);
+    UNUSED(indices);
+  }
+  void DrawVertices(const JE::Vector<JE::Vertex, JE::MemoryTag::Renderer> &vertices) override { UNUSED(vertices); }
 };

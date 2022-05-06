@@ -12,8 +12,6 @@ namespace JE {
 class IEvent;
 }
 
-// static constexpr auto MILISECONDS = 1000;
-
 namespace JEditor {
 
 void UILayer::OnCreate()
@@ -24,8 +22,17 @@ void UILayer::OnDestroy() {}
 
 void UILayer::OnUpdate()
 {
-  // JE::Logger::ClientLogger().info("App delta time - {}", JE::Application::Get().DeltaTime() * MILISECONDS);
+  auto &renderer2D = JE::Application::Get().Renderer2D();
+  renderer2D.BeginBatch();
+
+  constexpr auto vertex0 = JE::Vertex{ JE::Color{ { 1.0F, 0.0F, 0.0F, 1.0F } }, glm::vec3{ -1.0F, -1.0F, 0.0F } };
+  constexpr auto vertex1 = JE::Vertex{ JE::Color{ { 0.0F, 1.0F, 0.0F, 1.0F } }, glm::vec3{ 1.0F, -1.0F, 0.0F } };
+  constexpr auto vertex2 = JE::Vertex{ JE::Color{ { 0.0F, 0.0F, 1.0F, 1.0F } }, glm::vec3{ 0.5F, 1.0F, 0.0F } };
+  renderer2D.DrawTriangle(vertex0, vertex1, vertex2);
+
+  renderer2D.EndBatch();
 }
+
 void UILayer::OnImGuiRender()
 {
   ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);

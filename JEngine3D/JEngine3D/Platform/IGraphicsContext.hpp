@@ -5,12 +5,14 @@
 #include "JEngine3D/Platform/IGraphicsContextCreator.hpp"
 #include "JEngine3D/Core/Types.hpp"
 
+#include "JEngine3D/Renderer/IDrawTarget.hpp"
+
 namespace JE {
 
 class Window;
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
-class IGraphicsContext
+class IGraphicsContext : public IDrawTarget
 {
 public:
   IGraphicsContext(IPlatformBackend::NativeWindowHandle windowHandle,// NOLINT(bugprone-easily-swappable-parameters)
@@ -26,7 +28,7 @@ public:
     return m_ContextHandle;
   }
 
-  virtual ~IGraphicsContext() = default;
+  virtual ~IGraphicsContext() = default;// NOLINT
 
   [[nodiscard]] virtual auto DrawableSize() -> Size2DI = 0;
   virtual void Resize(const Size2DI &size) = 0;

@@ -13,7 +13,7 @@ class InputController final : public IEventProcessor
 {
 public:
   InputController();
-  ~InputController() override;
+  virtual ~InputController();// NOLINT
 
   [[nodiscard]] static inline auto Get() -> InputController &
   {

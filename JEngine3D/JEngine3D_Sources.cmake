@@ -19,6 +19,7 @@ set(JEngine3D_HEADERS
     JEngine3D/Debug/View/IImGuiDebugView.hpp
     JEngine3D/Debug/View/InputControllerDebugView.hpp
     JEngine3D/Debug/View/MemoryControllerDebugView.hpp
+    JEngine3D/Debug/View/Renderer2DDebugView.hpp
     JEngine3D/Debug/View/WindowControllerDebugView.hpp
     JEngine3D/Platform/IGraphicsContext.hpp
     JEngine3D/Platform/IGraphicsContextCreator.hpp
@@ -27,7 +28,10 @@ set(JEngine3D_HEADERS
     JEngine3D/Platform/SDL/SDLGLGraphicsContextCreator.hpp
     JEngine3D/Platform/SDL/SDLPlatformBackend.hpp
     JEngine3D/Platform/SDL/SDLSoftwareGraphicsContext.hpp
-    JEngine3D/Platform/SDL/SDLSoftwareGraphicsContextCreator.hpp)
+    JEngine3D/Platform/SDL/SDLSoftwareGraphicsContextCreator.hpp
+    JEngine3D/Renderer/IDrawTarget.hpp
+    JEngine3D/Renderer/Renderer2D.hpp
+    JEngine3D/Renderer/SoftwareRasterizer.hpp)
 
 set(JEngine3D_SOURCES
     JEngine3D/Core/ImGui/ImGuiLayer.cpp
@@ -41,6 +45,7 @@ set(JEngine3D_SOURCES
     JEngine3D/Debug/View/ApplicationDebugView.cpp
     JEngine3D/Debug/View/InputControllerDebugView.cpp
     JEngine3D/Debug/View/MemoryControllerDebugView.cpp
+    JEngine3D/Debug/View/Renderer2DDebugView.cpp
     JEngine3D/Debug/View/WindowControllerDebugView.cpp
     JEngine3D/Platform/IGraphicsContextCreator.cpp
     JEngine3D/Platform/IPlatformBackend.cpp
@@ -48,4 +53,6 @@ set(JEngine3D_SOURCES
     JEngine3D/Platform/SDL/SDLGLGraphicsContextCreator.cpp
     JEngine3D/Platform/SDL/SDLPlatformBackend.cpp
     JEngine3D/Platform/SDL/SDLSoftwareGraphicsContext.cpp
-    JEngine3D/Platform/SDL/SDLSoftwareGraphicsContextCreator.cpp)
+    JEngine3D/Platform/SDL/SDLSoftwareGraphicsContextCreator.cpp
+    JEngine3D/Renderer/Renderer2D.cpp
+    JEngine3D/Renderer/SoftwareRasterizer.cpp)

@@ -71,7 +71,7 @@ class WindowController final : public IEventProcessor
 
 public:
   WindowController();
-  ~WindowController() override;
+  virtual ~WindowController();// NOLINT
 
   [[nodiscard]] static inline auto Get() -> WindowController &
   {

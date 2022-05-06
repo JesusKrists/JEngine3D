@@ -24,7 +24,12 @@ public:
 
   void Destroy() override;
 
-  void Clear();
+  void Clear(const Color &clearColor) override;
+
+  void DrawVerticesIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
+    const Vector<uint32_t, MemoryTag::Renderer> &indices) override;
+  void DrawVertices(const Vector<Vertex, MemoryTag::Renderer> &vertices) override;
+
 
   [[nodiscard]] inline auto PixelPtr() -> void *
   {

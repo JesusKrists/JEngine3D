@@ -14,7 +14,8 @@ target_link_system_libraries(
   PUBLIC
   fmt::fmt
   spdlog
-  ImGuiLibrary)
+  ImGuiLibrary
+  glm::glm)
 
 target_include_directories(JEngine3D PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
 

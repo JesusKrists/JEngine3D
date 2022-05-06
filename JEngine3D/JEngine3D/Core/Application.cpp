@@ -80,6 +80,7 @@ void Application::AddInternalDebugViews()
   AddDebugView(m_InternalDebugViews.applicationDebugView);
   AddDebugView(m_InternalDebugViews.inputControllerDebugView);
   AddDebugView(m_InternalDebugViews.memoryControllerDebugView);
+  AddDebugView(m_InternalDebugViews.renderer2DDebugView);
   AddDebugView(m_InternalDebugViews.windowControllerDebugView);
 }
 
@@ -109,6 +110,7 @@ void Application::ProcessMainLoop()
   UpdateDeltaTime();
 
   InputController::Get().NewFrame();
+  m_Renderer2D.NewFrame();
 
   IPlatformBackend::Get().PollEvents();
   if (!m_Running) { return; }

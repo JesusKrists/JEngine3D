@@ -13,7 +13,7 @@ class SDLPlatformBackend final : public IPlatformBackend
 {
 public:
   SDLPlatformBackend();
-  ~SDLPlatformBackend() override;
+  virtual ~SDLPlatformBackend();// NOLINT
 
   [[nodiscard]] auto Initialize() -> bool override;
   [[nodiscard]] auto Initialized() -> bool override;

@@ -10,8 +10,11 @@
 #include "JEngine3D/Debug/View/ApplicationDebugView.hpp"
 #include "JEngine3D/Debug/View/InputControllerDebugView.hpp"
 #include "JEngine3D/Debug/View/MemoryControllerDebugView.hpp"
+#include "JEngine3D/Debug/View/Renderer2DDebugView.hpp"
 #include "JEngine3D/Debug/View/WindowControllerDebugView.hpp"
 #include "JEngine3D/Platform/IPlatformBackend.hpp"
+
+#include "JEngine3D/Renderer/Renderer2D.hpp"
 
 #include <functional>// for reference_wrapper
 
@@ -31,6 +34,7 @@ class Application final : public IEventProcessor
     ApplicationDebugView applicationDebugView;
     InputControllerDebugView inputControllerDebugView;
     MemoryControllerDebugView memoryControllerDebugView;
+    Renderer2DDebugView renderer2DDebugView;
     WindowControllerDebugView windowControllerDebugView;
   };
 
@@ -41,7 +45,7 @@ public:
   static constexpr auto MAIN_WINDOW_CONFIG = WindowConfiguration{ true };
 
   explicit Application(const std::string_view &title);
-  ~Application() override = default;
+  virtual ~Application() = default;// NOLINT
 
   [[nodiscard]] static inline auto Get() -> Application &
   {
@@ -64,6 +68,8 @@ public:
   // cppcheck-suppress functionConst
   [[nodiscard]] inline auto MainWindow() -> Window & { return m_MainWindow; }
   // cppcheck-suppress functionConst
+  [[nodiscard]] inline auto Renderer2D() -> JE::Renderer2D & { return m_Renderer2D; }
+  // cppcheck-suppress functionConst
   [[nodiscard]] inline auto Layers() -> LayerStack & { return m_LayerStack; }
   // cppcheck-suppress functionConst
   [[nodiscard]] inline auto DebugViews() -> DebugViewContainer & { return m_DebugViewContainer; }
@@ -81,6 +87,7 @@ private:
   void ProcessMainLoop();
 
   Window &m_MainWindow;
+  JE::Renderer2D m_Renderer2D;
 
   ImGuiLayer m_ImGuiLayer;
   LayerStack m_LayerStack;
