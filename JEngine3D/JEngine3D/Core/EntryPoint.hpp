@@ -5,8 +5,8 @@
 #include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Core/LoggerController.hpp"
 #include "JEngine3D/Platform/SDL/SDLPlatformBackend.hpp"
-#include "JEngine3D/Platform/SDL/SDLGLGraphicsContextCreator.hpp"
-#include "JEngine3D/Platform/SDL/SDLSoftwareGraphicsContextCreator.hpp"
+#include "JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContextCreator.hpp"
+#include "JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContextCreator.hpp"
 #include "JEngine3D/Core/WindowController.hpp"
 #include "JEngine3D/Core/InputController.hpp"
 

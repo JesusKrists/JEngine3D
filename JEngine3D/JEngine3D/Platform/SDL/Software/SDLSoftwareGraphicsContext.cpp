@@ -1,7 +1,7 @@
 #include "SDLSoftwareGraphicsContext.hpp"
 #include "JEngine3D/Core/Base.hpp"
 
-#include "JEngine3D/Renderer/SoftwareRasterizer.hpp"
+#include "JEngine3D/Renderer/Software/SoftwareRasterizer.hpp"
 
 #include <SDL_pixels.h>
 #include <cstring>// IWYU pragma: keep
@@ -73,11 +73,13 @@ void SDLSoftwareGraphicsContext::Clear(const Color &clearColor)
 void SDLSoftwareGraphicsContext::DrawVerticesIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
   const Vector<uint32_t, MemoryTag::Renderer> &indices)
 {
-  UNUSED(vertices);
-  UNUSED(indices);
+  SoftwareRasterizer::DrawVerticesIndexed(vertices, indices, static_cast<uint32_t *>(m_PixelPtr), DrawableSize());
 }
 
-void SDLSoftwareGraphicsContext::DrawVertices(const Vector<Vertex, MemoryTag::Renderer> &vertices) { UNUSED(vertices); }
+void SDLSoftwareGraphicsContext::DrawVertices(const Vector<Vertex, MemoryTag::Renderer> &vertices)
+{
+  SoftwareRasterizer::DrawVertices(vertices, static_cast<uint32_t *>(m_PixelPtr), DrawableSize());
+}
 
 auto SDLSoftwareGraphicsContext::RendererSize() -> Size2DI
 {

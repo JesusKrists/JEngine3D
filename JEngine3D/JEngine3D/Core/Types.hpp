@@ -39,6 +39,14 @@ struct RectangleI
   constexpr auto operator==(const RectangleI &other) const -> bool = default;
 };
 
+struct Range
+{
+  float start;
+  float end;
+
+  constexpr auto operator==(const Range &other) const -> bool = default;
+};
+
 struct Color
 {
   glm::vec4 rawColor;
@@ -135,6 +143,18 @@ template<> struct fmt::formatter<JE::RectangleI>
   }
 };
 
+template<> struct fmt::formatter<JE::Range>
+{
+  // cppcheck-suppress functionStatic
+  template<typename ParseContext> constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+  // cppcheck-suppress functionStatic
+  template<typename FormatContext> auto format(const JE::Range &range, FormatContext &ctx)
+  {
+    return format_to(ctx.out(), "Range{{ Start: {0}, End: {1} }}", range.start, range.end);
+  }
+};
+
 template<> struct fmt::formatter<JE::Color>
 {
   // cppcheck-suppress functionStatic
@@ -193,6 +213,12 @@ inline auto operator<<(std::ostream &outStream, Position2DI const &value) -> std
 }
 
 inline auto operator<<(std::ostream &outStream, RectangleI const &value) -> std::ostream &
+{
+  outStream << fmt::format("{}", value);
+  return outStream;
+}
+
+inline auto operator<<(std::ostream &outStream, Range const &value) -> std::ostream &
 {
   outStream << fmt::format("{}", value);
   return outStream;

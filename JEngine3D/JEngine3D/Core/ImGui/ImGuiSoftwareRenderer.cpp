@@ -4,14 +4,13 @@
 #include "JEngine3D/Core/Types.hpp"// for Siz...
 #include "JEngine3D/Core/WindowController.hpp"// for Siz...
 #include "JEngine3D/Platform/IGraphicsContext.hpp"// for SDL...
-#include "JEngine3D/Platform/SDL/SDLSoftwareGraphicsContext.hpp"// for SDL...
+#include "JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContext.hpp"// for SDL...
 
 #include <imgui_sw.hpp>
 #include <imgui.h>
 
 namespace JE {
 
-static constexpr auto MAINWINDOW_CLEAR_COLOR = Color{ { 0.1F, 0.1F, 0.1F, 1.0F } };
 
 void ImGuiSoftwareRenderer::Initialize() { imgui_sw::bind_imgui_painting(); }
 
@@ -27,7 +26,6 @@ void ImGuiSoftwareRenderer::RenderImGui(Window &window, ImDrawData *drawData)
         || (static_cast<float>(drawableSize.Height) != drawData->DisplaySize.y)) {
       drawData->DisplaySize = ImVec2{ static_cast<float>(drawableSize.Width), static_cast<float>(drawableSize.Height) };
     }
-    if (&window == &Application::Get().MainWindow()) { swContext->Clear(MAINWINDOW_CLEAR_COLOR); }
     imgui_sw::paint_imgui(static_cast<uint32_t *>(swContext->PixelPtr()), drawData);
   }
 }

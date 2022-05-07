@@ -5,7 +5,7 @@
 #include <JEngine3D/Core/InputController.hpp>
 
 #include <JEngine3D/Platform/SDL/SDLPlatformBackend.hpp>
-#include <JEngine3D/Platform/SDL/SDLGLGraphicsContextCreator.hpp>
+#include <JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContextCreator.hpp>
 #include "TestPlatformBackend.hpp"// IWYU pragma: export
 #include "TestPlatformGraphicsContextCreator.hpp"
 

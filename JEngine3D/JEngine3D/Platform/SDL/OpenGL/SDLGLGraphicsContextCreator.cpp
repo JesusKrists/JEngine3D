@@ -1,6 +1,6 @@
 #include "SDLGLGraphicsContextCreator.hpp"
 
-#include "JEngine3D/Platform/SDL/SDLGLGraphicsContext.hpp"
+#include "JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContext.hpp"
 #include "JEngine3D/Platform/IGraphicsContext.hpp"// for IGraphics...
 #include "JEngine3D/Core/LoggerController.hpp"// for Logger
 

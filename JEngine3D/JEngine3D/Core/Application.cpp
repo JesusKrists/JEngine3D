@@ -115,6 +115,8 @@ void Application::ProcessMainLoop()
   IPlatformBackend::Get().PollEvents();
   if (!m_Running) { return; }
 
+  m_MainWindow.GraphicsContext().MakeCurrent();
+
   ForEach(m_LayerStack, [](ILayer &layer) { layer.OnUpdate(); });
 
   m_ImGuiLayer.Begin();

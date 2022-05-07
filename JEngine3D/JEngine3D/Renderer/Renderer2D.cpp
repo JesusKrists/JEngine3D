@@ -2,6 +2,8 @@
 
 
 #include "JEngine3D/Core/Application.hpp"
+#include "JEngine3D/Platform/IGraphicsContext.hpp"
+#include "JEngine3D/Renderer/IDrawTarget.hpp"
 
 namespace JE {
 
@@ -44,8 +46,8 @@ void Renderer2D::Flush()
 
   ASSERT(Data.Target != nullptr, "IDrawTarget is missing");
 
-  Data.Target->DrawVerticesIndexed(Data.QuadVertices, Data.QuadIndices);
-  Data.Target->DrawVertices(Data.TriangleVertices);
+  if (!Data.QuadVertices.empty()) { Data.Target->DrawVerticesIndexed(Data.QuadVertices, Data.QuadIndices); }
+  if (!Data.TriangleVertices.empty()) { Data.Target->DrawVertices(Data.TriangleVertices); }
 
   Data.BatchBegun = false;
   Data.Target = nullptr;

@@ -6,8 +6,6 @@
 #include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Core/WindowController.hpp"
 
-#include "JEngine3D/Platform/IGraphicsContext.hpp"
-
 namespace JE {
 
 class IDrawTarget;

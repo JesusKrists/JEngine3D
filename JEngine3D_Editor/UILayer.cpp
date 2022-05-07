@@ -3,6 +3,7 @@
 #include <JEngine3D/Core/Base.hpp>
 #include <JEngine3D/Core/Application.hpp>
 #include <JEngine3D/Debug/View/IImGuiDebugView.hpp>
+#include <JEngine3D/Platform/IGraphicsContext.hpp>
 
 #include <string>
 
@@ -22,12 +23,16 @@ void UILayer::OnDestroy() {}
 
 void UILayer::OnUpdate()
 {
+
+  static constexpr auto CLEAR_COLOR = JE::Color{ { 0.1F, 0.1F, 0.1F, 1.0F } };
+  JE::Application::Get().MainWindow().GraphicsContext().Clear(CLEAR_COLOR);
+
   auto &renderer2D = JE::Application::Get().Renderer2D();
   renderer2D.BeginBatch();
 
-  constexpr auto vertex0 = JE::Vertex{ JE::Color{ { 1.0F, 0.0F, 0.0F, 1.0F } }, glm::vec3{ -1.0F, -1.0F, 0.0F } };
-  constexpr auto vertex1 = JE::Vertex{ JE::Color{ { 0.0F, 1.0F, 0.0F, 1.0F } }, glm::vec3{ 1.0F, -1.0F, 0.0F } };
-  constexpr auto vertex2 = JE::Vertex{ JE::Color{ { 0.0F, 0.0F, 1.0F, 1.0F } }, glm::vec3{ 0.5F, 1.0F, 0.0F } };
+  constexpr auto vertex0 = JE::Vertex{ JE::Color{ { 1.0F, 0.0F, 0.0F, 1.0F } }, glm::vec3{ -0.5F, -0.5F, 0.0F } };
+  constexpr auto vertex1 = JE::Vertex{ JE::Color{ { 0.0F, 1.0F, 0.0F, 1.0F } }, glm::vec3{ 0.5F, -0.5F, 0.0F } };
+  constexpr auto vertex2 = JE::Vertex{ JE::Color{ { 0.0F, 0.0F, 1.0F, 1.0F } }, glm::vec3{ 0.0F, 0.5F, 0.0F } };
   renderer2D.DrawTriangle(vertex0, vertex1, vertex2);
 
   renderer2D.EndBatch();
