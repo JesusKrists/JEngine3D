@@ -39,14 +39,13 @@ void Renderer2DDebugView::OnImGuiRender()
 
   ImGui::BeginGroup();
   RenderRenderer2DModifiableIntParameter(
-    "Quads Per Batch:", renderer2D.QuadsPerBatch(), 1, Renderer2D::MAX_QUADS_PER_BATCH, [&](size_t batches) {
+    "Quads Per Batch", renderer2D.QuadsPerBatch(), 1, Renderer2D::MAX_QUADS_PER_BATCH, [&](size_t batches) {
       renderer2D.SetQuadsPerBatch(batches);
     });
-  RenderRenderer2DModifiableIntParameter("Triangles Per Batch:",
-    renderer2D.TrianglesPerBatch(),
-    1,
-    Renderer2D::MAX_TRIANGLES_PER_BATCH,
-    [&](size_t batches) { renderer2D.SetTrianglesPerBatch(batches); });
+  RenderRenderer2DModifiableIntParameter(
+    "Triangles Per Batch", renderer2D.TrianglesPerBatch(), 1, Renderer2D::MAX_TRIANGLES_PER_BATCH, [&](size_t batches) {
+      renderer2D.SetTrianglesPerBatch(batches);
+    });
 
   RenderRenderer2DParameter("Frame Quad Vertex Count:", fmt::format("{}", renderer2D.FrameQuadVertexCount()));
   RenderRenderer2DParameter("Frame Triangle Vertex Count:", fmt::format("{}", renderer2D.FrameTriangleVertexCount()));

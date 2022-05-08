@@ -44,7 +44,10 @@ void SDLSoftwareGraphicsContext::Resize(const Size2DI &size)
 
 void SDLSoftwareGraphicsContext::MakeCurrent()
 {
-  if (m_PixelPtr == nullptr) { SDL_LockTexture(static_cast<SDL_Texture *>(m_Texture), nullptr, &m_PixelPtr, &m_Pitch); }
+  if (m_PixelPtr == nullptr) {
+    int pitch = 0;
+    SDL_LockTexture(static_cast<SDL_Texture *>(m_Texture), nullptr, &m_PixelPtr, &pitch);
+  }
 }
 void SDLSoftwareGraphicsContext::SwapBuffers()
 {

@@ -36,14 +36,12 @@ public:
     ASSERT(m_PixelPtr, "Context not set to current");
     return m_PixelPtr;
   }
-  [[nodiscard]] inline auto Pitch() const -> int32_t { return m_Pitch; }
 
   [[nodiscard]] auto RendererSize() -> Size2DI;
 
 private:
   NativeTextureHandle m_Texture = nullptr;
   void *m_PixelPtr = nullptr;
-  int32_t m_Pitch = 0;
 };
 
 }// namespace JE

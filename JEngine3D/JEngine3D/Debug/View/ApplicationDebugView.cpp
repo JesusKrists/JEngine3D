@@ -12,7 +12,7 @@ namespace JE {
 
 static constexpr auto MILISECONDS = 1000;
 
-static constexpr auto APPLICATION_PARAMETER_ALIGNMENT_START = 128;
+static constexpr auto APPLICATION_PARAMETER_ALIGNMENT_START = 150;
 
 void ApplicationDebugView::OnImGuiRender()
 {

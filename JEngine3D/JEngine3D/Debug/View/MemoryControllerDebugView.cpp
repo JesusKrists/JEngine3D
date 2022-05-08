@@ -9,7 +9,7 @@
 
 namespace JE {
 
-static constexpr auto MEMORYCONTROLLER_PARAMETER_ALIGNMENT_START = 128;
+static constexpr auto MEMORYCONTROLLER_PARAMETER_ALIGNMENT_START = 150;
 
 void MemoryControllerDebugView::OnImGuiRender()
 {
@@ -31,6 +31,8 @@ void MemoryControllerDebugView::OnImGuiRender()
   ImGui::BeginGroup();
   RenderMemoryControllerParameter("Total Allocations:", fmt::format("{}", memoryController.TotalAllocCount()));
   RenderMemoryControllerParameter("Total Deallocations:", fmt::format("{}", memoryController.TotalDeallocCount()));
+  RenderMemoryControllerParameter("Alloc/Dealloc Delta:",
+    fmt::format("{}", memoryController.TotalAllocCount() - memoryController.TotalDeallocCount()));
   ImGui::EndGroup();
 
   ImGui::Unindent();

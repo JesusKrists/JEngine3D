@@ -29,7 +29,7 @@ set(JEngine3D_HEADERS
     JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContext.hpp
     JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContextCreator.hpp
     JEngine3D/Platform/SDL/SDLPlatformBackend.hpp
-    JEngine3D/Renderer/Software/ISoftwareFrameBufferObject.hpp
+    JEngine3D/Renderer/Software/SoftwareFrameBufferObject.hpp
     JEngine3D/Renderer/Software/SoftwareRasterizer.hpp
     JEngine3D/Renderer/IDrawTarget.hpp
     JEngine3D/Renderer/Renderer2D.hpp)
@@ -55,5 +55,6 @@ set(JEngine3D_SOURCES
     JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContext.cpp
     JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContextCreator.cpp
     JEngine3D/Platform/SDL/SDLPlatformBackend.cpp
+    JEngine3D/Renderer/Software/SoftwareFrameBufferObject.cpp
     JEngine3D/Renderer/Software/SoftwareRasterizer.cpp
     JEngine3D/Renderer/Renderer2D.cpp)

@@ -10,11 +10,11 @@ target_link_system_libraries(
   PRIVATE
   SDL2-static
   libglew_static
-  ImGui_SWLibrary
   PUBLIC
   fmt::fmt
   spdlog
   ImGuiLibrary
+  ImGui_SWLibrary
   glm::glm)
 
 target_include_directories(JEngine3D PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
