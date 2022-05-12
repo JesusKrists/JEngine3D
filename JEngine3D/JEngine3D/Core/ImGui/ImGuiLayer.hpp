@@ -20,10 +20,16 @@ public:
 
   void OnEvent(JE::IEvent &event) override;
 
+  void SetCaptureEvents(bool capture = true);
+  [[nodiscard]] inline auto CaptureEvents() const -> bool { return m_CaptureEvents; }
+
   // cppcheck-suppress functionStatic
   void Begin();
   // cppcheck-suppress functionStatic
   void End();
+
+private:
+  bool m_CaptureEvents = true;
 };
 
 }// namespace JE

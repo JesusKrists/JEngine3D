@@ -36,6 +36,9 @@ void ApplicationDebugView::OnImGuiRender()
   RenderApplicationParameter("Focused:", fmt::format("{}", app.Focused()), app.Focused() ? TRUE_COLOR : FALSE_COLOR);
   RenderApplicationParameter("Delta Time:", fmt::format("{}ms", app.DeltaTime() * MILISECONDS));
   RenderApplicationParameter("Total Frame Count:", fmt::format("{}", app.TotalFrameCount()));
+  RenderApplicationParameter("ImGui Capturing Events:",
+    fmt::format("{}", app.ImGuiLayer().CaptureEvents()),
+    app.ImGuiLayer().CaptureEvents() ? TRUE_COLOR : FALSE_COLOR);
   ImGui::EndGroup();
   ImGui::Dummy({ 0, 16 });// NOLINT
   ImGui::Unindent();

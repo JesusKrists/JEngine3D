@@ -2,6 +2,7 @@
 
 #include <JEngine3D/Core/Base.hpp>
 #include <JEngine3D/Core/Application.hpp>
+#include <JEngine3D/Core/InputController.hpp>
 #include <JEngine3D/Debug/View/IImGuiDebugView.hpp>
 #include <JEngine3D/Platform/IGraphicsContext.hpp>
 
@@ -24,6 +25,13 @@ void UILayer::OnDestroy() {}
 
 void UILayer::OnUpdate()
 {
+  auto UpdateImGuiLayer = []() {
+    if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Escape)) && !JE::Application::Get().ImGuiLayer().CaptureEvents()) {
+      JE::Application::Get().ImGuiLayer().SetCaptureEvents(true);
+    }
+  };
+  UpdateImGuiLayer();
+
 
   static constexpr auto CLEAR_COLOR = JE::Color{ { 0.1F, 0.1F, 0.1F, 1.0F } };
   // JE::Application::Get().MainWindow().GraphicsContext().Clear(CLEAR_COLOR);
@@ -48,10 +56,6 @@ void UILayer::OnImGuiRender()
   ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
   RenderMainMenuBar();
   RenderGameViewport();
-
-  ImGui::Begin("Test Tint Color");
-  ImGui::DragFloat4("Tint Color", reinterpret_cast<float *>(&m_TintColor), 0.01F, 0.0F, 1.0F);// NOLINT
-  ImGui::End();
 
   ImGui::ShowDemoWindow();
 }
@@ -90,14 +94,20 @@ void UILayer::RenderMainMenuBar()// NOLINT(readability-convert-member-functions-
 
 void UILayer::RenderGameViewport()
 {
-  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
-  ImGui::Begin("Game Viewport", nullptr, ImGuiWindowFlags_NoBackground | ImGuiWindowFlags_AlwaysUseWindowPadding);
+  ImGui::PushStyleColor(ImGuiCol_ResizeGrip, 0);
+  ImGui::PushStyleColor(ImGuiCol_ResizeGripHovered, 0);
+  ImGui::PushStyleColor(ImGuiCol_ResizeGripActive, 0);
+  ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 2, 2 });
+  ImGui::Begin("Game Viewport", nullptr);
   {
     // Using a Child allow to fill all the space of the window.
     // It also alows customization
     ImGui::BeginChild("GameRender");
     // Get the size of the child (i.e. the whole draw size of the windows).
     ImVec2 size = ImGui::GetWindowSize();
+    ImVec2 absoluteCursorPos = ImGui::GetCursorScreenPos();
+    ImVec2 absoluteCursorStart = { absoluteCursorPos.x - 1, absoluteCursorPos.y - 1 };
+    ImVec2 absoluteCursorEnd = { absoluteCursorPos.x + size.x + 1, absoluteCursorPos.y + size.y + 1 };
 
     // TODO(JesusKrists): Super temporary software rasterizer stuff, replace with OpenGL stuff later
 
@@ -109,16 +119,26 @@ void UILayer::RenderGameViewport()
         imgui_sw::Texture{ m_GameViewportFrameBufferObject.PixelPtr(), FrameBufferSize.Width, FrameBufferSize.Height };
     }
 
-    // Because I use the texture from OpenGL, I need to invert the V from the UV.
     ImGui::Image(reinterpret_cast<ImTextureID>(&m_ImGuiSWTextureWrapper),// NOLINT
       size,
       ImVec2(0, 0),
-      ImVec2(1, 1),
-      m_TintColor);
+      ImVec2(1, 1));// NOLINT
+
+    if (!JE::Application::Get().ImGuiLayer().CaptureEvents()) {
+      ImGui::PushClipRect(absoluteCursorStart, absoluteCursorEnd, false);
+      ImGui::GetWindowDrawList()->AddRect(
+        absoluteCursorStart, absoluteCursorEnd, IM_COL32(255, 255, 255, 127));// NOLINT
+      ImGui::PopClipRect();
+    }
+
+    if (ImGui::IsItemClicked()) { JE::Application::Get().ImGuiLayer().SetCaptureEvents(false); }
+
+
     ImGui::EndChild();
   }
   ImGui::End();
   ImGui::PopStyleVar();
+  ImGui::PopStyleColor(3);
 }
 
 }// namespace JEditor

@@ -31,7 +31,6 @@ private:
   // TODO(JesusKrists): Temporary software rasterizer stuff, replace with real OpenGL stuff later
   JE::SoftwareFrameBufferObject m_GameViewportFrameBufferObject;
   imgui_sw::Texture m_ImGuiSWTextureWrapper;
-  ImVec4 m_TintColor = { 1.0f, 0.0f, 1.0f, 0.5f };
 };
 
 }// namespace JEditor

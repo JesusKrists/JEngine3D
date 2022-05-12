@@ -8,6 +8,7 @@
 #include "JEngine3D/Platform/IGraphicsContext.hpp"// for IPlatformBackend
 #include "JEngine3D/Core/Events.hpp"// for MousePressEvent
 #include "JEngine3D/Core/WindowController.hpp"// for MousePressEvent
+#include "JEngine3D/Core/InputController.hpp"
 #include "JEngine3D/Core/ImGui/ImGuiSupport.hpp"
 #include "JEngine3D/Core/ImGui/ImGuiSoftwareRenderer.hpp"// IWYU pragma: keep
 
@@ -304,6 +305,7 @@ void ImGuiLayer::OnImGuiRender()
   // ImGui layer itself won't render anything
 }
 
+// NOLINTNEXTLINE(readability-function-cognitive-complexity)
 void ImGuiLayer::OnEvent(IEvent &event)
 {
 
@@ -370,7 +372,11 @@ void ImGuiLayer::OnEvent(IEvent &event)
     ImGuiKey key = JEngine3DKeyCodeToImGuiCode(keyPressEvent.Key());
     imguiIO.AddKeyEvent(key, true);
 
-    return imguiIO.WantCaptureKeyboard;// When true we don't capture event in app
+    if (m_CaptureEvents) {
+      return imguiIO.WantCaptureKeyboard;// When true we don't capture event in app
+    } else {
+      return false;
+    }
   });
 
   dispatcher.Dispatch<EventType::KeyRelease>([&](const IEvent &evnt) {
@@ -384,7 +390,11 @@ void ImGuiLayer::OnEvent(IEvent &event)
     ImGuiKey key = JEngine3DKeyCodeToImGuiCode(keyReleaseEvent.Key());
     imguiIO.AddKeyEvent(key, false);
 
-    return imguiIO.WantCaptureKeyboard;// When true we don't capture event in app
+    if (m_CaptureEvents) {
+      return imguiIO.WantCaptureKeyboard;// When true we don't capture event in app
+    } else {
+      return false;
+    }
   });
 
   dispatcher.Dispatch<EventType::TextInput>([&](const IEvent &evnt) {
@@ -393,7 +403,11 @@ void ImGuiLayer::OnEvent(IEvent &event)
 
     imguiIO.AddInputCharactersUTF8(std::string(textInputEvent.Text()).c_str());
 
-    return imguiIO.WantCaptureKeyboard;// When true we don't capture event in app
+    if (m_CaptureEvents) {
+      return imguiIO.WantCaptureKeyboard;// When true we don't capture event in app
+    } else {
+      return false;
+    }
   });
 
   dispatcher.Dispatch<EventType::MousePress>([&](const IEvent &evnt) {
@@ -406,7 +420,11 @@ void ImGuiLayer::OnEvent(IEvent &event)
 
     s_MouseButtonsPressed[static_cast<size_t>(pressEvent.Button()) - 1] = true;// NOLINT
 
-    return imguiIO.WantCaptureMouse;// When true we don't capture event in app
+    if (m_CaptureEvents) {
+      return imguiIO.WantCaptureMouse;// When true we don't capture event in app
+    } else {
+      return false;
+    }
   });
 
   dispatcher.Dispatch<EventType::MouseRelease>([&](const IEvent &evnt) {
@@ -419,24 +437,32 @@ void ImGuiLayer::OnEvent(IEvent &event)
 
     s_MouseButtonsPressed[static_cast<size_t>(releaseEvent.Button()) - 1] = false;// NOLINT
 
-    return imguiIO.WantCaptureMouse;// When true we don't capture event in app
+    if (m_CaptureEvents) {
+      return imguiIO.WantCaptureMouse;// When true we don't capture event in app
+    } else {
+      return false;
+    }
   });
 
   dispatcher.Dispatch<EventType::MouseMove>([&](const IEvent &evnt) {
     const auto &moveEvent =
       static_cast<const MouseMoveEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
 
-    Position2DI mousePos = moveEvent.Position();
-    if (imguiIO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {// NOLINT
-      const auto &window = WindowController::Get().WindowFromNativeHandle(moveEvent.WindowHandle());
-      const auto &windowPosition = window.Position();
-      mousePos.X += windowPosition.X;
-      mousePos.Y += windowPosition.Y;
+    if (m_CaptureEvents) {
+      Position2DI mousePos = moveEvent.Position();
+      if (imguiIO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable) {// NOLINT
+        const auto &window = WindowController::Get().WindowFromNativeHandle(moveEvent.WindowHandle());
+        const auto &windowPosition = window.Position();
+        mousePos.X += windowPosition.X;
+        mousePos.Y += windowPosition.Y;
+      }
+
+      imguiIO.AddMousePosEvent(static_cast<float>(mousePos.X), static_cast<float>(mousePos.Y));
+
+      return imguiIO.WantCaptureMouse;// When true we don't capture event in app
+    } else {
+      return false;
     }
-
-    imguiIO.AddMousePosEvent(static_cast<float>(mousePos.X), static_cast<float>(mousePos.Y));
-
-    return imguiIO.WantCaptureMouse;// When true we don't capture event in app
   });
 
   dispatcher.Dispatch<EventType::MouseWheel>([&](const IEvent &evnt) {
@@ -445,10 +471,15 @@ void ImGuiLayer::OnEvent(IEvent &event)
 
     imguiIO.AddMouseWheelEvent(0, static_cast<float>(wheelEvent.ScrollAmount()));
 
-    return imguiIO.WantCaptureMouse;// When true we don't capture event in app
+    if (m_CaptureEvents) {
+      return imguiIO.WantCaptureMouse;// When true we don't capture event in app
+    } else {
+      return false;
+    }
   });
 }
 
+void ImGuiLayer::SetCaptureEvents(bool capture) { m_CaptureEvents = capture; }
 
 void ImGuiLayer::Begin() { ImGui::NewFrame(); }// NOLINT(readability-convert-member-functions-to-static)
 

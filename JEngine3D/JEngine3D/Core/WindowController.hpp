@@ -29,7 +29,6 @@ public:
 
   [[nodiscard]] inline auto NativeHandle() const -> IPlatformBackend::NativeWindowHandle { return m_NativeHandle; }
 
-  // cppcheck-suppress functionConst
   [[nodiscard]] inline auto GraphicsContext() -> IGraphicsContext & { return *m_GraphicsContext; }
 
   [[nodiscard]] inline auto Title() const -> const std::string & { return m_Title; }

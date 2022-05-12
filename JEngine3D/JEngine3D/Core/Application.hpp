@@ -65,13 +65,10 @@ public:
   void Run(int32_t loopCount = -1);
   inline void Stop() { m_Running = false; }
 
-  // cppcheck-suppress functionConst
   [[nodiscard]] inline auto MainWindow() -> Window & { return m_MainWindow; }
-  // cppcheck-suppress functionConst
   [[nodiscard]] inline auto Renderer2D() -> JE::Renderer2D & { return m_Renderer2D; }
-  // cppcheck-suppress functionConst
+  [[nodiscard]] inline auto ImGuiLayer() -> JE::ImGuiLayer & { return m_ImGuiLayer; }
   [[nodiscard]] inline auto Layers() -> LayerStack & { return m_LayerStack; }
-  // cppcheck-suppress functionConst
   [[nodiscard]] inline auto DebugViews() -> DebugViewContainer & { return m_DebugViewContainer; }
 
 
@@ -89,7 +86,7 @@ private:
   Window &m_MainWindow;
   JE::Renderer2D m_Renderer2D;
 
-  ImGuiLayer m_ImGuiLayer;
+  JE::ImGuiLayer m_ImGuiLayer;
   LayerStack m_LayerStack;
 
   InternalDebugViews m_InternalDebugViews;
