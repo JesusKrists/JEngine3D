@@ -4,6 +4,7 @@
 #include <string>// for string, allocator
 #include "JEngine3D/Core/Base.hpp"// for ForEach
 #include "JEngine3D/Core/ILayer.hpp"// for ILayer
+#include "JEngine3D/Core/ImGui/ImGuiLayer.hpp"// for ImGuiLayer
 
 #include <fmt/core.h>
 #include <imgui.h>

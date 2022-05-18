@@ -2,14 +2,17 @@
 
 #include <JEngine3D/Core/Base.hpp>
 #include <JEngine3D/Core/Application.hpp>
-#include <JEngine3D/Core/InputController.hpp>
 #include <JEngine3D/Debug/View/IImGuiDebugView.hpp>
-#include <JEngine3D/Platform/IGraphicsContext.hpp>
-
-#include <imgui_sw.hpp>
-#include <string>
+#include <JEngine3D/Core/ImGui/ImGuiLayer.hpp>
+#include <JEngine3D/Core/Types.hpp>
+#include <JEngine3D/Renderer/Renderer2D.hpp>
+#include <JEngine3D/Renderer/Software/SoftwareFrameBufferObject.hpp>
 
 #include <imgui.h>
+
+// IWYU pragma: no_include <glm/detail/type_vec3.inl>
+// IWYU pragma: no_include <glm/detail/type_vec4.inl>
+// IWYU pragma: no_include <glm/ext/vector_float3.hpp>
 
 namespace JE {
 class IEvent;

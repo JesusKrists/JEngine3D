@@ -8,7 +8,6 @@
 #include "JEngine3D/Platform/IGraphicsContext.hpp"// for IPlatformBackend
 #include "JEngine3D/Core/Events.hpp"// for MousePressEvent
 #include "JEngine3D/Core/WindowController.hpp"// for MousePressEvent
-#include "JEngine3D/Core/InputController.hpp"
 #include "JEngine3D/Core/ImGui/ImGuiSupport.hpp"
 #include "JEngine3D/Core/ImGui/ImGuiSoftwareRenderer.hpp"// IWYU pragma: keep
 

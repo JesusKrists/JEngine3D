@@ -4,6 +4,7 @@
 #include "JEngine3D/Core/Application.hpp"
 #include "JEngine3D/Platform/IGraphicsContext.hpp"
 #include "JEngine3D/Renderer/IDrawTarget.hpp"
+#include "JEngine3D/Core/WindowController.hpp"// for Window
 
 namespace JE {
 

@@ -4,7 +4,12 @@
 #include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Core/Math.hpp"
 
-#include <utility>
+#include <cstdlib>// for abs
+#include <glm/detail/type_vec3.hpp>// for vec<>::(anonymous)
+#include <glm/ext/vector_float3.hpp>// for vec3
+#include "JEngine3D/Core/Base.hpp"// for UNUSED, fill_n, size_t
+
+// IWYU pragma: no_include <bits/std_abs.h>
 
 namespace JE::SoftwareRasterizer {
 

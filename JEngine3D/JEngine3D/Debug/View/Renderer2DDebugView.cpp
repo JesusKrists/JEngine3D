@@ -3,6 +3,7 @@
 #include "JEngine3D/Core/Application.hpp"
 
 #include <string>// for string, allocator
+#include <cstddef>// for size_t
 
 #include <fmt/core.h>
 #include <imgui.h>

@@ -1,7 +1,6 @@
 #include <JEngine3D/Renderer/Software/SoftwareFrameBufferObject.hpp>
 #include <JEngine3D/Core/ILayer.hpp>
 
-#include <imgui.h>
 #include <imgui_sw.hpp>
 
 namespace JE {

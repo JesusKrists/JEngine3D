@@ -5,6 +5,7 @@
 #include "JEngine3D/Platform/IGraphicsContextCreator.hpp"// for IGraphicsC...
 #include "JEngine3D/Platform/IPlatformBackend.hpp"// for IPlatformB...
 #include "JEngine3D/Core/Assert.hpp"// for ASSERT_
+#include "JEngine3D/Core/MemoryController.hpp"// for MemoryTag
 
 namespace JE {
 

@@ -1,6 +1,6 @@
 #include "SoftwareFrameBufferObject.hpp"
 
-#include <cstddef>
+#include "JEngine3D/Core/Base.hpp"// for size_t
 #include "JEngine3D/Renderer/Software/SoftwareRasterizer.hpp"
 
 namespace JE {

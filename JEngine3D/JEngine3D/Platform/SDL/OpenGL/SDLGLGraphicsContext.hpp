@@ -3,6 +3,7 @@
 #include "JEngine3D/Core/Base.hpp"
 #include "JEngine3D/Platform/IGraphicsContext.hpp"
 #include "JEngine3D/Core/Types.hpp"// for Size2DI
+#include "JEngine3D/Core/MemoryController.hpp"// for MemoryTag, Memory...
 
 namespace JE {
 
