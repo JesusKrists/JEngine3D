@@ -25,3 +25,9 @@ target_include_directories(JEngine3D_Editor
                            PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
 target_include_directories(JEngine3D_Editor_Executable
                            PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
+
+add_custom_command(
+  TARGET JEngine3D_Editor_Executable
+  POST_BUILD
+  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets/
+          $<TARGET_FILE_DIR:JEngine3D_Editor>/assets/)

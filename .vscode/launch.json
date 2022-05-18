@@ -39,7 +39,7 @@
             "request": "launch",
             "name": "Debug JEngine3D Editor",
             "program": "${workspaceFolder}/out/build/JEngine3D_Editor/JEngine3D_Editor_Executable",
-            "cwd": "${workspaceFolder}"
+            "cwd": "${workspaceFolder}/out/build/JEngine3D_Editor/"
         }
     ]
 }

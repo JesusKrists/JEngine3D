@@ -24,9 +24,12 @@ public:
 
 private:
   // cppcheck-suppress functionStatic
+  void LoadImGuiSettings();
+  // cppcheck-suppress functionStatic
   void RenderMainMenuBar();
   void RenderGameViewport();
 
+  bool m_ResetDockLayout = false;
   // TODO(JesusKrists): Temporary software rasterizer stuff, replace with real OpenGL stuff later
   JE::SoftwareFrameBufferObject m_GameViewportFrameBufferObject;
   imgui_sw::Texture m_ImGuiSWTextureWrapper;

@@ -10,6 +10,8 @@
 
 #include <imgui.h>
 
+#include <filesystem>
+
 // IWYU pragma: no_include <glm/detail/type_vec3.inl>
 // IWYU pragma: no_include <glm/detail/type_vec4.inl>
 // IWYU pragma: no_include <glm/ext/vector_float3.hpp>
@@ -23,12 +25,19 @@ namespace JEditor {
 void UILayer::OnCreate()
 {
   JE::ForEach(JE::Application::Get().DebugViews(), [](JE::IImGuiDebugView &view) { view.Open(); });
+
+  LoadImGuiSettings();
 }
 void UILayer::OnDestroy() {}
 
 void UILayer::OnUpdate()
 {
-  auto UpdateImGuiLayer = []() {
+  auto UpdateImGuiLayer = [&]() {
+    if (m_ResetDockLayout) {
+      ImGui::LoadIniSettingsFromDisk("assets/imgui/default_layout.ini");
+      m_ResetDockLayout = false;
+    }
+
     if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Escape)) && !JE::Application::Get().ImGuiLayer().CaptureEvents()) {
       JE::Application::Get().ImGuiLayer().SetCaptureEvents(true);
     }
@@ -65,6 +74,13 @@ void UILayer::OnImGuiRender()
 
 void UILayer::OnEvent(JE::IEvent &event) { JE::UNUSED(event); }
 
+void UILayer::LoadImGuiSettings()// NOLINT(readability-convert-member-functions-to-static)
+{
+  if (std::filesystem::exists("imgui.ini")) { return; }
+
+  ImGui::LoadIniSettingsFromDisk("assets/imgui/default_layout.ini");
+}
+
 void UILayer::RenderMainMenuBar()// NOLINT(readability-convert-member-functions-to-static)
 {
 
@@ -83,6 +99,10 @@ void UILayer::RenderMainMenuBar()// NOLINT(readability-convert-member-functions-
   };
 
   if (ImGui::BeginMainMenuBar()) {
+    if (ImGui::BeginMenu("Options")) {
+      if (ImGui::MenuItem("Reset Dock Layout")) { m_ResetDockLayout = true; }
+      ImGui::EndMenu();
+    }
     if (ImGui::BeginMenu("Debug")) {
       if (ImGui::BeginMenu("Views")) {
         RenderMenuBarDebugViews();
