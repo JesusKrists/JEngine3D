@@ -29,7 +29,6 @@ public:
     UNUSED(vertices);
     UNUSED(indices);
   }
-  void DrawVertices(const Vector<Vertex, MemoryTag::Renderer> &vertices) override { UNUSED(vertices); }
 };
 
 }// namespace JE

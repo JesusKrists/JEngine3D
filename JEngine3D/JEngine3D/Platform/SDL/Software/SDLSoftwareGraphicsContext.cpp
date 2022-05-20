@@ -79,11 +79,6 @@ void SDLSoftwareGraphicsContext::DrawVerticesIndexed(const Vector<Vertex, Memory
   SoftwareRasterizer::DrawVerticesIndexed(vertices, indices, static_cast<uint32_t *>(m_PixelPtr), DrawableSize());
 }
 
-void SDLSoftwareGraphicsContext::DrawVertices(const Vector<Vertex, MemoryTag::Renderer> &vertices)
-{
-  SoftwareRasterizer::DrawVertices(vertices, static_cast<uint32_t *>(m_PixelPtr), DrawableSize());
-}
-
 auto SDLSoftwareGraphicsContext::RendererSize() -> Size2DI
 {
   Size2DI size{};

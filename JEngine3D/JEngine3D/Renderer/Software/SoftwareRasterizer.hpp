@@ -12,7 +12,5 @@ void DrawVerticesIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
   uint32_t *pixelPtr,
   const Size2DI &bufferSize);
 
-void DrawVertices(const Vector<Vertex, MemoryTag::Renderer> &vertices, uint32_t *pixelPtr, const Size2DI &bufferSize);
-
 
 }// namespace JE::SoftwareRasterizer

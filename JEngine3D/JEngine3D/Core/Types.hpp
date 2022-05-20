@@ -49,6 +49,8 @@ struct Range
 
 struct Color
 {
+  constexpr Color(float red, float green, float blue, float alpha) : rawColor(red, green, blue, alpha) {}// NOLINT
+
   glm::vec4 rawColor;
 
   [[nodiscard]] constexpr auto ToRGBA8() const -> uint32_t
@@ -71,8 +73,10 @@ struct Color
 
 struct Vertex
 {
-  Color color;
+  constexpr Vertex(const glm::vec3 &position, const Color &color) : position(position), color(color) {}
+
   glm::vec3 position;
+  Color color;
 };
 
 

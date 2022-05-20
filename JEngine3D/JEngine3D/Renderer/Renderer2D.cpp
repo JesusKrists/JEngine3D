@@ -15,23 +15,8 @@ Renderer2D::Renderer2D()
   ASSERT(s_Renderer2DInstance == nullptr, "Renderer2D instance already exists");
   s_Renderer2DInstance = this;
 
-  Data.QuadVertices.reserve(MAX_QUAD_VERTICES);
-  Data.QuadIndices.resize(MAX_QUAD_INDICES);
-
   Data.TriangleVertices.reserve(MAX_TRIANGLES_PER_BATCH);
-
-  uint32_t offset = 0;
-  for (uint32_t i = 0; i < MAX_QUAD_INDICES; i += 6) {// NOLINT
-    Data.QuadIndices[i + 0] = offset + 0;
-    Data.QuadIndices[i + 1] = offset + 1;
-    Data.QuadIndices[i + 2] = offset + 2;
-
-    Data.QuadIndices[i + 3] = offset + 2;
-    Data.QuadIndices[i + 4] = offset + 3;
-    Data.QuadIndices[i + 5] = offset + 0;// NOLINT
-
-    offset += 4;
-  }
+  Data.TriangleIndices.reserve(MAX_TRIANGLE_INDICES);
 }
 
 void Renderer2D::InitializeBatch(IDrawTarget *target)
@@ -42,18 +27,20 @@ void Renderer2D::InitializeBatch(IDrawTarget *target)
 
 void Renderer2D::Flush()
 {
-  Data.Stats.FrameQuadVertexCount += QuadVertexCount();
-  Data.Stats.FrameTriangleVertexCount += TriangleVertexCount();
-
   ASSERT(Data.Target != nullptr, "IDrawTarget is missing");
 
-  if (!Data.QuadVertices.empty()) { Data.Target->DrawVerticesIndexed(Data.QuadVertices, Data.QuadIndices); }
-  if (!Data.TriangleVertices.empty()) { Data.Target->DrawVertices(Data.TriangleVertices); }
+  Data.Stats.FrameTriangleVertexCount += Data.TriangleVertices.size();
+  Data.Stats.FrameTriangleIndexCount += Data.TriangleIndices.size();
+
+  if (!Data.TriangleVertices.empty() && !Data.TriangleIndices.empty()) {
+    Data.Target->DrawVerticesIndexed(Data.TriangleVertices, Data.TriangleIndices);
+    Data.Stats.FrameDrawCalls++;
+  }
 
   Data.BatchBegun = false;
   Data.Target = nullptr;
-  Data.QuadVertices.clear();
   Data.TriangleVertices.clear();
+  Data.TriangleIndices.clear();
 }
 
 void Renderer2D::NextBatch()
@@ -65,8 +52,9 @@ void Renderer2D::NextBatch()
 
 void Renderer2D::NewFrame()
 {
-  Data.Stats.FrameQuadVertexCount = 0;
   Data.Stats.FrameTriangleVertexCount = 0;
+  Data.Stats.FrameTriangleIndexCount = 0;
+  Data.Stats.FrameDrawCalls = 0;
 }
 
 void Renderer2D::BeginBatch(IDrawTarget *target)
@@ -87,9 +75,41 @@ void Renderer2D::EndBatch()
 
 void Renderer2D::DrawTriangle(const Vertex &vertex0, const Vertex &vertex1, const Vertex &vertex2)
 {
-  Data.TriangleVertices.push_back(vertex0);
-  Data.TriangleVertices.push_back(vertex1);
-  Data.TriangleVertices.push_back(vertex2);
+  if (TriangleCount() + 1 > Data.TrianglesPerBatch) { NextBatch(); }
+
+  Data.TriangleIndices.resize(Data.TriangleIndices.size() + 3);
+
+  auto vertexOffset = Data.TriangleVertices.size();
+
+  Data.TriangleVertices.emplace_back(vertex0);
+  Data.TriangleVertices.emplace_back(vertex1);
+  Data.TriangleVertices.emplace_back(vertex2);
+
+  Data.TriangleIndices[vertexOffset] = static_cast<uint32_t>(vertexOffset);
+  Data.TriangleIndices[vertexOffset + 1] = static_cast<uint32_t>(vertexOffset + 1);
+  Data.TriangleIndices[vertexOffset + 2] = static_cast<uint32_t>(vertexOffset + 2);
+}
+
+
+void Renderer2D::DrawQuad(const glm::vec3 &position, const glm::vec2 &size, const Color &color)
+{
+  if (TriangleCount() + 2 > Data.TrianglesPerBatch) { NextBatch(); }
+
+  Data.TriangleIndices.resize(Data.TriangleIndices.size() + 6);// NOLINT
+
+  auto vertexOffset = Data.TriangleVertices.size();
+
+  Data.TriangleVertices.emplace_back(position, color);
+  Data.TriangleVertices.emplace_back(glm::vec3{ position.x + size.x, position.y, position.z }, color);// NOLINT
+  Data.TriangleVertices.emplace_back(glm::vec3{ position.x + size.x, position.y + size.y, position.z }, color);// NOLINT
+  Data.TriangleVertices.emplace_back(glm::vec3{ position.x, position.y + size.y, position.z }, color);// NOLINT
+
+  Data.TriangleIndices[vertexOffset] = static_cast<uint32_t>(vertexOffset);
+  Data.TriangleIndices[vertexOffset + 1] = static_cast<uint32_t>(vertexOffset + 1);
+  Data.TriangleIndices[vertexOffset + 2] = static_cast<uint32_t>(vertexOffset + 2);
+  Data.TriangleIndices[vertexOffset + 3] = static_cast<uint32_t>(vertexOffset + 2);
+  Data.TriangleIndices[vertexOffset + 4] = static_cast<uint32_t>(vertexOffset + 3);
+  Data.TriangleIndices[vertexOffset + 5] = static_cast<uint32_t>(vertexOffset);// NOLINT
 }
 
 }// namespace JE

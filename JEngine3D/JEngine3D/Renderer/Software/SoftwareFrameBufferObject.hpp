@@ -16,7 +16,6 @@ public:
 
   void DrawVerticesIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
     const Vector<uint32_t, MemoryTag::Renderer> &indices) override;
-  void DrawVertices(const Vector<Vertex, MemoryTag::Renderer> &vertices) override;
 
   [[nodiscard]] inline auto PixelPtr() -> uint32_t * { return m_PixelData.data(); };
   [[nodiscard]] inline auto Size() const -> const Size2DI & { return m_Size; };

@@ -30,7 +30,10 @@ private:
   void RenderGameViewport();
 
   bool m_ResetDockLayout = false;
+
   // TODO(JesusKrists): Temporary software rasterizer stuff, replace with real OpenGL stuff later
+  bool m_ResizeGameViewport = false;
+  JE::Size2DI m_GameViewportSize = { 0, 0 };
   JE::SoftwareFrameBufferObject m_GameViewportFrameBufferObject;
   imgui_sw::Texture m_ImGuiSWTextureWrapper;
 };

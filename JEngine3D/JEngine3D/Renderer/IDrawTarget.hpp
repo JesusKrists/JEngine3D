@@ -15,7 +15,6 @@ public:
 
   virtual void DrawVerticesIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
     const Vector<uint32_t, MemoryTag::Renderer> &indices) = 0;
-  virtual void DrawVertices(const Vector<Vertex, MemoryTag::Renderer> &vertices) = 0;
 };
 
 }// namespace JE

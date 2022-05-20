@@ -41,11 +41,15 @@ void UILayer::OnUpdate()
     if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Escape)) && !JE::Application::Get().ImGuiLayer().CaptureEvents()) {
       JE::Application::Get().ImGuiLayer().SetCaptureEvents(true);
     }
+
+    if (m_ResizeGameViewport) {
+      m_GameViewportFrameBufferObject.Resize(m_GameViewportSize);
+      m_ResizeGameViewport = false;
+    }
   };
   UpdateImGuiLayer();
 
-
-  static constexpr auto CLEAR_COLOR = JE::Color{ { 0.1F, 0.1F, 0.1F, 1.0F } };
+  static constexpr auto CLEAR_COLOR = JE::Color{ 0.1F, 0.1F, 0.1F, 1.0F };
   // JE::Application::Get().MainWindow().GraphicsContext().Clear(CLEAR_COLOR);
 
   auto &renderer2D = JE::Application::Get().Renderer2D();
@@ -54,10 +58,21 @@ void UILayer::OnUpdate()
     m_GameViewportFrameBufferObject.Clear(CLEAR_COLOR);
     renderer2D.BeginBatch(&m_GameViewportFrameBufferObject);
 
-    constexpr auto vertex0 = JE::Vertex{ JE::Color{ { 1.0F, 0.0F, 0.0F, 1.0F } }, glm::vec3{ -0.5F, -0.5F, 0.0F } };
-    constexpr auto vertex1 = JE::Vertex{ JE::Color{ { 0.0F, 1.0F, 0.0F, 1.0F } }, glm::vec3{ 0.5F, -0.5F, 0.0F } };
-    constexpr auto vertex2 = JE::Vertex{ JE::Color{ { 0.0F, 0.0F, 1.0F, 1.0F } }, glm::vec3{ 0.0F, 0.5F, 0.0F } };
+    constexpr auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
+    constexpr auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
+    constexpr auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
+
+    constexpr auto vertex3 = JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
+    constexpr auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
+    constexpr auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
+
+    constexpr auto position = glm::vec3{ -0.95F, -0.95F, 0.0F };
+    constexpr auto size = glm::vec2{ 0.3F, 0.3F };
+    constexpr auto color = JE::Color{ 1.0F, 0.0F, 1.0F, 1.0F };
+
     renderer2D.DrawTriangle(vertex0, vertex1, vertex2);
+    renderer2D.DrawTriangle(vertex3, vertex4, vertex5);
+    renderer2D.DrawQuad(position, size, color);
 
     renderer2D.EndBatch();
   }
@@ -137,13 +152,15 @@ void UILayer::RenderGameViewport()
     const auto &FrameBufferSize = m_GameViewportFrameBufferObject.Size();
     if (static_cast<int32_t>(size.x) != FrameBufferSize.Width
         || static_cast<int32_t>(size.y) != FrameBufferSize.Height) {
-      m_GameViewportFrameBufferObject.Resize({ static_cast<int32_t>(size.x), static_cast<int32_t>(size.y) });
-      m_ImGuiSWTextureWrapper =
-        imgui_sw::Texture{ m_GameViewportFrameBufferObject.PixelPtr(), FrameBufferSize.Width, FrameBufferSize.Height };
+      m_ResizeGameViewport = true;
+      m_GameViewportSize = { static_cast<int32_t>(size.x), static_cast<int32_t>(size.y) };
     }
 
+
+    m_ImGuiSWTextureWrapper =
+      imgui_sw::Texture{ m_GameViewportFrameBufferObject.PixelPtr(), FrameBufferSize.Width, FrameBufferSize.Height };
     ImGui::Image(reinterpret_cast<ImTextureID>(&m_ImGuiSWTextureWrapper),// NOLINT
-      size,
+      ImVec2{ static_cast<float>(FrameBufferSize.Width), static_cast<float>(FrameBufferSize.Height) },
       ImVec2(0, 0),
       ImVec2(1, 1));// NOLINT
 

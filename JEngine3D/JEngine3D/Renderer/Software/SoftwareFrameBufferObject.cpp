@@ -20,11 +20,6 @@ void SoftwareFrameBufferObject::DrawVerticesIndexed(const Vector<Vertex, MemoryT
   SoftwareRasterizer::DrawVerticesIndexed(vertices, indices, m_PixelData.data(), m_Size);
 }
 
-void SoftwareFrameBufferObject::DrawVertices(const Vector<Vertex, MemoryTag::Renderer> &vertices)
-{
-  SoftwareRasterizer::DrawVertices(vertices, m_PixelData.data(), m_Size);
-}
-
 void SoftwareFrameBufferObject::Resize(const Size2DI &newSize)
 {
   m_PixelData.resize(static_cast<size_t>(newSize.Width * newSize.Height));// NOLINT

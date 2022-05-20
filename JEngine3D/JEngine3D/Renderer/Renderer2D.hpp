@@ -14,12 +14,8 @@ class Renderer2D
   friend class Application;
 
 public:
-  static constexpr size_t INITIAL_QUADS_PER_BATCH = 1000;
-  static constexpr size_t MAX_QUADS_PER_BATCH = 20000;
-  static constexpr size_t MAX_QUAD_VERTICES = MAX_QUADS_PER_BATCH * 4;
-  static constexpr size_t MAX_QUAD_INDICES = MAX_QUADS_PER_BATCH * 6;
-
   static constexpr size_t MAX_TRIANGLES_PER_BATCH = 50000;
+  static constexpr size_t MAX_TRIANGLE_INDICES = MAX_TRIANGLES_PER_BATCH * 3;
 
   void NewFrame();
 
@@ -27,13 +23,7 @@ public:
   void EndBatch();
 
   void DrawTriangle(const Vertex &vertex0, const Vertex &vertex1, const Vertex &vertex2);
-
-  [[nodiscard]] inline auto QuadsPerBatch() const -> size_t { return Data.QuadsPerBatch; }
-  inline void SetQuadsPerBatch(size_t numQuads)
-  {
-    ASSERT(numQuads != 0, "Cannot have 0 quads in a batch");
-    Data.QuadsPerBatch = std::min(numQuads, MAX_QUADS_PER_BATCH);
-  }
+  void DrawQuad(const glm::vec3 &position, const glm::vec2 &size, const Color &color);
 
   [[nodiscard]] inline auto TrianglesPerBatch() const -> size_t { return Data.TrianglesPerBatch; }
   inline void SetTrianglesPerBatch(size_t numTriangles)
@@ -42,14 +32,15 @@ public:
     Data.TrianglesPerBatch = std::min(numTriangles, MAX_TRIANGLES_PER_BATCH);
   }
 
-  [[nodiscard]] inline auto QuadVertexCount() const -> size_t { return Data.QuadVertices.size(); }
-  [[nodiscard]] inline auto TriangleVertexCount() const -> size_t { return Data.TriangleVertices.size(); }
-
-  [[nodiscard]] inline auto FrameQuadVertexCount() const -> size_t { return Data.Stats.FrameQuadVertexCount; }
   [[nodiscard]] inline auto FrameTriangleVertexCount() const -> size_t { return Data.Stats.FrameTriangleVertexCount; }
+  [[nodiscard]] inline auto FrameTriangleIndexCount() const -> size_t { return Data.Stats.FrameTriangleIndexCount; }
+  [[nodiscard]] inline auto FrameTriangleCount() const -> size_t { return Data.Stats.FrameTriangleIndexCount / 3; }
+  [[nodiscard]] inline auto FrameDrawCalls() const -> size_t { return Data.Stats.FrameDrawCalls; }
 
 private:
   Renderer2D();
+
+  [[nodiscard]] inline auto TriangleCount() const -> size_t { return Data.TriangleIndices.size() / 3; }
 
   void InitializeBatch(IDrawTarget *target);
   void Flush();
@@ -59,20 +50,18 @@ private:
   {
     struct Stats
     {
-      size_t FrameQuadVertexCount = 0;
       size_t FrameTriangleVertexCount = 0;
+      size_t FrameTriangleIndexCount = 0;
+      size_t FrameDrawCalls = 0;
     } Stats;
 
-    size_t QuadsPerBatch = INITIAL_QUADS_PER_BATCH;
     size_t TrianglesPerBatch = MAX_TRIANGLES_PER_BATCH;
 
     bool BatchBegun = false;
     IDrawTarget *Target = nullptr;
 
-    Vector<Vertex, MemoryTag::Renderer> QuadVertices;
-    Vector<uint32_t, MemoryTag::Renderer> QuadIndices;
-
     Vector<Vertex, MemoryTag::Renderer> TriangleVertices;
+    Vector<uint32_t, MemoryTag::Renderer> TriangleIndices;
   };
 
   Renderer2DData Data;

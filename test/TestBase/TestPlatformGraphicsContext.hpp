@@ -26,5 +26,4 @@ public:
     UNUSED(vertices);
     UNUSED(indices);
   }
-  void DrawVertices(const JE::Vector<JE::Vertex, JE::MemoryTag::Renderer> &vertices) override { UNUSED(vertices); }
 };

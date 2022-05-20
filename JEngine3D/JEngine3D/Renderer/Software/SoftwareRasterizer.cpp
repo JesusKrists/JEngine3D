@@ -59,22 +59,14 @@ void DrawVerticesIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
   const Size2DI &bufferSize)
 {
   ASSERT(pixelPtr != nullptr, "PixelPtr is null");
-  UNUSED(vertices);
-  UNUSED(indices);
-  UNUSED(pixelPtr);
-  UNUSED(bufferSize);
-}
-
-void DrawVertices(const Vector<Vertex, MemoryTag::Renderer> &vertices, uint32_t *pixelPtr, const Size2DI &bufferSize)
-{
-  ASSERT(pixelPtr != nullptr, "PixelPtr is null");
+  ASSERT(indices.size() % 3 == 0, "Missing triangle indices");
 
   Size2DI bufferSizeMinusOne = { bufferSize.Width - 1, bufferSize.Height - 1 };
 
-  for (size_t i = 0; i < vertices.size(); i += 3) {
-    const Vertex &vertex0 = vertices[i];
-    const Vertex &vertex1 = vertices[i + 1];
-    const Vertex &vertex2 = vertices[i + 2];
+  for (size_t i = 0; i < indices.size(); i += 3) {
+    const Vertex &vertex0 = vertices[indices[i]];
+    const Vertex &vertex1 = vertices[indices[i + 1]];
+    const Vertex &vertex2 = vertices[indices[i + 2]];
 
     Position2DI position0 = {
       static_cast<int32_t>(
