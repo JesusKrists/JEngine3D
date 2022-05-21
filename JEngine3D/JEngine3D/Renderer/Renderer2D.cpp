@@ -33,7 +33,9 @@ void Renderer2D::Flush()
   Data.Stats.FrameTriangleIndexCount += Data.TriangleIndices.size();
 
   if (!Data.TriangleVertices.empty() && !Data.TriangleIndices.empty()) {
-    Data.Target->DrawVerticesIndexed(Data.TriangleVertices, Data.TriangleIndices);
+    Data.Target->DrawVerticesIndexed(// NOLINT(clang-analyzer-core.CallAndMessage)
+      Data.TriangleVertices,
+      Data.TriangleIndices);
     Data.Stats.FrameDrawCalls++;
   }
 
@@ -77,25 +79,23 @@ void Renderer2D::DrawTriangle(const Vertex &vertex0, const Vertex &vertex1, cons
 {
   if (TriangleCount() + 1 > Data.TrianglesPerBatch) { NextBatch(); }
 
-  Data.TriangleIndices.resize(Data.TriangleIndices.size() + 3);
-
   auto vertexOffset = Data.TriangleVertices.size();
 
   Data.TriangleVertices.emplace_back(vertex0);
   Data.TriangleVertices.emplace_back(vertex1);
   Data.TriangleVertices.emplace_back(vertex2);
 
-  Data.TriangleIndices[vertexOffset] = static_cast<uint32_t>(vertexOffset);
-  Data.TriangleIndices[vertexOffset + 1] = static_cast<uint32_t>(vertexOffset + 1);
-  Data.TriangleIndices[vertexOffset + 2] = static_cast<uint32_t>(vertexOffset + 2);
+  auto indexOffset = Data.TriangleIndices.size();
+  Data.TriangleIndices.resize(indexOffset + 3);// NOLINT
+  Data.TriangleIndices[indexOffset] = static_cast<uint32_t>(vertexOffset);
+  Data.TriangleIndices[indexOffset + 1] = static_cast<uint32_t>(vertexOffset + 1);
+  Data.TriangleIndices[indexOffset + 2] = static_cast<uint32_t>(vertexOffset + 2);
 }
 
 
 void Renderer2D::DrawQuad(const glm::vec3 &position, const glm::vec2 &size, const Color &color)
 {
   if (TriangleCount() + 2 > Data.TrianglesPerBatch) { NextBatch(); }
-
-  Data.TriangleIndices.resize(Data.TriangleIndices.size() + 6);// NOLINT
 
   auto vertexOffset = Data.TriangleVertices.size();
 
@@ -104,12 +104,14 @@ void Renderer2D::DrawQuad(const glm::vec3 &position, const glm::vec2 &size, cons
   Data.TriangleVertices.emplace_back(glm::vec3{ position.x + size.x, position.y + size.y, position.z }, color);// NOLINT
   Data.TriangleVertices.emplace_back(glm::vec3{ position.x, position.y + size.y, position.z }, color);// NOLINT
 
-  Data.TriangleIndices[vertexOffset] = static_cast<uint32_t>(vertexOffset);
-  Data.TriangleIndices[vertexOffset + 1] = static_cast<uint32_t>(vertexOffset + 1);
-  Data.TriangleIndices[vertexOffset + 2] = static_cast<uint32_t>(vertexOffset + 2);
-  Data.TriangleIndices[vertexOffset + 3] = static_cast<uint32_t>(vertexOffset + 2);
-  Data.TriangleIndices[vertexOffset + 4] = static_cast<uint32_t>(vertexOffset + 3);
-  Data.TriangleIndices[vertexOffset + 5] = static_cast<uint32_t>(vertexOffset);// NOLINT
+  auto indexOffset = Data.TriangleIndices.size();
+  Data.TriangleIndices.resize(indexOffset + 6);// NOLINT
+  Data.TriangleIndices[indexOffset] = static_cast<uint32_t>(vertexOffset);
+  Data.TriangleIndices[indexOffset + 1] = static_cast<uint32_t>(vertexOffset + 1);
+  Data.TriangleIndices[indexOffset + 2] = static_cast<uint32_t>(vertexOffset + 2);
+  Data.TriangleIndices[indexOffset + 3] = static_cast<uint32_t>(vertexOffset + 2);
+  Data.TriangleIndices[indexOffset + 4] = static_cast<uint32_t>(vertexOffset + 3);
+  Data.TriangleIndices[indexOffset + 5] = static_cast<uint32_t>(vertexOffset);// NOLINT
 }
 
 }// namespace JE

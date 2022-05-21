@@ -41,41 +41,50 @@ void UILayer::OnUpdate()
     if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Escape)) && !JE::Application::Get().ImGuiLayer().CaptureEvents()) {
       JE::Application::Get().ImGuiLayer().SetCaptureEvents(true);
     }
+  };
+  UpdateImGuiLayer();
 
+  auto Renderer2DTest = [&]() {
     if (m_ResizeGameViewport) {
       m_GameViewportFrameBufferObject.Resize(m_GameViewportSize);
       m_ResizeGameViewport = false;
     }
+
+    static constexpr auto CLEAR_COLOR = JE::Color{ 0.1F, 0.1F, 0.1F, 1.0F };
+    // JE::Application::Get().MainWindow().GraphicsContext().Clear(CLEAR_COLOR);
+
+    auto &renderer2D = JE::Application::Get().Renderer2D();
+
+    if (m_GameViewportFrameBufferObject.Size() != JE::Size2DI{ 0, 0 }) {
+      m_GameViewportFrameBufferObject.Clear(CLEAR_COLOR);
+
+      renderer2D.BeginBatch(&m_GameViewportFrameBufferObject);
+
+      constexpr auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
+      constexpr auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
+      constexpr auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
+
+      constexpr auto vertex3 = JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
+      constexpr auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
+      constexpr auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
+
+      constexpr auto position = glm::vec3{ -0.95F, -0.95F, 0.0F };
+      constexpr auto size = glm::vec2{ 0.3F, 0.3F };
+      constexpr auto color = JE::Color{ 1.0F, 0.0F, 1.0F, 1.0F };
+
+      constexpr auto position2 = glm::vec3{ 0.65F, -0.95F, 0.0F };
+      constexpr auto color2 = JE::Color{ 0.0F, 1.0F, 1.0F, 1.0F };
+
+      renderer2D.DrawTriangle(vertex0, vertex1, vertex2);
+      renderer2D.DrawTriangle(vertex3, vertex4, vertex5);
+      renderer2D.DrawQuad(position, size, color);
+      renderer2D.DrawQuad(position2, size, color2);
+
+      renderer2D.EndBatch();
+    }
   };
-  UpdateImGuiLayer();
 
-  static constexpr auto CLEAR_COLOR = JE::Color{ 0.1F, 0.1F, 0.1F, 1.0F };
-  // JE::Application::Get().MainWindow().GraphicsContext().Clear(CLEAR_COLOR);
-
-  auto &renderer2D = JE::Application::Get().Renderer2D();
-
-  if (m_GameViewportFrameBufferObject.Size() != JE::Size2DI{ 0, 0 }) {
-    m_GameViewportFrameBufferObject.Clear(CLEAR_COLOR);
-    renderer2D.BeginBatch(&m_GameViewportFrameBufferObject);
-
-    constexpr auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
-    constexpr auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
-    constexpr auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
-
-    constexpr auto vertex3 = JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
-    constexpr auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
-    constexpr auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
-
-    constexpr auto position = glm::vec3{ -0.95F, -0.95F, 0.0F };
-    constexpr auto size = glm::vec2{ 0.3F, 0.3F };
-    constexpr auto color = JE::Color{ 1.0F, 0.0F, 1.0F, 1.0F };
-
-    renderer2D.DrawTriangle(vertex0, vertex1, vertex2);
-    renderer2D.DrawTriangle(vertex3, vertex4, vertex5);
-    renderer2D.DrawQuad(position, size, color);
-
-    renderer2D.EndBatch();
-  }
+  Renderer2DTest();
 }
 
 void UILayer::OnImGuiRender()
@@ -160,9 +169,7 @@ void UILayer::RenderGameViewport()
     m_ImGuiSWTextureWrapper =
       imgui_sw::Texture{ m_GameViewportFrameBufferObject.PixelPtr(), FrameBufferSize.Width, FrameBufferSize.Height };
     ImGui::Image(reinterpret_cast<ImTextureID>(&m_ImGuiSWTextureWrapper),// NOLINT
-      ImVec2{ static_cast<float>(FrameBufferSize.Width), static_cast<float>(FrameBufferSize.Height) },
-      ImVec2(0, 0),
-      ImVec2(1, 1));// NOLINT
+      ImVec2{ static_cast<float>(FrameBufferSize.Width), static_cast<float>(FrameBufferSize.Height) });// NOLINT
 
     if (!JE::Application::Get().ImGuiLayer().CaptureEvents()) {
       ImGui::PushClipRect(absoluteCursorStart, absoluteCursorEnd, false);
