@@ -14,6 +14,7 @@
 #include "JEngine3D/Debug/View/WindowControllerDebugView.hpp"
 #include "JEngine3D/Platform/IPlatformBackend.hpp"
 
+#include "JEngine3D/Renderer/IRendererAPI.hpp"
 #include "JEngine3D/Renderer/Renderer2D.hpp"
 
 #include <functional>// for reference_wrapper
@@ -66,6 +67,7 @@ public:
   inline void Stop() { m_Running = false; }
 
   [[nodiscard]] inline auto MainWindow() -> Window & { return m_MainWindow; }
+  [[nodiscard]] inline auto RendererAPI() -> JE::IRendererAPI & { return *m_RendererAPI; }
   [[nodiscard]] inline auto Renderer2D() -> JE::Renderer2D & { return m_Renderer2D; }
   [[nodiscard]] inline auto ImGuiLayer() -> JE::ImGuiLayer & { return m_ImGuiLayer; }
   [[nodiscard]] inline auto Layers() -> LayerStack & { return m_LayerStack; }
@@ -84,6 +86,7 @@ private:
   void ProcessMainLoop();
 
   Window &m_MainWindow;
+  Scope<IRendererAPI, MemoryTag::Renderer> m_RendererAPI;
   JE::Renderer2D m_Renderer2D;
 
   JE::ImGuiLayer m_ImGuiLayer;

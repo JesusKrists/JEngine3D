@@ -488,10 +488,10 @@ void ImGuiLayer::End()// NOLINT(readability-convert-member-functions-to-static)
 
   ImGui::Render();
 
-
-  Application::Get().MainWindow().GraphicsContext().MakeCurrent();
+  auto &previousContext = IGraphicsContext::CurrentContext();
 #if defined(JE_SOFTWARE_CONTEXT)
   if (!Application::Get().MainWindow().Minimized()) {
+    Application::Get().MainWindow().GraphicsContext().MakeCurrent();
     ImGuiSoftwareRenderer::RenderImGui(Application::Get().MainWindow(), ImGui::GetDrawData());
   }
 #endif
@@ -500,7 +500,7 @@ void ImGuiLayer::End()// NOLINT(readability-convert-member-functions-to-static)
       == ImGuiConfigFlags_ViewportsEnable) {
     ImGui::UpdatePlatformWindows();
     ImGui::RenderPlatformWindowsDefault();
-    Application::Get().MainWindow().GraphicsContext().MakeCurrent();
+    previousContext.MakeCurrent();
   }
 }
 

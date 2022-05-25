@@ -20,26 +20,22 @@ public:
   [[nodiscard]] auto DrawableSize() -> Size2DI override;
   void Resize(const Size2DI &size) override;
 
-  void MakeCurrent() override;
   void SwapBuffers() override;
 
   void Destroy() override;
 
-  void Clear(const Color &clearColor) override;
 
-  void DrawVerticesIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
-    const Vector<uint32_t, MemoryTag::Renderer> &indices) override;
-
-
-  [[nodiscard]] inline auto PixelPtr() -> void *
+  [[nodiscard]] inline auto PixelPtr() -> uint32_t *
   {
     ASSERT(m_PixelPtr, "Context not set to current");
-    return m_PixelPtr;
+    return static_cast<uint32_t *>(m_PixelPtr);
   }
 
   [[nodiscard]] auto RendererSize() -> Size2DI;
 
 private:
+  void MakeContextCurrent() override;
+
   NativeTextureHandle m_Texture = nullptr;
   void *m_PixelPtr = nullptr;
 };

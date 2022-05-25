@@ -5,7 +5,7 @@ set(MEMORYCHECK_SUPPRESSIONS_FILE
     "${CMAKE_SOURCE_DIR}/valgrind.supp"
     CACHE FILEPATH "File that contains suppressions for the memory checker")
 set(MEMORYCHECK_COMMAND_OPTIONS
-    "--leak-check=full --show-leak-kinds=definite,indirect,possible --error-exitcode=1 --errors-for-leak-kinds=definite,indirect,possible --track-origins=yes"
+    "--leak-check=full --show-leak-kinds=definite,indirect,possible --error-exitcode=1 --errors-for-leak-kinds=definite,indirect,possible --track-origins=yes --keep-debuginfo=yes"
     CACHE STRING "valgrind command line options")
 
 # Not ideal to use this global variable, but necessary to make sure

@@ -13,12 +13,13 @@ auto SDLGLGraphicsContext::DrawableSize() -> Size2DI
   return size;
 }
 
-void SDLGLGraphicsContext::MakeCurrent()
-{
-  SDL_GL_MakeCurrent(static_cast<SDL_Window *>(NativeWindowHandle()), NativeContextHandle());
-}
 void SDLGLGraphicsContext::SwapBuffers() { SDL_GL_SwapWindow(static_cast<SDL_Window *>(NativeWindowHandle())); }
 
 void SDLGLGraphicsContext::Destroy() { SDL_GL_DeleteContext(NativeContextHandle()); }
+
+void SDLGLGraphicsContext::MakeContextCurrent()
+{
+  SDL_GL_MakeCurrent(static_cast<SDL_Window *>(NativeWindowHandle()), NativeContextHandle());
+}
 
 }// namespace JE

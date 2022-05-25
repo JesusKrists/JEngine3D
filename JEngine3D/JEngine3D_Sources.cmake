@@ -31,7 +31,11 @@ set(JEngine3D_HEADERS
     JEngine3D/Platform/SDL/SDLPlatformBackend.hpp
     JEngine3D/Renderer/Software/SoftwareFrameBufferObject.hpp
     JEngine3D/Renderer/Software/SoftwareRasterizer.hpp
+    JEngine3D/Renderer/Software/SoftwareRendererAPI.hpp
+    JEngine3D/Renderer/Software/SoftwareRendererAPICreator.hpp
     JEngine3D/Renderer/IDrawTarget.hpp
+    JEngine3D/Renderer/IRendererAPI.hpp
+    JEngine3D/Renderer/IRendererAPICreator.hpp
     JEngine3D/Renderer/Renderer2D.hpp)
 
 set(JEngine3D_SOURCES
@@ -48,6 +52,7 @@ set(JEngine3D_SOURCES
     JEngine3D/Debug/View/MemoryControllerDebugView.cpp
     JEngine3D/Debug/View/Renderer2DDebugView.cpp
     JEngine3D/Debug/View/WindowControllerDebugView.cpp
+    JEngine3D/Platform/IGraphicsContext.cpp
     JEngine3D/Platform/IGraphicsContextCreator.cpp
     JEngine3D/Platform/IPlatformBackend.cpp
     JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContext.cpp
@@ -57,4 +62,6 @@ set(JEngine3D_SOURCES
     JEngine3D/Platform/SDL/SDLPlatformBackend.cpp
     JEngine3D/Renderer/Software/SoftwareFrameBufferObject.cpp
     JEngine3D/Renderer/Software/SoftwareRasterizer.cpp
+    JEngine3D/Renderer/Software/SoftwareRendererAPI.cpp
+    JEngine3D/Renderer/IRendererAPICreator.cpp
     JEngine3D/Renderer/Renderer2D.cpp)

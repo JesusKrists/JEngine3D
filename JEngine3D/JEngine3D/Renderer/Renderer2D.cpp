@@ -33,9 +33,9 @@ void Renderer2D::Flush()
   Data.Stats.FrameTriangleIndexCount += Data.TriangleIndices.size();
 
   if (!Data.TriangleVertices.empty() && !Data.TriangleIndices.empty()) {
-    Data.Target->DrawVerticesIndexed(// NOLINT(clang-analyzer-core.CallAndMessage)
-      Data.TriangleVertices,
-      Data.TriangleIndices);
+    Data.Target->Bind();
+    Application::Get().RendererAPI().DrawVerticesIndexed(Data.TriangleVertices, Data.TriangleIndices);
+    Data.Target->UnBind();
     Data.Stats.FrameDrawCalls++;
   }
 

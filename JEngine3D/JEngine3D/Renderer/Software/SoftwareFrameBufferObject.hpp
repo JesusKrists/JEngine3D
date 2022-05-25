@@ -10,12 +10,12 @@ namespace JE {
 class SoftwareFrameBufferObject : public IDrawTarget
 {
 public:
-  explicit SoftwareFrameBufferObject(const Size2DI &size = { 0, 0 });
+  explicit SoftwareFrameBufferObject(const Size2DI &size = { 0, 0 })
+    : m_PixelData(static_cast<size_t>(size.Width * size.Height)), m_Size(size)
+  {}
 
-  void Clear(const Color &clearColor) override;
-
-  void DrawVerticesIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
-    const Vector<uint32_t, MemoryTag::Renderer> &indices) override;
+  void Bind() override;
+  void UnBind() override;
 
   [[nodiscard]] inline auto PixelPtr() -> uint32_t * { return m_PixelData.data(); };
   [[nodiscard]] inline auto Size() const -> const Size2DI & { return m_Size; };

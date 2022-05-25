@@ -11,6 +11,24 @@
             },
             "command": "ctest -C Debug -D NightlyMemCheck --verbose --stop-on-failure",
             "problemMatcher": []
+        },
+        {
+            "label": "Run JEngine3D_Editor with valgrind",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/out/build/JEngine3D_Editor"
+            },
+            "command": "valgrind --suppressions=/workspaces/JEngine3D/valgrind.supp --leak-check=full --show-leak-kinds=definite,indirect,possible --error-exitcode=1 --errors-for-leak-kinds=definite,indirect,possible --track-origins=yes ./JEngine3D_Editor_Executable",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run JEngine3D_Editor with callgrind",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/out/build/JEngine3D_Editor"
+            },
+            "command": "valgrind --tool=callgrind ./JEngine3D_Editor_Executable",
+            "problemMatcher": []
         }
     ]
 }

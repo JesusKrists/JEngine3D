@@ -41,31 +41,31 @@ struct RectangleI
 
 struct Range
 {
-  float start;
-  float end;
+  float Start;
+  float End;
 
   constexpr auto operator==(const Range &other) const -> bool = default;
 };
 
 struct Color
 {
-  constexpr Color(float red, float green, float blue, float alpha) : rawColor(red, green, blue, alpha) {}// NOLINT
+  constexpr Color(float red, float green, float blue, float alpha) : RawColor(red, green, blue, alpha) {}// NOLINT
 
-  glm::vec4 rawColor;
+  glm::vec4 RawColor;
 
   [[nodiscard]] constexpr auto ToRGBA8() const -> uint32_t
   {
-    return ((static_cast<uint32_t>(std::roundf(rawColor.r * 255)) << 24)// NOLINT
-            | (static_cast<uint32_t>(std::roundf(rawColor.g * 255)) << 16)// NOLINT
-            | (static_cast<uint32_t>(std::roundf(rawColor.b * 255)) << 8)// NOLINT
-            | (static_cast<uint32_t>(std::roundf(rawColor.a * 255))));// NOLINT
+    return ((static_cast<uint32_t>(std::roundf(RawColor.r * 255)) << 24)// NOLINT
+            | (static_cast<uint32_t>(std::roundf(RawColor.g * 255)) << 16)// NOLINT
+            | (static_cast<uint32_t>(std::roundf(RawColor.b * 255)) << 8)// NOLINT
+            | (static_cast<uint32_t>(std::roundf(RawColor.a * 255))));// NOLINT
   }
   [[nodiscard]] constexpr auto ToABGR8() const -> uint32_t
   {
-    return ((static_cast<uint32_t>(std::roundf(rawColor.a * 255)) << 24)// NOLINT
-            | (static_cast<uint32_t>(std::roundf(rawColor.b * 255)) << 16)// NOLINT
-            | (static_cast<uint32_t>(std::roundf(rawColor.g * 255)) << 8)// NOLINT
-            | (static_cast<uint32_t>(std::roundf(rawColor.r * 255))));// NOLINT
+    return ((static_cast<uint32_t>(std::roundf(RawColor.a * 255)) << 24)// NOLINT
+            | (static_cast<uint32_t>(std::roundf(RawColor.b * 255)) << 16)// NOLINT
+            | (static_cast<uint32_t>(std::roundf(RawColor.g * 255)) << 8)// NOLINT
+            | (static_cast<uint32_t>(std::roundf(RawColor.r * 255))));// NOLINT
   }
 
   constexpr auto operator==(const Color &other) const -> bool = default;
@@ -73,10 +73,10 @@ struct Color
 
 struct Vertex
 {
-  constexpr Vertex(const glm::vec3 &position, const Color &color) : position(position), color(color) {}
+  constexpr Vertex(const glm::vec3 &position, const Color &color) : Position(position), Color(color) {}
 
-  glm::vec3 position;
-  Color color;
+  glm::vec3 Position;
+  JE::Color Color;
 };
 
 
@@ -155,7 +155,7 @@ template<> struct fmt::formatter<JE::Range>
   // cppcheck-suppress functionStatic
   template<typename FormatContext> auto format(const JE::Range &range, FormatContext &ctx)
   {
-    return format_to(ctx.out(), "Range{{ Start: {0}, End: {1} }}", range.start, range.end);
+    return format_to(ctx.out(), "Range{{ Start: {0}, End: {1} }}", range.Start, range.End);
   }
 };
 
@@ -169,10 +169,10 @@ template<> struct fmt::formatter<JE::Color>
   {
     return format_to(ctx.out(),
       "Color{{ R: {0}, G: {1}, B: {2}, A: {3} }}",
-      color.rawColor.r,// NOLINT(cppcoreguidelines-pro-type-union-access)
-      color.rawColor.g,// NOLINT(cppcoreguidelines-pro-type-union-access)
-      color.rawColor.b,// NOLINT(cppcoreguidelines-pro-type-union-access)
-      color.rawColor.a);// NOLINT(cppcoreguidelines-pro-type-union-access)
+      color.RawColor.r,// NOLINT(cppcoreguidelines-pro-type-union-access)
+      color.RawColor.g,// NOLINT(cppcoreguidelines-pro-type-union-access)
+      color.RawColor.b,// NOLINT(cppcoreguidelines-pro-type-union-access)
+      color.RawColor.a);// NOLINT(cppcoreguidelines-pro-type-union-access)
   }
 };
 
@@ -184,7 +184,7 @@ template<> struct fmt::formatter<JE::Vertex>
   // cppcheck-suppress functionStatic
   template<typename FormatContext> auto format(const JE::Vertex &vertex, FormatContext &ctx)
   {
-    return format_to(ctx.out(), "Vertex{{\n{0},\nPosition: {1}\n}}", vertex.color, vertex.position);
+    return format_to(ctx.out(), "Vertex{{\n{0},\nPosition: {1}\n}}", vertex.Color, vertex.Position);
   }
 };
 

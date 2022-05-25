@@ -10,6 +10,8 @@
 
 #include "JEngine3D/Debug/View/IImGuiDebugView.hpp"
 
+#include "JEngine3D/Renderer/IRendererAPICreator.hpp"
+
 #include <iterator>// for rbegin, rend
 
 namespace JE {
@@ -20,7 +22,8 @@ Application::Application(const std::string_view &title)
   : m_MainWindow(WindowController::Get().CreateWindow(title,
     DEFAULT_SIZE,
     IPlatformBackend::WINDOW_CENTER_POSITION,
-    MAIN_WINDOW_CONFIG))
+    MAIN_WINDOW_CONFIG)),
+    m_RendererAPI(IRendererAPICreator::Get().CreateAPI())
 {
   ASSERT(!s_ApplicationInstance, "Application instance already exists");
   s_ApplicationInstance = this;
@@ -43,7 +46,8 @@ void Application::OnEvent(IEvent &event)
   if (event.Category() == EventCategory::Window) {
     EventDispatcher dispatcher{ event };
     dispatcher.Dispatch<EventType::WindowClose>([&](const IEvent &evnt) {
-      const auto &closeEvent = static_cast<const WindowCloseEvent &>(evnt);// NOLINT(cppcoreguidelines-pro
+      const auto &closeEvent =
+        static_cast<const WindowCloseEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
       if (closeEvent.NativeWindowHandle() == m_MainWindow.NativeHandle()) { m_Running = false; }
       return false;
     });
@@ -115,8 +119,6 @@ void Application::ProcessMainLoop()
   IPlatformBackend::Get().PollEvents();
   if (!m_Running) { return; }
 
-  m_MainWindow.GraphicsContext().MakeCurrent();
-
   ForEach(m_LayerStack, [](ILayer &layer) { layer.OnUpdate(); });
 
   m_ImGuiLayer.Begin();
@@ -126,8 +128,12 @@ void Application::ProcessMainLoop()
   });
   m_ImGuiLayer.End();
 
+  auto &previousContext = IGraphicsContext::CurrentContext();
+
   m_MainWindow.GraphicsContext().MakeCurrent();
   m_MainWindow.GraphicsContext().SwapBuffers();
+
+  previousContext.MakeCurrent();
 }
 
 void Application::Run(int32_t loopCount)

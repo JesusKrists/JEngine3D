@@ -67,20 +67,21 @@ static auto
 static auto CalculateColorFromBarycentric(const glm::vec3 &bary, uint32_t colorU, uint32_t colorV, uint32_t colorW)
   -> uint32_t
 {
-  uint8_t A = static_cast<uint8_t>(((colorU >> 24) & 0xFF) * bary.x)// NOLINT
-              + static_cast<uint8_t>(((colorV >> 24) & 0xFF) * bary.y)// NOLINT
-              + static_cast<uint8_t>(((colorW >> 24) & 0xFF) * bary.z);// NOLINT
+  uint8_t A = static_cast<uint8_t>(static_cast<float>((colorU >> 24) & 0xFF) * bary.x// NOLINT
+                                   + static_cast<float>((colorV >> 24) & 0xFF) * bary.y// NOLINT
+                                   + static_cast<float>((colorW >> 24) & 0xFF) * bary.z);// NOLINT
 
-  uint8_t B = static_cast<uint8_t>(((colorU >> 16) & 0xFF) * bary.x)// NOLINT
-              + static_cast<uint8_t>(((colorV >> 16) & 0xFF) * bary.y)// NOLINT
-              + static_cast<uint8_t>(((colorW >> 16) & 0xFF) * bary.z);// NOLINT
+  uint8_t B = static_cast<uint8_t>(static_cast<float>((colorU >> 16) & 0xFF) * bary.x// NOLINT
+                                   + static_cast<float>((colorV >> 16) & 0xFF) * bary.y// NOLINT
+                                   + static_cast<float>((colorW >> 16) & 0xFF) * bary.z);// NOLINT
 
-  uint8_t G = static_cast<uint8_t>(((colorU >> 8) & 0xFF) * bary.x)// NOLINT
-              + static_cast<uint8_t>(((colorV >> 8) & 0xFF) * bary.y)// NOLINT
-              + static_cast<uint8_t>(((colorW >> 8) & 0xFF) * bary.z);// NOLINT
+  uint8_t G = static_cast<uint8_t>(static_cast<float>((colorU >> 8) & 0xFF) * bary.x// NOLINT
+                                   + static_cast<float>((colorV >> 8) & 0xFF) * bary.y// NOLINT
+                                   + static_cast<float>((colorW >> 8) & 0xFF) * bary.z);// NOLINT
 
-  uint8_t R = static_cast<uint8_t>((colorU & 0xFF) * bary.x) + static_cast<uint8_t>((colorV & 0xFF) * bary.y)// NOLINT
-              + static_cast<uint8_t>((colorW & 0xFF) * bary.z);// NOLINT
+  uint8_t R = static_cast<uint8_t>(static_cast<float>(colorU & 0xFF) * bary.x// NOLINT
+                                   + static_cast<float>(colorV & 0xFF) * bary.y// NOLINT
+                                   + static_cast<float>(colorW & 0xFF) * bary.z);// NOLINT
 
   return static_cast<uint32_t>((A << 24) | (B << 16) | (G << 8) | R);// NOLINT
 }
@@ -159,36 +160,36 @@ void DrawVerticesIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
 
     Position2DI position0 = {
       static_cast<int32_t>(
-        JE::Math::Map(vertex0.position.x, { -1, 1 }, { 0, static_cast<float>(bufferSizeMinusOne.Width) })),// NOLINT
+        JE::Math::Map(vertex0.Position.x, { -1, 1 }, { 0, static_cast<float>(bufferSizeMinusOne.Width) })),// NOLINT
       static_cast<int32_t>(
-        JE::Math::Map(vertex0.position.y, { -1, 1 }, { static_cast<float>(bufferSizeMinusOne.Height), 0 }))// NOLINT
+        JE::Math::Map(vertex0.Position.y, { -1, 1 }, { static_cast<float>(bufferSizeMinusOne.Height), 0 }))// NOLINT
     };
 
     if (IsPointInsideBuffer(position0, bufferSizeMinusOne)) { draw = true; }
 
     Position2DI position1 = {
       static_cast<int32_t>(
-        JE::Math::Map(vertex1.position.x, { -1, 1 }, { 0, static_cast<float>(bufferSizeMinusOne.Width) })),// NOLINT
+        JE::Math::Map(vertex1.Position.x, { -1, 1 }, { 0, static_cast<float>(bufferSizeMinusOne.Width) })),// NOLINT
       static_cast<int32_t>(
-        JE::Math::Map(vertex1.position.y, { -1, 1 }, { static_cast<float>(bufferSizeMinusOne.Height), 0 }))// NOLINT
+        JE::Math::Map(vertex1.Position.y, { -1, 1 }, { static_cast<float>(bufferSizeMinusOne.Height), 0 }))// NOLINT
     };
 
     if (!draw && IsPointInsideBuffer(position1, bufferSizeMinusOne)) { draw = true; }
 
     Position2DI position2 = {
       static_cast<int32_t>(
-        JE::Math::Map(vertex2.position.x, { -1, 1 }, { 0, static_cast<float>(bufferSizeMinusOne.Width) })),// NOLINT
+        JE::Math::Map(vertex2.Position.x, { -1, 1 }, { 0, static_cast<float>(bufferSizeMinusOne.Width) })),// NOLINT
       static_cast<int32_t>(
-        JE::Math::Map(vertex2.position.y, { -1, 1 }, { static_cast<float>(bufferSizeMinusOne.Height), 0 }))// NOLINT
+        JE::Math::Map(vertex2.Position.y, { -1, 1 }, { static_cast<float>(bufferSizeMinusOne.Height), 0 }))// NOLINT
     };
 
     if (!draw && IsPointInsideBuffer(position2, bufferSizeMinusOne)) { draw = true; }
 
     if (!draw) { continue; }
 
-    uint32_t color0 = vertex0.color.ToABGR8();
-    uint32_t color1 = vertex1.color.ToABGR8();
-    uint32_t color2 = vertex2.color.ToABGR8();
+    uint32_t color0 = vertex0.Color.ToABGR8();
+    uint32_t color1 = vertex1.Color.ToABGR8();
+    uint32_t color2 = vertex2.Color.ToABGR8();
 
     FillTriangle(position0, position1, position2, color0, color1, color2, pixelPtr, bufferSizeMinusOne);
   }

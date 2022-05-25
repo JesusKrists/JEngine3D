@@ -25,7 +25,7 @@ void ImGuiSoftwareRenderer::RenderImGui(Window &window, ImDrawData *drawData)
         || (static_cast<float>(drawableSize.Height) != drawData->DisplaySize.y)) {
       drawData->DisplaySize = ImVec2{ static_cast<float>(drawableSize.Width), static_cast<float>(drawableSize.Height) };
     }
-    imgui_sw::paint_imgui(static_cast<uint32_t *>(swContext->PixelPtr()), drawData);
+    imgui_sw::paint_imgui(swContext->PixelPtr(), drawData);
   }
 }
 

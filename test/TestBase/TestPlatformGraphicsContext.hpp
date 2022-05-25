@@ -12,18 +12,10 @@ public:
   [[nodiscard]] inline auto DrawableSize() -> JE::Size2DI override { return TEST_DRAWABLE_SIZE; }
   inline void Resize(const JE::Size2DI &size) override { JE::UNUSED(size); }
 
-  inline void MakeCurrent() override {}
   inline void SwapBuffers() override {}
 
   inline void Destroy() override {}
 
-
-  void Clear(const JE::Color &clearColor) override { UNUSED(clearColor); }
-
-  void DrawVerticesIndexed(const JE::Vector<JE::Vertex, JE::MemoryTag::Renderer> &vertices,
-    const JE::Vector<uint32_t, JE::MemoryTag::Renderer> &indices) override
-  {
-    UNUSED(vertices);
-    UNUSED(indices);
-  }
+private:
+  inline void MakeContextCurrent() override {}
 };

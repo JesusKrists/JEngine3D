@@ -27,6 +27,9 @@ void UILayer::OnCreate()
   JE::ForEach(JE::Application::Get().DebugViews(), [](JE::IImGuiDebugView &view) { view.Open(); });
 
   LoadImGuiSettings();
+
+  // Prevent first frame clear from asserting
+  m_GameViewportFrameBufferObject.Resize({ 1, 1 });
 }
 void UILayer::OnDestroy() {}
 
@@ -51,37 +54,39 @@ void UILayer::OnUpdate()
     }
 
     static constexpr auto CLEAR_COLOR = JE::Color{ 0.1F, 0.1F, 0.1F, 1.0F };
-    // JE::Application::Get().MainWindow().GraphicsContext().Clear(CLEAR_COLOR);
 
+    auto &rendererAPI = JE::Application::Get().RendererAPI();
     auto &renderer2D = JE::Application::Get().Renderer2D();
 
-    if (m_GameViewportFrameBufferObject.Size() != JE::Size2DI{ 0, 0 }) {
-      m_GameViewportFrameBufferObject.Clear(CLEAR_COLOR);
+    rendererAPI.SetClearColor(CLEAR_COLOR);
 
-      renderer2D.BeginBatch(&m_GameViewportFrameBufferObject);
+    m_GameViewportFrameBufferObject.Bind();
+    rendererAPI.Clear();
+    m_GameViewportFrameBufferObject.UnBind();
 
-      constexpr auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
-      constexpr auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
-      constexpr auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
+    renderer2D.BeginBatch(&m_GameViewportFrameBufferObject);
 
-      constexpr auto vertex3 = JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
-      constexpr auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
-      constexpr auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
+    constexpr auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
+    constexpr auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
+    constexpr auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
 
-      constexpr auto position = glm::vec3{ -0.95F, -0.95F, 0.0F };
-      constexpr auto size = glm::vec2{ 0.3F, 0.3F };
-      constexpr auto color = JE::Color{ 1.0F, 0.0F, 1.0F, 1.0F };
+    constexpr auto vertex3 = JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
+    constexpr auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
+    constexpr auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
 
-      constexpr auto position2 = glm::vec3{ 0.65F, -0.95F, 0.0F };
-      constexpr auto color2 = JE::Color{ 0.0F, 1.0F, 1.0F, 1.0F };
+    constexpr auto position = glm::vec3{ -0.95F, -0.95F, 0.0F };
+    constexpr auto size = glm::vec2{ 0.3F, 0.3F };
+    constexpr auto color = JE::Color{ 1.0F, 0.0F, 1.0F, 1.0F };
 
-      renderer2D.DrawTriangle(vertex0, vertex1, vertex2);
-      renderer2D.DrawTriangle(vertex3, vertex4, vertex5);
-      renderer2D.DrawQuad(position, size, color);
-      renderer2D.DrawQuad(position2, size, color2);
+    constexpr auto position2 = glm::vec3{ 0.65F, -0.95F, 0.0F };
+    constexpr auto color2 = JE::Color{ 0.0F, 1.0F, 1.0F, 1.0F };
 
-      renderer2D.EndBatch();
-    }
+    renderer2D.DrawTriangle(vertex0, vertex1, vertex2);
+    renderer2D.DrawTriangle(vertex3, vertex4, vertex5);
+    renderer2D.DrawQuad(position, size, color);
+    renderer2D.DrawQuad(position2, size, color2);
+
+    renderer2D.EndBatch();
   };
 
   Renderer2DTest();
