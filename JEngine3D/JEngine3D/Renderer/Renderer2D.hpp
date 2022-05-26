@@ -4,6 +4,7 @@
 #include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Core/MemoryController.hpp"
+#include "JEngine3D/Renderer/ITexture.hpp"
 
 namespace JE {
 
@@ -16,6 +17,7 @@ class Renderer2D
 public:
   static constexpr size_t MAX_TRIANGLES_PER_BATCH = 50000;
   static constexpr size_t MAX_TRIANGLE_INDICES = MAX_TRIANGLES_PER_BATCH * 3;
+  static constexpr size_t MAX_TEXTURE_SLOTS = 16;
 
   void NewFrame();
 
@@ -23,7 +25,17 @@ public:
   void EndBatch();
 
   void DrawTriangle(const Vertex &vertex0, const Vertex &vertex1, const Vertex &vertex2);
+  void DrawTriangle(Vertex &vertex0, Vertex &vertex1, Vertex &vertex2, const ITexture &texture);
   void DrawQuad(const glm::vec3 &position, const glm::vec2 &size, const Color &color);
+  void DrawQuad(const glm::vec3 &position,
+    const glm::vec2 &size,
+    const ITexture &texture,
+    const Color &tintColor = Color{ 1.0F, 1.0F, 1.0F, 1.0F });
+
+  void DrawQuad(const glm::mat4 &transform, const Color &color);
+  void DrawQuad(const glm::mat4 &transform,
+    const ITexture &texture,
+    const Color &tintColor = Color{ 1.0F, 1.0F, 1.0F, 1.0F });
 
   [[nodiscard]] inline auto TrianglesPerBatch() const -> size_t { return Data.TrianglesPerBatch; }
   inline void SetTrianglesPerBatch(size_t numTriangles)
@@ -62,6 +74,8 @@ private:
 
     Vector<Vertex, MemoryTag::Renderer> TriangleVertices;
     Vector<uint32_t, MemoryTag::Renderer> TriangleIndices;
+    std::array<const ITexture *, MAX_TEXTURE_SLOTS> TextureSlots{};
+    int32_t TextureSlotIndex = -1;
   };
 
   Renderer2DData Data;

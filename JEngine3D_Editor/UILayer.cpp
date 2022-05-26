@@ -1,4 +1,5 @@
 #include "UILayer.hpp"
+#include "JEngine3D/Renderer/Software/SoftwareRendererAPI.hpp"
 
 #include <JEngine3D/Core/Base.hpp>
 #include <JEngine3D/Core/Application.hpp>
@@ -8,8 +9,10 @@
 #include <JEngine3D/Renderer/Renderer2D.hpp>
 #include <JEngine3D/Renderer/Software/SoftwareFrameBufferObject.hpp>
 #include <JEngine3D/Renderer/IRendererObjectCreator.hpp>
+#include <JEngine3D/Renderer/Software/ISoftwareShader.hpp>
 
 #include <imgui.h>
+#include <stb_image.h>
 
 #include <filesystem>
 
@@ -23,6 +26,48 @@ class IEvent;
 
 namespace JEditor {
 
+class TestSoftwareShader : public JE::ISoftwareShader
+{
+public:
+  auto VertexShader(const JE::Vertex &vertex, uint32_t index) -> glm::vec4 override
+  {
+    varying_Color[index] = &vertex.Color;// NOLINT
+    varying_UV[index] = &vertex.UV;// NOLINT
+    flat_TextureIndex = vertex.TextureIndex;
+    return glm::vec4{ vertex.Position, 1.0F };
+  }
+
+  auto FragmentShader(const glm::vec3 &barycentric, uint32_t &pixelColorOut) -> bool override
+  {
+    if (flat_TextureIndex == -1) {
+      pixelColorOut = JE::CalculateColorFromBarycentric(
+        barycentric, varying_Color[0]->ToABGR8(), varying_Color[1]->ToABGR8(), varying_Color[2]->ToABGR8());
+    } else {
+      auto uv = JE::CalculateUVFromBarycentric(barycentric, *varying_UV[0], *varying_UV[1], *varying_UV[2]);// NOLINT
+      const auto *texture = JE::SoftwareRendererAPI::GetTexture(static_cast<uint32_t>(flat_TextureIndex));
+
+      auto pixelColor = JE::CalculateColorFromBarycentric(
+        barycentric, varying_Color[0]->ToABGR8(), varying_Color[1]->ToABGR8(), varying_Color[2]->ToABGR8());
+
+      pixelColorOut = JE::MultiplyColor(JE::SampleTexture(uv, *texture), pixelColor);
+    }
+
+    return true;
+  }
+
+  [[nodiscard]] auto Name() const -> const std::string & override { return m_Name; }
+
+private:
+  std::array<const JE::Color *, 3> varying_Color{};
+  std::array<const glm::vec2 *, 3> varying_UV{};
+  int32_t flat_TextureIndex = -1;
+
+  const std::string m_Name = "TestShader";
+};
+
+static TestSoftwareShader s_TestShader;// NOLINT
+
+
 void UILayer::OnCreate()
 {
   JE::ForEach(JE_APP.DebugViews(), [](JE::IImGuiDebugView &view) { view.Open(); });
@@ -32,9 +77,19 @@ void UILayer::OnCreate()
   // Prevent first frame clear from asserting
   m_GameViewportFBO.Resize({ 1, 1 });
   m_TestTexture = JE::IRendererObjectCreator::Get().CreateTexture();
+  m_MemeTexture = JE::IRendererObjectCreator::Get().CreateTexture();
 
   constexpr uint32_t WHITE_COLOR = 0xFFFFFFFF;
   m_TestTexture->SetData(&WHITE_COLOR, { 1, 1 });
+
+
+  stbi_set_flip_vertically_on_load(1);
+  JE::Size2DI imageSize = { 0, 0 };
+  int imageChannels = 0;
+  unsigned char *data =
+    stbi_load("assets/textures/testtexture.jpg", &imageSize.Width, &imageSize.Height, &imageChannels, 4);
+  m_MemeTexture->SetData(reinterpret_cast<const uint32_t *>(data), imageSize);// NOLINT
+  stbi_image_free(data);
 }
 
 void UILayer::OnDestroy() {}
@@ -70,29 +125,33 @@ void UILayer::OnUpdate()
     rendererAPI.Clear();
     m_GameViewportFBO.Unbind();
 
+    s_TestShader.Bind();
+
     renderer2D.BeginBatch(&m_GameViewportFBO);
 
-    constexpr auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
-    constexpr auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
-    constexpr auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
+    auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
+    auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
+    auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
 
-    constexpr auto vertex3 = JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
-    constexpr auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
-    constexpr auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
+    auto vertex3 = JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
+    auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
+    auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
 
-    constexpr auto position = glm::vec3{ -0.95F, -0.95F, 0.0F };
-    constexpr auto size = glm::vec2{ 0.3F, 0.3F };
+    constexpr auto position = glm::vec3{ -0.80F, -0.80F, 0.0F };
+    constexpr auto size = glm::vec2{ 0.5F, 0.5F };
     constexpr auto color = JE::Color{ 1.0F, 0.0F, 1.0F, 1.0F };
 
-    constexpr auto position2 = glm::vec3{ 0.65F, -0.95F, 0.0F };
-    constexpr auto color2 = JE::Color{ 0.0F, 1.0F, 1.0F, 1.0F };
+    constexpr auto position2 = glm::vec3{ 0.0F, 0.0F, 0.0F };
+    constexpr auto color2 = JE::Color{ 1.0F, 1.0F, 1.0F, 1.0F };
 
-    renderer2D.DrawTriangle(vertex0, vertex1, vertex2);
+    renderer2D.DrawTriangle(vertex0, vertex1, vertex2, *m_TestTexture);
     renderer2D.DrawTriangle(vertex3, vertex4, vertex5);
     renderer2D.DrawQuad(position, size, color);
-    renderer2D.DrawQuad(position2, size, color2);
+    renderer2D.DrawQuad(position2, size, *m_MemeTexture, color2);
 
     renderer2D.EndBatch();
+
+    s_TestShader.Unbind();
   };
 
   Renderer2DTest();

@@ -73,10 +73,18 @@ struct Color
 
 struct Vertex
 {
-  constexpr Vertex(const glm::vec3 &position, const Color &color) : Position(position), Color(color) {}
+  constexpr Vertex(const glm::vec3 &position,
+    const Color &color,
+    const glm::vec2 &uv = { 0, 0 },
+    int32_t textureIndex = -1)// NOLINT
+    : Position(position), Color(color), UV(uv), TextureIndex(textureIndex)
+  {}
 
   glm::vec3 Position;
   JE::Color Color;
+  glm::vec2 UV;
+  int32_t
+    TextureIndex;// SUPER TEMPORARY FOR SOFTWARE RENDERER TODO(JesusKrists): Remove this once OpenGL is implemented
 };
 
 

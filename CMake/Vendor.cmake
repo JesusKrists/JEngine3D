@@ -100,3 +100,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glm)
 
 disable_static_analysis(glm)
+
+################################# STB Image #####################################################
+
+include(${CMAKE_SOURCE_DIR}/CMake/STBTarget.cmake)

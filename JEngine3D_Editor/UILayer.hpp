@@ -36,6 +36,7 @@ private:
 
 
   JE::Scope<JE::ITexture, JE::MemoryTag::Renderer> m_TestTexture;
+  JE::Scope<JE::ITexture, JE::MemoryTag::Renderer> m_MemeTexture;
 
   // TODO(JesusKrists): Temporary software rasterizer stuff, replace with real OpenGL stuff later
   bool m_ResizeGameViewport = false;

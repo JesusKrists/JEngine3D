@@ -16,6 +16,7 @@ struct SoftwareRendererAPIData
   SoftwareFrameBufferObject *CurrentFBO = nullptr;
   SDLSoftwareGraphicsContext *CurrentContext = nullptr;
   std::array<const SoftwareTexture *, TEXTURE_SLOT_COUNT> TextureSlots{};
+  ISoftwareShader *CurrentShader = nullptr;
 };
 
 static SoftwareRendererAPIData Data;// NOLINT
@@ -45,12 +46,21 @@ void SoftwareRendererAPI::DrawVerticesIndexed(const Vector<Vertex, MemoryTag::Re
 {
   StateSanityCheck();
 
+  ASSERT(Data.CurrentShader, "No shader bound");
+
   if (Data.CurrentFBO != nullptr) {
-    SoftwareRasterizer::DrawVerticesIndexed(vertices, indices, Data.CurrentFBO->PixelPtr(), Data.CurrentFBO->Size());
+    SoftwareRasterizer::DrawVerticesIndexed(
+      vertices, indices, *Data.CurrentShader, Data.CurrentFBO->PixelPtr(), Data.CurrentFBO->Size());
   } else {
     SoftwareRasterizer::DrawVerticesIndexed(
-      vertices, indices, Data.CurrentContext->PixelPtr(), Data.CurrentContext->DrawableSize());
+      vertices, indices, *Data.CurrentShader, Data.CurrentContext->PixelPtr(), Data.CurrentContext->DrawableSize());
   }
+}
+
+
+auto SoftwareRendererAPI::GetTexture(uint32_t slot) -> const SoftwareTexture *
+{
+  return Data.TextureSlots[slot];// NOLINT
 }
 
 void SoftwareRendererAPI::BindGraphicsContext(SDLSoftwareGraphicsContext *context) { Data.CurrentContext = context; }
@@ -62,5 +72,7 @@ void SoftwareRendererAPI::BindTexture(const SoftwareTexture *texture, uint32_t s
   ASSERT(slot < SoftwareRendererAPIData::TEXTURE_SLOT_COUNT, "Texture slot count exceeded");
   Data.TextureSlots[slot] = texture;// NOLINT
 }
+
+void SoftwareRendererAPI::BindShader(ISoftwareShader *shader) { Data.CurrentShader = shader; }
 
 }// namespace JE
