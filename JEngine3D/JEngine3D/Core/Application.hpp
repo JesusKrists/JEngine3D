@@ -20,6 +20,8 @@
 #include <functional>// for reference_wrapper
 
 
+#define JE_APP JE::Application::Get()// NOLINT
+
 namespace JE {
 
 

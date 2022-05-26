@@ -28,7 +28,7 @@ protected:
 
 TEST_CASE_METHOD(ApplicationTestsFixture, "JE::Application creates MainWindow and is focused", "[JE::Application]")
 {
-  REQUIRE(&m_App == &JE::Application::Get());
+  REQUIRE(&m_App == &JE_APP);
   REQUIRE(m_App.MainWindow().Title() == DEFAULT_TITLE);
   REQUIRE(m_App.MainWindow().Size() == JE::Application::DEFAULT_SIZE);
 

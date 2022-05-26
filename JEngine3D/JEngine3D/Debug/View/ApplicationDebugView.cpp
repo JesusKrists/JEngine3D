@@ -26,7 +26,7 @@ void ApplicationDebugView::OnImGuiRender()
       ImGui::TextColored(parameterColor, "%s", parameter.c_str());// NOLINT
     };
 
-  auto &app = JE::Application::Get();
+  auto &app = JE_APP;
 
 
   ImGui::TextUnformatted("Application Properties");

@@ -47,7 +47,7 @@ public:
     m_PreviousContext = &CurrentContext();
     MakeCurrent();
   }
-  inline void UnBind() override { m_PreviousContext->MakeCurrent(); }
+  inline void Unbind() override { m_PreviousContext->MakeCurrent(); }
 
   virtual ~IGraphicsContext() = default;// NOLINT
   [[nodiscard]] virtual auto DrawableSize() -> Size2DI = 0;

@@ -9,7 +9,7 @@
 #include "JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContextCreator.hpp"
 #include "JEngine3D/Core/WindowController.hpp"
 #include "JEngine3D/Core/InputController.hpp"
-#include "JEngine3D/Renderer/Software/SoftwareRendererAPICreator.hpp"
+#include "JEngine3D/Renderer/Software/SoftwareRendererObjectCreator.hpp"
 
 namespace JE {
 
@@ -17,7 +17,7 @@ using Backend = SDLPlatformBackend;
 
 #if defined(JE_SOFTWARE_CONTEXT)
 using GraphicsContextCreator = SDLSoftwareGraphicsContextCreator;
-using RendererAPICreator = SoftwareRendererAPICreator;
+using RendererObjectCreator = SoftwareRendererObjectCreator;
 #else
 using GraphicsContextCreator = SDLGLGraphicsContextCreator;
 using RendererAPICreator = OpenGLRendererAPICreator;
@@ -33,7 +33,7 @@ inline auto CreateApplication(const std::string_view &title) -> Scope<Applicatio
 
   static Backend s_PlatformBackend;
   static GraphicsContextCreator s_GraphicsContextCreator;
-  static RendererAPICreator s_RendererAPICreator;
+  static RendererObjectCreator s_RendererObjectCreator;
 
   static WindowController s_WindowController;
   static InputController s_InputController;

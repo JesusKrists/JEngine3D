@@ -54,7 +54,7 @@ static void JEngine3DImGuiDestroyWindow(ImGuiViewport *viewport)
   }
 
   auto &window = *static_cast<Window *>(viewport->PlatformHandle);
-  ASSERT(&window != &JE::Application::Get().MainWindow(), "Cannot destroy MainWindow");
+  ASSERT(&window != &JE_APP.MainWindow(), "Cannot destroy MainWindow");
 
   WindowController::Get().DestroyWindow(window);
   viewport->PlatformUserData = viewport->PlatformHandle = nullptr;
@@ -146,7 +146,7 @@ static void InitializeImGuiForJEngine3D()
   ASSERT(imguiIO.BackendPlatformUserData == nullptr, "Already initialized a platform backend!");
 
   // Setup backend capabilities flags
-  imguiIO.BackendPlatformUserData = static_cast<void *>(&Application::Get());
+  imguiIO.BackendPlatformUserData = static_cast<void *>(&JE_APP);
   imguiIO.BackendPlatformName = "JEngine3D Backend";
   imguiIO.BackendRendererName = "JEngine3D Renderer";
   // imguiIO.BackendFlags |= ImGuiBackendFlags_HasMouseCursors;// We can honor GetMouseCursor() values (optional)
@@ -174,8 +174,8 @@ static void InitializeImGuiForJEngine3D()
   // Set platform dependent data in viewport
   // Our mouse update function expect PlatformHandle to be filled for the main viewport
   ImGuiViewport *mainViewport = ImGui::GetMainViewport();
-  mainViewport->PlatformHandle = static_cast<void *>(&Application::Get().MainWindow());
-  mainViewport->PlatformUserData = static_cast<void *>(&Application::Get().MainWindow());
+  mainViewport->PlatformHandle = static_cast<void *>(&JE_APP.MainWindow());
+  mainViewport->PlatformUserData = static_cast<void *>(&JE_APP.MainWindow());
 
 
   // Register platform interface (will be coupled with a renderer interface)
@@ -275,7 +275,7 @@ void ImGuiLayer::OnDestroy()
 
 void ImGuiLayer::OnUpdate()
 {
-  auto &mainWindow = Application::Get().MainWindow();
+  auto &mainWindow = JE_APP.MainWindow();
   auto &graphicsContext = mainWindow.GraphicsContext();
   auto windowMinimized = mainWindow.Minimized();
 
@@ -291,7 +291,7 @@ void ImGuiLayer::OnUpdate()
     imguiIO.DisplaySize = ImVec2{ 0, 0 };
   }
 
-  imguiIO.DeltaTime = static_cast<float>(Application::Get().DeltaTime());
+  imguiIO.DeltaTime = static_cast<float>(JE_APP.DeltaTime());
 
   if (MouseButtonsPressed()) {
     IPlatformBackend::Get().CaptureMouse();
@@ -490,9 +490,9 @@ void ImGuiLayer::End()// NOLINT(readability-convert-member-functions-to-static)
 
   auto &previousContext = IGraphicsContext::CurrentContext();
 #if defined(JE_SOFTWARE_CONTEXT)
-  if (!Application::Get().MainWindow().Minimized()) {
-    Application::Get().MainWindow().GraphicsContext().MakeCurrent();
-    ImGuiSoftwareRenderer::RenderImGui(Application::Get().MainWindow(), ImGui::GetDrawData());
+  if (!JE_APP.MainWindow().Minimized()) {
+    JE_APP.MainWindow().GraphicsContext().MakeCurrent();
+    ImGuiSoftwareRenderer::RenderImGui(JE_APP.MainWindow(), ImGui::GetDrawData());
   }
 #endif
 

@@ -32,7 +32,7 @@ void Renderer2DDebugView::OnImGuiRender()
       ImGui::TextColored(parameterColor, "%s", parameter.c_str());// NOLINT
     };
 
-  auto &renderer2D = JE::Application::Get().Renderer2D();
+  auto &renderer2D = JE_APP.Renderer2D();
 
 
   ImGui::TextUnformatted("Renderer2D Properties");

@@ -7,6 +7,7 @@
 #include <JEngine3D/Core/Types.hpp>
 #include <JEngine3D/Renderer/Renderer2D.hpp>
 #include <JEngine3D/Renderer/Software/SoftwareFrameBufferObject.hpp>
+#include <JEngine3D/Renderer/IRendererObjectCreator.hpp>
 
 #include <imgui.h>
 
@@ -24,13 +25,18 @@ namespace JEditor {
 
 void UILayer::OnCreate()
 {
-  JE::ForEach(JE::Application::Get().DebugViews(), [](JE::IImGuiDebugView &view) { view.Open(); });
+  JE::ForEach(JE_APP.DebugViews(), [](JE::IImGuiDebugView &view) { view.Open(); });
 
   LoadImGuiSettings();
 
   // Prevent first frame clear from asserting
-  m_GameViewportFrameBufferObject.Resize({ 1, 1 });
+  m_GameViewportFBO.Resize({ 1, 1 });
+  m_TestTexture = JE::IRendererObjectCreator::Get().CreateTexture();
+
+  constexpr uint32_t WHITE_COLOR = 0xFFFFFFFF;
+  m_TestTexture->SetData(&WHITE_COLOR, { 1, 1 });
 }
+
 void UILayer::OnDestroy() {}
 
 void UILayer::OnUpdate()
@@ -41,30 +47,30 @@ void UILayer::OnUpdate()
       m_ResetDockLayout = false;
     }
 
-    if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Escape)) && !JE::Application::Get().ImGuiLayer().CaptureEvents()) {
-      JE::Application::Get().ImGuiLayer().SetCaptureEvents(true);
+    if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Escape)) && !JE_APP.ImGuiLayer().CaptureEvents()) {
+      JE_APP.ImGuiLayer().SetCaptureEvents(true);
     }
   };
   UpdateImGuiLayer();
 
   auto Renderer2DTest = [&]() {
     if (m_ResizeGameViewport) {
-      m_GameViewportFrameBufferObject.Resize(m_GameViewportSize);
+      m_GameViewportFBO.Resize(m_GameViewportSize);
       m_ResizeGameViewport = false;
     }
 
     static constexpr auto CLEAR_COLOR = JE::Color{ 0.1F, 0.1F, 0.1F, 1.0F };
 
-    auto &rendererAPI = JE::Application::Get().RendererAPI();
-    auto &renderer2D = JE::Application::Get().Renderer2D();
+    auto &rendererAPI = JE_APP.RendererAPI();
+    auto &renderer2D = JE_APP.Renderer2D();
 
     rendererAPI.SetClearColor(CLEAR_COLOR);
 
-    m_GameViewportFrameBufferObject.Bind();
+    m_GameViewportFBO.Bind();
     rendererAPI.Clear();
-    m_GameViewportFrameBufferObject.UnBind();
+    m_GameViewportFBO.Unbind();
 
-    renderer2D.BeginBatch(&m_GameViewportFrameBufferObject);
+    renderer2D.BeginBatch(&m_GameViewportFBO);
 
     constexpr auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
     constexpr auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
@@ -114,7 +120,7 @@ void UILayer::RenderMainMenuBar()// NOLINT(readability-convert-member-functions-
 {
 
   auto RenderMenuBarDebugViews = [&]() {
-    auto &views = JE::Application::Get().DebugViews();
+    auto &views = JE_APP.DebugViews();
 
     JE::ForEach(views, [](JE::IImGuiDebugView &view) {
       if (ImGui::MenuItem(view.Name().c_str(), nullptr, view.IsOpen())) {
@@ -163,7 +169,7 @@ void UILayer::RenderGameViewport()
 
     // TODO(JesusKrists): Super temporary software rasterizer stuff, replace with OpenGL stuff later
 
-    const auto &FrameBufferSize = m_GameViewportFrameBufferObject.Size();
+    const auto &FrameBufferSize = m_GameViewportFBO.Size();
     if (static_cast<int32_t>(size.x) != FrameBufferSize.Width
         || static_cast<int32_t>(size.y) != FrameBufferSize.Height) {
       m_ResizeGameViewport = true;
@@ -172,18 +178,18 @@ void UILayer::RenderGameViewport()
 
 
     m_ImGuiSWTextureWrapper =
-      imgui_sw::Texture{ m_GameViewportFrameBufferObject.PixelPtr(), FrameBufferSize.Width, FrameBufferSize.Height };
+      imgui_sw::Texture{ m_GameViewportFBO.PixelPtr(), FrameBufferSize.Width, FrameBufferSize.Height };
     ImGui::Image(reinterpret_cast<ImTextureID>(&m_ImGuiSWTextureWrapper),// NOLINT
       ImVec2{ static_cast<float>(FrameBufferSize.Width), static_cast<float>(FrameBufferSize.Height) });// NOLINT
 
-    if (!JE::Application::Get().ImGuiLayer().CaptureEvents()) {
+    if (!JE_APP.ImGuiLayer().CaptureEvents()) {
       ImGui::PushClipRect(absoluteCursorStart, absoluteCursorEnd, false);
       ImGui::GetWindowDrawList()->AddRect(
         absoluteCursorStart, absoluteCursorEnd, IM_COL32(255, 255, 255, 127));// NOLINT
       ImGui::PopClipRect();
     }
 
-    if (ImGui::IsItemClicked()) { JE::Application::Get().ImGuiLayer().SetCaptureEvents(false); }
+    if (ImGui::IsItemClicked()) { JE_APP.ImGuiLayer().SetCaptureEvents(false); }
 
 
     ImGui::EndChild();

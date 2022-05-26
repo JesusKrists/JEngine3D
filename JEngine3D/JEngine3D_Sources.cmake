@@ -32,10 +32,12 @@ set(JEngine3D_HEADERS
     JEngine3D/Renderer/Software/SoftwareFrameBufferObject.hpp
     JEngine3D/Renderer/Software/SoftwareRasterizer.hpp
     JEngine3D/Renderer/Software/SoftwareRendererAPI.hpp
-    JEngine3D/Renderer/Software/SoftwareRendererAPICreator.hpp
+    JEngine3D/Renderer/Software/SoftwareRendererObjectCreator.hpp
+    JEngine3D/Renderer/Software/SoftwareTexture.hpp
     JEngine3D/Renderer/IDrawTarget.hpp
     JEngine3D/Renderer/IRendererAPI.hpp
-    JEngine3D/Renderer/IRendererAPICreator.hpp
+    JEngine3D/Renderer/IRendererObjectCreator.hpp
+    JEngine3D/Renderer/ITexture.hpp
     JEngine3D/Renderer/Renderer2D.hpp)
 
 set(JEngine3D_SOURCES
@@ -63,5 +65,6 @@ set(JEngine3D_SOURCES
     JEngine3D/Renderer/Software/SoftwareFrameBufferObject.cpp
     JEngine3D/Renderer/Software/SoftwareRasterizer.cpp
     JEngine3D/Renderer/Software/SoftwareRendererAPI.cpp
-    JEngine3D/Renderer/IRendererAPICreator.cpp
+    JEngine3D/Renderer/Software/SoftwareTexture.cpp
+    JEngine3D/Renderer/IRendererObjectCreator.cpp
     JEngine3D/Renderer/Renderer2D.cpp)

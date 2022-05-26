@@ -34,8 +34,8 @@ void Renderer2D::Flush()
 
   if (!Data.TriangleVertices.empty() && !Data.TriangleIndices.empty()) {
     Data.Target->Bind();
-    Application::Get().RendererAPI().DrawVerticesIndexed(Data.TriangleVertices, Data.TriangleIndices);
-    Data.Target->UnBind();
+    JE_APP.RendererAPI().DrawVerticesIndexed(Data.TriangleVertices, Data.TriangleIndices);
+    Data.Target->Unbind();
     Data.Stats.FrameDrawCalls++;
   }
 
@@ -65,7 +65,7 @@ void Renderer2D::BeginBatch(IDrawTarget *target)
   if (target != nullptr) {
     InitializeBatch(target);
   } else {
-    InitializeBatch(&Application::Get().MainWindow().GraphicsContext());
+    InitializeBatch(&JE_APP.MainWindow().GraphicsContext());
   }
 }
 

@@ -15,7 +15,7 @@ public:
   {}
 
   void Bind() override;
-  void UnBind() override;
+  void Unbind() override;
 
   [[nodiscard]] inline auto PixelPtr() -> uint32_t * { return m_PixelData.data(); };
   [[nodiscard]] inline auto Size() const -> const Size2DI & { return m_Size; };

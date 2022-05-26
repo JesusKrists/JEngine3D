@@ -10,7 +10,7 @@
 
 #include "JEngine3D/Debug/View/IImGuiDebugView.hpp"
 
-#include "JEngine3D/Renderer/IRendererAPICreator.hpp"
+#include "JEngine3D/Renderer/IRendererObjectCreator.hpp"
 
 #include <iterator>// for rbegin, rend
 
@@ -23,7 +23,7 @@ Application::Application(const std::string_view &title)
     DEFAULT_SIZE,
     IPlatformBackend::WINDOW_CENTER_POSITION,
     MAIN_WINDOW_CONFIG)),
-    m_RendererAPI(IRendererAPICreator::Get().CreateAPI())
+    m_RendererAPI(IRendererObjectCreator::Get().CreateAPI())
 {
   ASSERT(!s_ApplicationInstance, "Application instance already exists");
   s_ApplicationInstance = this;

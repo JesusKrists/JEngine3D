@@ -7,7 +7,7 @@ namespace JE {
 
 void SoftwareFrameBufferObject::Bind() { SoftwareRendererAPI::BindFrameBuffer(this); }
 
-void SoftwareFrameBufferObject::UnBind() { SoftwareRendererAPI::BindFrameBuffer(nullptr); }
+void SoftwareFrameBufferObject::Unbind() { SoftwareRendererAPI::BindFrameBuffer(nullptr); }
 
 void SoftwareFrameBufferObject::Resize(const Size2DI &newSize)
 {

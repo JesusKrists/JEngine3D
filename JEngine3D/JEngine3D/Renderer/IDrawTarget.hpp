@@ -9,7 +9,7 @@ public:
   virtual ~IDrawTarget() = default;
 
   virtual void Bind() = 0;
-  virtual void UnBind() = 0;
+  virtual void Unbind() = 0;
 };
 
 }// namespace JE
