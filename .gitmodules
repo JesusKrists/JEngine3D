@@ -25,3 +25,6 @@
 [submodule "glm"]
     path = out/build/_deps/glm-src
     url = dummy_string_to_satisfy_vscode
+[submodule "stb"]
+    path = out/build/_deps/stb-src
+    url = dummy_string_to_satisfy_vscode
