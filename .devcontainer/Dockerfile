@@ -11,7 +11,7 @@ RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
     software-properties-common wget apt-utils file zip \
     openssh-client gpg-agent socat rsync \
     make ninja-build git \
-    python3 python3-pip pkg-config valgrind unzip curl
+    python3 python3-pip pkg-config valgrind unzip curl kcachegrind dbus-x11
 
 # Install packages required by SDL2
 RUN apt-get -y install xorg-dev libsdl2-dev

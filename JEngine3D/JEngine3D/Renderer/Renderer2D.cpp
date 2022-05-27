@@ -17,6 +17,11 @@ static constexpr std::array<glm::vec4, 4> QUAD_VERTEX_POSITION = { glm::vec4{ -0
   glm::vec4{ 0.5F, 0.5F, 0.0F, 1.0F },
   glm::vec4{ -0.5F, 0.5F, 0.0F, 1.0F } };
 
+static constexpr std::array<glm::vec2, 4> QUAD_UV_COORDINATES = { glm::vec2{ 0, 0 },
+  glm::vec2{ 1, 0 },
+  glm::vec2{ 1, 1 },
+  glm::vec2{ 0, 1 } };
+
 Renderer2D::Renderer2D()
 {
   ASSERT(s_Renderer2DInstance == nullptr, "Renderer2D instance already exists");
@@ -101,7 +106,7 @@ void Renderer2D::DrawTriangle(const Vertex &vertex0, const Vertex &vertex1, cons
   Data.TriangleVertices.emplace_back(vertex2);
 
   auto indexOffset = Data.TriangleIndices.size();
-  Data.TriangleIndices.resize(indexOffset + 3);// NOLINT
+  Data.TriangleIndices.resize(indexOffset + 3);
   Data.TriangleIndices[indexOffset] = static_cast<uint32_t>(vertexOffset);
   Data.TriangleIndices[indexOffset + 1] = static_cast<uint32_t>(vertexOffset + 1);
   Data.TriangleIndices[indexOffset + 2] = static_cast<uint32_t>(vertexOffset + 2);
@@ -172,27 +177,27 @@ void Renderer2D::DrawQuad(const glm::mat4 &transform, const ITexture &texture, c
   } else {
     if (static_cast<uint32_t>(Data.TextureSlotIndex) >= MAX_TEXTURE_SLOTS) { NextBatch(); }
     Data.TextureSlots[static_cast<uint32_t>(++Data.TextureSlotIndex)] = &texture;// NOLINT
-
-    auto vertexOffset = Data.TriangleVertices.size();
-
-    Data.TriangleVertices.emplace_back(
-      transform * QUAD_VERTEX_POSITION[0], tintColor, glm::vec2{ 0, 0 }, Data.TextureSlotIndex);
-    Data.TriangleVertices.emplace_back(
-      transform * QUAD_VERTEX_POSITION[1], tintColor, glm::vec2{ 1, 0 }, Data.TextureSlotIndex);
-    Data.TriangleVertices.emplace_back(
-      transform * QUAD_VERTEX_POSITION[2], tintColor, glm::vec2{ 1, 1 }, Data.TextureSlotIndex);
-    Data.TriangleVertices.emplace_back(
-      transform * QUAD_VERTEX_POSITION[3], tintColor, glm::vec2{ 0, 1 }, Data.TextureSlotIndex);
-
-    auto indexOffset = Data.TriangleIndices.size();
-    Data.TriangleIndices.resize(indexOffset + 6);// NOLINT
-    Data.TriangleIndices[indexOffset] = static_cast<uint32_t>(vertexOffset);
-    Data.TriangleIndices[indexOffset + 1] = static_cast<uint32_t>(vertexOffset + 1);
-    Data.TriangleIndices[indexOffset + 2] = static_cast<uint32_t>(vertexOffset + 2);
-    Data.TriangleIndices[indexOffset + 3] = static_cast<uint32_t>(vertexOffset + 2);
-    Data.TriangleIndices[indexOffset + 4] = static_cast<uint32_t>(vertexOffset + 3);
-    Data.TriangleIndices[indexOffset + 5] = static_cast<uint32_t>(vertexOffset);// NOLINT
   }
+
+  auto vertexOffset = Data.TriangleVertices.size();
+
+  Data.TriangleVertices.emplace_back(
+    transform * QUAD_VERTEX_POSITION[0], tintColor, QUAD_UV_COORDINATES[0], Data.TextureSlotIndex);
+  Data.TriangleVertices.emplace_back(
+    transform * QUAD_VERTEX_POSITION[1], tintColor, QUAD_UV_COORDINATES[1], Data.TextureSlotIndex);
+  Data.TriangleVertices.emplace_back(
+    transform * QUAD_VERTEX_POSITION[2], tintColor, QUAD_UV_COORDINATES[2], Data.TextureSlotIndex);
+  Data.TriangleVertices.emplace_back(
+    transform * QUAD_VERTEX_POSITION[3], tintColor, QUAD_UV_COORDINATES[3], Data.TextureSlotIndex);
+
+  auto indexOffset = Data.TriangleIndices.size();
+  Data.TriangleIndices.resize(indexOffset + 6);// NOLINT
+  Data.TriangleIndices[indexOffset] = static_cast<uint32_t>(vertexOffset);
+  Data.TriangleIndices[indexOffset + 1] = static_cast<uint32_t>(vertexOffset + 1);
+  Data.TriangleIndices[indexOffset + 2] = static_cast<uint32_t>(vertexOffset + 2);
+  Data.TriangleIndices[indexOffset + 3] = static_cast<uint32_t>(vertexOffset + 2);
+  Data.TriangleIndices[indexOffset + 4] = static_cast<uint32_t>(vertexOffset + 3);
+  Data.TriangleIndices[indexOffset + 5] = static_cast<uint32_t>(vertexOffset);// NOLINT
 }
 
 }// namespace JE

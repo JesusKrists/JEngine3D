@@ -75,7 +75,6 @@ void UILayer::OnCreate()
   LoadImGuiSettings();
 
   // Prevent first frame clear from asserting
-  m_GameViewportFBO.Resize({ 1, 1 });
   m_TestTexture = JE::IRendererObjectCreator::Get().CreateTexture();
   m_MemeTexture = JE::IRendererObjectCreator::Get().CreateTexture();
 
@@ -121,37 +120,39 @@ void UILayer::OnUpdate()
 
     rendererAPI.SetClearColor(CLEAR_COLOR);
 
-    m_GameViewportFBO.Bind();
-    rendererAPI.Clear();
-    m_GameViewportFBO.Unbind();
+    if (m_GameViewportFBO.Size() != JE::Size2DI{ 0, 0 }) {
+      m_GameViewportFBO.Bind();
+      rendererAPI.Clear();
+      m_GameViewportFBO.Unbind();
 
-    s_TestShader.Bind();
+      s_TestShader.Bind();
 
-    renderer2D.BeginBatch(&m_GameViewportFBO);
+      renderer2D.BeginBatch(&m_GameViewportFBO);
 
-    auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
-    auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
-    auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
+      auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
+      auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
+      auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
 
-    auto vertex3 = JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };
-    auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };
-    auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };
+      auto vertex3 = JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
+      auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
+      auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
 
-    constexpr auto position = glm::vec3{ -0.80F, -0.80F, 0.0F };
-    constexpr auto size = glm::vec2{ 0.5F, 0.5F };
-    constexpr auto color = JE::Color{ 1.0F, 0.0F, 1.0F, 1.0F };
+      constexpr auto position = glm::vec3{ -0.80F, -0.80F, 0.0F };
+      constexpr auto size = glm::vec2{ 0.5F, 0.5F };
+      constexpr auto color = JE::Color{ 1.0F, 0.0F, 1.0F, 1.0F };
 
-    constexpr auto position2 = glm::vec3{ 0.0F, 0.0F, 0.0F };
-    constexpr auto color2 = JE::Color{ 1.0F, 1.0F, 1.0F, 1.0F };
+      constexpr auto position2 = glm::vec3{ 0.0F, 0.0F, 0.0F };
+      constexpr auto color2 = JE::Color{ 1.0F, 1.0F, 1.0F, 1.0F };
 
-    renderer2D.DrawTriangle(vertex0, vertex1, vertex2, *m_TestTexture);
-    renderer2D.DrawTriangle(vertex3, vertex4, vertex5);
-    renderer2D.DrawQuad(position, size, color);
-    renderer2D.DrawQuad(position2, size, *m_MemeTexture, color2);
+      renderer2D.DrawTriangle(vertex0, vertex1, vertex2, *m_TestTexture);
+      renderer2D.DrawTriangle(vertex3, vertex4, vertex5);
+      renderer2D.DrawQuad(position, size, color);
+      renderer2D.DrawQuad(position2, size, *m_MemeTexture, color2);
 
-    renderer2D.EndBatch();
+      renderer2D.EndBatch();
 
-    s_TestShader.Unbind();
+      s_TestShader.Unbind();
+    }
   };
 
   Renderer2DTest();
@@ -239,7 +240,7 @@ void UILayer::RenderGameViewport()
     m_ImGuiSWTextureWrapper =
       imgui_sw::Texture{ m_GameViewportFBO.PixelPtr(), FrameBufferSize.Width, FrameBufferSize.Height };
     ImGui::Image(reinterpret_cast<ImTextureID>(&m_ImGuiSWTextureWrapper),// NOLINT
-      ImVec2{ static_cast<float>(FrameBufferSize.Width), static_cast<float>(FrameBufferSize.Height) });// NOLINT
+      ImVec2{ static_cast<float>(FrameBufferSize.Width), static_cast<float>(FrameBufferSize.Height) });
 
     if (!JE_APP.ImGuiLayer().CaptureEvents()) {
       ImGui::PushClipRect(absoluteCursorStart, absoluteCursorEnd, false);

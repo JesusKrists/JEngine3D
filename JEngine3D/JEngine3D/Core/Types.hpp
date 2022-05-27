@@ -55,17 +55,17 @@ struct Color
 
   [[nodiscard]] constexpr auto ToRGBA8() const -> uint32_t
   {
-    return ((static_cast<uint32_t>(std::roundf(RawColor.r * 255)) << 24)// NOLINT
-            | (static_cast<uint32_t>(std::roundf(RawColor.g * 255)) << 16)// NOLINT
-            | (static_cast<uint32_t>(std::roundf(RawColor.b * 255)) << 8)// NOLINT
-            | (static_cast<uint32_t>(std::roundf(RawColor.a * 255))));// NOLINT
+    return ((static_cast<uint32_t>(RawColor.r * 255 + 0.5F) << 24)// NOLINT
+            | (static_cast<uint32_t>(RawColor.g * 255 + 0.5F) << 16)// NOLINT
+            | (static_cast<uint32_t>(RawColor.b * 255 + 0.5F) << 8)// NOLINT
+            | (static_cast<uint32_t>(RawColor.a * 255 + 0.5F)));// NOLINT
   }
   [[nodiscard]] constexpr auto ToABGR8() const -> uint32_t
   {
-    return ((static_cast<uint32_t>(std::roundf(RawColor.a * 255)) << 24)// NOLINT
-            | (static_cast<uint32_t>(std::roundf(RawColor.b * 255)) << 16)// NOLINT
-            | (static_cast<uint32_t>(std::roundf(RawColor.g * 255)) << 8)// NOLINT
-            | (static_cast<uint32_t>(std::roundf(RawColor.r * 255))));// NOLINT
+    return ((static_cast<uint32_t>(RawColor.a * 255 + 0.5F) << 24)// NOLINT
+            | (static_cast<uint32_t>(RawColor.b * 255 + 0.5F) << 16)// NOLINT
+            | (static_cast<uint32_t>(RawColor.g * 255 + 0.5F) << 8)// NOLINT
+            | (static_cast<uint32_t>(RawColor.r * 255 + 0.5F)));// NOLINT
   }
 
   constexpr auto operator==(const Color &other) const -> bool = default;
