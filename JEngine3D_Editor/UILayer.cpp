@@ -79,7 +79,7 @@ void UILayer::OnCreate()
   m_MemeTexture = JE::IRendererObjectCreator::Get().CreateTexture();
 
   constexpr uint32_t WHITE_COLOR = 0xFFFFFFFF;
-  m_TestTexture->SetData(&WHITE_COLOR, { 1, 1 });
+  m_TestTexture->SetData({ reinterpret_cast<const uint8_t *>(&WHITE_COLOR), 4 }, { 1, 1 });// NOLINT
 
 
   stbi_set_flip_vertically_on_load(1);
@@ -87,7 +87,7 @@ void UILayer::OnCreate()
   int imageChannels = 0;
   unsigned char *data =
     stbi_load("assets/textures/testtexture.jpg", &imageSize.Width, &imageSize.Height, &imageChannels, 4);
-  m_MemeTexture->SetData(reinterpret_cast<const uint32_t *>(data), imageSize);// NOLINT
+  m_MemeTexture->SetData({ data, static_cast<size_t>(imageSize.Width * imageSize.Height * 4) }, imageSize);
   stbi_image_free(data);
 }
 

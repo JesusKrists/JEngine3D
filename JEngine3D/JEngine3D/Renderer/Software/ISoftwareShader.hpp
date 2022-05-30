@@ -55,7 +55,8 @@ inline auto SampleTexture(const glm::vec2 &uv, const SoftwareTexture &texture) -
   uint32_t X = static_cast<uint32_t>(uv.x * static_cast<float>(textureSize.Width - 1) + 0.5F);// NOLINT
   uint32_t Y = static_cast<uint32_t>(uv.y * static_cast<float>(textureSize.Height - 1) + 0.5F);// NOLINT
 
-  return texture.PixelPtr()[X + Y * static_cast<uint32_t>(textureSize.Width)];// NOLINT
+  return reinterpret_cast<const uint32_t *>(// NOLINT
+    texture.PixelPtr())[X + Y * static_cast<uint32_t>(textureSize.Width)];
 }
 
 inline auto MultiplyColor(uint32_t color1, uint32_t color2) -> uint32_t
