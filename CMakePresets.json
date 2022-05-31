@@ -16,7 +16,7 @@
         },
         {
             "name": "conf-windows-common",
-            "description": "Windows settings for MSBuild toolchain that apply to msvc and clang",
+            "description": "Windows settings for MSBuild toolchain that apply to msvc, gcc and clang",
             "hidden": true,
             "inherits": "conf-common",
             "condition": {
@@ -101,6 +101,18 @@
                 "microsoft.com/VisualStudioSettings/CMake/1.0": {
                     "intelliSenseMode": "windows-clang-x64"
                 }
+            }
+        },
+        {
+            "name": "windows-gcc-debug-SW",
+            "displayName": "gcc Debug SW Context",
+            "description": "Target Windows with the gcc compiler, debug build type",
+            "inherits": "conf-windows-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "USE_SDL_SOFTWARE_CONTEXT": "TRUE"
             }
         },
         {

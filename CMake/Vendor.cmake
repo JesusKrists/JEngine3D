@@ -76,6 +76,10 @@ include(${CMAKE_SOURCE_DIR}/CMake/ImGuiTarget.cmake)
 
 ############################## glew #############################################
 
+set(glew-cmake_BUILD_SHARED
+    OFF
+    CACHE BOOL "Disable shared build of glew" FORCE)
+
 FetchContent_Declare(
   glew
   GIT_REPOSITORY https://github.com/Perlmint/glew-cmake.git
@@ -84,7 +88,7 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glew)
 
 disable_static_analysis(libglew_static)
-disable_static_analysis(libglew_shared)
+# disable_static_analysis(libglew_shared)
 
 ################################# ImGui Software renderer ####################################################
 
