@@ -1,5 +1,6 @@
 // This file will be generated automatically when you run the CMake configuration step.
 // You can modify the source template at `configured_files/config.hpp.in`.
+
 #include <internal_use_only/config.hpp>// for project_name, project_version
 
 #include <docopt.h>// for docopt
