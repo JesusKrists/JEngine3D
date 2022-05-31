@@ -35,7 +35,11 @@ auto SDLGLGraphicsContextCreator::CreateContext(IPlatformBackend::NativeWindowHa
     s_GLEWInitialized = true;
   }
 
-  SDL_GL_MakeCurrent(currentWindow, currentContext);
+  if (currentContext != nullptr) {
+    SDL_GL_MakeCurrent(currentWindow, currentContext);
+  } else {
+    SDL_GL_MakeCurrent(static_cast<SDL_Window *>(handle), context);
+  }
   return CreatePolymorphicScope<SDLGLGraphicsContext, MemoryTag::App, IGraphicsContext>(handle, context);
 }
 
