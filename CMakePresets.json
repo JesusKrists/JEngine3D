@@ -150,6 +150,20 @@
             }
         },
         {
+            "name": "linux-gcc-debug-SW-nostaticanalysis",
+            "displayName": "gcc debug SW nostaticanalysis",
+            "description": "Target Linux with the gcc compiler, debug build type",
+            "inherits": "conf-linux-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc-11",
+                "CMAKE_CXX_COMPILER": "g++-11",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "USE_SDL_SOFTWARE_CONTEXT": "TRUE",
+                "OPT_ENABLE_CLANG_TIDY": "FALSE",
+                "OPT_ENABLE_CPPCHECK": "FALSE"
+            }
+        },
+        {
             "name": "linux-clang-debug",
             "displayName": "clang Debug",
             "description": "Target Linux with the clang compiler, debug build type",
