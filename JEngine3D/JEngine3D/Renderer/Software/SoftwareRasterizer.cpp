@@ -112,7 +112,7 @@ static auto IsPointInsideBuffer(const Position2DI &point, const Size2DI &bufferS
   return (point.X >= 0 && point.X <= bufferSize.Width) && (point.Y >= 0 && point.Y <= bufferSize.Height);
 }
 
-void DrawVerticesIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
+void DrawIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
   const Vector<uint32_t, MemoryTag::Renderer> &indices,
   ISoftwareShader &shader,
   uint32_t *pixelPtr,

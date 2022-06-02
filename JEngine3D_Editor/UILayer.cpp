@@ -44,7 +44,7 @@ public:
         barycentric, varying_Color[0]->ToABGR8(), varying_Color[1]->ToABGR8(), varying_Color[2]->ToABGR8());
     } else {
       auto uv = JE::CalculateUVFromBarycentric(barycentric, *varying_UV[0], *varying_UV[1], *varying_UV[2]);// NOLINT
-      const auto *texture = JE::SoftwareRendererAPI::GetTexture(static_cast<uint32_t>(flat_TextureIndex));
+      const auto *texture = JE::SoftwareRendererAPI::BoundTexture(static_cast<uint32_t>(flat_TextureIndex));
 
       auto pixelColor = JE::CalculateColorFromBarycentric(
         barycentric, varying_Color[0]->ToABGR8(), varying_Color[1]->ToABGR8(), varying_Color[2]->ToABGR8());

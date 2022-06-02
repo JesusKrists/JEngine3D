@@ -79,10 +79,10 @@ public:
   virtual void MinimizeWindow(NativeWindowHandle handle) = 0;
   virtual void MaximizeWindow(NativeWindowHandle handle) = 0;
 
-  [[nodiscard]] virtual auto GetMonitorCount() -> int32_t = 0;
-  [[nodiscard]] virtual auto GetDisplayBounds(int32_t displayIndex) -> RectangleI = 0;
-  [[nodiscard]] virtual auto GetDisplayUsableBounds(int32_t displayIndex) -> RectangleI = 0;
-  [[nodiscard]] virtual auto GetDisplayDPI(int32_t displayIndex) -> float = 0;
+  [[nodiscard]] virtual auto MonitorCount() -> int32_t = 0;
+  [[nodiscard]] virtual auto DisplayBounds(int32_t displayIndex) -> RectangleI = 0;
+  [[nodiscard]] virtual auto DisplayUsableBounds(int32_t displayIndex) -> RectangleI = 0;
+  [[nodiscard]] virtual auto DisplayDPI(int32_t displayIndex) -> float = 0;
 
   virtual void CaptureMouse() = 0;
   virtual void ReleaseMouse() = 0;

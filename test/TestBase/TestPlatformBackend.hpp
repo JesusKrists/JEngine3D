@@ -152,21 +152,21 @@ public:
     if (windowIt != std::end(m_CreatedWindows)) { windowIt->Minimized = false; }
   }
 
-  [[nodiscard]] inline auto GetMonitorCount() -> int32_t override { return 1; }
+  [[nodiscard]] inline auto MonitorCount() -> int32_t override { return 1; }
 
-  [[nodiscard]] inline auto GetDisplayBounds(int32_t displayIndex) -> JE::RectangleI override
+  [[nodiscard]] inline auto DisplayBounds(int32_t displayIndex) -> JE::RectangleI override
   {
     if (displayIndex == 0) { return DISPLAY_BOUNDS; }
     return JE::RectangleI{ { 0, 0 }, { 0, 0 } };
   }
 
-  [[nodiscard]] inline auto GetDisplayUsableBounds(int32_t displayIndex) -> JE::RectangleI override
+  [[nodiscard]] inline auto DisplayUsableBounds(int32_t displayIndex) -> JE::RectangleI override
   {
     if (displayIndex == 0) { return DISPLAY_USABLE_BOUNDS; }
     return JE::RectangleI{ { 0, 0 }, { 0, 0 } };
   }
 
-  [[nodiscard]] inline auto GetDisplayDPI(int32_t displayIndex) -> float override
+  [[nodiscard]] inline auto DisplayDPI(int32_t displayIndex) -> float override
   {
     if (displayIndex == 0) { return DISPLAY_DPI; }
     return 0;

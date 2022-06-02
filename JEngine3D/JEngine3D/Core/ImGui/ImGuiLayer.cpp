@@ -182,10 +182,10 @@ static void InitializeImGuiForJEngine3D()
   ImGuiPlatformIO &platformIO = ImGui::GetPlatformIO();
 
   platformIO.Monitors.resize(0);
-  int monitorCount = IPlatformBackend::Get().GetMonitorCount();
+  int monitorCount = IPlatformBackend::Get().MonitorCount();
   for (int i = 0; i < monitorCount; i++) {
-    auto bounds = IPlatformBackend::Get().GetDisplayBounds(i);
-    auto usableBounds = IPlatformBackend::Get().GetDisplayUsableBounds(i);
+    auto bounds = IPlatformBackend::Get().DisplayBounds(i);
+    auto usableBounds = IPlatformBackend::Get().DisplayUsableBounds(i);
 
     ImGuiPlatformMonitor monitor;
     monitor.MainPos = ImVec2(static_cast<float>(bounds.Position.X), static_cast<float>(bounds.Position.Y));
@@ -193,7 +193,7 @@ static void InitializeImGuiForJEngine3D()
     monitor.WorkPos = ImVec2(static_cast<float>(usableBounds.Position.X), static_cast<float>(usableBounds.Position.Y));
     monitor.WorkSize =
       ImVec2(static_cast<float>(usableBounds.Size.Width), static_cast<float>(usableBounds.Size.Height));
-    monitor.DpiScale = IPlatformBackend::Get().GetDisplayDPI(i) / 96.0F;// NOLINT
+    monitor.DpiScale = IPlatformBackend::Get().DisplayDPI(i) / 96.0F;// NOLINT
     if (monitor.DpiScale == 0) { monitor.DpiScale = 96.0F; }// NOLINT
     platformIO.Monitors.push_back(monitor);
   }

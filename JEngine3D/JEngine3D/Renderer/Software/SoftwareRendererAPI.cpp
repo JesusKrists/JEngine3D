@@ -41,24 +41,32 @@ void SoftwareRendererAPI::Clear()
   }
 }
 
-void SoftwareRendererAPI::DrawVerticesIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
-  const Vector<uint32_t, MemoryTag::Renderer> &indices)
+void SoftwareRendererAPI::DrawIndexed(const IVertexArray &vertexArray, uint32_t indexCount)
 {
   StateSanityCheck();
 
   ASSERT(Data.CurrentShader, "No shader bound");
+  ASSERT(Data.CurrentVAO, "No VAO bound");
+
+  vertexArray.Bind();
+  indexCount = indexCount != 0 ? indexCount : vertexArray.IndexBuffer().Count();
 
   if (Data.CurrentFBO != nullptr) {
-    SoftwareRasterizer::DrawVerticesIndexed(
-      vertices, indices, *Data.CurrentShader, Data.CurrentFBO->PixelPtr(), Data.CurrentFBO->Size());
+    SoftwareRasterizer::DrawIndexed(
+      *Data.CurrentVAO, indexCount, *Data.CurrentShader, Data.CurrentFBO->PixelPtr(), Data.CurrentFBO->Size());
   } else {
-    SoftwareRasterizer::DrawVerticesIndexed(
-      vertices, indices, *Data.CurrentShader, Data.CurrentContext->PixelPtr(), Data.CurrentContext->DrawableSize());
+    SoftwareRasterizer::DrawIndexed(*Data.CurrentVAO,
+      indexCount,
+      *Data.CurrentShader,
+      Data.CurrentContext->PixelPtr(),
+      Data.CurrentContext->DrawableSize());
   }
+
+  vertexArray.Unbind();
 }
 
 
-auto SoftwareRendererAPI::GetTexture(uint32_t slot) -> const SoftwareTexture *
+auto SoftwareRendererAPI::BoundTexture(uint32_t slot) -> const SoftwareTexture *
 {
   return Data.TextureSlots[slot];// NOLINT
 }

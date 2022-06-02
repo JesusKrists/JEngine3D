@@ -47,10 +47,10 @@ public:
   void MinimizeWindow(NativeWindowHandle handle) override;
   void MaximizeWindow(NativeWindowHandle handle) override;
 
-  [[nodiscard]] auto GetMonitorCount() -> int32_t override;
-  [[nodiscard]] auto GetDisplayBounds(int32_t displayIndex) -> RectangleI override;
-  [[nodiscard]] auto GetDisplayUsableBounds(int32_t displayIndex) -> RectangleI override;
-  [[nodiscard]] auto GetDisplayDPI(int32_t displayIndex) -> float override;
+  [[nodiscard]] auto MonitorCount() -> int32_t override;
+  [[nodiscard]] auto DisplayBounds(int32_t displayIndex) -> RectangleI override;
+  [[nodiscard]] auto DisplayUsableBounds(int32_t displayIndex) -> RectangleI override;
+  [[nodiscard]] auto DisplayDPI(int32_t displayIndex) -> float override;
 
   void CaptureMouse() override;
   void ReleaseMouse() override;

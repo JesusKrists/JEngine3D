@@ -42,6 +42,7 @@ set(JEngine3D_HEADERS
     JEngine3D/Renderer/IRendererObjectCreator.hpp
     JEngine3D/Renderer/IShader.hpp
     JEngine3D/Renderer/ITexture.hpp
+    JEngine3D/Renderer/IVertexArray.hpp
     JEngine3D/Renderer/Renderer2D.hpp)
 
 set(JEngine3D_SOURCES

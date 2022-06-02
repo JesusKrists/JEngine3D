@@ -12,8 +12,8 @@ namespace JE {
 class ISoftwareShader : public IShader
 {
 public:
-  inline void Bind() override { SoftwareRendererAPI::BindShader(this); }
-  inline void Unbind() override { SoftwareRendererAPI::BindShader(nullptr); }
+  inline void Bind() const override { SoftwareRendererAPI::BindShader(const_cast<ISoftwareShader *>(this)); }// MOLINT
+  inline void Unbind() const override { SoftwareRendererAPI::BindShader(nullptr); }
 
   virtual auto VertexShader(const Vertex &vertex, uint32_t index) -> glm::vec4 = 0;
   virtual auto FragmentShader(const glm::vec3 &barycentric, uint32_t &pixelColorOut) -> bool = 0;

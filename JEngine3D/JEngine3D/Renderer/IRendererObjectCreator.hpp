@@ -2,6 +2,8 @@
 
 #include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Core/MemoryController.hpp"// for Scope, MemoryTag
+#include "JEngine3D/Renderer/IBuffer.hpp"
+#include "JEngine3D/Renderer/IVertexArray.hpp"
 
 namespace JE {
 
@@ -28,6 +30,14 @@ public:
 
   virtual ~IRendererObjectCreator() { s_RendererObjectCreatorInstance = nullptr; };
 
+
+  [[nodiscard]] virtual auto CreateVertexBuffer(const BufferLayout &layout)
+    -> Scope<IVertexBuffer, MemoryTag::Renderer> = 0;
+  [[nodiscard]] virtual auto CreateVertexBuffer(const BufferLayout &layout, const std::span<const float> &vertices)
+    -> Scope<IVertexBuffer, MemoryTag::Renderer> = 0;
+  [[nodiscard]] virtual auto CreateIndexBuffer(const std::span<const uint32_t> &indices)
+    -> Scope<IIndexBuffer, MemoryTag::Renderer> = 0;
+  [[nodiscard]] virtual auto CreateVertexArray() -> Scope<IVertexArray, MemoryTag::Renderer> = 0;
 
   [[nodiscard]] virtual auto CreateTexture() -> Scope<ITexture, MemoryTag::Renderer> = 0;
 

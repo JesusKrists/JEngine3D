@@ -10,8 +10,8 @@ class IShader
 public:
   virtual ~IShader() = default;
 
-  virtual void Bind() = 0;
-  virtual void Unbind() = 0;
+  virtual void Bind() const = 0;
+  virtual void Unbind() const = 0;
 
   [[nodiscard]] virtual auto Name() const -> const std::string & = 0;
 };

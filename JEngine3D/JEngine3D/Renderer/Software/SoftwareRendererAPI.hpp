@@ -1,6 +1,7 @@
 #pragma once
 
 #include "JEngine3D/Renderer/IRendererAPI.hpp"
+#include "JEngine3D/Renderer/IVertexArray.hpp"
 
 namespace JE {
 
@@ -22,10 +23,9 @@ public:
   void SetClearColor(const Color &color) override;
   void Clear() override;
 
-  void DrawVerticesIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
-    const Vector<uint32_t, MemoryTag::Renderer> &indices) override;
+  void DrawIndexed(const IVertexArray &vertexArray, uint32_t indexCount = 0) override;
 
-  static auto GetTexture(uint32_t slot) -> const SoftwareTexture *;
+  static auto BoundTexture(uint32_t slot) -> const SoftwareTexture *;
 
 private:
   static void BindGraphicsContext(SDLSoftwareGraphicsContext *context);

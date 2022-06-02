@@ -2,6 +2,7 @@
 
 #include "JEngine3D/Core/Base.hpp"
 #include "JEngine3D/Core/Types.hpp"
+#include "JEngine3D/Core/MemoryController.hpp"
 
 #include <span>
 
@@ -45,14 +46,14 @@ struct BufferElement
   std::string Name;
   ShaderDataType Type;
   uint32_t Size;
-  size_t Offset = 0;
-  bool Normalized;
+  uint32_t Offset = 0;
+  bool Normalize;
 
-  BufferElement(ShaderDataType type, const std::string_view &name, bool normalized = false)
-    : Name(name), Type(type), Size(ShaderDataTypeSize(type)), Normalized(normalized)
+  BufferElement(ShaderDataType type, const std::string_view &name, bool normalize = false)
+    : Name(name), Type(type), Size(ShaderDataTypeSize(type)), Normalize(normalize)
   {}
 
-  [[nodiscard]] inline auto GetComponentCount() const -> uint32_t
+  [[nodiscard]] inline auto ComponentCount() const -> uint32_t
   {
     switch (Type) {
     case ShaderDataType::Float:
@@ -84,36 +85,39 @@ struct BufferElement
   }
 };
 
-/*class BufferLayout
+class BufferLayout
 {
+  using ElementContainer = Vector<BufferElement, MemoryTag::Renderer>;
+
 public:
-  BufferLayout() = default;
-  BufferLayout(std::initializer_list<BufferElement> elements) : m_Elements(elements) { CalculateOffsetsAndStride(); }
+  BufferLayout(const std::initializer_list<BufferElement> &elements) : m_Elements(elements)
+  {
+    CalculateOffsetsAndStride();
+  }
 
-  [[nodiscard]] inline auto GetStride() const -> uint32_t { return m_Stride; }
-  [[nodiscard]] auto GetElements() const -> const std::vector<BufferElement> & { return m_Elements; }
+  [[nodiscard]] inline auto Stride() const -> uint32_t { return m_Stride; }
+  [[nodiscard]] inline auto Elements() const -> const ElementContainer & { return m_Elements; }
 
-  std::vector<BufferElement>::iterator begin() { return m_Elements.begin(); }
-  std::vector<BufferElement>::iterator end() { return m_Elements.end(); }
-  std::vector<BufferElement>::const_iterator begin() const { return m_Elements.begin(); }
-  std::vector<BufferElement>::const_iterator end() const { return m_Elements.end(); }
+  inline auto begin() -> ElementContainer::iterator { return std::begin(m_Elements); }
+  inline auto end() -> ElementContainer::iterator { return std::end(m_Elements); }
+  [[nodiscard]] inline auto begin() const -> ElementContainer::const_iterator { return std::begin(m_Elements); }
+  [[nodiscard]] inline auto end() const -> ElementContainer::const_iterator { return std::end(m_Elements); }
 
 private:
   void CalculateOffsetsAndStride()
   {
-    size_t offset = 0;
+    uint32_t offset = 0;
     m_Stride = 0;
     for (auto &element : m_Elements) {
       element.Offset = offset;
       offset += element.Size;
-      m_Stride += element.Size;
     }
+    m_Stride = offset;
   }
 
-private:
-  std::vector<BufferElement> m_Elements;
+  ElementContainer m_Elements;
   uint32_t m_Stride = 0;
-};*/
+};
 
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
@@ -122,12 +126,29 @@ class IVertexBuffer
 public:
   virtual ~IVertexBuffer() = default;
 
-  virtual void Bind() = 0;
-  virtual void Unbind() = 0;
+  explicit IVertexBuffer(const JE::BufferLayout &layout) : m_BufferLayout(layout) {}// NOLINT
+
+  virtual void Bind() const = 0;
+  virtual void Unbind() const = 0;
 
   virtual void SetData(const std::span<const uint8_t> &data) = 0;
 
-  // TODO(JesusKrists): LAYOUT STUFF
+  [[nodiscard]] inline auto BufferLayout() const -> const JE::BufferLayout & { return m_BufferLayout; }
+
+private:
+  JE::BufferLayout m_BufferLayout;
+};
+
+// NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
+class IIndexBuffer
+{
+public:
+  virtual ~IIndexBuffer() = default;
+
+  virtual void Bind() const = 0;
+  virtual void Unbind() const = 0;
+
+  [[nodiscard]] virtual auto Count() const -> uint32_t = 0;
 };
 
 
