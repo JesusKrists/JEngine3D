@@ -4,7 +4,7 @@
 
 namespace JE {
 
-class InputControllerDebugView : public IImGuiDebugView
+class InputControllerDebugView final : public IImGuiDebugView
 {
 public:
   InputControllerDebugView() : IImGuiDebugView("InputControllerDebugView") {}

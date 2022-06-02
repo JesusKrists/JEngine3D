@@ -26,7 +26,7 @@ class IEvent;
 
 namespace JEditor {
 
-class TestSoftwareShader : public JE::ISoftwareShader
+class TestSoftwareShader final : public JE::ISoftwareShader
 {
 public:
   auto VertexShader(const JE::Vertex &vertex, uint32_t index) -> glm::vec4 override

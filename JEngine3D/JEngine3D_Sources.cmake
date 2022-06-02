@@ -31,6 +31,7 @@ set(JEngine3D_HEADERS
     JEngine3D/Platform/SDL/SDLPlatformBackend.hpp
     JEngine3D/Renderer/ImGui/ImGuiRenderer.hpp
     JEngine3D/Renderer/Software/ISoftwareShader.hpp
+    JEngine3D/Renderer/Software/SoftwareBuffer.hpp
     JEngine3D/Renderer/Software/SoftwareFrameBufferObject.hpp
     JEngine3D/Renderer/Software/SoftwareRasterizer.hpp
     JEngine3D/Renderer/Software/SoftwareRendererAPI.hpp

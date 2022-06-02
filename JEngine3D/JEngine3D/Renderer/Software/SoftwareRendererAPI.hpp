@@ -11,7 +11,7 @@ class SoftwareTexture;
 class ISoftwareShader;
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
-class SoftwareRendererAPI : public IRendererAPI
+class SoftwareRendererAPI final : public IRendererAPI
 {
   friend class SDLSoftwareGraphicsContext;
   friend class SoftwareFrameBufferObject;

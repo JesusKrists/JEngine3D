@@ -148,7 +148,9 @@ public:
   virtual void Bind() const = 0;
   virtual void Unbind() const = 0;
 
-  [[nodiscard]] virtual auto Count() const -> uint32_t = 0;
+  virtual void SetData(const std::span<const size_t> &data) = 0;
+
+  [[nodiscard]] virtual auto Count() const -> size_t = 0;
 };
 
 

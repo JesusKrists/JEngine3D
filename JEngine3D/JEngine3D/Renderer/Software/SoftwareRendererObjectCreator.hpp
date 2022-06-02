@@ -7,7 +7,7 @@
 
 namespace JE {
 
-class SoftwareRendererObjectCreator : public IRendererObjectCreator
+class SoftwareRendererObjectCreator final : public IRendererObjectCreator
 {
 public:
   [[nodiscard]] inline auto CreateTexture() -> Scope<ITexture, MemoryTag::Renderer> override

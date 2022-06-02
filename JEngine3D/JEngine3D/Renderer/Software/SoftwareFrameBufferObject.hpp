@@ -7,7 +7,7 @@
 namespace JE {
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
-class SoftwareFrameBufferObject : public IDrawTarget
+class SoftwareFrameBufferObject final : public IDrawTarget
 {
 public:
   explicit SoftwareFrameBufferObject(const Size2DI &size = { 0, 0 })

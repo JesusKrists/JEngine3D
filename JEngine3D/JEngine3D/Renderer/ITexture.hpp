@@ -18,7 +18,7 @@ public:
 
   virtual void Bind(uint32_t slot = 0) const = 0;
 
-  [[nodiscard]] virtual auto RendererID() const -> size_t = 0;
+  [[nodiscard]] virtual auto PointerValue() const -> size_t = 0;
 };
 
 }// namespace JE
