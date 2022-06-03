@@ -4,13 +4,14 @@
 #include "JEngine3D/Core/MemoryController.hpp"
 
 #include "ISoftwareShader.hpp"
+#include "SoftwareVertexArray.hpp"
 
 namespace JE::SoftwareRasterizer {
 
 void Clear(const Color &color, uint32_t *pixelPtr, const Size2DI &bufferSize);
 
-void DrawIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
-  const Vector<uint32_t, MemoryTag::Renderer> &indices,
+void DrawIndexed(const SoftwareVertexArray &vertexArray,
+  size_t indexCount,
   ISoftwareShader &shader,
   uint32_t *pixelPtr,
   const Size2DI &bufferSize);

@@ -4,7 +4,11 @@
 #include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Core/MemoryController.hpp"
+#include "JEngine3D/Renderer/IRendererAPI.hpp"
 #include "JEngine3D/Renderer/ITexture.hpp"
+#include "JEngine3D/Renderer/IBuffer.hpp"
+#include "JEngine3D/Renderer/IVertexArray.hpp"
+#include "JEngine3D/Renderer/IRendererObjectCreator.hpp"
 
 namespace JE {
 
@@ -76,7 +80,16 @@ private:
     Vector<uint32_t, MemoryTag::Renderer> TriangleIndices;
     std::array<const ITexture *, MAX_TEXTURE_SLOTS> TextureSlots{};
     int32_t TextureSlotIndex = -1;
-  };
+
+    Scope<IVertexBuffer, MemoryTag::Renderer> VertexBuffer = IRendererObjectCreator::Get().CreateVertexBuffer(
+      { { ShaderDataType::Float3, BufferElement::VERTEX_ATTRIBUTE_NAME },
+        { ShaderDataType::Float4, "a_Color" },
+        { ShaderDataType::Float2, "a_UV" },
+        { ShaderDataType::Int, "a_TexIndex" } });
+
+    Scope<IIndexBuffer, MemoryTag::Renderer> IndexBuffer = IRendererObjectCreator::Get().CreateIndexBuffer();
+    Scope<IVertexArray, MemoryTag::Renderer> VertexArray = IRendererObjectCreator::Get().CreateVertexArray();
+  };// namespace JE
 
   Renderer2DData Data;
 };

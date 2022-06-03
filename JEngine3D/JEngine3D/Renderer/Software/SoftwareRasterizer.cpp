@@ -8,6 +8,8 @@
 #include <glm/detail/type_vec3.hpp>// for vec<>::(anonymous)
 #include <glm/ext/vector_float3.hpp>// for vec3
 #include "JEngine3D/Core/Base.hpp"// for UNUSED, fill_n, size_t
+#include "SoftwareBuffer.hpp"
+
 
 // IWYU pragma: no_include <bits/std_abs.h>
 
@@ -112,23 +114,42 @@ static auto IsPointInsideBuffer(const Position2DI &point, const Size2DI &bufferS
   return (point.X >= 0 && point.X <= bufferSize.Width) && (point.Y >= 0 && point.Y <= bufferSize.Height);
 }
 
-void DrawIndexed(const Vector<Vertex, MemoryTag::Renderer> &vertices,
-  const Vector<uint32_t, MemoryTag::Renderer> &indices,
+void DrawIndexed(const SoftwareVertexArray &vertexArray,
+  size_t indexCount,
   ISoftwareShader &shader,
   uint32_t *pixelPtr,
   const Size2DI &bufferSize)
 {
   ASSERT(pixelPtr != nullptr, "PixelPtr is null");
-  ASSERT(indices.size() % 3 == 0, "Missing triangle indices");
+  ASSERT(indexCount % 3 == 0, "Missing triangle indices");
 
   Size2DI bufferSizeMinusOne = { bufferSize.Width - 1, bufferSize.Height - 1 };
 
-  for (size_t i = 0; i < indices.size(); i += 3) {
+
+  const auto &vertexBuffers = vertexArray.VertexBuffers();
+
+  const auto *vertexVertexBuffer = [&]() -> const SoftwareVertexBuffer * {
+    for (const auto &buffer : vertexBuffers) {
+      const SoftwareVertexBuffer &vertexBuffer = reinterpret_cast<const SoftwareVertexBuffer &>(buffer.get());// NOLINT
+
+      for (const auto &element : vertexBuffer.BufferLayout()) {
+        if (element.Name == BufferElement::VERTEX_ATTRIBUTE_NAME) { return &vertexBuffer; }
+      }
+    }
+
+    DEBUGBREAK();
+    return nullptr;
+  }();
+
+  const auto *vertices = reinterpret_cast<const Vertex *>(vertexVertexBuffer->DataPtr());// NOLINT
+  const auto *indices = reinterpret_cast<const uint32_t *>(// NOLINT
+    reinterpret_cast<const SoftwareIndexBuffer &>(vertexArray.IndexBuffer()).DataPtr());// NOLINT
+  for (size_t i = 0; i < indexCount; i += 3) {
     bool draw = false;
 
-    const Vertex &vertex0 = vertices[indices[i]];
-    const Vertex &vertex1 = vertices[indices[i + 1]];
-    const Vertex &vertex2 = vertices[indices[i + 2]];
+    const Vertex &vertex0 = vertices[indices[i]];// NOLINT
+    const Vertex &vertex1 = vertices[indices[i + 1]];// NOLINT
+    const Vertex &vertex2 = vertices[indices[i + 2]];// NOLINT
 
     auto vertex0Pos = shader.VertexShader(vertex0, 0);
     auto vertex1Pos = shader.VertexShader(vertex1, 1);

@@ -25,10 +25,10 @@ public:
   void PopOverlay(ILayer &layer);
 
 
-  inline auto begin() -> LayerContainer::iterator { return std::begin(m_Layers); }
-  inline auto end() -> LayerContainer::iterator { return std::end(m_Layers); }
-  inline auto rbegin() -> LayerContainer::reverse_iterator { return std::rbegin(m_Layers); }
-  inline auto rend() -> LayerContainer::reverse_iterator { return std::rend(m_Layers); }
+  [[nodiscard]] inline auto begin() -> LayerContainer::iterator { return std::begin(m_Layers); }
+  [[nodiscard]] inline auto end() -> LayerContainer::iterator { return std::end(m_Layers); }
+  [[nodiscard]] inline auto rbegin() -> LayerContainer::reverse_iterator { return std::rbegin(m_Layers); }
+  [[nodiscard]] inline auto rend() -> LayerContainer::reverse_iterator { return std::rend(m_Layers); }
 
 
   [[nodiscard]] inline auto begin() const -> LayerContainer::const_iterator { return std::begin(m_Layers); }

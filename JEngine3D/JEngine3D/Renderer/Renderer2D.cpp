@@ -29,6 +29,9 @@ Renderer2D::Renderer2D()
 
   Data.TriangleVertices.reserve(MAX_TRIANGLES_PER_BATCH);
   Data.TriangleIndices.reserve(MAX_TRIANGLE_INDICES);
+
+  Data.VertexArray->AddVertexBuffer(*Data.VertexBuffer);
+  Data.VertexArray->SetIndexBuffer(*Data.IndexBuffer);
 }
 
 void Renderer2D::InitializeBatch(IDrawTarget *target)
@@ -44,6 +47,11 @@ void Renderer2D::Flush()
   Data.Stats.FrameTriangleVertexCount += Data.TriangleVertices.size();
   Data.Stats.FrameTriangleIndexCount += Data.TriangleIndices.size();
 
+  Data.VertexBuffer->SetData({ reinterpret_cast<const uint8_t *>(Data.TriangleVertices.data()),// NOLINT
+    Data.TriangleVertices.size() * sizeof(Vertex) });
+
+  Data.IndexBuffer->SetData(Data.TriangleIndices);
+
   if (!Data.TriangleVertices.empty() && !Data.TriangleIndices.empty()) {
 
     if (Data.TextureSlotIndex != -1) {
@@ -53,7 +61,7 @@ void Renderer2D::Flush()
     }
 
     Data.Target->Bind();
-    JE_APP.RendererAPI().DrawVerticesIndexed(Data.TriangleVertices, Data.TriangleIndices);
+    JE_APP.RendererAPI().DrawIndexed(*Data.VertexArray);
     Data.Target->Unbind();
     Data.Stats.FrameDrawCalls++;
   }

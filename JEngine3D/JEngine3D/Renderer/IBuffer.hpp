@@ -43,6 +43,8 @@ inline auto ShaderDataTypeSize(ShaderDataType type) -> uint32_t
 
 struct BufferElement
 {
+  static constexpr auto VERTEX_ATTRIBUTE_NAME = std::string_view{ "a_Position" };
+
   std::string Name;
   ShaderDataType Type;
   uint32_t Size;
@@ -98,8 +100,8 @@ public:
   [[nodiscard]] inline auto Stride() const -> uint32_t { return m_Stride; }
   [[nodiscard]] inline auto Elements() const -> const ElementContainer & { return m_Elements; }
 
-  inline auto begin() -> ElementContainer::iterator { return std::begin(m_Elements); }
-  inline auto end() -> ElementContainer::iterator { return std::end(m_Elements); }
+  [[nodiscard]] inline auto begin() -> ElementContainer::iterator { return std::begin(m_Elements); }
+  [[nodiscard]] inline auto end() -> ElementContainer::iterator { return std::end(m_Elements); }
   [[nodiscard]] inline auto begin() const -> ElementContainer::const_iterator { return std::begin(m_Elements); }
   [[nodiscard]] inline auto end() const -> ElementContainer::const_iterator { return std::end(m_Elements); }
 
@@ -148,7 +150,7 @@ public:
   virtual void Bind() const = 0;
   virtual void Unbind() const = 0;
 
-  virtual void SetData(const std::span<const size_t> &data) = 0;
+  virtual void SetData(const std::span<const uint32_t> &data) = 0;
 
   [[nodiscard]] virtual auto Count() const -> size_t = 0;
 };

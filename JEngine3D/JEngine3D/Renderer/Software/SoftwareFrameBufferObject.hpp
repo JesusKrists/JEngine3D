@@ -3,6 +3,7 @@
 #include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Renderer/IDrawTarget.hpp"
+#include "SoftwareRendererAPI.hpp"
 
 namespace JE {
 
@@ -14,13 +15,17 @@ public:
     : m_PixelData(static_cast<size_t>(size.Width * size.Height)), m_Size(size)
   {}
 
-  void Bind() override;
-  void Unbind() override;
+  inline void Bind() override { SoftwareRendererAPI::BindFrameBuffer(this); }
+  inline void Unbind() override { SoftwareRendererAPI::BindFrameBuffer(nullptr); }
 
   [[nodiscard]] inline auto PixelPtr() -> uint32_t * { return m_PixelData.data(); };
   [[nodiscard]] inline auto Size() const -> const Size2DI & { return m_Size; };
 
-  void Resize(const Size2DI &newSize);
+  inline void Resize(const Size2DI &newSize)
+  {
+    m_PixelData.resize(static_cast<size_t>(newSize.Width * newSize.Height));// NOLINT
+    m_Size = newSize;
+  }
 
 private:
   Vector<uint32_t, MemoryTag::Renderer> m_PixelData;

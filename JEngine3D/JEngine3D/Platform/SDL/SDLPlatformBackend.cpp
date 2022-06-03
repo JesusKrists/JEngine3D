@@ -201,9 +201,9 @@ void SDLPlatformBackend::MaximizeWindow(NativeWindowHandle handle)
   SDL_RestoreWindow(static_cast<SDL_Window *>(handle));
 }
 
-auto SDLPlatformBackend::GetMonitorCount() -> int32_t { return SDL_GetNumVideoDisplays(); }
+auto SDLPlatformBackend::MonitorCount() -> int32_t { return SDL_GetNumVideoDisplays(); }
 
-auto SDLPlatformBackend::GetDisplayBounds(int32_t displayIndex) -> RectangleI
+auto SDLPlatformBackend::DisplayBounds(int32_t displayIndex) -> RectangleI
 {
   SDL_Rect sdlRect;
   RectangleI rect{};
@@ -215,7 +215,7 @@ auto SDLPlatformBackend::GetDisplayBounds(int32_t displayIndex) -> RectangleI
   return rect;
 }
 
-auto SDLPlatformBackend::GetDisplayUsableBounds(int32_t displayIndex) -> RectangleI
+auto SDLPlatformBackend::DisplayUsableBounds(int32_t displayIndex) -> RectangleI
 {
   SDL_Rect sdlRect;
   RectangleI rect{};
@@ -227,7 +227,7 @@ auto SDLPlatformBackend::GetDisplayUsableBounds(int32_t displayIndex) -> Rectang
   return rect;
 }
 
-auto SDLPlatformBackend::GetDisplayDPI(int32_t displayIndex) -> float
+auto SDLPlatformBackend::DisplayDPI(int32_t displayIndex) -> float
 {
   float dpi = 0;
   SDL_GetDisplayDPI(displayIndex, &dpi, nullptr, nullptr);

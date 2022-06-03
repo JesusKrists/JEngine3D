@@ -3,8 +3,8 @@
 #include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContext.hpp"
 #include "SoftwareFrameBufferObject.hpp"
-
 #include "SoftwareRasterizer.hpp"
+#include "SoftwareVertexArray.hpp"
 
 namespace JE {
 
@@ -17,6 +17,7 @@ struct SoftwareRendererAPIData
   SDLSoftwareGraphicsContext *CurrentContext = nullptr;
   std::array<const SoftwareTexture *, TEXTURE_SLOT_COUNT> TextureSlots{};
   ISoftwareShader *CurrentShader = nullptr;
+  const SoftwareVertexArray *CurrentVAO = nullptr;
 };
 
 static SoftwareRendererAPIData Data;// NOLINT
@@ -41,12 +42,12 @@ void SoftwareRendererAPI::Clear()
   }
 }
 
-void SoftwareRendererAPI::DrawIndexed(const IVertexArray &vertexArray, uint32_t indexCount)
+void SoftwareRendererAPI::DrawIndexed(const IVertexArray &vertexArray, size_t indexCount)
 {
   StateSanityCheck();
 
   ASSERT(Data.CurrentShader, "No shader bound");
-  ASSERT(Data.CurrentVAO, "No VAO bound");
+  ASSERT(!Data.CurrentVAO, "VAO already bound");
 
   vertexArray.Bind();
   indexCount = indexCount != 0 ? indexCount : vertexArray.IndexBuffer().Count();
@@ -82,5 +83,7 @@ void SoftwareRendererAPI::BindTexture(const SoftwareTexture *texture, uint32_t s
 }
 
 void SoftwareRendererAPI::BindShader(ISoftwareShader *shader) { Data.CurrentShader = shader; }
+
+void SoftwareRendererAPI::BindVertexArray(const SoftwareVertexArray *vertexArray) { Data.CurrentVAO = vertexArray; }
 
 }// namespace JE

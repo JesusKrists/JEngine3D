@@ -33,10 +33,8 @@ public:
 
   [[nodiscard]] virtual auto CreateVertexBuffer(const BufferLayout &layout)
     -> Scope<IVertexBuffer, MemoryTag::Renderer> = 0;
-  [[nodiscard]] virtual auto CreateVertexBuffer(const BufferLayout &layout, const std::span<const float> &vertices)
-    -> Scope<IVertexBuffer, MemoryTag::Renderer> = 0;
   [[nodiscard]] virtual auto CreateIndexBuffer() -> Scope<IIndexBuffer, MemoryTag::Renderer> = 0;
-  [[nodiscard]] virtual auto CreateIndexBuffer(const std::span<const size_t> &indices)
+  [[nodiscard]] virtual auto CreateIndexBuffer(const std::span<const uint32_t> &indices)
     -> Scope<IIndexBuffer, MemoryTag::Renderer> = 0;
   [[nodiscard]] virtual auto CreateVertexArray() -> Scope<IVertexArray, MemoryTag::Renderer> = 0;
 
