@@ -130,10 +130,11 @@ void DrawIndexed(const SoftwareVertexArray &vertexArray,
 
   const auto *vertexVertexBuffer = [&]() -> const SoftwareVertexBuffer * {
     for (const auto &buffer : vertexBuffers) {
-      const SoftwareVertexBuffer &vertexBuffer = reinterpret_cast<const SoftwareVertexBuffer &>(buffer.get());// NOLINT
+      auto it = FindIf(buffer.get().BufferLayout(),// NOLINT
+        [&](const auto &element) { return element.Name == BufferElement::VERTEX_ATTRIBUTE_NAME; });
 
-      for (const auto &element : vertexBuffer.BufferLayout()) {
-        if (element.Name == BufferElement::VERTEX_ATTRIBUTE_NAME) { return &vertexBuffer; }
+      if (it != std::end(buffer.get().BufferLayout())) {
+        return reinterpret_cast<const SoftwareVertexBuffer *>(&buffer.get());// NOLINT
       }
     }
 

@@ -61,6 +61,7 @@ private:
   void InitializeBatch(IDrawTarget *target);
   void Flush();
   void NextBatch();
+  auto PushTexture(const ITexture &texture) -> int32_t;
 
   struct Renderer2DData
   {

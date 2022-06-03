@@ -11,11 +11,12 @@ class ImGuiRenderer
 {
 public:
   ImGuiRenderer();
-  ~ImGuiRenderer();
+  ~ImGuiRenderer() = default;
 
   void RenderDrawData(ImDrawData *drawData);
 
 private:
+  // cppcheck-suppress functionStatic
   void RenderCommandList(const ImDrawList *drawList);
 };
 

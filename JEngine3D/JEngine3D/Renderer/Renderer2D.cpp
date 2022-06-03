@@ -80,6 +80,33 @@ void Renderer2D::NextBatch()
   InitializeBatch(target);
 }
 
+auto Renderer2D::PushTexture(const ITexture &texture) -> int32_t
+{
+  int32_t textureIndex = -1;
+  if (Data.TextureSlotIndex == -1) {
+    Data.TextureSlots[static_cast<uint32_t>(++Data.TextureSlotIndex)] = &texture;// NOLINT
+    return Data.TextureSlotIndex;
+  } else {
+
+    for (int i = 0; i <= Data.TextureSlotIndex; i++) {
+      if (i == MAX_TEXTURE_SLOTS) { break; }
+
+      if (Data.TextureSlots[static_cast<size_t>(i)] == &texture) {// NOLINT
+        textureIndex = i;
+        break;
+      }
+    }
+  }
+
+  if (textureIndex == -1) {
+    if (static_cast<uint32_t>(Data.TextureSlotIndex) >= MAX_TEXTURE_SLOTS) { NextBatch(); }
+    Data.TextureSlots[static_cast<uint32_t>(++Data.TextureSlotIndex)] = &texture;// NOLINT
+    textureIndex = Data.TextureSlotIndex;
+  }
+
+  return textureIndex;
+}
+
 void Renderer2D::NewFrame()
 {
   Data.Stats.FrameTriangleVertexCount = 0;
@@ -124,16 +151,11 @@ void Renderer2D::DrawTriangle(Vertex &vertex0, Vertex &vertex1, Vertex &vertex2,
 {
   if (TriangleCount() + 1 > Data.TrianglesPerBatch) { NextBatch(); }
 
-  if (Data.TextureSlotIndex == -1) {
-    Data.TextureSlots[static_cast<uint32_t>(++Data.TextureSlotIndex)] = &texture;// NOLINT
-  } else {
-    if (static_cast<uint32_t>(Data.TextureSlotIndex) >= MAX_TEXTURE_SLOTS) { NextBatch(); }
-    Data.TextureSlots[static_cast<uint32_t>(++Data.TextureSlotIndex)] = &texture;// NOLINT
-  }
+  int32_t textureIndex = PushTexture(texture);
 
-  vertex0.TextureIndex = Data.TextureSlotIndex;
-  vertex1.TextureIndex = Data.TextureSlotIndex;
-  vertex2.TextureIndex = Data.TextureSlotIndex;
+  vertex0.TextureIndex = textureIndex;
+  vertex1.TextureIndex = textureIndex;
+  vertex2.TextureIndex = textureIndex;
 
   DrawTriangle(vertex0, vertex1, vertex2);
 }
@@ -180,23 +202,18 @@ void Renderer2D::DrawQuad(const glm::mat4 &transform, const ITexture &texture, c
 {
   if (TriangleCount() + 2 > Data.TrianglesPerBatch) { NextBatch(); }
 
-  if (Data.TextureSlotIndex == -1) {
-    Data.TextureSlots[static_cast<uint32_t>(++Data.TextureSlotIndex)] = &texture;// NOLINT
-  } else {
-    if (static_cast<uint32_t>(Data.TextureSlotIndex) >= MAX_TEXTURE_SLOTS) { NextBatch(); }
-    Data.TextureSlots[static_cast<uint32_t>(++Data.TextureSlotIndex)] = &texture;// NOLINT
-  }
+  int32_t textureIndex = PushTexture(texture);
 
   auto vertexOffset = Data.TriangleVertices.size();
 
   Data.TriangleVertices.emplace_back(
-    transform * QUAD_VERTEX_POSITION[0], tintColor, QUAD_UV_COORDINATES[0], Data.TextureSlotIndex);
+    transform * QUAD_VERTEX_POSITION[0], tintColor, QUAD_UV_COORDINATES[0], textureIndex);
   Data.TriangleVertices.emplace_back(
-    transform * QUAD_VERTEX_POSITION[1], tintColor, QUAD_UV_COORDINATES[1], Data.TextureSlotIndex);
+    transform * QUAD_VERTEX_POSITION[1], tintColor, QUAD_UV_COORDINATES[1], textureIndex);
   Data.TriangleVertices.emplace_back(
-    transform * QUAD_VERTEX_POSITION[2], tintColor, QUAD_UV_COORDINATES[2], Data.TextureSlotIndex);
+    transform * QUAD_VERTEX_POSITION[2], tintColor, QUAD_UV_COORDINATES[2], textureIndex);
   Data.TriangleVertices.emplace_back(
-    transform * QUAD_VERTEX_POSITION[3], tintColor, QUAD_UV_COORDINATES[3], Data.TextureSlotIndex);
+    transform * QUAD_VERTEX_POSITION[3], tintColor, QUAD_UV_COORDINATES[3], textureIndex);
 
   auto indexOffset = Data.TriangleIndices.size();
   Data.TriangleIndices.resize(indexOffset + 6);// NOLINT

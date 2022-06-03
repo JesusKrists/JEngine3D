@@ -8,8 +8,6 @@ namespace JE {
 
 ImGuiRenderer::ImGuiRenderer() = default;
 
-ImGuiRenderer::~ImGuiRenderer() = default;
-
 void ImGuiRenderer::RenderDrawData(ImDrawData *drawData)
 {
   for (int i = 0; i < drawData->CmdListsCount; ++i) {
@@ -23,6 +21,7 @@ void ImGuiRenderer::RenderDrawData(ImDrawData *drawData)
   }
 }
 
+// NOLINTNEXTLINE
 void ImGuiRenderer::RenderCommandList(const ImDrawList *drawList)
 {
   for (int i = 0; i < drawList->CmdBuffer.Size; ++i) {

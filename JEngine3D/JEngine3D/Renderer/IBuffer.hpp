@@ -92,6 +92,7 @@ class BufferLayout
   using ElementContainer = Vector<BufferElement, MemoryTag::Renderer>;
 
 public:
+  // cppcheck-suppress noExplicitConstructor
   BufferLayout(const std::initializer_list<BufferElement> &elements) : m_Elements(elements)
   {
     CalculateOffsetsAndStride();

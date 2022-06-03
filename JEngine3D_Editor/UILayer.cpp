@@ -138,16 +138,22 @@ void UILayer::OnUpdate()
       auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
 
       constexpr auto position = glm::vec3{ -0.80F, -0.80F, 0.0F };
-      constexpr auto size = glm::vec2{ 0.5F, 0.5F };
+      constexpr auto size = glm::vec2{ 0.15F, 0.15F };
       constexpr auto color = JE::Color{ 1.0F, 0.0F, 1.0F, 1.0F };
 
-      constexpr auto position2 = glm::vec3{ 0.0F, 0.0F, 0.0F };
+      // constexpr auto position2 = glm::vec3{ 0.0F, 0.0F, 0.0F };
       constexpr auto color2 = JE::Color{ 1.0F, 1.0F, 1.0F, 1.0F };
 
       renderer2D.DrawTriangle(vertex0, vertex1, vertex2, *m_TestTexture);
       renderer2D.DrawTriangle(vertex3, vertex4, vertex5);
       renderer2D.DrawQuad(position, size, color);
-      renderer2D.DrawQuad(position2, size, *m_MemeTexture, color2);
+      for (int y = 0; y < 10; y++) {// NOLINT
+        for (int x = 0; x < 10; x++) {// NOLINT
+          const auto newPosition =
+            glm::vec3{ -0.9F + (static_cast<float>(x) / 5), -0.9F + (static_cast<float>(y) / 5), 0 };
+          renderer2D.DrawQuad(newPosition, size, *m_MemeTexture, color2);
+        }
+      }
 
       renderer2D.EndBatch();
 
