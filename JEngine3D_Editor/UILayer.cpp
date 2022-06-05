@@ -29,12 +29,14 @@ namespace JEditor {
 class TestSoftwareShader final : public JE::ISoftwareShader
 {
 public:
-  auto VertexShader(const JE::Vertex &vertex, uint32_t index) -> glm::vec4 override
+  auto VertexShader(const void *vertexData, uint32_t vertexIndex, const JE::BufferLayout &layout) -> glm::vec4 override
   {
-    varying_Color[index] = &vertex.Color;// NOLINT
-    varying_UV[index] = &vertex.UV;// NOLINT
-    flat_TextureIndex = vertex.TextureIndex;
-    return glm::vec4{ vertex.Position, 1.0F };
+    UNUSED(layout);
+    const auto *vertex = reinterpret_cast<const JE::Vertex *>(vertexData);// NOLINT
+    varying_Color[vertexIndex] = &vertex->Color;// NOLINT
+    varying_UV[vertexIndex] = &vertex->UV;// NOLINT
+    flat_TextureIndex = vertex->TextureIndex;
+    return glm::vec4{ vertex->Position, 1.0F };
   }
 
   auto FragmentShader(const glm::vec3 &barycentric, uint32_t &pixelColorOut) -> bool override
@@ -243,10 +245,10 @@ void UILayer::RenderGameViewport()
     }
 
 
-    m_ImGuiSWTextureWrapper =
+    /*m_ImGuiSWTextureWrapper =
       imgui_sw::Texture{ m_GameViewportFBO.PixelPtr(), FrameBufferSize.Width, FrameBufferSize.Height };
     ImGui::Image(reinterpret_cast<ImTextureID>(&m_ImGuiSWTextureWrapper),// NOLINT
-      ImVec2{ static_cast<float>(FrameBufferSize.Width), static_cast<float>(FrameBufferSize.Height) });
+      ImVec2{ static_cast<float>(FrameBufferSize.Width), static_cast<float>(FrameBufferSize.Height) });*/
 
     if (!JE_APP.ImGuiLayer().CaptureEvents()) {
       ImGui::PushClipRect(absoluteCursorStart, absoluteCursorEnd, false);

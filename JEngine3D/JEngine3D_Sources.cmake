@@ -1,6 +1,5 @@
 set(JEngine3D_HEADERS
     JEngine3D/Core/ImGui/ImGuiLayer.hpp
-    JEngine3D/Core/ImGui/ImGuiSoftwareRenderer.hpp
     JEngine3D/Core/ImGui/ImGuiSupport.hpp
     JEngine3D/Core/Application.hpp
     JEngine3D/Core/Assert.hpp
@@ -29,6 +28,7 @@ set(JEngine3D_HEADERS
     JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContext.hpp
     JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContextCreator.hpp
     JEngine3D/Platform/SDL/SDLPlatformBackend.hpp
+    JEngine3D/Renderer/ImGui/config.hpp
     JEngine3D/Renderer/ImGui/ImGuiRenderer.hpp
     JEngine3D/Renderer/Software/ISoftwareShader.hpp
     JEngine3D/Renderer/Software/SoftwareBuffer.hpp
@@ -49,7 +49,6 @@ set(JEngine3D_HEADERS
 
 set(JEngine3D_SOURCES
     JEngine3D/Core/ImGui/ImGuiLayer.cpp
-    JEngine3D/Core/ImGui/ImGuiSoftwareRenderer.cpp
     JEngine3D/Core/Application.cpp
     JEngine3D/Core/InputController.cpp
     JEngine3D/Core/LayerStack.cpp

@@ -84,8 +84,8 @@ private:
 
     Scope<IVertexBuffer, MemoryTag::Renderer> VertexBuffer = IRendererObjectCreator::Get().CreateVertexBuffer(
       { { ShaderDataType::Float3, BufferElement::VERTEX_ATTRIBUTE_NAME },
-        { ShaderDataType::Float4, "a_Color" },
-        { ShaderDataType::Float2, "a_UV" },
+        { ShaderDataType::Float4, BufferElement::COLOR_ATTRIBUTE_NAME },
+        { ShaderDataType::Float2, BufferElement::UV_ATTRIBUTE_NAME },
         { ShaderDataType::Int, "a_TexIndex" } });
 
     Scope<IIndexBuffer, MemoryTag::Renderer> IndexBuffer = IRendererObjectCreator::Get().CreateIndexBuffer();

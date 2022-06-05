@@ -45,11 +45,7 @@ public:
 
   [[nodiscard]] inline auto Count() const -> size_t override { return m_Indices.size(); }
 
-
-  [[nodiscard]] inline auto DataPtr() const -> const uint8_t *
-  {
-    return reinterpret_cast<const uint8_t *>(m_Indices.data());// NOLINT
-  }
+  [[nodiscard]] inline auto DataPtr() const -> const uint32_t * { return m_Indices.data(); }
 
 private:
   Vector<uint32_t, MemoryTag::Renderer> m_Indices;

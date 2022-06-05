@@ -9,7 +9,6 @@
 #include "JEngine3D/Core/Events.hpp"// for MousePressEvent
 #include "JEngine3D/Core/WindowController.hpp"// for MousePressEvent
 #include "JEngine3D/Core/ImGui/ImGuiSupport.hpp"
-#include "JEngine3D/Core/ImGui/ImGuiSoftwareRenderer.hpp"// IWYU pragma: keep
 
 
 // #include "Roboto-Regular.embed"
@@ -135,9 +134,7 @@ static void JEngine3DImGuiSwapBuffers(ImGuiViewport *viewport,
 static void JEngine3DImGuiRendererRenderWindow([[maybe_unused]] ImGuiViewport *viewport,
   void *)// NOLINT(readability-named-parameter, hicpp-named-parameter)
 {
-#if defined(JE_SOFTWARE_CONTEXT)
-  ImGuiSoftwareRenderer::RenderImGui(*static_cast<Window *>(viewport->PlatformHandle), viewport->DrawData);
-#endif
+  JE_APP.ImGuiLayer().Renderer().RenderDrawData(viewport->DrawData);
 }
 
 static void InitializeImGuiForJEngine3D()
@@ -254,24 +251,9 @@ void ImGuiLayer::OnCreate()
       &fontConfig);
   imguiIO.FontDefault = robotoFont;*/
 
-#if defined(JE_SOFTWARE_CONTEXT)
-  ImGuiSoftwareRenderer::Initialize();
-#else
-  uint8_t *tex_data = nullptr;
-  int font_width = 0;
-  int font_height = 0;
-  imguiIO.Fonts->GetTexDataAsAlpha8(&tex_data, &font_width, &font_height);
-#endif
+  JE_APP.ImGuiLayer().Renderer().Initialize();
 }
-void ImGuiLayer::OnDestroy()
-{
-
-#if defined(JE_SOFTWARE_CONTEXT)
-  ImGuiSoftwareRenderer::Destroy();
-#endif
-
-  ImGui::DestroyContext();
-}
+void ImGuiLayer::OnDestroy() { ImGui::DestroyContext(); }
 
 void ImGuiLayer::OnUpdate()
 {
@@ -489,12 +471,10 @@ void ImGuiLayer::End()// NOLINT(readability-convert-member-functions-to-static)
   ImGui::Render();
 
   auto &previousContext = IGraphicsContext::CurrentContext();
-#if defined(JE_SOFTWARE_CONTEXT)
   if (!JE_APP.MainWindow().Minimized()) {
     JE_APP.MainWindow().GraphicsContext().MakeCurrent();
-    ImGuiSoftwareRenderer::RenderImGui(JE_APP.MainWindow(), ImGui::GetDrawData());
+    m_ImGuiRenderer.RenderDrawData(ImGui::GetDrawData());
   }
-#endif
 
   if ((imguiIO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)// NOLINT(hicpp-signed-bitwise)
       == ImGuiConfigFlags_ViewportsEnable) {

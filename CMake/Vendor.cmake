@@ -92,7 +92,7 @@ disable_static_analysis(libglew_static)
 
 ################################# ImGui Software renderer ####################################################
 
-include(${CMAKE_SOURCE_DIR}/CMake/ImGuiSoftwareRenderer.cmake)
+#include(${CMAKE_SOURCE_DIR}/CMake/ImGuiSoftwareRenderer.cmake)
 
 ################################# OpenGL Mathematics (glm) #####################################################
 

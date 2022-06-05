@@ -7,6 +7,7 @@
 #include <cstdlib>// for abs
 #include <glm/detail/type_vec3.hpp>// for vec<>::(anonymous)
 #include <glm/ext/vector_float3.hpp>// for vec3
+#include <glm/geometric.hpp>
 #include "JEngine3D/Core/Base.hpp"// for UNUSED, fill_n, size_t
 #include "SoftwareBuffer.hpp"
 
@@ -54,16 +55,12 @@ static auto
   Barycentric(const Position2DI &v0, const Position2DI &v1, const Position2DI &v2, const Position2DI &point)// NOLINT
   -> glm::vec3
 {
-  glm::vec2 vv0 = { v1.X - v0.X, v1.Y - v0.Y };
-  glm::vec2 vv1 = { v2.X - v0.X, v2.Y - v0.Y };
-  glm::vec2 vv2 = { point.X - v0.X, point.Y - v0.Y };
-  float den = vv0.x * vv1.y - vv1.x * vv0.y;// NOLINT
+  glm::vec3 vv0 = { v2.Y - v0.Y, v1.Y - v0.Y, v0.Y - point.Y };
+  glm::vec3 vv1 = { v2.X - v0.X, v1.X - v0.X, v0.X - point.X };
+  glm::vec3 cross = glm::cross(vv0, vv1);
+  if (std::abs(cross.z) < 0.01F) { return glm::vec3{ -1, -1, -1 }; }// NOLINT
 
-  float v = (vv2.x * vv1.y - vv1.x * vv2.y) / den;// NOLINT
-  float w = (vv0.x * vv2.y - vv2.x * vv0.y) / den;// NOLINT
-  float u = 1.0F - v - w;// NOLINT
-
-  return glm::vec3{ u, v, w };
+  return glm::vec3{ 1.0F - (cross.x + cross.y) / cross.z, cross.y / cross.z, cross.x / cross.z };// NOLINT
 }
 
 static void FillTriangle(const Position2DI &position0,
@@ -142,19 +139,18 @@ void DrawIndexed(const SoftwareVertexArray &vertexArray,
     return nullptr;
   }();
 
-  const auto *vertices = reinterpret_cast<const Vertex *>(vertexVertexBuffer->DataPtr());// NOLINT
-  const auto *indices = reinterpret_cast<const uint32_t *>(// NOLINT
-    reinterpret_cast<const SoftwareIndexBuffer &>(vertexArray.IndexBuffer()).DataPtr());// NOLINT
+  const auto &vertexData = vertexVertexBuffer->DataPtr();
+  const auto &vertexLayout = vertexVertexBuffer->BufferLayout();
+  const auto *indices = reinterpret_cast<const SoftwareIndexBuffer &>(vertexArray.IndexBuffer()).DataPtr();// NOLINT
   for (size_t i = 0; i < indexCount; i += 3) {
-    bool draw = false;
 
-    const Vertex &vertex0 = vertices[indices[i]];// NOLINT
-    const Vertex &vertex1 = vertices[indices[i + 1]];// NOLINT
-    const Vertex &vertex2 = vertices[indices[i + 2]];// NOLINT
+    const auto *vertex0 = vertexData + (indices[i] * vertexLayout.Stride());// NOLINT
+    const auto *vertex1 = vertexData + (indices[i + 1] * vertexLayout.Stride());// NOLINT
+    const auto *vertex2 = vertexData + (indices[i + 2] * vertexLayout.Stride());// NOLINT
 
-    auto vertex0Pos = shader.VertexShader(vertex0, 0);
-    auto vertex1Pos = shader.VertexShader(vertex1, 1);
-    auto vertex2Pos = shader.VertexShader(vertex2, 2);
+    auto vertex0Pos = shader.VertexShader(vertex0, 0, vertexLayout);
+    auto vertex1Pos = shader.VertexShader(vertex1, 1, vertexLayout);
+    auto vertex2Pos = shader.VertexShader(vertex2, 2, vertexLayout);
 
     Position2DI position0 = {
       static_cast<int32_t>(
@@ -163,16 +159,12 @@ void DrawIndexed(const SoftwareVertexArray &vertexArray,
         JE::Math::Map(vertex0Pos.y, { -1, 1 }, { static_cast<float>(bufferSizeMinusOne.Height), 0 }))// NOLINT
     };
 
-    if (IsPointInsideBuffer(position0, bufferSizeMinusOne)) { draw = true; }
-
     Position2DI position1 = {
       static_cast<int32_t>(
         JE::Math::Map(vertex1Pos.x, { -1, 1 }, { 0, static_cast<float>(bufferSizeMinusOne.Width) })),// NOLINT
       static_cast<int32_t>(
         JE::Math::Map(vertex1Pos.y, { -1, 1 }, { static_cast<float>(bufferSizeMinusOne.Height), 0 }))// NOLINT
     };
-
-    if (!draw && IsPointInsideBuffer(position1, bufferSizeMinusOne)) { draw = true; }
 
     Position2DI position2 = {
       static_cast<int32_t>(
@@ -181,9 +173,10 @@ void DrawIndexed(const SoftwareVertexArray &vertexArray,
         JE::Math::Map(vertex2Pos.y, { -1, 1 }, { static_cast<float>(bufferSizeMinusOne.Height), 0 }))// NOLINT
     };
 
-    if (!draw && IsPointInsideBuffer(position2, bufferSizeMinusOne)) { draw = true; }
-
-    if (!draw) { continue; }
+    if (!IsPointInsideBuffer(position0, bufferSizeMinusOne) && IsPointInsideBuffer(position1, bufferSizeMinusOne)
+        && !IsPointInsideBuffer(position2, bufferSizeMinusOne)) {
+      continue;
+    }
 
     FillTriangle(position0, position1, position2, shader, pixelPtr, bufferSizeMinusOne);
   }

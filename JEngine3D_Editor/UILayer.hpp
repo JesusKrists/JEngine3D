@@ -4,8 +4,6 @@
 #include <JEngine3D/Renderer/Software/SoftwareTexture.hpp>
 #include <JEngine3D/Renderer/Software/SoftwareFrameBufferObject.hpp>
 
-#include <imgui_sw.hpp>
-
 namespace JE {
 class IEvent;
 }
@@ -42,7 +40,6 @@ private:
   bool m_ResizeGameViewport = false;
   JE::Size2DI m_GameViewportSize = { 0, 0 };
   JE::SoftwareFrameBufferObject m_GameViewportFBO;
-  imgui_sw::Texture m_ImGuiSWTextureWrapper;
 };
 
 }// namespace JEditor

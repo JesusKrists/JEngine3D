@@ -44,6 +44,8 @@ inline auto ShaderDataTypeSize(ShaderDataType type) -> uint32_t
 struct BufferElement
 {
   static constexpr auto VERTEX_ATTRIBUTE_NAME = std::string_view{ "a_Position" };
+  static constexpr auto UV_ATTRIBUTE_NAME = std::string_view{ "a_UV" };
+  static constexpr auto COLOR_ATTRIBUTE_NAME = std::string_view{ "a_Color" };
 
   std::string Name;
   ShaderDataType Type;

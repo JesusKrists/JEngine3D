@@ -33,3 +33,6 @@ target_link_libraries(ImGuiLibrary PRIVATE project_options SDL2-static)
 
 target_include_directories(ImGuiLibrary PUBLIC ${imgui_SOURCE_DIR})
 target_include_directories(ImGuiLibrary PUBLIC ${imgui_SOURCE_DIR}/backends)
+
+target_include_directories(ImGuiLibrary PUBLIC ${CMAKE_SOURCE_DIR}/JEngine3D)
+target_compile_definitions(ImGuiLibrary PUBLIC "IMGUI_USER_CONFIG=\"JEngine3D/Renderer/ImGui/config.hpp\"")

@@ -2,6 +2,7 @@
 
 #include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Renderer/IShader.hpp"
+#include "JEngine3D/Renderer/IBuffer.hpp"
 #include "JEngine3D/Renderer/Software/SoftwareRendererAPI.hpp"
 #include "JEngine3D/Renderer/Software/SoftwareTexture.hpp"
 
@@ -12,10 +13,10 @@ namespace JE {
 class ISoftwareShader : public IShader
 {
 public:
-  inline void Bind() const override { SoftwareRendererAPI::BindShader(const_cast<ISoftwareShader *>(this)); }// MOLINT
+  inline void Bind() const override { SoftwareRendererAPI::BindShader(const_cast<ISoftwareShader *>(this)); }// NOLINT
   inline void Unbind() const override { SoftwareRendererAPI::BindShader(nullptr); }
 
-  virtual auto VertexShader(const Vertex &vertex, uint32_t index) -> glm::vec4 = 0;
+  virtual auto VertexShader(const void *vertexData, uint32_t vertexIndex, const BufferLayout &layout) -> glm::vec4 = 0;
   virtual auto FragmentShader(const glm::vec3 &barycentric, uint32_t &pixelColorOut) -> bool = 0;
 };
 

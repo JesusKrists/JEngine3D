@@ -1,6 +1,7 @@
 #pragma once
 
 #include "JEngine3D/Core/ILayer.hpp"
+#include "JEngine3D/Renderer/ImGui/ImGuiRenderer.hpp"
 
 namespace JE {
 
@@ -28,7 +29,11 @@ public:
   // cppcheck-suppress functionStatic
   void End();
 
+  [[nodiscard]] inline auto Renderer() -> ImGuiRenderer & { return m_ImGuiRenderer; }
+
 private:
+  ImGuiRenderer m_ImGuiRenderer;
+
   bool m_CaptureEvents = true;
 };
 

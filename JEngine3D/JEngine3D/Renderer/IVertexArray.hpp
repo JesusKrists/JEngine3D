@@ -25,8 +25,8 @@ public:
     Bind();
     vertexBuffer.Bind();
     ConfigureVertexBufferLayout(vertexBuffer);
-    Unbind();
     vertexBuffer.Unbind();
+    Unbind();
 
     m_VertexBuffers.push_back(vertexBuffer);
   }

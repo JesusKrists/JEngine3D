@@ -14,7 +14,7 @@ target_link_system_libraries(
   fmt::fmt
   spdlog
   ImGuiLibrary
-  ImGui_SWLibrary
+  #ImGui_SWLibrary
   glm::glm
   STBTarget)
 
