@@ -116,6 +116,19 @@
             }
         },
         {
+            "name": "linux-gcc-debug-nostaticanalysis",
+            "displayName": "gcc Debug No Static Analysis",
+            "description": "Target Linux with the gcc compiler, debug build type",
+            "inherits": "conf-linux-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc-11",
+                "CMAKE_CXX_COMPILER": "g++-11",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "OPT_ENABLE_CLANG_TIDY": "FALSE",
+                "OPT_ENABLE_CPPCHECK": "FALSE"
+            }
+        },
+        {
             "name": "linux-gcc-debug",
             "displayName": "gcc Debug",
             "description": "Target Linux with the gcc compiler, debug build type",
@@ -138,32 +151,6 @@
             }
         },
         {
-            "name": "linux-gcc-debug-SW",
-            "displayName": "gcc Debug SW Context",
-            "description": "Target Linux with the gcc compiler, debug build type",
-            "inherits": "conf-linux-common",
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "gcc-11",
-                "CMAKE_CXX_COMPILER": "g++-11",
-                "CMAKE_BUILD_TYPE": "Debug",
-                "USE_SDL_SOFTWARE_CONTEXT": "TRUE"
-            }
-        },
-        {
-            "name": "linux-gcc-debug-SW-nostaticanalysis",
-            "displayName": "gcc debug SW nostaticanalysis",
-            "description": "Target Linux with the gcc compiler, debug build type",
-            "inherits": "conf-linux-common",
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "gcc-11",
-                "CMAKE_CXX_COMPILER": "g++-11",
-                "CMAKE_BUILD_TYPE": "Debug",
-                "USE_SDL_SOFTWARE_CONTEXT": "TRUE",
-                "OPT_ENABLE_CLANG_TIDY": "FALSE",
-                "OPT_ENABLE_CPPCHECK": "FALSE"
-            }
-        },
-        {
             "name": "linux-clang-debug",
             "displayName": "clang Debug",
             "description": "Target Linux with the clang compiler, debug build type",
@@ -175,18 +162,6 @@
             }
         },
         {
-            "name": "linux-clang-debug-SW",
-            "displayName": "clang Debug SW Context",
-            "description": "Target Linux with the clang compiler, debug build type",
-            "inherits": "conf-linux-common",
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "clang",
-                "CMAKE_CXX_COMPILER": "clang++",
-                "CMAKE_BUILD_TYPE": "Debug",
-                "USE_SDL_SOFTWARE_CONTEXT": "TRUE"
-            }
-        },
-        {
             "name": "linux-clang-release",
             "displayName": "clang Release",
             "description": "Target Linux with the clang compiler, release build type",
@@ -195,30 +170,6 @@
                 "CMAKE_C_COMPILER": "clang",
                 "CMAKE_CXX_COMPILER": "clang++",
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo"
-            }
-        },
-        {
-            "name": "linux-clang-release-SW",
-            "displayName": "clang Release SW Context",
-            "description": "Target Linux with the clang compiler, release build type",
-            "inherits": "conf-linux-common",
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "clang",
-                "CMAKE_CXX_COMPILER": "clang++",
-                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-                "USE_SDL_SOFTWARE_CONTEXT": "TRUE"
-            }
-        },
-        {
-            "name": "linux-clang-dist-SW",
-            "displayName": "clang Dist SW Context",
-            "description": "Target Linux with the clang compiler, release build type",
-            "inherits": "conf-linux-common",
-            "cacheVariables": {
-                "CMAKE_C_COMPILER": "clang",
-                "CMAKE_CXX_COMPILER": "clang++",
-                "CMAKE_BUILD_TYPE": "Release",
-                "USE_SDL_SOFTWARE_CONTEXT": "TRUE"
             }
         }
     ],
@@ -279,13 +230,6 @@
             "configurePreset": "linux-gcc-release"
         },
         {
-            "name": "test-linux-gcc-debug-SW",
-            "displayName": "Strict",
-            "description": "Enable output and stop on failure",
-            "inherits": "test-common",
-            "configurePreset": "linux-gcc-debug-SW"
-        },
-        {
             "name": "test-linux-clang-debug",
             "displayName": "Strict",
             "description": "Enable output and stop on failure",
@@ -293,32 +237,11 @@
             "configurePreset": "linux-clang-debug"
         },
         {
-            "name": "test-linux-clang-debug-SW",
-            "displayName": "Strict",
-            "description": "Enable output and stop on failure",
-            "inherits": "test-common",
-            "configurePreset": "linux-clang-debug-SW"
-        },
-        {
             "name": "test-linux-clang-release",
             "displayName": "Strict",
             "description": "Enable output and stop on failure",
             "inherits": "test-common",
             "configurePreset": "linux-clang-release"
-        },
-        {
-            "name": "test-linux-clang-release-SW",
-            "displayName": "Strict",
-            "description": "Enable output and stop on failure",
-            "inherits": "test-common",
-            "configurePreset": "linux-clang-release-SW"
-        },
-        {
-            "name": "test-linux-clang-dist-SW",
-            "displayName": "Strict",
-            "description": "Enable output and stop on failure",
-            "inherits": "test-common",
-            "configurePreset": "linux-clang-dist-SW"
         }
     ]
 }

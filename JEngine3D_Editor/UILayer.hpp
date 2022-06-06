@@ -1,8 +1,7 @@
 #pragma once
 
 #include <JEngine3D/Core/ILayer.hpp>
-#include <JEngine3D/Renderer/Software/SoftwareTexture.hpp>
-#include <JEngine3D/Renderer/Software/SoftwareFrameBufferObject.hpp>
+#include <JEngine3D/Renderer/ITexture.hpp>
 
 namespace JE {
 class IEvent;
@@ -36,10 +35,8 @@ private:
   JE::Scope<JE::ITexture, JE::MemoryTag::Renderer> m_TestTexture;
   JE::Scope<JE::ITexture, JE::MemoryTag::Renderer> m_MemeTexture;
 
-  // TODO(JesusKrists): Temporary software rasterizer stuff, replace with real OpenGL stuff later
   bool m_ResizeGameViewport = false;
   JE::Size2DI m_GameViewportSize = { 0, 0 };
-  JE::SoftwareFrameBufferObject m_GameViewportFBO;
 };
 
 }// namespace JEditor

@@ -6,10 +6,6 @@ set(ENABLE_DEBUG_BREAK
     TRUE
     CACHE BOOL "Enable DEBUGBREAK to break in debugger")
 
-set(USE_SDL_SOFTWARE_CONTEXT
-    FALSE
-    CACHE BOOL "Enable SDL Software graphics context")
-
 set(ENABLE_TESTING
     TRUE
     CACHE BOOL "Enable the tests")

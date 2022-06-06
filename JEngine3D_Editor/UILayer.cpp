@@ -1,5 +1,4 @@
 #include "UILayer.hpp"
-#include "JEngine3D/Renderer/Software/SoftwareRendererAPI.hpp"
 
 #include <JEngine3D/Core/Base.hpp>
 #include <JEngine3D/Core/Application.hpp>
@@ -7,9 +6,7 @@
 #include <JEngine3D/Core/ImGui/ImGuiLayer.hpp>
 #include <JEngine3D/Core/Types.hpp>
 #include <JEngine3D/Renderer/Renderer2D.hpp>
-#include <JEngine3D/Renderer/Software/SoftwareFrameBufferObject.hpp>
 #include <JEngine3D/Renderer/IRendererObjectCreator.hpp>
-#include <JEngine3D/Renderer/Software/ISoftwareShader.hpp>
 
 #include <imgui.h>
 #include <stb_image.h>
@@ -25,49 +22,6 @@ class IEvent;
 }
 
 namespace JEditor {
-
-class TestSoftwareShader final : public JE::ISoftwareShader
-{
-public:
-  auto VertexShader(const void *vertexData, uint32_t vertexIndex, const JE::BufferLayout &layout) -> glm::vec4 override
-  {
-    UNUSED(layout);
-    const auto *vertex = reinterpret_cast<const JE::Vertex *>(vertexData);// NOLINT
-    varying_Color[vertexIndex] = &vertex->Color;// NOLINT
-    varying_UV[vertexIndex] = &vertex->UV;// NOLINT
-    flat_TextureIndex = vertex->TextureIndex;
-    return glm::vec4{ vertex->Position, 1.0F };
-  }
-
-  auto FragmentShader(const glm::vec3 &barycentric, uint32_t &pixelColorOut) -> bool override
-  {
-    if (flat_TextureIndex == -1) {
-      pixelColorOut = JE::CalculateColorFromBarycentric(
-        barycentric, varying_Color[0]->ToABGR8(), varying_Color[1]->ToABGR8(), varying_Color[2]->ToABGR8());
-    } else {
-      auto uv = JE::CalculateUVFromBarycentric(barycentric, *varying_UV[0], *varying_UV[1], *varying_UV[2]);// NOLINT
-      const auto *texture = JE::SoftwareRendererAPI::BoundTexture(static_cast<uint32_t>(flat_TextureIndex));
-
-      auto pixelColor = JE::CalculateColorFromBarycentric(
-        barycentric, varying_Color[0]->ToABGR8(), varying_Color[1]->ToABGR8(), varying_Color[2]->ToABGR8());
-
-      pixelColorOut = JE::MultiplyColor(JE::SampleTexture(uv, *texture), pixelColor);
-    }
-
-    return true;
-  }
-
-  [[nodiscard]] auto Name() const -> const std::string & override { return m_Name; }
-
-private:
-  std::array<const JE::Color *, 3> varying_Color{};
-  std::array<const glm::vec2 *, 3> varying_UV{};
-  int32_t flat_TextureIndex = -1;
-
-  const std::string m_Name = "TestShader";
-};
-
-static TestSoftwareShader s_TestShader;// NOLINT
 
 
 void UILayer::OnCreate()
@@ -111,7 +65,7 @@ void UILayer::OnUpdate()
 
   auto Renderer2DTest = [&]() {
     if (m_ResizeGameViewport) {
-      m_GameViewportFBO.Resize(m_GameViewportSize);
+      // m_GameViewportFBO.Resize(m_GameViewportSize);
       m_ResizeGameViewport = false;
     }
 
@@ -121,8 +75,11 @@ void UILayer::OnUpdate()
     auto &renderer2D = JE_APP.Renderer2D();
 
     rendererAPI.SetClearColor(CLEAR_COLOR);
+    rendererAPI.Clear();
 
-    if (m_GameViewportFBO.Size() != JE::Size2DI{ 0, 0 }) {
+    UNUSED(renderer2D);
+
+    /*if (m_GameViewportFBO.Size() != JE::Size2DI{ 0, 0 }) {
       m_GameViewportFBO.Bind();
       rendererAPI.Clear();
       m_GameViewportFBO.Unbind();
@@ -160,7 +117,7 @@ void UILayer::OnUpdate()
       renderer2D.EndBatch();
 
       s_TestShader.Unbind();
-    }
+    }*/
   };
 
   Renderer2DTest();
@@ -217,7 +174,6 @@ void UILayer::RenderMainMenuBar()// NOLINT(readability-convert-member-functions-
   }
 }
 
-
 void UILayer::RenderGameViewport()
 {
   ImGui::PushStyleColor(ImGuiCol_ResizeGrip, 0);
@@ -235,17 +191,14 @@ void UILayer::RenderGameViewport()
     ImVec2 absoluteCursorStart = { absoluteCursorPos.x - 1, absoluteCursorPos.y - 1 };
     ImVec2 absoluteCursorEnd = { absoluteCursorPos.x + size.x + 1, absoluteCursorPos.y + size.y + 1 };
 
-    // TODO(JesusKrists): Super temporary software rasterizer stuff, replace with OpenGL stuff later
-
-    const auto &FrameBufferSize = m_GameViewportFBO.Size();
+    /*const auto &FrameBufferSize = m_GameViewportFBO.Size();
     if (static_cast<int32_t>(size.x) != FrameBufferSize.Width
         || static_cast<int32_t>(size.y) != FrameBufferSize.Height) {
       m_ResizeGameViewport = true;
       m_GameViewportSize = { static_cast<int32_t>(size.x), static_cast<int32_t>(size.y) };
     }
 
-
-    /*m_ImGuiSWTextureWrapper =
+    m_ImGuiSWTextureWrapper =
       imgui_sw::Texture{ m_GameViewportFBO.PixelPtr(), FrameBufferSize.Width, FrameBufferSize.Height };
     ImGui::Image(reinterpret_cast<ImTextureID>(&m_ImGuiSWTextureWrapper),// NOLINT
       ImVec2{ static_cast<float>(FrameBufferSize.Width), static_cast<float>(FrameBufferSize.Height) });*/

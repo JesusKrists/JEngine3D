@@ -73,22 +73,29 @@ struct Color
 
 struct Vertex
 {
-  constexpr Vertex(const glm::vec3 &position,
-    const Color &color,
-    const glm::vec2 &uv = { 0, 0 },
-    int32_t textureIndex = -1)// NOLINT
-    : Position(position), Color(color), UV(uv), TextureIndex(textureIndex)
+  constexpr Vertex(const glm::vec3 &position, const Color &color, const glm::vec2 &uv = { 0, 0 })// NOLINT
+    : Position(position), Color(color), UV(uv)
   {}
 
   glm::vec3 Position;
   JE::Color Color;
   glm::vec2 UV;
-  int32_t
-    TextureIndex;// SUPER TEMPORARY FOR SOFTWARE RENDERER TODO(JesusKrists): Remove this once OpenGL is implemented
 };
 
 
 }// namespace JE
+
+template<> struct fmt::formatter<glm::vec2>
+{
+  // cppcheck-suppress functionStatic
+  template<typename ParseContext> constexpr auto parse(ParseContext &ctx) { return ctx.begin(); }
+
+  // cppcheck-suppress functionStatic
+  template<typename FormatContext> auto format(const glm::vec2 &vec, FormatContext &ctx)
+  {
+    return format_to(ctx.out(), "glm::vec2{{ X: {0}, Y: {1} }}", vec.x, vec.y);// NOLINT
+  }
+};
 
 template<> struct fmt::formatter<glm::vec3>
 {
@@ -192,7 +199,8 @@ template<> struct fmt::formatter<JE::Vertex>
   // cppcheck-suppress functionStatic
   template<typename FormatContext> auto format(const JE::Vertex &vertex, FormatContext &ctx)
   {
-    return format_to(ctx.out(), "Vertex{{\n{0},\nPosition: {1}\n}}", vertex.Color, vertex.Position);
+    return format_to(
+      ctx.out(), "Vertex{{\n{0},\nPosition: {1}\n,UV: {2}\n}}", vertex.Color, vertex.Position, vertex.UV);
   }
 };
 

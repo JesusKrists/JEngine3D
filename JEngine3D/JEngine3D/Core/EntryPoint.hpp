@@ -6,22 +6,15 @@
 #include "JEngine3D/Core/LoggerController.hpp"
 #include "JEngine3D/Platform/SDL/SDLPlatformBackend.hpp"
 #include "JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContextCreator.hpp"
-#include "JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContextCreator.hpp"
 #include "JEngine3D/Core/WindowController.hpp"
 #include "JEngine3D/Core/InputController.hpp"
-#include "JEngine3D/Renderer/Software/SoftwareRendererObjectCreator.hpp"
 
 namespace JE {
 
 using Backend = SDLPlatformBackend;
-
-#if defined(JE_SOFTWARE_CONTEXT)
-using GraphicsContextCreator = SDLSoftwareGraphicsContextCreator;
-using RendererObjectCreator = SoftwareRendererObjectCreator;
-#else
 using GraphicsContextCreator = SDLGLGraphicsContextCreator;
-using RendererAPICreator = OpenGLRendererAPICreator;
-#endif
+
+using RendererObjectCreator = OpenGLRendererObjectCreator;
 
 inline auto CreateApplication(const std::string_view &title) -> Scope<Application, MemoryTag::App>
 {

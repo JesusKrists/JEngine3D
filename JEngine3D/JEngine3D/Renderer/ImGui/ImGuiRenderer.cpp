@@ -3,65 +3,12 @@
 #include "JEngine3D/Core/Base.hpp"
 #include "JEngine3D/Core/Application.hpp"
 #include "JEngine3D/Renderer/ITexture.hpp"
-#include "JEngine3D/Renderer/Software/ISoftwareShader.hpp"
 
 #include <JEngine3D/Core/Types.hpp>
 #include <glm/ext/matrix_clip_space.hpp>
 #include <imgui.h>
 
 namespace JE {
-
-class ImGuiSoftwareShader final : public ISoftwareShader
-{
-public:
-  auto VertexShader(const void *vertexData, uint32_t vertexIndex, const JE::BufferLayout &layout) -> glm::vec4 override
-  {
-    UNUSED(layout);
-
-    const auto *position = reinterpret_cast<const glm::vec2 *>(vertexData);// NOLINT
-    const auto *uv =// NOLINT`
-      reinterpret_cast<const glm::vec2 *>(reinterpret_cast<const uint8_t *>(vertexData) + sizeof(glm::vec2));// NOLINT
-    const auto *color =// NOLINT`
-      reinterpret_cast<const uint32_t *>(// NOLINT
-        reinterpret_cast<const uint8_t *>(vertexData) + sizeof(glm::vec2) * 2);// NOLINT
-
-    varying_UV[vertexIndex] = uv;// NOLINT
-    varying_Color[vertexIndex] = color;// NOLINT
-    return m_OrthoMatrix * glm::vec4{ position->x, position->y, 0.0F, 1.0F };// NOLINT
-  }
-
-  auto FragmentShader(const glm::vec3 &barycentric, uint32_t &pixelColorOut) -> bool override
-  {
-    auto uv = JE::CalculateUVFromBarycentric(barycentric, *varying_UV[0], *varying_UV[1], *varying_UV[2]);// NOLINT
-    const auto *texture = JE::SoftwareRendererAPI::BoundTexture(static_cast<uint32_t>(flat_TextureIndex));
-
-    auto pixelColor =
-      JE::CalculateColorFromBarycentric(barycentric, *varying_Color[0], *varying_Color[1], *varying_Color[2]);
-
-    pixelColorOut = JE::MultiplyColor(JE::SampleTexture(uv, *texture), pixelColor);
-
-    return true;
-  }
-
-  [[nodiscard]] auto Name() const -> const std::string & override { return m_Name; }
-
-  void CalculateOrtho(const RectangleI &viewport)
-  {
-    m_OrthoMatrix = glm::ortho(static_cast<float>(viewport.Position.X),
-      static_cast<float>(viewport.Position.X + viewport.Size.Width),
-      static_cast<float>(viewport.Position.Y + viewport.Size.Height),
-      static_cast<float>(viewport.Position.Y));
-  }
-
-private:
-  std::array<const glm::vec2 *, 3> varying_UV{};
-  std::array<const uint32_t *, 3> varying_Color{};
-  int32_t flat_TextureIndex = 0;
-  glm::mat4 m_OrthoMatrix = glm::mat4{ 1.0F };
-  const std::string m_Name = "ImGuiTestShader";
-};
-
-static ImGuiSoftwareShader s_SoftwareShader;// NOLINT
 
 ImGuiRenderer::ImGuiRenderer()
 {
@@ -105,17 +52,18 @@ void ImGuiRenderer::RenderDrawData(ImDrawData *drawData)
     RenderCommandList(commandList, viewport, clipScale);
   }
 
-  s_SoftwareShader.Unbind();
+  // s_SoftwareShader.Unbind();
 }
 
 // NOLINTNEXTLINE
 void ImGuiRenderer::SetupRenderState(const RectangleI &viewport)
 {
+  UNUSED(viewport);
   // Setup OpenGL state (glViewport)
 
   // Setup shader stuff (Projection etc.)
-  s_SoftwareShader.Bind();
-  s_SoftwareShader.CalculateOrtho(viewport);
+  // s_SoftwareShader.Bind();
+  // s_SoftwareShader.CalculateOrtho(viewport);
 }
 
 // NOLINTNEXTLINE

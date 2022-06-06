@@ -36,10 +36,6 @@ if(ENABLE_DEBUG_BREAK)
   set(JEngine3D_DEFINITIONS ${JEngine3D_DEFINITIONS} JE_ENABLE_DEBUGBREAK)
 endif()
 
-if(USE_SDL_SOFTWARE_CONTEXT)
-  set(JEngine3D_DEFINITIONS ${JEngine3D_DEFINITIONS} JE_SOFTWARE_CONTEXT)
-endif()
-
 target_compile_definitions(JEngine3D PUBLIC ${JEngine3D_DEFINITIONS})
 
 #############################################################################################

@@ -25,19 +25,9 @@ set(JEngine3D_HEADERS
     JEngine3D/Platform/IPlatformBackend.hpp
     JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContext.hpp
     JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContextCreator.hpp
-    JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContext.hpp
-    JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContextCreator.hpp
     JEngine3D/Platform/SDL/SDLPlatformBackend.hpp
     JEngine3D/Renderer/ImGui/config.hpp
     JEngine3D/Renderer/ImGui/ImGuiRenderer.hpp
-    JEngine3D/Renderer/Software/ISoftwareShader.hpp
-    JEngine3D/Renderer/Software/SoftwareBuffer.hpp
-    JEngine3D/Renderer/Software/SoftwareFrameBufferObject.hpp
-    JEngine3D/Renderer/Software/SoftwareRasterizer.hpp
-    JEngine3D/Renderer/Software/SoftwareRendererAPI.hpp
-    JEngine3D/Renderer/Software/SoftwareRendererObjectCreator.hpp
-    JEngine3D/Renderer/Software/SoftwareTexture.hpp
-    JEngine3D/Renderer/Software/SoftwareVertexArray.hpp
     JEngine3D/Renderer/IBuffer.hpp
     JEngine3D/Renderer/IDrawTarget.hpp
     JEngine3D/Renderer/IRendererAPI.hpp
@@ -65,11 +55,7 @@ set(JEngine3D_SOURCES
     JEngine3D/Platform/IPlatformBackend.cpp
     JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContext.cpp
     JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContextCreator.cpp
-    JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContext.cpp
-    JEngine3D/Platform/SDL/Software/SDLSoftwareGraphicsContextCreator.cpp
     JEngine3D/Platform/SDL/SDLPlatformBackend.cpp
     JEngine3D/Renderer/ImGui/ImGuiRenderer.cpp
-    JEngine3D/Renderer/Software/SoftwareRasterizer.cpp
-    JEngine3D/Renderer/Software/SoftwareRendererAPI.cpp
     JEngine3D/Renderer/IRendererObjectCreator.cpp
     JEngine3D/Renderer/Renderer2D.cpp)
