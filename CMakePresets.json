@@ -223,6 +223,13 @@
             "configurePreset": "linux-gcc-debug"
         },
         {
+            "name": "test-linux-gcc-debug",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "linux-gcc-debug-nostaticanalysis"
+        },
+        {
             "name": "test-linux-gcc-release",
             "displayName": "Strict",
             "description": "Enable output and stop on failure",

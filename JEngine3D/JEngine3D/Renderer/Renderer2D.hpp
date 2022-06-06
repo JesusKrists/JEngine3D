@@ -61,7 +61,7 @@ private:
   void InitializeBatch(IDrawTarget *target);
   void Flush();
   void NextBatch();
-  auto PushTexture(const ITexture &texture) -> int32_t;
+  auto PushTexture(const ITexture &texture) -> int8_t;
 
   struct Renderer2DData
   {
@@ -80,7 +80,7 @@ private:
     Vector<Vertex, MemoryTag::Renderer> TriangleVertices;
     Vector<uint32_t, MemoryTag::Renderer> TriangleIndices;
     std::array<const ITexture *, MAX_TEXTURE_SLOTS> TextureSlots{};
-    int32_t TextureSlotIndex = -1;
+    int8_t TextureSlotIndex = -1;
 
     Scope<IVertexBuffer, MemoryTag::Renderer> VertexBuffer = IRendererObjectCreator::Get().CreateVertexBuffer(
       { { ShaderDataType::Float3, BufferElement::VERTEX_ATTRIBUTE_NAME },

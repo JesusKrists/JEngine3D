@@ -80,15 +80,15 @@ void Renderer2D::NextBatch()
   InitializeBatch(target);
 }
 
-auto Renderer2D::PushTexture(const ITexture &texture) -> int32_t
+auto Renderer2D::PushTexture(const ITexture &texture) -> int8_t
 {
-  int32_t textureIndex = -1;
+  int8_t textureIndex = -1;
   if (Data.TextureSlotIndex == -1) {
-    Data.TextureSlots[static_cast<uint32_t>(++Data.TextureSlotIndex)] = &texture;// NOLINT
+    Data.TextureSlots[static_cast<size_t>(++Data.TextureSlotIndex)] = &texture;// NOLINT
     return Data.TextureSlotIndex;
   } else {
 
-    for (int i = 0; i <= Data.TextureSlotIndex; i++) {
+    for (int8_t i = 0; i <= Data.TextureSlotIndex; i++) {
       if (i == MAX_TEXTURE_SLOTS) { break; }
 
       if (Data.TextureSlots[static_cast<size_t>(i)] == &texture) {// NOLINT
@@ -100,7 +100,7 @@ auto Renderer2D::PushTexture(const ITexture &texture) -> int32_t
 
   if (textureIndex == -1) {
     if (static_cast<uint32_t>(Data.TextureSlotIndex) >= MAX_TEXTURE_SLOTS) { NextBatch(); }
-    Data.TextureSlots[static_cast<uint32_t>(++Data.TextureSlotIndex)] = &texture;// NOLINT
+    Data.TextureSlots[static_cast<size_t>(++Data.TextureSlotIndex)] = &texture;// NOLINT
     textureIndex = Data.TextureSlotIndex;
   }
 
@@ -151,7 +151,7 @@ void Renderer2D::DrawTriangle(Vertex &vertex0, Vertex &vertex1, Vertex &vertex2,
 {
   if (TriangleCount() + 1 > Data.TrianglesPerBatch) { NextBatch(); }
 
-  int32_t textureIndex = PushTexture(texture);
+  auto textureIndex = PushTexture(texture);
 
   vertex0.TextureIndex = textureIndex;
   vertex1.TextureIndex = textureIndex;
@@ -202,7 +202,7 @@ void Renderer2D::DrawQuad(const glm::mat4 &transform, const ITexture &texture, c
 {
   if (TriangleCount() + 2 > Data.TrianglesPerBatch) { NextBatch(); }
 
-  int32_t textureIndex = PushTexture(texture);
+  auto textureIndex = PushTexture(texture);
 
   auto vertexOffset = Data.TriangleVertices.size();
 

@@ -73,13 +73,17 @@ struct Color
 
 struct Vertex
 {
-  constexpr Vertex(const glm::vec3 &position, const Color &color, const glm::vec2 &uv = { 0, 0 })// NOLINT
-    : Position(position), Color(color), UV(uv)
+  constexpr Vertex(const glm::vec3 &position,
+    const Color &color,
+    const glm::vec2 &uv = { 0, 0 },// NOLINT
+    int8_t textureIndex = 0)
+    : Position(position), Color(color), UV(uv), TextureIndex(textureIndex)
   {}
 
   glm::vec3 Position;
   JE::Color Color;
   glm::vec2 UV;
+  int8_t TextureIndex;
 };
 
 

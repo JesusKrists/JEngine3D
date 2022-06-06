@@ -69,7 +69,7 @@ void UILayer::OnUpdate()
       m_ResizeGameViewport = false;
     }
 
-    static constexpr auto CLEAR_COLOR = JE::Color{ 0.1F, 0.1F, 0.1F, 1.0F };
+    static constexpr auto CLEAR_COLOR = JE::Color{ 0.0F, 1.0F, 1.0F, 1.0F };
 
     auto &rendererAPI = JE_APP.RendererAPI();
     auto &renderer2D = JE_APP.Renderer2D();
@@ -77,7 +77,26 @@ void UILayer::OnUpdate()
     rendererAPI.SetClearColor(CLEAR_COLOR);
     rendererAPI.Clear();
 
-    UNUSED(renderer2D);
+
+    renderer2D.BeginBatch();
+
+    auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
+    auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
+    auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
+
+    auto vertex3 = JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
+    auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
+    auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
+
+    constexpr auto position = glm::vec3{ -0.80F, -0.80F, 0.0F };
+    constexpr auto size = glm::vec2{ 0.15F, 0.15F };
+    constexpr auto color = JE::Color{ 1.0F, 0.0F, 1.0F, 1.0F };
+
+    renderer2D.DrawTriangle(vertex0, vertex1, vertex2);
+    renderer2D.DrawTriangle(vertex3, vertex4, vertex5);
+    renderer2D.DrawQuad(position, size, color);
+
+    renderer2D.EndBatch();
 
     /*if (m_GameViewportFBO.Size() != JE::Size2DI{ 0, 0 }) {
       m_GameViewportFBO.Bind();

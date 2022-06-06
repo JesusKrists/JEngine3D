@@ -1,9 +1,9 @@
 #pragma once
 
+#include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Renderer/IVertexArray.hpp"
 #include "JEngine3D/Renderer/IRendererObjectCreator.hpp"
-#include <JEngine3D/Core/Types.hpp>
-#include <JEngine3D/Renderer/ITexture.hpp>
+#include "JEngine3D/Renderer/ITexture.hpp"
 
 struct ImDrawData;
 struct ImDrawList;

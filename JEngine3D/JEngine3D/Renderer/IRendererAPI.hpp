@@ -15,7 +15,7 @@ class IRendererAPI
 public:
   virtual ~IRendererAPI() = default;
 
-  virtual void SetViewport(const RectangleI &viewportRect) = 0;
+  virtual void SetViewport(const RectangleI &viewport) = 0;
   virtual void SetClearColor(const Color &color) = 0;
   virtual void Clear() = 0;
 
