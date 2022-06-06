@@ -31,27 +31,17 @@ static constexpr auto SDLKeyCodeToJEngine3DKeyCode(SDL_Keycode keyCode) -> KeyCo
 
 static auto s_Initialized = false;// NOLINT
 
-SDLPlatformBackend::SDLPlatformBackend() { JE::UNUSED(Initialize()); }
-
-SDLPlatformBackend::~SDLPlatformBackend()
-{
-  if (m_ClipboardText != nullptr) {
-    SDL_free(m_ClipboardText);// NOLINT(cppcoreguidelines-no-malloc,hicpp-no-malloc,cppcoreguidelines-owning-memory)
-  }
-  SDL_Quit();
-}
-
-auto SDLPlatformBackend::Initialize() -> bool
+SDLPlatformBackend::SDLPlatformBackend()
 {
   ASSERT(!s_Initialized, "Backend already initialized");
 
   if (SDL_Init(SDL_INIT_VIDEO) != 0) {
     JE::Logger::CoreLogger().error("SDL Failed to initialize - {}", SDL_GetError());
-    return false;
+    DEBUGBREAK();
   }
 
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 3);
-  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);// NOLINT
   SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
   SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
 
@@ -64,7 +54,14 @@ auto SDLPlatformBackend::Initialize() -> bool
   SDL_SetHint(SDL_HINT_MOUSE_FOCUS_CLICKTHROUGH, "1");
 
   s_Initialized = true;
-  return true;
+}
+
+SDLPlatformBackend::~SDLPlatformBackend()
+{
+  if (m_ClipboardText != nullptr) {
+    SDL_free(m_ClipboardText);// NOLINT(cppcoreguidelines-no-malloc,hicpp-no-malloc,cppcoreguidelines-owning-memory)
+  }
+  SDL_Quit();
 }
 
 auto SDLPlatformBackend::Initialized() -> bool { return s_Initialized; }

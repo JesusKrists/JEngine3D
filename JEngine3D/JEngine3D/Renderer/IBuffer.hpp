@@ -57,7 +57,7 @@ struct BufferElement
     : Name(name), Type(type), Size(ShaderDataTypeSize(type)), Normalize(normalize)
   {}
 
-  [[nodiscard]] inline auto ComponentCount() const -> uint32_t
+  [[nodiscard]] inline auto ComponentCount() const -> size_t
   {
     switch (Type) {
     case ShaderDataType::Float:
@@ -155,7 +155,7 @@ public:
 
   virtual void SetData(const std::span<const uint32_t> &data) = 0;
 
-  [[nodiscard]] virtual auto Count() const -> size_t = 0;
+  [[nodiscard]] virtual auto IndexCount() const -> size_t = 0;
 };
 
 

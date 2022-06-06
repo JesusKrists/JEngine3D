@@ -8,6 +8,8 @@ namespace JE {
 class IShader
 {
 public:
+  enum class Type { VERTEX, FRAGMENT };
+
   virtual ~IShader() = default;
 
   virtual void Bind() const = 0;

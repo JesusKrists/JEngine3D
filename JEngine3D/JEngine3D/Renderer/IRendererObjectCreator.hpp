@@ -3,6 +3,7 @@
 #include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Core/MemoryController.hpp"// for Scope, MemoryTag
 #include "JEngine3D/Renderer/IBuffer.hpp"
+#include "JEngine3D/Renderer/IShader.hpp"
 #include "JEngine3D/Renderer/IVertexArray.hpp"
 
 namespace JE {
@@ -39,6 +40,10 @@ public:
   [[nodiscard]] virtual auto CreateVertexArray() -> Scope<IVertexArray, MemoryTag::Renderer> = 0;
 
   [[nodiscard]] virtual auto CreateTexture() -> Scope<ITexture, MemoryTag::Renderer> = 0;
+
+  [[nodiscard]] virtual auto CreateShader(const std::string_view &name,
+    const std::string_view &vertexSource,
+    const std::string_view &fragmentSource) -> Scope<IShader, MemoryTag::Renderer> = 0;
 
 private:
   [[nodiscard]] virtual auto CreateAPI() -> Scope<IRendererAPI, MemoryTag::Renderer> = 0;

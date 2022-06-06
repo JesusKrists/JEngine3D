@@ -5,7 +5,7 @@
 
 namespace JE {
 
-class OpenGLTexture : public ITexture
+class OpenGLTexture final : public ITexture
 {
 public:
   void SetData(const std::span<const uint8_t> &data, const Size2DI &textureDimensions) override

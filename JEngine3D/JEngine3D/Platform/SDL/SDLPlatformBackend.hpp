@@ -15,7 +15,7 @@ public:
   SDLPlatformBackend();
   virtual ~SDLPlatformBackend();// NOLINT
 
-  [[nodiscard]] auto Initialize() -> bool override;
+
   [[nodiscard]] auto Initialized() -> bool override;
 
   [[nodiscard]] auto CreateWindow(const std::string_view &title,

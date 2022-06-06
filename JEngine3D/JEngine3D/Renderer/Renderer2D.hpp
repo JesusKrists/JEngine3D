@@ -6,6 +6,7 @@
 #include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Renderer/IRendererAPI.hpp"
 #include "JEngine3D/Renderer/ITexture.hpp"
+#include "JEngine3D/Renderer/IShader.hpp"
 #include "JEngine3D/Renderer/IBuffer.hpp"
 #include "JEngine3D/Renderer/IVertexArray.hpp"
 #include "JEngine3D/Renderer/IRendererObjectCreator.hpp"
@@ -90,6 +91,7 @@ private:
 
     Scope<IIndexBuffer, MemoryTag::Renderer> IndexBuffer = IRendererObjectCreator::Get().CreateIndexBuffer();
     Scope<IVertexArray, MemoryTag::Renderer> VertexArray = IRendererObjectCreator::Get().CreateVertexArray();
+    Scope<IShader, MemoryTag::Renderer> Shader;
   };// namespace JE
 
   Renderer2DData Data;

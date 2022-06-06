@@ -4,6 +4,7 @@
 #include "JEngine3D/Platform/IGraphicsContext.hpp"// for IGraphics...
 #include "JEngine3D/Core/LoggerController.hpp"// for Logger
 
+#include <JEngine3D/Core/Base.hpp>
 #include <exception>// for exception
 #include <cstring>// IWYU pragma: keep
 #include <SDL_video.h>// for SDL_GL_Cr...
@@ -22,6 +23,10 @@ auto SDLGLGraphicsContextCreator::CreateContext(IPlatformBackend::NativeWindowHa
 
   SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
   auto *context = SDL_GL_CreateContext(static_cast<SDL_Window *>(handle));
+  if (context == nullptr) {
+    JE::Logger::CoreLogger().error("SDL Failed to initialize - {}", SDL_GetError());
+    DEBUGBREAK();
+  }
 
   if (!s_GLEWInitialized) {
     glewExperimental = GL_TRUE;
@@ -30,6 +35,8 @@ auto SDLGLGraphicsContextCreator::CreateContext(IPlatformBackend::NativeWindowHa
       Logger::CoreLogger().error("GLEW failed to initialize - {}",
         reinterpret_cast<const char *>(// NOLINT(cppcoreguidelines-pro-type-reinterpret-cast)
           glewGetErrorString(success)));
+
+      DEBUGBREAK();
     }
 
     s_GLEWInitialized = true;

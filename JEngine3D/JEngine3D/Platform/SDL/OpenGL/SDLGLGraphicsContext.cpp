@@ -1,5 +1,7 @@
 #include "SDLGLGraphicsContext.hpp"
 
+#include "JEngine3D/Core/Application.hpp"
+
 #include <cstring>// IWYU pragma: keep
 #include <SDL_video.h>// for SDL_GL_DeleteContext, SDL_GL_MakeCurrent, SDL...
 
@@ -19,6 +21,7 @@ void SDLGLGraphicsContext::Destroy() { SDL_GL_DeleteContext(NativeContextHandle(
 
 void SDLGLGraphicsContext::MakeContextCurrent()
 {
+  JE_APP.RendererAPI().SetViewport({ { 0, 0 }, DrawableSize() });
   SDL_GL_MakeCurrent(static_cast<SDL_Window *>(NativeWindowHandle()), NativeContextHandle());
 }
 

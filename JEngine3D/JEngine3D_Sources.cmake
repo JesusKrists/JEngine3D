@@ -31,6 +31,7 @@ set(JEngine3D_HEADERS
     JEngine3D/Renderer/OpenGL/OpenGLBuffer.hpp
     JEngine3D/Renderer/OpenGL/OpenGLRendererAPI.hpp
     JEngine3D/Renderer/OpenGL/OpenGLRendererObjectCreator.hpp
+    JEngine3D/Renderer/OpenGL/OpenGLShader.hpp
     JEngine3D/Renderer/OpenGL/OpenGLTexture.hpp
     JEngine3D/Renderer/OpenGL/OpenGLVertexArray.hpp
     JEngine3D/Renderer/IBuffer.hpp
@@ -62,7 +63,10 @@ set(JEngine3D_SOURCES
     JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContextCreator.cpp
     JEngine3D/Platform/SDL/SDLPlatformBackend.cpp
     JEngine3D/Renderer/ImGui/ImGuiRenderer.cpp
+    JEngine3D/Renderer/OpenGL/OpenGLBuffer.cpp
     JEngine3D/Renderer/OpenGL/OpenGLRendererAPI.cpp
     JEngine3D/Renderer/OpenGL/OpenGLRendererObjectCreator.cpp
+    JEngine3D/Renderer/OpenGL/OpenGLShader.cpp
+    JEngine3D/Renderer/OpenGL/OpenGLVertexArray.cpp
     JEngine3D/Renderer/IRendererObjectCreator.cpp
     JEngine3D/Renderer/Renderer2D.cpp)

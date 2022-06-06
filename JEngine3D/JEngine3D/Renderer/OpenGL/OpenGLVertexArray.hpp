@@ -4,13 +4,21 @@
 
 namespace JE {
 
-class OpenGLVertexArray : public IVertexArray
+// NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
+class OpenGLVertexArray final : public IVertexArray
 {
 public:
-  void Bind() const override {}
-  void Unbind() const override {}
+  OpenGLVertexArray();
+  virtual ~OpenGLVertexArray();// NOLINT
 
-  void ConfigureVertexBufferLayout(const IVertexBuffer &vertexBuffer) override { UNUSED(vertexBuffer); }
+  void Bind() const override;
+  void Unbind() const override;
+
+  void ConfigureVertexBufferLayout(const BufferLayout &bufferLayout) override;
+
+private:
+  uint32_t m_RendererID = 0;
+  uint32_t m_LocationIndex = 0;
 };
 
 }// namespace JE

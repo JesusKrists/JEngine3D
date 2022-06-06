@@ -27,7 +27,6 @@ public:
   static constexpr auto DISPLAY_USABLE_BOUNDS = JE::RectangleI{ { 0, 0 }, { 600, 480 } };
   static constexpr float DISPLAY_DPI = 100;
 
-  [[nodiscard]] inline auto Initialize() -> bool override { return true; }
   [[nodiscard]] inline auto Initialized() -> bool override { return true; }
 
   [[nodiscard]] inline auto CreateWindow(const std::string_view &title,

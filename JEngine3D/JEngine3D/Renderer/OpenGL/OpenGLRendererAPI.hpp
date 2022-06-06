@@ -4,9 +4,11 @@
 
 namespace JE {
 
-class OpenGLRendererAPI : public IRendererAPI
+class OpenGLRendererAPI final : public IRendererAPI
 {
 public:
+  OpenGLRendererAPI();
+
   void SetViewport(const RectangleI &viewport) override;
   void SetClearColor(const Color &color) override;
   void Clear() override;

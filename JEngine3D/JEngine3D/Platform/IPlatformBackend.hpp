@@ -48,7 +48,6 @@ public:
 
   virtual ~IPlatformBackend() { s_PlatformBackendInstance = nullptr; };
 
-  [[nodiscard]] virtual auto Initialize() -> bool = 0;
   [[nodiscard]] virtual auto Initialized() -> bool = 0;
 
   [[nodiscard]] virtual auto CreateWindow(const std::string_view &title,

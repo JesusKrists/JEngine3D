@@ -17,14 +17,14 @@ public:
   virtual void Bind() const = 0;
   virtual void Unbind() const = 0;
 
-  virtual void ConfigureVertexBufferLayout(const IVertexBuffer &vertexBuffer) = 0;
+  virtual void ConfigureVertexBufferLayout(const BufferLayout &bufferLayout) = 0;
 
   [[nodiscard]] inline auto VertexBuffers() const -> const VertexBufferContainer & { return m_VertexBuffers; }
   inline void AddVertexBuffer(const IVertexBuffer &vertexBuffer)
   {
     Bind();
     vertexBuffer.Bind();
-    ConfigureVertexBufferLayout(vertexBuffer);
+    ConfigureVertexBufferLayout(vertexBuffer.BufferLayout());
     vertexBuffer.Unbind();
     Unbind();
 
