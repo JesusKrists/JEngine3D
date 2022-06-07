@@ -67,6 +67,7 @@ set(JEngine3D_SOURCES
     JEngine3D/Renderer/OpenGL/OpenGLRendererAPI.cpp
     JEngine3D/Renderer/OpenGL/OpenGLRendererObjectCreator.cpp
     JEngine3D/Renderer/OpenGL/OpenGLShader.cpp
+    JEngine3D/Renderer/OpenGL/OpenGLTexture.cpp
     JEngine3D/Renderer/OpenGL/OpenGLVertexArray.cpp
     JEngine3D/Renderer/IRendererObjectCreator.cpp
     JEngine3D/Renderer/Renderer2D.cpp)

@@ -6,7 +6,34 @@
 #include <GL/glew.h>
 #include <array>
 
+#include <glm/gtc/type_ptr.hpp>
+
 namespace JE {
+
+static void CheckShaderErrors(uint32_t rendererID, GLenum status)
+{
+  // print compile errors if any
+  int32_t success = 0;
+  if (status == GL_LINK_STATUS) {
+    glGetProgramiv(rendererID, status, &success);
+  } else {
+    glGetShaderiv(rendererID, status, &success);
+  }
+  if (success == 0) {
+    std::array<char, 512> infoLog{};// NOLINT
+    glGetShaderInfoLog(rendererID, infoLog.size(), nullptr, infoLog.data());
+    Logger::CoreLogger().error("Failed to compile/link shader: {}", infoLog.data());
+    DEBUGBREAK();
+  };
+}
+
+static auto GetUniformLocation(uint32_t rendererID, const std::string_view &uniformName) -> int32_t
+{
+  auto location = glGetUniformLocation(rendererID, uniformName.data());
+  if (location == -1) { Logger::CoreLogger().error("Uniform location not found: {}", uniformName.data()); }
+
+  return location;
+}
 
 static auto ShaderTypeToOpenGLShaderType(IShader::Type type) -> GLuint
 {
@@ -32,16 +59,7 @@ OpenGLShader::OpenGLShader(const std::string_view &name,// NOLINT
   glAttachShader(m_RendererID, vertexShader);
   glAttachShader(m_RendererID, fragmentShader);
   glLinkProgram(m_RendererID);
-
-  // print linking errors if any
-  int32_t success = 0;
-  glGetProgramiv(m_RendererID, GL_LINK_STATUS, &success);
-  if (success == 0) {
-    std::array<char, 512> infoLog{};// NOLINT
-    glGetShaderInfoLog(m_RendererID, infoLog.size(), nullptr, infoLog.data());
-    Logger::CoreLogger().error("Failed to link shader: {}", infoLog.data());
-    DEBUGBREAK();
-  };
+  CheckShaderErrors(m_RendererID, GL_LINK_STATUS);
 
   // delete the shaders as they're linked into our program now and no longer necessary
   glDeleteShader(vertexShader);
@@ -54,6 +72,19 @@ void OpenGLShader::Bind() const { glUseProgram(m_RendererID); }
 
 void OpenGLShader::Unbind() const { glUseProgram(0); }
 
+
+void OpenGLShader::SetInt(const std::string_view &name, int value)
+{
+  auto location = GetUniformLocation(m_RendererID, name);
+  glUniform1i(location, value);
+}
+
+void OpenGLShader::SetMat4(const std::string_view &name, const glm::mat4 &value)
+{
+  auto location = GetUniformLocation(m_RendererID, name);
+  glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
+}
+
 auto OpenGLShader::CreateShader(Type shaderType, const std::string_view &shaderSource) -> uint32_t
 {
   auto shaderSourceStr = std::string(shaderSource);
@@ -62,16 +93,7 @@ auto OpenGLShader::CreateShader(Type shaderType, const std::string_view &shaderS
   auto shader = glCreateShader(ShaderTypeToOpenGLShaderType(shaderType));
   glShaderSource(shader, 1, &shaderSourcePtr, nullptr);
   glCompileShader(shader);
-
-  // print compile errors if any
-  int32_t success = 0;
-  glGetShaderiv(shader, GL_COMPILE_STATUS, &success);
-  if (success == 0) {
-    std::array<char, 512> infoLog{};// NOLINT
-    glGetShaderInfoLog(shader, infoLog.size(), nullptr, infoLog.data());
-    Logger::CoreLogger().error("Failed to compile shader: {}", infoLog.data());
-    DEBUGBREAK();
-  };
+  CheckShaderErrors(shader, GL_COMPILE_STATUS);
 
   return shader;
 }

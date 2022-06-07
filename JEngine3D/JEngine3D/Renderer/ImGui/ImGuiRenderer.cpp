@@ -8,12 +8,43 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <imgui.h>
 
+#include <GL/glew.h>
+
 namespace JE {
+
+static constexpr std::string_view VERTEX_SHADER_SOURCE =
+  "#version 330 core\n"
+  "layout (location = 0) in vec2 a_Position;\n"
+  "layout (location = 1) in vec2 a_UV;\n"
+  "layout (location = 2) in vec4 a_Color;\n"
+  "out vec4 Frag_Color;\n"
+  "out vec2 Frag_UV;\n"
+  "uniform mat4 u_OrthoProjection;\n"
+  "void main()\n"
+  "{\n"
+  "    Frag_Color = a_Color;\n"
+  "    Frag_UV = a_UV;\n"
+  "    gl_Position = u_OrthoProjection * vec4(a_Position.xy, 0, 1);\n"
+  "}\n";
+
+static constexpr std::string_view FRAGMENT_SHADER_SOURCE =
+  "#version 330 core\n"
+  "layout (location = 0) out vec4 Out_Color;\n"
+  "in vec4 Frag_Color;\n"
+  "in vec2 Frag_UV;\n"
+  "uniform sampler2D u_Texture;\n"
+  "void main()\n"
+  "{\n"
+  "    Out_Color = Frag_Color * texture(u_Texture, Frag_UV);\n"
+  "}\n";
 
 ImGuiRenderer::ImGuiRenderer()
 {
   m_VertexArray->AddVertexBuffer(*m_VertexBuffer);
   m_VertexArray->SetIndexBuffer(*m_IndexBuffer);
+
+  m_Shader =
+    IRendererObjectCreator::Get().CreateShader("JEngine3D ImGui Shader", VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
 }
 
 void ImGuiRenderer::Initialize()
@@ -25,8 +56,11 @@ void ImGuiRenderer::Initialize()
   int fontHeight = 0;
   imguiIO.Fonts->GetTexDataAsRGBA32(&textureData, &fontWidth, &fontHeight);
 
-  m_FontTexture->SetData({ textureData, static_cast<size_t>(fontWidth * fontHeight * 4) }, { fontWidth, fontHeight });
-  imguiIO.Fonts->TexID = m_FontTexture.get();
+  m_FontTexture = IRendererObjectCreator::Get().CreateTexture("ImGui Default Font",
+    { textureData, static_cast<size_t>(fontWidth * fontHeight * 4) },
+    { fontWidth, fontHeight },
+    TextureFormat::RGBA8);
+  imguiIO.Fonts->TexID = m_FontTexture->RendererID();
 }
 
 void ImGuiRenderer::RenderDrawData(ImDrawData *drawData)
@@ -52,18 +86,24 @@ void ImGuiRenderer::RenderDrawData(ImDrawData *drawData)
     RenderCommandList(commandList, viewport, clipScale);
   }
 
-  // s_SoftwareShader.Unbind();
+  m_Shader->Unbind();
 }
 
 // NOLINTNEXTLINE
 void ImGuiRenderer::SetupRenderState(const RectangleI &viewport)
 {
-  UNUSED(viewport);
-  // Setup OpenGL state (glViewport)
+  // Refactor to RendererAPI calls
+  glEnable(GL_SCISSOR_TEST);
+  glDisable(GL_DEPTH_TEST);
 
   // Setup shader stuff (Projection etc.)
-  // s_SoftwareShader.Bind();
-  // s_SoftwareShader.CalculateOrtho(viewport);
+  m_Shader->Bind();
+  m_Shader->SetMat4("u_OrthoProjection",
+    glm::ortho(static_cast<float>(viewport.Position.X),
+      static_cast<float>(viewport.Position.X + viewport.Size.Width),
+      static_cast<float>(viewport.Position.Y + viewport.Size.Height),
+      static_cast<float>(viewport.Position.Y)));
+  m_Shader->SetInt("u_Texture", 0);
 }
 
 // NOLINTNEXTLINE
@@ -92,17 +132,17 @@ void ImGuiRenderer::RenderCommandList(const ImDrawList *drawList, const Rectangl
     if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y) { continue; }
 
     // Apply scissor/clipping rectangle (Y is inverted in OpenGL)
-    /*glScissor((int)clip_min.x,
-      (int)((float)fb_height - clip_max.y),
-      (int)(clip_max.x - clip_min.x),
-      (int)(clip_max.y - clip_min.y));*/
+    glScissor(static_cast<int>(clip_min.x),
+      static_cast<int>((static_cast<float>(viewport.Size.Height) - clip_max.y)),
+      static_cast<int>((clip_max.x - clip_min.x)),
+      static_cast<int>((clip_max.y - clip_min.y)));// Refactor to RendererAPI call
 
     // Bind Texture
-    const auto *texture = command.GetTexID();// NOLINT
-    texture->Bind();
+    auto rendererID = command.GetTexID();// NOLINT
+    JE_APP.RendererAPI().BindTexture(rendererID);
 
     // DrawCall
-    JE_APP.RendererAPI().DrawIndexed(*m_VertexArray);
+    JE_APP.RendererAPI().DrawIndexed(*m_VertexArray);// Refactor for offset indexed draw call
   }
 }
 

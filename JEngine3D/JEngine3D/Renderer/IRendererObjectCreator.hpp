@@ -5,11 +5,11 @@
 #include "JEngine3D/Renderer/IBuffer.hpp"
 #include "JEngine3D/Renderer/IShader.hpp"
 #include "JEngine3D/Renderer/IVertexArray.hpp"
+#include "JEngine3D/Renderer/ITexture.hpp"
 
 namespace JE {
 
 class IRendererAPI;
-class ITexture;
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
 class IRendererObjectCreator
@@ -39,7 +39,10 @@ public:
     -> Scope<IIndexBuffer, MemoryTag::Renderer> = 0;
   [[nodiscard]] virtual auto CreateVertexArray() -> Scope<IVertexArray, MemoryTag::Renderer> = 0;
 
-  [[nodiscard]] virtual auto CreateTexture() -> Scope<ITexture, MemoryTag::Renderer> = 0;
+  [[nodiscard]] virtual auto CreateTexture(const std::string_view &sourcePath,
+    const std::span<const uint8_t> &textureData,
+    const Size2DI &textureDimensions,
+    TextureFormat format) -> Scope<ITexture2D, MemoryTag::Renderer> = 0;
 
   [[nodiscard]] virtual auto CreateShader(const std::string_view &name,
     const std::string_view &vertexSource,

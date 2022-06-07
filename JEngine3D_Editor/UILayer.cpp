@@ -5,6 +5,7 @@
 #include <JEngine3D/Debug/View/IImGuiDebugView.hpp>
 #include <JEngine3D/Core/ImGui/ImGuiLayer.hpp>
 #include <JEngine3D/Core/Types.hpp>
+#include <JEngine3D/Renderer/ITexture.hpp>
 #include <JEngine3D/Renderer/Renderer2D.hpp>
 #include <JEngine3D/Renderer/IRendererObjectCreator.hpp>
 
@@ -30,12 +31,11 @@ void UILayer::OnCreate()
 
   LoadImGuiSettings();
 
-  // Prevent first frame clear from asserting
-  m_TestTexture = JE::IRendererObjectCreator::Get().CreateTexture();
-  m_MemeTexture = JE::IRendererObjectCreator::Get().CreateTexture();
-
   constexpr uint32_t WHITE_COLOR = 0xFFFFFFFF;
-  m_TestTexture->SetData({ reinterpret_cast<const uint8_t *>(&WHITE_COLOR), 4 }, { 1, 1 });// NOLINT
+  m_TestTexture = JE::IRendererObjectCreator::Get().CreateTexture("UILayer test texture",
+    { reinterpret_cast<const uint8_t *>(&WHITE_COLOR), 4 },// NOLINT
+    { 1, 1 },
+    JE::TextureFormat::RGBA8);
 
 
   stbi_set_flip_vertically_on_load(1);
@@ -43,7 +43,10 @@ void UILayer::OnCreate()
   int imageChannels = 0;
   unsigned char *data =
     stbi_load("assets/textures/testtexture.jpg", &imageSize.Width, &imageSize.Height, &imageChannels, 4);
-  m_MemeTexture->SetData({ data, static_cast<size_t>(imageSize.Width * imageSize.Height * 4) }, imageSize);
+  m_MemeTexture = JE::IRendererObjectCreator::Get().CreateTexture("assets/textures/testtexture.jpg",
+    { data, static_cast<size_t>(imageSize.Width * imageSize.Height * 4) },
+    imageSize,
+    JE::TextureFormat::RGBA8);
   stbi_image_free(data);
 }
 
@@ -72,32 +75,40 @@ void UILayer::OnUpdate()
     static constexpr auto CLEAR_COLOR = JE::Color{ 0.1F, 0.1F, 0.1F, 1.0F };
 
     auto &rendererAPI = JE_APP.RendererAPI();
-    auto &renderer2D = JE_APP.Renderer2D();
+    // auto &renderer2D = JE_APP.Renderer2D();
 
     rendererAPI.SetClearColor(CLEAR_COLOR);
     rendererAPI.Clear();
 
+    /*renderer2D.BeginBatch();
 
-    renderer2D.BeginBatch();
+    auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
+    auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
+    auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
 
-    constexpr auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
-    constexpr auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
-    constexpr auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
-
-    constexpr auto vertex3 =
-      JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
-    constexpr auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
-    constexpr auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
+    auto vertex3 = JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
+    auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
+    auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
 
     constexpr auto position = glm::vec3{ -0.80F, -0.80F, 0.0F };
     constexpr auto size = glm::vec2{ 0.15F, 0.15F };
     constexpr auto color = JE::Color{ 1.0F, 0.0F, 1.0F, 1.0F };
 
-    renderer2D.DrawTriangle(vertex0, vertex1, vertex2);
+    // constexpr auto position2 = glm::vec3{ 0.0F, 0.0F, 0.0F };
+    constexpr auto color2 = JE::Color{ 1.0F, 1.0F, 1.0F, 1.0F };
+
+    renderer2D.DrawTriangle(vertex0, vertex1, vertex2, *m_TestTexture);
     renderer2D.DrawTriangle(vertex3, vertex4, vertex5);
     renderer2D.DrawQuad(position, size, color);
+    for (int y = 0; y < 10; y++) {// NOLINT
+      for (int x = 0; x < 10; x++) {// NOLINT
+        const auto newPosition =
+          glm::vec3{ -0.9F + (static_cast<float>(x) / 5), -0.9F + (static_cast<float>(y) / 5), 0 };
+        renderer2D.DrawQuad(newPosition, size, *m_MemeTexture, color2);
+      }
+    }
 
-    renderer2D.EndBatch();
+    renderer2D.EndBatch();*/
 
     /*if (m_GameViewportFBO.Size() != JE::Size2DI{ 0, 0 }) {
       m_GameViewportFBO.Bind();

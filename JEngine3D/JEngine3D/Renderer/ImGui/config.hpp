@@ -1,8 +1,8 @@
 #pragma once
 
 namespace JE {
-class ITexture;
+class ITexture2D;
 }
 
 #define ImDrawIdx unsigned int
-#define ImTextureID JE::ITexture *
+#define ImTextureID unsigned int

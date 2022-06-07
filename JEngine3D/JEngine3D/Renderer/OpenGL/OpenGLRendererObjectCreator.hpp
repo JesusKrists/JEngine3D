@@ -14,7 +14,10 @@ public:
     -> Scope<IIndexBuffer, MemoryTag::Renderer> override;
   [[nodiscard]] auto CreateVertexArray() -> Scope<IVertexArray, MemoryTag::Renderer> override;
 
-  [[nodiscard]] auto CreateTexture() -> Scope<ITexture, MemoryTag::Renderer> override;
+  [[nodiscard]] auto CreateTexture(const std::string_view &sourcePath,
+    const std::span<const uint8_t> &textureData,
+    const Size2DI &textureDimensions,
+    TextureFormat format) -> Scope<ITexture2D, MemoryTag::Renderer> override;
 
   [[nodiscard]] auto CreateShader(const std::string_view &name,
     const std::string_view &vertexSource,

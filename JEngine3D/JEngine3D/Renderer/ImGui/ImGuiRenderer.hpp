@@ -31,12 +31,12 @@ private:
   Scope<IVertexBuffer, MemoryTag::Renderer> m_VertexBuffer =
     IRendererObjectCreator::Get().CreateVertexBuffer({ { ShaderDataType::Float2, BufferElement::VERTEX_ATTRIBUTE_NAME },
       { ShaderDataType::Float2, BufferElement::UV_ATTRIBUTE_NAME },
-      { ShaderDataType::Int, BufferElement::COLOR_ATTRIBUTE_NAME } });
+      { ShaderDataType::UByte4, BufferElement::COLOR_ATTRIBUTE_NAME, true } });
 
   Scope<IIndexBuffer, MemoryTag::Renderer> m_IndexBuffer = IRendererObjectCreator::Get().CreateIndexBuffer();
   Scope<IVertexArray, MemoryTag::Renderer> m_VertexArray = IRendererObjectCreator::Get().CreateVertexArray();
-
-  Scope<ITexture, MemoryTag::Renderer> m_FontTexture = IRendererObjectCreator::Get().CreateTexture();
+  Scope<ITexture2D, MemoryTag::Renderer> m_FontTexture;
+  Scope<IShader, MemoryTag::Renderer> m_Shader;
 };
 
 

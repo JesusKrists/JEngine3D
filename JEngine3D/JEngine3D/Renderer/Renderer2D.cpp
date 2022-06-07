@@ -7,6 +7,7 @@
 #include "JEngine3D/Core/WindowController.hpp"// for Window
 
 #include <JEngine3D/Renderer/IRendererObjectCreator.hpp>
+#include <JEngine3D/Renderer/IShader.hpp>
 #include <glm/gtx/transform.hpp>
 
 namespace JE {
@@ -46,43 +47,27 @@ static constexpr std::string_view FRAGMENT_SHADER_SOURCE =
   "in vec4 Frag_Color;\n"
   "in vec2 Frag_UV;\n"
   "flat in int Frag_TexIndex;\n"
-  "uniform sampler2D u_Textures[32];\n"
+  "uniform sampler2D u_Texture[16];\n"
   "void main()\n"
   "{\n"
   "    if (Frag_TexIndex != -1) {\n"
   "        switch (Frag_TexIndex) {\n"
-  "            case  0: Out_Color = Frag_Color * texture(u_Textures[0], Frag_UV); break;\n"
-  "            case  1: Out_Color = Frag_Color * texture(u_Textures[1], Frag_UV); break;\n"
-  "            case  2: Out_Color = Frag_Color * texture(u_Textures[2], Frag_UV); break;\n"
-  "            case  3: Out_Color = Frag_Color * texture(u_Textures[3], Frag_UV); break;\n"
-  "            case  4: Out_Color = Frag_Color * texture(u_Textures[4], Frag_UV); break;\n"
-  "            case  5: Out_Color = Frag_Color * texture(u_Textures[5], Frag_UV); break;\n"
-  "            case  6: Out_Color = Frag_Color * texture(u_Textures[6], Frag_UV); break;\n"
-  "            case  7: Out_Color = Frag_Color * texture(u_Textures[7], Frag_UV); break;\n"
-  "            case  8: Out_Color = Frag_Color * texture(u_Textures[8], Frag_UV); break;\n"
-  "            case  9: Out_Color = Frag_Color * texture(u_Textures[9], Frag_UV); break;\n"
-  "            case 10: Out_Color = Frag_Color * texture(u_Textures[10], Frag_UV); break;\n"
-  "            case 11: Out_Color = Frag_Color * texture(u_Textures[11], Frag_UV); break;\n"
-  "            case 12: Out_Color = Frag_Color * texture(u_Textures[12], Frag_UV); break;\n"
-  "            case 13: Out_Color = Frag_Color * texture(u_Textures[13], Frag_UV); break;\n"
-  "            case 14: Out_Color = Frag_Color * texture(u_Textures[14], Frag_UV); break;\n"
-  "            case 15: Out_Color = Frag_Color * texture(u_Textures[15], Frag_UV); break;\n"
-  "            case 16: Out_Color = Frag_Color * texture(u_Textures[16], Frag_UV); break;\n"
-  "            case 17: Out_Color = Frag_Color * texture(u_Textures[17], Frag_UV); break;\n"
-  "            case 18: Out_Color = Frag_Color * texture(u_Textures[18], Frag_UV); break;\n"
-  "            case 19: Out_Color = Frag_Color * texture(u_Textures[19], Frag_UV); break;\n"
-  "            case 20: Out_Color = Frag_Color * texture(u_Textures[20], Frag_UV); break;\n"
-  "            case 21: Out_Color = Frag_Color * texture(u_Textures[21], Frag_UV); break;\n"
-  "            case 22: Out_Color = Frag_Color * texture(u_Textures[22], Frag_UV); break;\n"
-  "            case 23: Out_Color = Frag_Color * texture(u_Textures[23], Frag_UV); break;\n"
-  "            case 24: Out_Color = Frag_Color * texture(u_Textures[24], Frag_UV); break;\n"
-  "            case 25: Out_Color = Frag_Color * texture(u_Textures[25], Frag_UV); break;\n"
-  "            case 26: Out_Color = Frag_Color * texture(u_Textures[26], Frag_UV); break;\n"
-  "            case 27: Out_Color = Frag_Color * texture(u_Textures[27], Frag_UV); break;\n"
-  "            case 28: Out_Color = Frag_Color * texture(u_Textures[28], Frag_UV); break;\n"
-  "            case 29: Out_Color = Frag_Color * texture(u_Textures[29], Frag_UV); break;\n"
-  "            case 30: Out_Color = Frag_Color * texture(u_Textures[30], Frag_UV); break;\n"
-  "            case 31: Out_Color = Frag_Color * texture(u_Textures[31], Frag_UV); break;\n"
+  "            case  0: Out_Color = Frag_Color * texture(u_Texture[0], Frag_UV); break;\n"
+  "            case  1: Out_Color = Frag_Color * texture(u_Texture[1], Frag_UV); break;\n"
+  "            case  2: Out_Color = Frag_Color * texture(u_Texture[2], Frag_UV); break;\n"
+  "            case  3: Out_Color = Frag_Color * texture(u_Texture[3], Frag_UV); break;\n"
+  "            case  4: Out_Color = Frag_Color * texture(u_Texture[4], Frag_UV); break;\n"
+  "            case  5: Out_Color = Frag_Color * texture(u_Texture[5], Frag_UV); break;\n"
+  "            case  6: Out_Color = Frag_Color * texture(u_Texture[6], Frag_UV); break;\n"
+  "            case  7: Out_Color = Frag_Color * texture(u_Texture[7], Frag_UV); break;\n"
+  "            case  8: Out_Color = Frag_Color * texture(u_Texture[8], Frag_UV); break;\n"
+  "            case  9: Out_Color = Frag_Color * texture(u_Texture[9], Frag_UV); break;\n"
+  "            case 10: Out_Color = Frag_Color * texture(u_Texture[10], Frag_UV); break;\n"
+  "            case 11: Out_Color = Frag_Color * texture(u_Texture[11], Frag_UV); break;\n"
+  "            case 12: Out_Color = Frag_Color * texture(u_Texture[12], Frag_UV); break;\n"
+  "            case 13: Out_Color = Frag_Color * texture(u_Texture[13], Frag_UV); break;\n"
+  "            case 14: Out_Color = Frag_Color * texture(u_Texture[14], Frag_UV); break;\n"
+  "            case 15: Out_Color = Frag_Color * texture(u_Texture[15], Frag_UV); break;\n"
   "        }\n"
   "    } else {\n"
   "        Out_Color = Frag_Color;\n"
@@ -124,16 +109,19 @@ void Renderer2D::Flush()
   Data.IndexBuffer->SetData(Data.TriangleIndices);
 
   if (!Data.TriangleVertices.empty() && !Data.TriangleIndices.empty()) {
+    Data.Shader->Bind();
 
     if (Data.TextureSlotIndex != -1) {
       for (uint32_t i = 0; i <= static_cast<uint32_t>(Data.TextureSlotIndex); i++) {
-        Data.TextureSlots[i]->Bind(i);// NOLINT
+        Data.TextureSlots[i]->Bind(static_cast<uint8_t>(i));// NOLINT
+        Data.Shader->SetInt(TextureSamplerUniformString(static_cast<uint8_t>(i)), static_cast<int32_t>(i));
       }
     }
 
     Data.Target->Bind();
-    Data.Shader->Bind();
+
     JE_APP.RendererAPI().DrawIndexed(*Data.VertexArray);
+
     Data.Shader->Unbind();
     Data.Target->Unbind();
     Data.Stats.FrameDrawCalls++;
@@ -153,7 +141,7 @@ void Renderer2D::NextBatch()
   InitializeBatch(target);
 }
 
-auto Renderer2D::PushTexture(const ITexture &texture) -> int8_t
+auto Renderer2D::PushTexture(const ITexture2D &texture) -> int8_t
 {
   int8_t textureIndex = -1;
   if (Data.TextureSlotIndex == -1) {
@@ -220,7 +208,7 @@ void Renderer2D::DrawTriangle(const Vertex &vertex0, const Vertex &vertex1, cons
   Data.TriangleIndices[indexOffset + 2] = static_cast<uint32_t>(vertexOffset + 2);
 }
 
-void Renderer2D::DrawTriangle(Vertex &vertex0, Vertex &vertex1, Vertex &vertex2, const ITexture &texture)
+void Renderer2D::DrawTriangle(Vertex &vertex0, Vertex &vertex1, Vertex &vertex2, const ITexture2D &texture)
 {
   if (TriangleCount() + 1 > Data.TrianglesPerBatch) { NextBatch(); }
 
@@ -242,7 +230,7 @@ void Renderer2D::DrawQuad(const glm::vec3 &position, const glm::vec2 &size, cons
 
 void Renderer2D::DrawQuad(const glm::vec3 &position,
   const glm::vec2 &size,
-  const ITexture &texture,
+  const ITexture2D &texture,
   const Color &tintColor)
 {
   glm::mat4 transform =
@@ -271,7 +259,7 @@ void Renderer2D::DrawQuad(const glm::mat4 &transform, const Color &color)
   Data.TriangleIndices[indexOffset + 5] = static_cast<uint32_t>(vertexOffset);// NOLINT
 }
 
-void Renderer2D::DrawQuad(const glm::mat4 &transform, const ITexture &texture, const Color &tintColor)
+void Renderer2D::DrawQuad(const glm::mat4 &transform, const ITexture2D &texture, const Color &tintColor)
 {
   if (TriangleCount() + 2 > Data.TrianglesPerBatch) { NextBatch(); }
 

@@ -30,16 +30,16 @@ public:
   void EndBatch();
 
   void DrawTriangle(const Vertex &vertex0, const Vertex &vertex1, const Vertex &vertex2);
-  void DrawTriangle(Vertex &vertex0, Vertex &vertex1, Vertex &vertex2, const ITexture &texture);
+  void DrawTriangle(Vertex &vertex0, Vertex &vertex1, Vertex &vertex2, const ITexture2D &texture);
   void DrawQuad(const glm::vec3 &position, const glm::vec2 &size, const Color &color);
   void DrawQuad(const glm::vec3 &position,
     const glm::vec2 &size,
-    const ITexture &texture,
+    const ITexture2D &texture,
     const Color &tintColor = Color{ 1.0F, 1.0F, 1.0F, 1.0F });
 
   void DrawQuad(const glm::mat4 &transform, const Color &color);
   void DrawQuad(const glm::mat4 &transform,
-    const ITexture &texture,
+    const ITexture2D &texture,
     const Color &tintColor = Color{ 1.0F, 1.0F, 1.0F, 1.0F });
 
   [[nodiscard]] inline auto TrianglesPerBatch() const -> size_t { return Data.TrianglesPerBatch; }
@@ -62,7 +62,7 @@ private:
   void InitializeBatch(IDrawTarget *target);
   void Flush();
   void NextBatch();
-  auto PushTexture(const ITexture &texture) -> int8_t;
+  auto PushTexture(const ITexture2D &texture) -> int8_t;
 
   struct Renderer2DData
   {
@@ -80,7 +80,7 @@ private:
 
     Vector<Vertex, MemoryTag::Renderer> TriangleVertices;
     Vector<uint32_t, MemoryTag::Renderer> TriangleIndices;
-    std::array<const ITexture *, MAX_TEXTURE_SLOTS> TextureSlots{};
+    std::array<const ITexture2D *, MAX_TEXTURE_SLOTS> TextureSlots{};
     int8_t TextureSlotIndex = -1;
 
     Scope<IVertexBuffer, MemoryTag::Renderer> VertexBuffer = IRendererObjectCreator::Get().CreateVertexBuffer(
@@ -88,7 +88,6 @@ private:
         { ShaderDataType::Float4, BufferElement::COLOR_ATTRIBUTE_NAME },
         { ShaderDataType::Float2, BufferElement::UV_ATTRIBUTE_NAME },
         { ShaderDataType::Int, "a_TexIndex" } });
-
     Scope<IIndexBuffer, MemoryTag::Renderer> IndexBuffer = IRendererObjectCreator::Get().CreateIndexBuffer();
     Scope<IVertexArray, MemoryTag::Renderer> VertexArray = IRendererObjectCreator::Get().CreateVertexArray();
     Scope<IShader, MemoryTag::Renderer> Shader;

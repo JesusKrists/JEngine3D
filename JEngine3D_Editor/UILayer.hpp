@@ -32,8 +32,8 @@ private:
   bool m_ResetDockLayout = false;
 
 
-  JE::Scope<JE::ITexture, JE::MemoryTag::Renderer> m_TestTexture;
-  JE::Scope<JE::ITexture, JE::MemoryTag::Renderer> m_MemeTexture;
+  JE::Scope<JE::ITexture2D, JE::MemoryTag::Renderer> m_TestTexture;
+  JE::Scope<JE::ITexture2D, JE::MemoryTag::Renderer> m_MemeTexture;
 
   bool m_ResizeGameViewport = false;
   JE::Size2DI m_GameViewportSize = { 0, 0 };

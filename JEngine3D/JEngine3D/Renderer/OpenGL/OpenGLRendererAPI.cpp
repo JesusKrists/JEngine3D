@@ -8,6 +8,8 @@
 
 namespace JE {
 
+static bool s_ScissorEnabled = true;
+
 static void OpenGLMessageCallback(unsigned source,// NOLINT
   unsigned type,// NOLINT
   unsigned id,// NOLINT
@@ -43,15 +45,25 @@ static void OpenGLMessageCallback(unsigned source,// NOLINT
 
 OpenGLRendererAPI::OpenGLRendererAPI()
 {
+#if defined(JE_DEBUG)
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   glDebugMessageCallback(OpenGLMessageCallback, nullptr);
   glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
+#endif
+
+  glEnable(GL_DEPTH_TEST);
+  glEnable(GL_SCISSOR_TEST);
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 void OpenGLRendererAPI::SetViewport(const RectangleI &viewport)
 {
   glViewport(viewport.Position.X, viewport.Position.Y, viewport.Size.Width, viewport.Size.Height);
+  if (s_ScissorEnabled) {
+    glScissor(viewport.Position.X, viewport.Position.Y, viewport.Size.Width, viewport.Size.Height);
+  }
 }
 
 void OpenGLRendererAPI::SetClearColor(const Color &color)
@@ -60,6 +72,12 @@ void OpenGLRendererAPI::SetClearColor(const Color &color)
 }
 
 void OpenGLRendererAPI::Clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }// NOLINT
+
+void OpenGLRendererAPI::BindTexture(uint32_t rendererID, uint8_t slot)// NOLINT
+{
+  glActiveTexture(GL_TEXTURE0 + slot);
+  glBindTexture(GL_TEXTURE_2D, rendererID);
+}
 
 void OpenGLRendererAPI::DrawIndexed(const IVertexArray &vertexArray, size_t indexCount)
 {

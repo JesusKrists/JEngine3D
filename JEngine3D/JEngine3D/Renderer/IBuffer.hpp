@@ -8,7 +8,7 @@
 
 namespace JE {
 
-enum class ShaderDataType { None = 0, Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, Bool };
+enum class ShaderDataType { None = 0, Float, Float2, Float3, Float4, Mat3, Mat4, Int, Int2, Int3, Int4, UByte4, Bool };
 
 inline auto ShaderDataTypeSize(ShaderDataType type) -> uint32_t
 {
@@ -33,6 +33,8 @@ inline auto ShaderDataTypeSize(ShaderDataType type) -> uint32_t
     return 4 * 3;
   case ShaderDataType::Int4:
     return 4 * 4;
+  case ShaderDataType::UByte4:
+    return 4;
   case ShaderDataType::Bool:
     return 1;
   default:
@@ -78,7 +80,9 @@ struct BufferElement
       return 2;
     case ShaderDataType::Int3:
       return 3;
-    case ShaderDataType::Int4:
+    case ShaderDataType::Int4:// NOLINT
+      return 4;
+    case ShaderDataType::UByte4:
       return 4;
     case ShaderDataType::Bool:
       return 1;

@@ -19,6 +19,7 @@ public:
   virtual void SetClearColor(const Color &color) = 0;
   virtual void Clear() = 0;
 
+  virtual void BindTexture(uint32_t rendererID, uint8_t slot = 0) = 0;
   virtual void DrawIndexed(const IVertexArray &vertexArray, size_t indexCount = 0) = 0;
 };
 

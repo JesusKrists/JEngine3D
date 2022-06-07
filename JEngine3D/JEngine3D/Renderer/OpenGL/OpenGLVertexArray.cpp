@@ -24,6 +24,8 @@ static auto ShaderDataTypeToOpenGLBaseType(ShaderDataType type) -> GLenum
     return GL_INT;
   case ShaderDataType::Bool:
     return GL_BOOL;
+  case ShaderDataType::UByte4:
+    return GL_UNSIGNED_BYTE;
 
   case ShaderDataType::None:
     break;
@@ -50,7 +52,8 @@ void OpenGLVertexArray::ConfigureVertexBufferLayout(const BufferLayout &bufferLa
     case ShaderDataType::Float:
     case ShaderDataType::Float2:
     case ShaderDataType::Float3:
-    case ShaderDataType::Float4: {
+    case ShaderDataType::Float4:
+    case ShaderDataType::UByte4: {
       glEnableVertexAttribArray(m_LocationIndex);
       glVertexAttribPointer(m_LocationIndex,
         static_cast<GLint>(element.ComponentCount()),
@@ -95,6 +98,6 @@ void OpenGLVertexArray::ConfigureVertexBufferLayout(const BufferLayout &bufferLa
       DEBUGBREAK();
     }
   }
-}
+}// namespace JE
 
 }// namespace JE

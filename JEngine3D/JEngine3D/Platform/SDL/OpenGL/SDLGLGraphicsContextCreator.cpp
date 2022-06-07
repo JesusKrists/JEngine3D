@@ -27,6 +27,7 @@ auto SDLGLGraphicsContextCreator::CreateContext(IPlatformBackend::NativeWindowHa
     JE::Logger::CoreLogger().error("SDL Failed to initialize - {}", SDL_GetError());
     DEBUGBREAK();
   }
+  SDL_GL_SetSwapInterval(0);
 
   if (!s_GLEWInitialized) {
     glewExperimental = GL_TRUE;

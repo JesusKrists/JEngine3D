@@ -32,9 +32,13 @@ auto OpenGLRendererObjectCreator::CreateVertexArray() -> Scope<IVertexArray, Mem
   return CreatePolymorphicScope<OpenGLVertexArray, MemoryTag::Renderer, IVertexArray>();
 }
 
-auto OpenGLRendererObjectCreator::CreateTexture() -> Scope<ITexture, MemoryTag::Renderer>
+auto OpenGLRendererObjectCreator::CreateTexture(const std::string_view &sourcePath,
+  const std::span<const uint8_t> &textureData,
+  const Size2DI &textureDimensions,
+  TextureFormat format) -> Scope<ITexture2D, MemoryTag::Renderer>
 {
-  return CreatePolymorphicScope<OpenGLTexture, MemoryTag::Renderer, ITexture>();
+  return CreatePolymorphicScope<OpenGLTexture2D, MemoryTag::Renderer, ITexture2D>(
+    sourcePath, textureData, textureDimensions, format);
 }
 
 auto OpenGLRendererObjectCreator::CreateShader(const std::string_view &name,

@@ -16,6 +16,9 @@ public:
   void Bind() const override;
   void Unbind() const override;
 
+  void SetInt(const std::string_view &name, int value) override;
+  void SetMat4(const std::string_view &name, const glm::mat4 &value) override;
+
   [[nodiscard]] inline auto Name() const -> const std::string & override { return m_Name; }
 
 private:
