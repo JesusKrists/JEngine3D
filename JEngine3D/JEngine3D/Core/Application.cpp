@@ -119,6 +119,8 @@ void Application::ProcessMainLoop()
   IPlatformBackend::Get().PollEvents();
   if (!m_Running) { return; }
 
+  m_MainWindow.GraphicsContext().MakeCurrent();
+
   ForEach(m_LayerStack, [](ILayer &layer) { layer.OnUpdate(); });
 
   m_ImGuiLayer.Begin();
@@ -128,12 +130,8 @@ void Application::ProcessMainLoop()
   });
   m_ImGuiLayer.End();
 
-  auto &previousContext = IGraphicsContext::CurrentContext();
-
-  m_MainWindow.GraphicsContext().MakeCurrent();
   m_MainWindow.GraphicsContext().SwapBuffers();
-
-  previousContext.MakeCurrent();
+  m_ImGuiLayer.RenderPlatformWindows();
 }
 
 void Application::Run(int32_t loopCount)

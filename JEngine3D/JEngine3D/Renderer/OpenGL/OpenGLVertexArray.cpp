@@ -88,7 +88,7 @@ void OpenGLVertexArray::ConfigureVertexBufferLayout(const BufferLayout &bufferLa
           ShaderDataTypeToOpenGLBaseType(element.Type),
           element.Normalize ? GL_TRUE : GL_FALSE,
           static_cast<GLsizei>(bufferLayout.Stride()),
-          reinterpret_cast<const void *>((element.Offset + sizeof(float) * count * i)));
+          reinterpret_cast<const void *>((element.Offset + sizeof(float) * count * i)));// NOLINT
         // glVertexAttribDivisor(m_LocationIndex, 1); maybe add this later when implementing instanced rendering
         m_LocationIndex++;
       }

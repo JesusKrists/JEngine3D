@@ -53,7 +53,6 @@ public:
   [[nodiscard]] virtual auto DrawableSize() -> Size2DI = 0;
   virtual void Resize(const Size2DI &size) = 0;
   virtual void SwapBuffers() = 0;
-  virtual void Destroy() = 0;
 
 private:
   virtual void MakeContextCurrent() = 0;

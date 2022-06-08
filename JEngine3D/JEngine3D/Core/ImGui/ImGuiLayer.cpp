@@ -120,13 +120,14 @@ static void JEngine3DImGuiPlatformRenderWindow(ImGuiViewport *viewport,
 {
   auto &window = *static_cast<Window *>(viewport->PlatformHandle);
   window.GraphicsContext().MakeCurrent();
+  JE_APP.RendererAPI().SetClearColor({ 1.0F, 0.0F, 1.0F, 1.0F });
+  JE_APP.RendererAPI().Clear();
 }
 
 static void JEngine3DImGuiSwapBuffers(ImGuiViewport *viewport,
   void *)// NOLINT(readability-named-parameter, hicpp-named-parameter)
 {
   auto &window = *static_cast<Window *>(viewport->PlatformHandle);
-  window.GraphicsContext().MakeCurrent();
   window.GraphicsContext().SwapBuffers();
 }
 
@@ -134,7 +135,7 @@ static void JEngine3DImGuiSwapBuffers(ImGuiViewport *viewport,
 static void JEngine3DImGuiRendererRenderWindow([[maybe_unused]] ImGuiViewport *viewport,
   void *)// NOLINT(readability-named-parameter, hicpp-named-parameter)
 {
-  JE_APP.ImGuiLayer().Renderer().RenderDrawData(viewport->DrawData);
+  JE_APP.ImGuiLayer().Renderer().RenderDrawData(*viewport->DrawData);
 }
 
 static void InitializeImGuiForJEngine3D()
@@ -466,23 +467,18 @@ void ImGuiLayer::Begin() { ImGui::NewFrame(); }// NOLINT(readability-convert-mem
 
 void ImGuiLayer::End()// NOLINT(readability-convert-member-functions-to-static)
 {
-  const ImGuiIO &imguiIO = ImGui::GetIO();
-
   ImGui::Render();
+  if (!JE_APP.MainWindow().Minimized()) { m_ImGuiRenderer.RenderDrawData(*ImGui::GetDrawData()); }
+}
 
-  auto &previousContext = IGraphicsContext::CurrentContext();
-  if (!JE_APP.MainWindow().Minimized()) {
-    JE_APP.MainWindow().GraphicsContext().MakeCurrent();
-    m_ImGuiRenderer.RenderDrawData(ImGui::GetDrawData());
-  }
-
+void ImGuiLayer::RenderPlatformWindows()// NOLINT(readability-convert-member-functions-to-static)
+{
+  const ImGuiIO &imguiIO = ImGui::GetIO();
   if ((imguiIO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)// NOLINT(hicpp-signed-bitwise)
       == ImGuiConfigFlags_ViewportsEnable) {
     ImGui::UpdatePlatformWindows();
     ImGui::RenderPlatformWindowsDefault();
-    previousContext.MakeCurrent();
   }
 }
-
 
 }// namespace JE

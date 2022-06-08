@@ -13,6 +13,9 @@ class SDLGLGraphicsContextCreator final : public IGraphicsContextCreator
 public:
   [[nodiscard]] auto CreateContext(IPlatformBackend::NativeWindowHandle handle)
     -> Scope<IGraphicsContext, MemoryTag::App> override;
+
+private:
+  NativeContextHandle m_OpenGLContext = nullptr;
 };
 
 }// namespace JE

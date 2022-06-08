@@ -39,11 +39,7 @@ Window::Window(const std::string_view &title,
     "Window mismatch with native window minimize");
 }
 
-Window::~Window()
-{
-  m_GraphicsContext->Destroy();
-  IPlatformBackend::Get().DestroyWindow(m_NativeHandle);
-}
+Window::~Window() { IPlatformBackend::Get().DestroyWindow(m_NativeHandle); }
 
 void Window::SetTitle(const std::string_view &title)
 {

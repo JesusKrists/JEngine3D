@@ -8,8 +8,6 @@
 
 namespace JE {
 
-static bool s_ScissorEnabled = true;
-
 static void OpenGLMessageCallback(unsigned source,// NOLINT
   unsigned type,// NOLINT
   unsigned id,// NOLINT
@@ -52,18 +50,20 @@ OpenGLRendererAPI::OpenGLRendererAPI()
   glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 #endif
 
-  glEnable(GL_DEPTH_TEST);
-  glEnable(GL_SCISSOR_TEST);
-  glEnable(GL_BLEND);
-  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+  UpdateRendererState();
 }
 
 void OpenGLRendererAPI::SetViewport(const RectangleI &viewport)
 {
   glViewport(viewport.Position.X, viewport.Position.Y, viewport.Size.Width, viewport.Size.Height);
-  if (s_ScissorEnabled) {
+  if (RendererState().ClipTest) {
     glScissor(viewport.Position.X, viewport.Position.Y, viewport.Size.Width, viewport.Size.Height);
   }
+}
+
+void OpenGLRendererAPI::SetClipRect(const RectangleI &clipRect)
+{
+  glScissor(clipRect.Position.X, clipRect.Position.Y, clipRect.Size.Width, clipRect.Size.Height);
 }
 
 void OpenGLRendererAPI::SetClearColor(const Color &color)
@@ -83,10 +83,40 @@ void OpenGLRendererAPI::DrawIndexed(const IVertexArray &vertexArray, size_t inde
 {
   vertexArray.Bind();
   glDrawElements(GL_TRIANGLES,
-    static_cast<int32_t>(indexCount != 0 ? indexCount : vertexArray.IndexBuffer().IndexCount()),
+    static_cast<GLsizei>(indexCount != 0 ? indexCount : vertexArray.IndexBuffer().IndexCount()),
     GL_UNSIGNED_INT,
     nullptr);
   vertexArray.Unbind();
+}
+
+
+void OpenGLRendererAPI::DrawIndexed(const IVertexArray &vertexArray, size_t indexCount, size_t indexOffset)
+{
+
+  vertexArray.Bind();
+  glDrawElements(GL_TRIANGLES,
+    static_cast<GLsizei>(indexCount),
+    GL_UNSIGNED_INT,
+    reinterpret_cast<const void *>(indexOffset * sizeof(uint32_t)));// NOLINT
+  vertexArray.Unbind();
+}
+
+void OpenGLRendererAPI::UpdateRendererState()
+{
+  if (RendererState().DepthTest) {
+    glEnable(GL_DEPTH_TEST);
+  } else {
+    glDisable(GL_DEPTH_TEST);
+  }
+
+  if (RendererState().ClipTest) {
+    glEnable(GL_SCISSOR_TEST);
+  } else {
+    glDisable(GL_SCISSOR_TEST);
+  }
+
+  glEnable(GL_BLEND);
+  glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 }
 
 }// namespace JE

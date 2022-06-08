@@ -14,8 +14,6 @@ public:
 
   inline void SwapBuffers() override {}
 
-  inline void Destroy() override {}
-
 private:
   inline void MakeContextCurrent() override {}
 };

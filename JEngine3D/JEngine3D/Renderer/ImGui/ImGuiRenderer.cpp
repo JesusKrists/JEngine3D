@@ -8,8 +8,6 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <imgui.h>
 
-#include <GL/glew.h>
-
 namespace JE {
 
 static constexpr std::string_view VERTEX_SHADER_SOURCE =
@@ -63,54 +61,46 @@ void ImGuiRenderer::Initialize()
   imguiIO.Fonts->TexID = m_FontTexture->RendererID();
 }
 
-void ImGuiRenderer::RenderDrawData(ImDrawData *drawData)
+void ImGuiRenderer::RenderDrawData(const ImDrawData &drawData)
 {
-  RectangleI viewport = { { static_cast<int32_t>(drawData->DisplayPos.x),
-                            static_cast<int32_t>(drawData->DisplayPos.y) },
-    { static_cast<int32_t>(drawData->DisplaySize.x), static_cast<int32_t>(drawData->DisplaySize.y) } };
+  m_PreviousRendererState = JE_APP.RendererAPI().RendererState();
 
-  SetupRenderState(viewport);
+  SetupRenderState(drawData);
 
-  // Will project scissor/clipping rectangles into framebuffer space
-  ImVec2 clipScale = drawData->FramebufferScale;// (1,1) unless using retina display which are often (2,2)
-
-  for (int i = 0; i < drawData->CmdListsCount; ++i) {
-    const auto *commandList = drawData->CmdLists[i];// NOLINT
+  for (int i = 0; i < drawData.CmdListsCount; ++i) {
+    const auto &commandList = *drawData.CmdLists[i];// NOLINT
 
     // Setup VAO stuff
-    m_VertexBuffer->SetData({ reinterpret_cast<const uint8_t *>(commandList->VtxBuffer.Data),// NOLINT
-      static_cast<size_t>(commandList->VtxBuffer.Size) * sizeof(ImDrawVert) });
-    m_IndexBuffer->SetData({ reinterpret_cast<const uint32_t *>(commandList->IdxBuffer.Data),// NOLINT
-      static_cast<size_t>(commandList->IdxBuffer.Size) });
+    m_VertexBuffer->SetData({ reinterpret_cast<const uint8_t *>(commandList.VtxBuffer.Data),// NOLINT
+      static_cast<size_t>(commandList.VtxBuffer.Size) * sizeof(ImDrawVert) });
+    m_IndexBuffer->SetData({ reinterpret_cast<const uint32_t *>(commandList.IdxBuffer.Data),// NOLINT
+      static_cast<size_t>(commandList.IdxBuffer.Size) });
 
-    RenderCommandList(commandList, viewport, clipScale);
+    RenderCommandList(commandList, drawData);
   }
 
   m_Shader->Unbind();
+
+  JE_APP.RendererAPI().SetRendererState(m_PreviousRendererState);
 }
 
-// NOLINTNEXTLINE
-void ImGuiRenderer::SetupRenderState(const RectangleI &viewport)
+void ImGuiRenderer::SetupRenderState(const ImDrawData &drawData)
 {
-  // Refactor to RendererAPI calls
-  glEnable(GL_SCISSOR_TEST);
-  glDisable(GL_DEPTH_TEST);
+  JE_APP.RendererAPI().SetRendererState(m_ImGuiRendererState);
 
-  // Setup shader stuff (Projection etc.)
   m_Shader->Bind();
   m_Shader->SetMat4("u_OrthoProjection",
-    glm::ortho(static_cast<float>(viewport.Position.X),
-      static_cast<float>(viewport.Position.X + viewport.Size.Width),
-      static_cast<float>(viewport.Position.Y + viewport.Size.Height),
-      static_cast<float>(viewport.Position.Y)));
+    glm::ortho(drawData.DisplayPos.x,
+      drawData.DisplayPos.x + drawData.DisplaySize.x,
+      drawData.DisplayPos.y + drawData.DisplaySize.y,
+      drawData.DisplayPos.y));
   m_Shader->SetInt("u_Texture", 0);
 }
 
-// NOLINTNEXTLINE
-void ImGuiRenderer::RenderCommandList(const ImDrawList *drawList, const RectangleI &viewport, const ImVec2 &clipScale)
+void ImGuiRenderer::RenderCommandList(const ImDrawList &drawList, const ImDrawData &drawData)
 {
-  for (int i = 0; i < drawList->CmdBuffer.Size; ++i) {
-    const auto &command = drawList->CmdBuffer[i];
+  for (int i = 0; i < drawList.CmdBuffer.Size; ++i) {
+    const auto &command = drawList.CmdBuffer[i];
 
     if (command.UserCallback != nullptr) {
       // User callback, registered via ImDrawList::AddCallback()
@@ -118,31 +108,30 @@ void ImGuiRenderer::RenderCommandList(const ImDrawList *drawList, const Rectangl
       // render state.)
       if (command.UserCallback == ImDrawCallback_ResetRenderState)// NOLINT
       {
-        SetupRenderState(viewport);
+        SetupRenderState(drawData);
       } else {
-        command.UserCallback(drawList, &command);
+        command.UserCallback(&drawList, &command);
       }
     }
 
     // Project scissor/clipping rectangles into framebuffer space
-    ImVec2 clip_min((command.ClipRect.x - static_cast<float>(viewport.Position.X)) * clipScale.x,
-      (command.ClipRect.y - static_cast<float>(viewport.Position.Y)) * clipScale.y);
-    ImVec2 clip_max((command.ClipRect.z - static_cast<float>(viewport.Position.X)) * clipScale.x,
-      (command.ClipRect.w - static_cast<float>(viewport.Position.Y)) * clipScale.y);
+    ImVec2 clip_min((command.ClipRect.x - drawData.DisplayPos.x) * drawData.FramebufferScale.x,
+      (command.ClipRect.y - drawData.DisplayPos.y) * drawData.FramebufferScale.y);
+    ImVec2 clip_max((command.ClipRect.z - drawData.DisplayPos.x) * drawData.FramebufferScale.x,
+      (command.ClipRect.w - drawData.DisplayPos.y) * drawData.FramebufferScale.y);
     if (clip_max.x <= clip_min.x || clip_max.y <= clip_min.y) { continue; }
 
-    // Apply scissor/clipping rectangle (Y is inverted in OpenGL)
-    glScissor(static_cast<int>(clip_min.x),
-      static_cast<int>((static_cast<float>(viewport.Size.Height) - clip_max.y)),
-      static_cast<int>((clip_max.x - clip_min.x)),
-      static_cast<int>((clip_max.y - clip_min.y)));// Refactor to RendererAPI call
+    JE_APP.RendererAPI().SetClipRect(
+      { { static_cast<int>(clip_min.x),
+          static_cast<int>((drawData.DisplaySize.y * drawData.FramebufferScale.y - clip_max.y)) },
+        { static_cast<int>((clip_max.x - clip_min.x)), static_cast<int>((clip_max.y - clip_min.y)) } });
 
     // Bind Texture
     auto rendererID = command.GetTexID();// NOLINT
     JE_APP.RendererAPI().BindTexture(rendererID);
 
     // DrawCall
-    JE_APP.RendererAPI().DrawIndexed(*m_VertexArray);// Refactor for offset indexed draw call
+    JE_APP.RendererAPI().DrawIndexed(*m_VertexArray, command.ElemCount, command.IdxOffset);
   }
 }
 

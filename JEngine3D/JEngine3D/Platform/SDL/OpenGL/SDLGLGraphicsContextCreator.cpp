@@ -20,14 +20,19 @@ auto SDLGLGraphicsContextCreator::CreateContext(IPlatformBackend::NativeWindowHa
 {
   auto *currentWindow = SDL_GL_GetCurrentWindow();
   auto *currentContext = SDL_GL_GetCurrentContext();
+  auto *context = [&]() {
+    if (m_OpenGLContext == nullptr) {
+      auto *glContext = SDL_GL_CreateContext(static_cast<SDL_Window *>(handle));
+      if (glContext == nullptr) {
+        JE::Logger::CoreLogger().error("SDL Failed to initialize - {}", SDL_GetError());
+        DEBUGBREAK();
+      }
+      m_OpenGLContext = glContext;
+    }
 
-  SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, 1);
-  auto *context = SDL_GL_CreateContext(static_cast<SDL_Window *>(handle));
-  if (context == nullptr) {
-    JE::Logger::CoreLogger().error("SDL Failed to initialize - {}", SDL_GetError());
-    DEBUGBREAK();
-  }
-  SDL_GL_SetSwapInterval(0);
+    return m_OpenGLContext;
+  }();
+
 
   if (!s_GLEWInitialized) {
     glewExperimental = GL_TRUE;
