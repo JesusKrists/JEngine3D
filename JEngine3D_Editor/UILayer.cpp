@@ -14,6 +14,8 @@
 
 #include <filesystem>
 
+#include <Tracy.hpp>
+
 // IWYU pragma: no_include <glm/detail/type_vec3.inl>
 // IWYU pragma: no_include <glm/detail/type_vec4.inl>
 // IWYU pragma: no_include <glm/ext/vector_float3.hpp>
@@ -54,6 +56,7 @@ void UILayer::OnDestroy() {}
 
 void UILayer::OnUpdate()
 {
+  ZoneScopedN("UILayer OnUpdate");// NOLINT
   auto UpdateImGuiLayer = [&]() {
     if (m_ResetDockLayout) {
       ImGui::LoadIniSettingsFromDisk("assets/imgui/default_layout.ini");
@@ -67,6 +70,7 @@ void UILayer::OnUpdate()
   UpdateImGuiLayer();
 
   auto Renderer2DTest = [&]() {
+    ZoneScopedN("Renderer2D Test");// NOLINT
     if (m_ResizeGameViewport) {
       // m_GameViewportFBO.Resize(m_GameViewportSize);
       m_ResizeGameViewport = false;

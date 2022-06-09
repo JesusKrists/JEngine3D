@@ -17,6 +17,8 @@
 #include <array>
 #include <cstddef>// IWYU pragma: keep
 
+#include <Tracy.hpp>
+
 namespace JE {
 
 static std::array<bool, static_cast<size_t>(MouseButton::TAG_COUNT_PLUS_ONE) - 1> s_MouseButtonsPressed{};// NOLINT
@@ -258,6 +260,7 @@ void ImGuiLayer::OnDestroy() { ImGui::DestroyContext(); }
 
 void ImGuiLayer::OnUpdate()
 {
+  ZoneScopedN("ImGuiLayer OnUpdate");// NOLINT
   auto &mainWindow = JE_APP.MainWindow();
   auto &graphicsContext = mainWindow.GraphicsContext();
   auto windowMinimized = mainWindow.Minimized();

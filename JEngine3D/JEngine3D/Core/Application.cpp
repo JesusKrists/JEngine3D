@@ -41,11 +41,10 @@ Application::Application(const std::string_view &title)
 
 void Application::OnEvent(IEvent &event)
 {
-
-  for (auto layerIt = std::rbegin(m_LayerStack); layerIt != std::rend(m_LayerStack); ++layerIt) {
-    layerIt->get().OnEvent(event);
+  ReverseForEach(m_LayerStack, [&](ILayer &layer) {
+    layer.OnEvent(event);
     if (event.Handled()) { return; }
-  }
+  });
 
   if (event.Category() == EventCategory::Window) {
     EventDispatcher dispatcher{ event };
@@ -150,16 +149,24 @@ void Application::ProcessMainLoop()
   {
     ZoneScopedN("Layer & ImGui Processing");// NOLINT
 
-    m_MainWindow.GraphicsContext().MakeCurrent();
+    {
+      ZoneScopedN("Make MainWindow Context Current");// NOLINT
+      m_MainWindow.GraphicsContext().MakeCurrent();
+    }
 
-    ForEach(m_LayerStack, [](ILayer &layer) { layer.OnUpdate(); });
-
-    m_ImGuiLayer.Begin();
-    ForEach(m_LayerStack, [](ILayer &layer) { layer.OnImGuiRender(); });
-    ForEach(m_DebugViewContainer, [](IImGuiDebugView &view) {
-      if (view.IsOpen()) { view.Render(); }
-    });
-    m_ImGuiLayer.End();
+    {
+      ZoneScopedN("Layer OnUpdate");// NOLINT
+      ReverseForEach(m_LayerStack, [](ILayer &layer) { layer.OnUpdate(); });
+    }
+    {
+      ZoneScopedN("Layer OnImGuiRender");// NOLINT
+      m_ImGuiLayer.Begin();
+      ReverseForEach(m_LayerStack, [](ILayer &layer) { layer.OnImGuiRender(); });
+      ForEach(m_DebugViewContainer, [](IImGuiDebugView &view) {
+        if (view.IsOpen()) { view.Render(); }
+      });
+      m_ImGuiLayer.End();
+    }
   }
 
   {

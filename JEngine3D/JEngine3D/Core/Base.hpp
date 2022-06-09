@@ -50,4 +50,9 @@ template<typename T, typename Func> inline auto ForEach(T &&container, Func func
   return std::for_each(std::begin(std::forward<T>(container)), std::end(std::forward<T>(container)), func);
 }
 
+template<typename T, typename Func> inline auto ReverseForEach(T &&container, Func func) -> decltype(auto)
+{
+  return std::for_each(std::rbegin(std::forward<T>(container)), std::rend(std::forward<T>(container)), func);
+}
+
 }// namespace JE

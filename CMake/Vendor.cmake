@@ -88,11 +88,6 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(glew)
 
 disable_static_analysis(libglew_static)
-# disable_static_analysis(libglew_shared)
-
-################################# ImGui Software renderer ####################################################
-
-#include(${CMAKE_SOURCE_DIR}/CMake/ImGuiSoftwareRenderer.cmake)
 
 ################################# OpenGL Mathematics (glm) #####################################################
 
