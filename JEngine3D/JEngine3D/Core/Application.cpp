@@ -14,6 +14,8 @@
 
 #include <iterator>// for rbegin, rend
 
+#include <Tracy.hpp>
+
 namespace JE {
 
 Application *Application::s_ApplicationInstance = nullptr;// NOLINT
@@ -25,6 +27,8 @@ Application::Application(const std::string_view &title)
     MAIN_WINDOW_CONFIG)),
     m_RendererAPI(IRendererObjectCreator::Get().CreateAPI())
 {
+  ZoneScopedN("JE::Application Setup");// NOLINT
+
   ASSERT(!s_ApplicationInstance, "Application instance already exists");
   s_ApplicationInstance = this;
 
@@ -69,13 +73,29 @@ void Application::OnEvent(IEvent &event)
   });
 }
 
-void Application::PushLayer(ILayer &layer) { m_LayerStack.PushLayer(layer); }
+void Application::PushLayer(ILayer &layer)
+{
+  ZoneScoped;// NOLINT
+  m_LayerStack.PushLayer(layer);
+}
 
-void Application::PushOverlay(ILayer &layer) { m_LayerStack.PushOverlay(layer); }
+void Application::PushOverlay(ILayer &layer)
+{
+  ZoneScoped;// NOLINT
+  m_LayerStack.PushOverlay(layer);
+}
 
-void Application::PopLayer(ILayer &layer) { m_LayerStack.PopLayer(layer); }
+void Application::PopLayer(ILayer &layer)
+{
+  ZoneScoped;// NOLINT
+  m_LayerStack.PopLayer(layer);
+}
 
-void Application::PopOverlay(ILayer &layer) { m_LayerStack.PopOverlay(layer); }
+void Application::PopOverlay(ILayer &layer)
+{
+  ZoneScoped;// NOLINT
+  m_LayerStack.PopOverlay(layer);
+}
 
 void Application::AddDebugView(IImGuiDebugView &view) { m_DebugViewContainer.emplace_back(view); }
 
@@ -109,29 +129,50 @@ void Application::ProcessMainLoop()
 {
   ++m_ProcessCount;
 
-  UpdateAppFocus();
+  {
+    ZoneScopedN("Pre-Frame Setup");// NOLINT
 
-  UpdateDeltaTime();
+    UpdateAppFocus();
 
-  InputController::Get().NewFrame();
-  m_Renderer2D.NewFrame();
+    UpdateDeltaTime();
 
-  IPlatformBackend::Get().PollEvents();
-  if (!m_Running) { return; }
+    InputController::Get().NewFrame();
+    m_Renderer2D.NewFrame();
+  }
 
-  m_MainWindow.GraphicsContext().MakeCurrent();
+  {
+    ZoneScopedN("Event Poll");// NOLINT
 
-  ForEach(m_LayerStack, [](ILayer &layer) { layer.OnUpdate(); });
+    IPlatformBackend::Get().PollEvents();
+    if (!m_Running) { return; }
+  }
 
-  m_ImGuiLayer.Begin();
-  ForEach(m_LayerStack, [](ILayer &layer) { layer.OnImGuiRender(); });
-  ForEach(m_DebugViewContainer, [](IImGuiDebugView &view) {
-    if (view.IsOpen()) { view.Render(); }
-  });
-  m_ImGuiLayer.End();
+  {
+    ZoneScopedN("Layer & ImGui Processing");// NOLINT
 
-  m_MainWindow.GraphicsContext().SwapBuffers();
-  m_ImGuiLayer.RenderPlatformWindows();
+    m_MainWindow.GraphicsContext().MakeCurrent();
+
+    ForEach(m_LayerStack, [](ILayer &layer) { layer.OnUpdate(); });
+
+    m_ImGuiLayer.Begin();
+    ForEach(m_LayerStack, [](ILayer &layer) { layer.OnImGuiRender(); });
+    ForEach(m_DebugViewContainer, [](IImGuiDebugView &view) {
+      if (view.IsOpen()) { view.Render(); }
+    });
+    m_ImGuiLayer.End();
+  }
+
+  {
+    ZoneScopedN("MainWindow SwapBuffers");// NOLINT
+    m_MainWindow.GraphicsContext().SwapBuffers();
+  }
+
+  {
+    ZoneScopedN("ImGui Render and SwapBuffers");// NOLINT
+    m_ImGuiLayer.RenderPlatformWindows();
+  }
+
+  FrameMark
 }
 
 void Application::Run(int32_t loopCount)

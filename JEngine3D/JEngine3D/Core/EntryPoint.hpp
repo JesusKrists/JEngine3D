@@ -10,6 +10,8 @@
 #include "JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContextCreator.hpp"
 #include "JEngine3D/Renderer/OpenGL/OpenGLRendererObjectCreator.hpp"
 
+#include <Tracy.hpp>
+
 namespace JE {
 
 using Backend = SDLPlatformBackend;
@@ -19,6 +21,8 @@ using RendererObjectCreator = OpenGLRendererObjectCreator;
 
 inline auto CreateApplication(const std::string_view &title) -> Scope<Application, MemoryTag::App>
 {
+  ZoneScoped;// NOLINT
+
   static bool s_EngineInitialized = false;
   ASSERT(!s_EngineInitialized, "Application already created");
 

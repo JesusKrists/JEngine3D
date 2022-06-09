@@ -16,7 +16,8 @@ target_link_system_libraries(
   ImGuiLibrary
   #ImGui_SWLibrary
   glm::glm
-  STBTarget)
+  STBTarget
+  Tracy::TracyClient)
 
 target_include_directories(JEngine3D PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
 
@@ -36,7 +37,7 @@ if(ENABLE_DEBUG_BREAK)
   set(JEngine3D_DEFINITIONS ${JEngine3D_DEFINITIONS} JE_ENABLE_DEBUGBREAK)
 endif()
 
-target_compile_definitions(JEngine3D PUBLIC ${JEngine3D_DEFINITIONS})
+target_compile_definitions(JEngine3D PUBLIC ${JEngine3D_DEFINITIONS} TRACY_ENABLE)
 
 #############################################################################################
 include(${CMAKE_SOURCE_DIR}/CMake/DisableStaticAnalysis.cmake)

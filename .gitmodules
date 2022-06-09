@@ -28,3 +28,6 @@
 [submodule "stb"]
     path = out/build/_deps/stb-src
     url = dummy_string_to_satisfy_vscode
+[submodule "stb"]
+    path = out/build/_deps/tracy-src
+    url = dummy_string_to_satisfy_vscode

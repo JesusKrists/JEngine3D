@@ -105,6 +105,21 @@ FetchContent_MakeAvailable(glm)
 
 disable_static_analysis(glm)
 
-################################# STB Image #####################################################
+################################# STB Image #####################################################################
 
 include(${CMAKE_SOURCE_DIR}/CMake/STBTarget.cmake)
+
+################################# Tracy profiler ##################################################################
+
+FetchContent_Declare(
+  tracy
+  GIT_REPOSITORY https://github.com/wolfpld/tracy.git
+  GIT_TAG v0.8.1)
+
+FetchContent_MakeAvailable(tracy)
+
+disable_static_analysis(TracyClient)
+
+if(UNIX AND NOT APPLE)
+  include(${CMAKE_SOURCE_DIR}/CMake/TracyServerTarget.cmake)
+endif()
