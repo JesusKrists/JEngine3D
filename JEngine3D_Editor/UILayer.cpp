@@ -80,12 +80,12 @@ void UILayer::OnUpdate()
     static constexpr auto CLEAR_COLOR = JE::Color{ 0.1F, 0.1F, 0.1F, 1.0F };
 
     auto &rendererAPI = JE_APP.RendererAPI();
-    // auto &renderer2D = JE_APP.Renderer2D();
+    auto &renderer2D = JE_APP.Renderer2D();
 
     rendererAPI.SetClearColor(CLEAR_COLOR);
     rendererAPI.Clear();
 
-    /*renderer2D.BeginBatch();
+    renderer2D.BeginBatch();
 
     auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
     auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
@@ -113,7 +113,7 @@ void UILayer::OnUpdate()
       }
     }
 
-    renderer2D.EndBatch();*/
+    renderer2D.EndBatch();
 
     /*if (m_GameViewportFBO.Size() != JE::Size2DI{ 0, 0 }) {
       m_GameViewportFBO.Bind();
