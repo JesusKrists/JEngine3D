@@ -155,16 +155,22 @@ void Application::ProcessMainLoop()
     }
 
     {
-      ZoneScopedN("Layer OnUpdate");// NOLINT
+      ZoneScopedN("OnUpdate");// NOLINT
       ReverseForEach(m_LayerStack, [](ILayer &layer) { layer.OnUpdate(); });
     }
     {
-      ZoneScopedN("Layer OnImGuiRender");// NOLINT
+      ZoneScopedN("ImGuiLayer Process and Render");// NOLINT
       m_ImGuiLayer.Begin();
-      ReverseForEach(m_LayerStack, [](ILayer &layer) { layer.OnImGuiRender(); });
-      ForEach(m_DebugViewContainer, [](IImGuiDebugView &view) {
-        if (view.IsOpen()) { view.Render(); }
-      });
+      {
+        ZoneScopedN("OnImGuiRender");// NOLINT
+        ReverseForEach(m_LayerStack, [](ILayer &layer) { layer.OnImGuiRender(); });
+      }
+      {
+        ZoneScopedN("DebugViewRender");// NOLINT
+        ForEach(m_DebugViewContainer, [](IImGuiDebugView &view) {
+          if (view.IsOpen()) { view.Render(); }
+        });
+      }
       m_ImGuiLayer.End();
     }
   }
@@ -172,11 +178,6 @@ void Application::ProcessMainLoop()
   {
     ZoneScopedN("MainWindow SwapBuffers");// NOLINT
     m_MainWindow.GraphicsContext().SwapBuffers();
-  }
-
-  {
-    ZoneScopedN("ImGui Render and SwapBuffers");// NOLINT
-    m_ImGuiLayer.RenderPlatformWindows();
   }
 
   FrameMark

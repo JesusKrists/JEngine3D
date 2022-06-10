@@ -122,19 +122,17 @@ static void JEngine3DImGuiPlatformRenderWindow(ImGuiViewport *viewport,
 {
   auto &window = *static_cast<Window *>(viewport->PlatformHandle);
   window.GraphicsContext().MakeCurrent();
-  JE_APP.RendererAPI().SetClearColor({ 1.0F, 0.0F, 1.0F, 1.0F });
-  JE_APP.RendererAPI().Clear();
 }
 
 static void JEngine3DImGuiSwapBuffers(ImGuiViewport *viewport,
   void *)// NOLINT(readability-named-parameter, hicpp-named-parameter)
 {
   auto &window = *static_cast<Window *>(viewport->PlatformHandle);
+  window.GraphicsContext().MakeCurrent();
   window.GraphicsContext().SwapBuffers();
 }
 
-
-static void JEngine3DImGuiRendererRenderWindow([[maybe_unused]] ImGuiViewport *viewport,
+static void JEngine3DImGuiRendererRenderWindow(ImGuiViewport *viewport,
   void *)// NOLINT(readability-named-parameter, hicpp-named-parameter)
 {
   JE_APP.ImGuiLayer().Renderer().RenderDrawData(*viewport->DrawData);
@@ -471,16 +469,16 @@ void ImGuiLayer::Begin() { ImGui::NewFrame(); }// NOLINT(readability-convert-mem
 void ImGuiLayer::End()// NOLINT(readability-convert-member-functions-to-static)
 {
   ImGui::Render();
-  if (!JE_APP.MainWindow().Minimized()) { m_ImGuiRenderer.RenderDrawData(*ImGui::GetDrawData()); }
-}
 
-void ImGuiLayer::RenderPlatformWindows()// NOLINT(readability-convert-member-functions-to-static)
-{
+  if (!JE_APP.MainWindow().Minimized()) { m_ImGuiRenderer.RenderDrawData(*ImGui::GetDrawData()); }
+
   const ImGuiIO &imguiIO = ImGui::GetIO();
   if ((imguiIO.ConfigFlags & ImGuiConfigFlags_ViewportsEnable)// NOLINT(hicpp-signed-bitwise)
       == ImGuiConfigFlags_ViewportsEnable) {
+    auto *currentContext = IGraphicsContext::CurrentContext();
     ImGui::UpdatePlatformWindows();
     ImGui::RenderPlatformWindowsDefault();
+    currentContext->MakeCurrent();
   }
 }
 

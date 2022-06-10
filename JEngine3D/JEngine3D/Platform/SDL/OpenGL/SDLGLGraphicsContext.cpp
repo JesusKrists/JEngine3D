@@ -22,6 +22,28 @@ void SDLGLGraphicsContext::SwapBuffers()
   SDL_GL_SwapWindow(static_cast<SDL_Window *>(NativeWindowHandle()));
 }
 
+void SDLGLGraphicsContext::EnableVSync()
+{
+  Bind();
+  SDL_GL_SetSwapInterval(1);
+  Unbind();
+}
+
+void SDLGLGraphicsContext::DisableVSync()
+{
+  Bind();
+  SDL_GL_SetSwapInterval(0);
+  Unbind();
+}
+
+auto SDLGLGraphicsContext::VSyncEnabled() -> bool
+{
+  Bind();
+  auto vsyncVal = SDL_GL_GetSwapInterval() == 1;
+  Unbind();
+  return vsyncVal;
+}
+
 void SDLGLGraphicsContext::MakeContextCurrent()
 {
   ZoneScopedN("SDLGLGraphicsContext::MakeContextCurrent");// NOLINT
@@ -29,7 +51,6 @@ void SDLGLGraphicsContext::MakeContextCurrent()
     JE::Logger::CoreLogger().error("Failed to set OpenGL context - {}", SDL_GetError());
     DEBUGBREAK();
   }
-  SDL_GL_SetSwapInterval(0);
   JE_APP.RendererAPI().SetViewport({ { 0, 0 }, DrawableSize() });
 }
 

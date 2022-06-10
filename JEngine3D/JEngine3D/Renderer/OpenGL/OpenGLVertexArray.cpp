@@ -115,6 +115,24 @@ void OpenGLVertexArray::ConfigureVertexBufferLayout(const BufferLayout &bufferLa
       DEBUGBREAK();
     }
   }
-}// namespace JE
+}
+
+void OpenGLVertexArray::Reset()
+{
+  ZoneScopedN("OpenGLVertexArray::Reset");// NOLINT
+  if (m_RendererID == 0) {
+    glGenVertexArrays(1, &m_RendererID);
+    ForEach(VertexBuffers(), [&](const IVertexBuffer &buffer) { ConfigureVertexBuffer(buffer); });
+    ConfigureIndexBuffer(IndexBuffer());
+  }
+}
+
+void OpenGLVertexArray::DeleteVertexArray()
+{
+  ZoneScopedN("OpenGLVertexArray::DeleteVertexArray");// NOLINT
+  glDeleteVertexArrays(1, &m_RendererID);
+  m_RendererID = 0;
+  m_LocationIndex = 0;
+}
 
 }// namespace JE

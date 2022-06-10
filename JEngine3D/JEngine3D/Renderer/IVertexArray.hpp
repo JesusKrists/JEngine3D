@@ -21,16 +21,14 @@ public:
 
   virtual void ConfigureVertexBufferLayout(const BufferLayout &bufferLayout) = 0;
 
+  virtual void Reset() = 0;
+  virtual void DeleteVertexArray() = 0;
+
   [[nodiscard]] inline auto VertexBuffers() const -> const VertexBufferContainer & { return m_VertexBuffers; }
   inline void AddVertexBuffer(const IVertexBuffer &vertexBuffer)
   {
     ZoneScopedN("IVertexArray::AddVertexBuffer");// NOLINT
-    Bind();
-    vertexBuffer.Bind();
-    ConfigureVertexBufferLayout(vertexBuffer.BufferLayout());
-    vertexBuffer.Unbind();
-    Unbind();
-
+    ConfigureVertexBuffer(vertexBuffer);
     m_VertexBuffers.push_back(vertexBuffer);
   }
 
@@ -42,9 +40,24 @@ public:
   inline void SetIndexBuffer(const IIndexBuffer &indexBuffer)
   {
     ZoneScopedN("IVertexArray::SetIndexBuffer");// NOLINT
+    ConfigureIndexBuffer(indexBuffer);
     m_IndexBuffer = &indexBuffer;
+  }
+
+protected:
+  inline void ConfigureVertexBuffer(const IVertexBuffer &vertexBuffer)
+  {
     Bind();
-    m_IndexBuffer->Bind();
+    vertexBuffer.Bind();
+    ConfigureVertexBufferLayout(vertexBuffer.BufferLayout());
+    vertexBuffer.Unbind();
+    Unbind();
+  }
+
+  inline void ConfigureIndexBuffer(const IIndexBuffer &indexBuffer)// NOLINT
+  {
+    Bind();
+    indexBuffer.Bind();
     Unbind();
   }
 

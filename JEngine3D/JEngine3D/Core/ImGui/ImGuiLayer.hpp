@@ -28,8 +28,6 @@ public:
   void Begin();
   // cppcheck-suppress functionStatic
   void End();
-  // cppcheck-suppress functionStatic
-  void RenderPlatformWindows();
 
   [[nodiscard]] inline auto Renderer() -> ImGuiRenderer & { return m_ImGuiRenderer; }
 

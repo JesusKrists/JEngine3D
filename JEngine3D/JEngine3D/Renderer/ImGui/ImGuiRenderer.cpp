@@ -69,6 +69,8 @@ void ImGuiRenderer::RenderDrawData(const ImDrawData &drawData)
 {
   ZoneScopedN("ImGuiRenderer::RenderDrawData");// NOLINT
 
+  m_VertexArray->Reset();
+
   m_PreviousRendererState = JE_APP.RendererAPI().RendererState();
 
   SetupRenderState(drawData);
@@ -88,6 +90,8 @@ void ImGuiRenderer::RenderDrawData(const ImDrawData &drawData)
   m_Shader->Unbind();
 
   JE_APP.RendererAPI().SetRendererState(m_PreviousRendererState);
+
+  m_VertexArray->DeleteVertexArray();
 }
 
 void ImGuiRenderer::SetupRenderState(const ImDrawData &drawData)

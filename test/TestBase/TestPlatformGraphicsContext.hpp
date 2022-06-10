@@ -14,6 +14,12 @@ public:
 
   inline void SwapBuffers() override {}
 
+  inline void EnableVSync() override { m_VSyncEnabled = true; }
+  inline void DisableVSync() override { m_VSyncEnabled = false; }
+  inline auto VSyncEnabled() -> bool override { return m_VSyncEnabled; }
+
 private:
   inline void MakeContextCurrent() override {}
+
+  bool m_VSyncEnabled = false;
 };

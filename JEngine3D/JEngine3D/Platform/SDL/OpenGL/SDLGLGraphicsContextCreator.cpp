@@ -18,21 +18,16 @@ static bool s_GLEWInitialized = false;// NOLINT
 auto SDLGLGraphicsContextCreator::CreateContext(IPlatformBackend::NativeWindowHandle handle)
   -> Scope<IGraphicsContext, MemoryTag::App>
 {
-  auto *currentWindow = SDL_GL_GetCurrentWindow();
-  auto *currentContext = SDL_GL_GetCurrentContext();
-  auto *context = [&]() {
-    if (m_OpenGLContext == nullptr) {
-      auto *glContext = SDL_GL_CreateContext(static_cast<SDL_Window *>(handle));
-      if (glContext == nullptr) {
-        JE::Logger::CoreLogger().error("SDL Failed to initialize - {}", SDL_GetError());
-        DEBUGBREAK();
-      }
-      m_OpenGLContext = glContext;
-    }
+  auto *previousContext = IGraphicsContext::CurrentContext();
 
-    return m_OpenGLContext;
-  }();
-
+  SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, SDL_TRUE);
+  auto *glContext = SDL_GL_CreateContext(static_cast<SDL_Window *>(handle));
+  if (glContext == nullptr) {
+    JE::Logger::CoreLogger().error("SDL Failed to initialize OpenGL Context - {}", SDL_GetError());
+    DEBUGBREAK();
+  }
+  SDL_GL_MakeCurrent(static_cast<SDL_Window *>(handle), glContext);
+  SDL_GL_SetSwapInterval(0);
 
   if (!s_GLEWInitialized) {
     glewExperimental = GL_TRUE;
@@ -48,12 +43,9 @@ auto SDLGLGraphicsContextCreator::CreateContext(IPlatformBackend::NativeWindowHa
     s_GLEWInitialized = true;
   }
 
-  if (currentContext != nullptr) {
-    SDL_GL_MakeCurrent(currentWindow, currentContext);
-  } else {
-    SDL_GL_MakeCurrent(static_cast<SDL_Window *>(handle), context);
-  }
-  return CreatePolymorphicScope<SDLGLGraphicsContext, MemoryTag::App, IGraphicsContext>(handle, context);
+  if (previousContext != nullptr) { previousContext->MakeCurrent(); }
+
+  return CreatePolymorphicScope<SDLGLGraphicsContext, MemoryTag::App, IGraphicsContext>(handle, glContext);
 }
 
 }// namespace JE

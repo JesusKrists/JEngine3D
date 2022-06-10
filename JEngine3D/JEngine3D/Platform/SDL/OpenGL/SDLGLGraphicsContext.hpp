@@ -17,6 +17,10 @@ public:
 
   void SwapBuffers() override;
 
+  void EnableVSync() override;
+  void DisableVSync() override;
+  auto VSyncEnabled() -> bool override;
+
 private:
   void MakeContextCurrent() override;
 };

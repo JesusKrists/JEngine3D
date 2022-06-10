@@ -8,7 +8,7 @@
 
 namespace JE {
 
-static void OpenGLMessageCallback(unsigned source,// NOLINT
+[[maybe_unused]] static void OpenGLMessageCallback(unsigned source,// NOLINT
   unsigned type,// NOLINT
   unsigned id,// NOLINT
   unsigned severity,// NOLINT

@@ -29,6 +29,7 @@ namespace JEditor {
 
 void UILayer::OnCreate()
 {
+  ZoneScopedN("UILayer::OnCreate");// NOLINT
   JE::ForEach(JE_APP.DebugViews(), [](JE::IImGuiDebugView &view) { view.Open(); });
 
   LoadImGuiSettings();
@@ -160,7 +161,9 @@ void UILayer::OnUpdate()
 
 void UILayer::OnImGuiRender()
 {
+  ZoneScopedN("UILayer::OnImGuiRender");// NOLINT
   ImGui::DockSpaceOverViewport(ImGui::GetMainViewport(), ImGuiDockNodeFlags_PassthruCentralNode);
+
   RenderMainMenuBar();
   RenderGameViewport();
 
@@ -178,7 +181,7 @@ void UILayer::LoadImGuiSettings()// NOLINT(readability-convert-member-functions-
 
 void UILayer::RenderMainMenuBar()// NOLINT(readability-convert-member-functions-to-static)
 {
-
+  ZoneScopedN("UILayer::RenderMainMenuBar");// NOLINT
   auto RenderMenuBarDebugViews = [&]() {
     auto &views = JE_APP.DebugViews();
 
@@ -211,6 +214,7 @@ void UILayer::RenderMainMenuBar()// NOLINT(readability-convert-member-functions-
 
 void UILayer::RenderGameViewport()
 {
+  ZoneScopedN("UILayer::RenderGameViewport");// NOLINT
   ImGui::PushStyleColor(ImGuiCol_ResizeGrip, 0);
   ImGui::PushStyleColor(ImGuiCol_ResizeGripHovered, 0);
   ImGui::PushStyleColor(ImGuiCol_ResizeGripActive, 0);

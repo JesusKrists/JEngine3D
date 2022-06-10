@@ -151,6 +151,19 @@
             }
         },
         {
+            "name": "linux-gcc-release-nostaticanalysis",
+            "displayName": "gcc Release No Static Analysis",
+            "description": "Target Linux with the gcc compiler, debug build type",
+            "inherits": "conf-linux-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc-11",
+                "CMAKE_CXX_COMPILER": "g++-11",
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "OPT_ENABLE_CLANG_TIDY": "FALSE",
+                "OPT_ENABLE_CPPCHECK": "FALSE"
+            }
+        },
+        {
             "name": "linux-clang-debug",
             "displayName": "clang Debug",
             "description": "Target Linux with the clang compiler, debug build type",
@@ -162,6 +175,19 @@
             }
         },
         {
+            "name": "linux-clang-debug-nostaticanalysis",
+            "displayName": "clang Debug No Static Analysis",
+            "description": "Target Linux with the gcc compiler, debug build type",
+            "inherits": "conf-linux-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "OPT_ENABLE_CLANG_TIDY": "FALSE",
+                "OPT_ENABLE_CPPCHECK": "FALSE"
+            }
+        },
+        {
             "name": "linux-clang-release",
             "displayName": "clang Release",
             "description": "Target Linux with the clang compiler, release build type",
@@ -170,6 +196,19 @@
                 "CMAKE_C_COMPILER": "clang",
                 "CMAKE_CXX_COMPILER": "clang++",
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "linux-clang-release-nostaticanalysis",
+            "displayName": "clang Release No Static Analysis",
+            "description": "Target Linux with the gcc compiler, debug build type",
+            "inherits": "conf-linux-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "clang",
+                "CMAKE_CXX_COMPILER": "clang++",
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "OPT_ENABLE_CLANG_TIDY": "FALSE",
+                "OPT_ENABLE_CPPCHECK": "FALSE"
             }
         }
     ],

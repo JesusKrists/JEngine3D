@@ -124,3 +124,13 @@ dynamic_project_options(
   --suppress=*:*/_deps/*)
 
 target_compile_features(project_options INTERFACE cxx_std_${CMAKE_CXX_STANDARD})
+
+if(${CMAKE_BUILD_TYPE} STREQUAL Debug OR ${CMAKE_BUILD_TYPE} STREQUAL RelWithDebInfo)
+  if(NOT WIN32)
+    target_compile_options(project_options INTERFACE -fno-omit-frame-pointer)
+
+    if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang.*")
+      target_compile_options(project_options INTERFACE -mno-omit-leaf-frame-pointer)
+    endif()
+  endif()
+endif()

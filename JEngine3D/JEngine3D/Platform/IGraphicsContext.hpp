@@ -19,9 +19,7 @@ public:
   IGraphicsContext(IPlatformBackend::NativeWindowHandle windowHandle,// NOLINT(bugprone-easily-swappable-parameters)
     IGraphicsContextCreator::NativeContextHandle contextHandle)
     : m_WindowHandle(windowHandle), m_ContextHandle(contextHandle)
-  {
-    if (s_CurrentContext == nullptr) { s_CurrentContext = this; }
-  }
+  {}
 
   [[nodiscard]] auto inline NativeWindowHandle() -> IPlatformBackend::NativeWindowHandle { return m_WindowHandle; }
   [[nodiscard]] auto inline NativeContextHandle() -> IGraphicsContextCreator::NativeContextHandle
@@ -29,30 +27,35 @@ public:
     return m_ContextHandle;
   }
 
-  static inline auto CurrentContext() -> IGraphicsContext &
-  {
-    ASSERT(s_CurrentContext != nullptr, "Current Graphics Context cannot be null");
-    return *s_CurrentContext;
-  }
+  static inline auto CurrentContext() -> IGraphicsContext * { return s_CurrentContext; }
 
   void MakeCurrent()
   {
-    s_CurrentContext = this;
-    MakeContextCurrent();
+    if (s_CurrentContext != this) {
+      s_CurrentContext = this;
+      MakeContextCurrent();
+    }
   }
 
   // IDrawTarget
   inline void Bind() override
   {
-    m_PreviousContext = &CurrentContext();
-    MakeCurrent();
+    m_PreviousContext = CurrentContext();
+    if (m_PreviousContext != this) { MakeCurrent(); }
   }
-  inline void Unbind() override { m_PreviousContext->MakeCurrent(); }
+  inline void Unbind() override
+  {
+    if (m_PreviousContext != this) { m_PreviousContext->MakeCurrent(); }
+  }
 
   virtual ~IGraphicsContext() = default;// NOLINT
   [[nodiscard]] virtual auto DrawableSize() -> Size2DI = 0;
   virtual void Resize(const Size2DI &size) = 0;
   virtual void SwapBuffers() = 0;
+
+  virtual void EnableVSync() = 0;
+  virtual void DisableVSync() = 0;
+  virtual auto VSyncEnabled() -> bool = 0;
 
 private:
   virtual void MakeContextCurrent() = 0;
