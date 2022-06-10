@@ -10,15 +10,21 @@ namespace JE {
 
 auto SDLGLGraphicsContext::DrawableSize() -> Size2DI
 {
+  ZoneScopedN("SDLGLGraphicsContext::DrawableSize");// NOLINT
   Size2DI size{};
   SDL_GL_GetDrawableSize(static_cast<SDL_Window *>(NativeWindowHandle()), &size.Width, &size.Height);
   return size;
 }
 
-void SDLGLGraphicsContext::SwapBuffers() { SDL_GL_SwapWindow(static_cast<SDL_Window *>(NativeWindowHandle())); }
+void SDLGLGraphicsContext::SwapBuffers()
+{
+  ZoneScopedN("SDLGLGraphicsContext::SwapBuffers");// NOLINT
+  SDL_GL_SwapWindow(static_cast<SDL_Window *>(NativeWindowHandle()));
+}
 
 void SDLGLGraphicsContext::MakeContextCurrent()
 {
+  ZoneScopedN("SDLGLGraphicsContext::MakeContextCurrent");// NOLINT
   if (SDL_GL_MakeCurrent(static_cast<SDL_Window *>(NativeWindowHandle()), NativeContextHandle()) != 0) {
     JE::Logger::CoreLogger().error("Failed to set OpenGL context - {}", SDL_GetError());
     DEBUGBREAK();

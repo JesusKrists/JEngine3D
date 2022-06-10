@@ -8,6 +8,8 @@
 #include <glm/ext/matrix_clip_space.hpp>
 #include <imgui.h>
 
+#include <Tracy.hpp>
+
 namespace JE {
 
 static constexpr std::string_view VERTEX_SHADER_SOURCE =
@@ -38,6 +40,7 @@ static constexpr std::string_view FRAGMENT_SHADER_SOURCE =
 
 ImGuiRenderer::ImGuiRenderer()
 {
+  ZoneScopedN("ImGuiRenderer::ImGuiRenderer");// NOLINT
   m_VertexArray->AddVertexBuffer(*m_VertexBuffer);
   m_VertexArray->SetIndexBuffer(*m_IndexBuffer);
 
@@ -47,6 +50,7 @@ ImGuiRenderer::ImGuiRenderer()
 
 void ImGuiRenderer::Initialize()
 {
+  ZoneScopedN("ImGuiRenderer::Initialize");// NOLINT
   auto &imguiIO = ImGui::GetIO();
 
   uint8_t *textureData = nullptr;
@@ -55,7 +59,7 @@ void ImGuiRenderer::Initialize()
   imguiIO.Fonts->GetTexDataAsRGBA32(&textureData, &fontWidth, &fontHeight);
 
   m_FontTexture = IRendererObjectCreator::Get().CreateTexture("ImGui Default Font",
-    { textureData, static_cast<size_t>(fontWidth * fontHeight * 4) },
+    { reinterpret_cast<const std::byte *>(textureData), static_cast<size_t>(fontWidth * fontHeight * 4) },// NOLINT
     { fontWidth, fontHeight },
     TextureFormat::RGBA8);
   imguiIO.Fonts->TexID = m_FontTexture->RendererID();
@@ -63,6 +67,8 @@ void ImGuiRenderer::Initialize()
 
 void ImGuiRenderer::RenderDrawData(const ImDrawData &drawData)
 {
+  ZoneScopedN("ImGuiRenderer::RenderDrawData");// NOLINT
+
   m_PreviousRendererState = JE_APP.RendererAPI().RendererState();
 
   SetupRenderState(drawData);
@@ -71,7 +77,7 @@ void ImGuiRenderer::RenderDrawData(const ImDrawData &drawData)
     const auto &commandList = *drawData.CmdLists[i];// NOLINT
 
     // Setup VAO stuff
-    m_VertexBuffer->SetData({ reinterpret_cast<const uint8_t *>(commandList.VtxBuffer.Data),// NOLINT
+    m_VertexBuffer->SetData({ reinterpret_cast<const std::byte *>(commandList.VtxBuffer.Data),// NOLINT
       static_cast<size_t>(commandList.VtxBuffer.Size) * sizeof(ImDrawVert) });
     m_IndexBuffer->SetData({ reinterpret_cast<const uint32_t *>(commandList.IdxBuffer.Data),// NOLINT
       static_cast<size_t>(commandList.IdxBuffer.Size) });
@@ -86,6 +92,7 @@ void ImGuiRenderer::RenderDrawData(const ImDrawData &drawData)
 
 void ImGuiRenderer::SetupRenderState(const ImDrawData &drawData)
 {
+  ZoneScopedN("ImGuiRenderer::SetupRenderState");// NOLINT
   JE_APP.RendererAPI().SetRendererState(m_ImGuiRendererState);
 
   m_Shader->Bind();

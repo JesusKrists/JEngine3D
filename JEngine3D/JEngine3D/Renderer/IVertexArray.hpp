@@ -4,6 +4,8 @@
 #include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Renderer/IBuffer.hpp"
 
+#include <Tracy.hpp>
+
 namespace JE {
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
@@ -22,6 +24,7 @@ public:
   [[nodiscard]] inline auto VertexBuffers() const -> const VertexBufferContainer & { return m_VertexBuffers; }
   inline void AddVertexBuffer(const IVertexBuffer &vertexBuffer)
   {
+    ZoneScopedN("IVertexArray::AddVertexBuffer");// NOLINT
     Bind();
     vertexBuffer.Bind();
     ConfigureVertexBufferLayout(vertexBuffer.BufferLayout());
@@ -38,6 +41,7 @@ public:
   }
   inline void SetIndexBuffer(const IIndexBuffer &indexBuffer)
   {
+    ZoneScopedN("IVertexArray::SetIndexBuffer");// NOLINT
     m_IndexBuffer = &indexBuffer;
     Bind();
     m_IndexBuffer->Bind();

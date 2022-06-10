@@ -76,6 +76,7 @@ static constexpr std::string_view FRAGMENT_SHADER_SOURCE =
 
 Renderer2D::Renderer2D()
 {
+  ZoneScopedN("Renderer2D::Renderer2D");// NOLINT
   ASSERT(s_Renderer2DInstance == nullptr, "Renderer2D instance already exists");
   s_Renderer2DInstance = this;
 
@@ -97,13 +98,14 @@ void Renderer2D::InitializeBatch(IDrawTarget *target)
 
 void Renderer2D::Flush()
 {
+  ZoneScopedN("Renderer2D::Flush");// NOLINT
   ASSERT(Data.Target != nullptr, "IDrawTarget is missing");
   ASSERT(Data.TriangleIndices.size() != 0, "Nothing has been drawn");
 
   Data.Stats.FrameTriangleVertexCount += Data.TriangleVertices.size();
   Data.Stats.FrameTriangleIndexCount += Data.TriangleIndices.size();
 
-  Data.VertexBuffer->SetData({ reinterpret_cast<const uint8_t *>(Data.TriangleVertices.data()),// NOLINT
+  Data.VertexBuffer->SetData({ reinterpret_cast<const std::byte *>(Data.TriangleVertices.data()),// NOLINT
     Data.TriangleVertices.size() * sizeof(Vertex) });
 
   Data.IndexBuffer->SetData(Data.TriangleIndices);
@@ -136,6 +138,7 @@ void Renderer2D::Flush()
 
 void Renderer2D::NextBatch()
 {
+  ZoneScopedN("Renderer2D::NextBatch");// NOLINT
   auto *target = Data.Target;
   Flush();
   InitializeBatch(target);
@@ -143,6 +146,7 @@ void Renderer2D::NextBatch()
 
 auto Renderer2D::PushTexture(const ITexture2D &texture) -> int8_t
 {
+  ZoneScopedN("Renderer2D::PushTexture");// NOLINT
   int8_t textureIndex = -1;
   if (Data.TextureSlotIndex == -1) {
     Data.TextureSlots[static_cast<size_t>(++Data.TextureSlotIndex)] = &texture;// NOLINT
@@ -177,6 +181,7 @@ void Renderer2D::NewFrame()
 
 void Renderer2D::BeginBatch(IDrawTarget *target)
 {
+  ZoneScopedN("Renderer2D::BeginBatch");// NOLINT
   if (Data.BatchBegun) { Flush(); }
   if (target != nullptr) {
     InitializeBatch(target);
@@ -187,12 +192,14 @@ void Renderer2D::BeginBatch(IDrawTarget *target)
 
 void Renderer2D::EndBatch()
 {
+  ZoneScopedN("Renderer2D::EndBatch");// NOLINT
   if (!Data.BatchBegun) { return; }
   Flush();
 }
 
 void Renderer2D::DrawTriangle(const Vertex &vertex0, const Vertex &vertex1, const Vertex &vertex2)
 {
+  ZoneScopedN("Renderer2D::DrawTriangle");// NOLINT
   if (TriangleCount() + 1 > Data.TrianglesPerBatch) { NextBatch(); }
 
   auto vertexOffset = Data.TriangleVertices.size();
@@ -210,6 +217,7 @@ void Renderer2D::DrawTriangle(const Vertex &vertex0, const Vertex &vertex1, cons
 
 void Renderer2D::DrawTriangle(Vertex &vertex0, Vertex &vertex1, Vertex &vertex2, const ITexture2D &texture)
 {
+  ZoneScopedN("Renderer2D::DrawTriangle(texture)");// NOLINT
   if (TriangleCount() + 1 > Data.TrianglesPerBatch) { NextBatch(); }
 
   auto textureIndex = PushTexture(texture);
@@ -223,6 +231,7 @@ void Renderer2D::DrawTriangle(Vertex &vertex0, Vertex &vertex1, Vertex &vertex2,
 
 void Renderer2D::DrawQuad(const glm::vec3 &position, const glm::vec2 &size, const Color &color)
 {
+  ZoneScopedN("Renderer2D::DrawQuad(pos, size)");// NOLINT
   glm::mat4 transform =
     glm::translate(glm::mat4(1.0F), position) * glm::scale(glm::mat4(1.0F), { size.x, size.y, 1.0F });// NOLINT
   DrawQuad(transform, color);
@@ -233,6 +242,7 @@ void Renderer2D::DrawQuad(const glm::vec3 &position,
   const ITexture2D &texture,
   const Color &tintColor)
 {
+  ZoneScopedN("Renderer2D::DrawQuad(pos, size, texture)");// NOLINT
   glm::mat4 transform =
     glm::translate(glm::mat4(1.0F), position) * glm::scale(glm::mat4(1.0F), { size.x, size.y, 1.0F });// NOLINT
   DrawQuad(transform, texture, tintColor);
@@ -240,6 +250,7 @@ void Renderer2D::DrawQuad(const glm::vec3 &position,
 
 void Renderer2D::DrawQuad(const glm::mat4 &transform, const Color &color)
 {
+  ZoneScopedN("Renderer2D::DrawQuad(transform)");// NOLINT
   if (TriangleCount() + 2 > Data.TrianglesPerBatch) { NextBatch(); }
 
   auto vertexOffset = Data.TriangleVertices.size();
@@ -261,6 +272,7 @@ void Renderer2D::DrawQuad(const glm::mat4 &transform, const Color &color)
 
 void Renderer2D::DrawQuad(const glm::mat4 &transform, const ITexture2D &texture, const Color &tintColor)
 {
+  ZoneScopedN("Renderer2D::DrawQuad(transform, texture)");// NOLINT
   if (TriangleCount() + 2 > Data.TrianglesPerBatch) { NextBatch(); }
 
   auto textureIndex = PushTexture(texture);

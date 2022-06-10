@@ -2,6 +2,8 @@
 
 #include "JEngine3D/Core/MemoryController.hpp"
 
+#include <Tracy.hpp>
+
 namespace JE {
 
 struct RectangleI;
@@ -23,6 +25,7 @@ public:
 
   inline void SetRendererState(const JE::RendererState &state)
   {
+    ZoneScopedN("IRendererAPI::SetRendererState");// NOLINT
     m_State = state;
     UpdateRendererState();
   };

@@ -140,7 +140,7 @@ public:
   virtual void Bind() const = 0;
   virtual void Unbind() const = 0;
 
-  virtual void SetData(const std::span<const uint8_t> &data) = 0;
+  virtual void SetData(const std::span<const std::byte> &data) = 0;
 
   [[nodiscard]] inline auto BufferLayout() const -> const JE::BufferLayout & { return m_BufferLayout; }
 

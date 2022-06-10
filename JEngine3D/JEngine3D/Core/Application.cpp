@@ -27,7 +27,7 @@ Application::Application(const std::string_view &title)
     MAIN_WINDOW_CONFIG)),
     m_RendererAPI(IRendererObjectCreator::Get().CreateAPI())
 {
-  ZoneScopedN("JE::Application Setup");// NOLINT
+  ZoneScopedN("Application::Application");// NOLINT
 
   ASSERT(!s_ApplicationInstance, "Application instance already exists");
   s_ApplicationInstance = this;

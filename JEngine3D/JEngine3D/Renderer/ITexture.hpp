@@ -16,7 +16,7 @@ public:
   virtual ~ITexture2D() = default;
 
   virtual void SetData(const std::string_view &sourcePath,
-    const std::span<const uint8_t> &data,
+    const std::span<const std::byte> &data,
     const Size2DI &textureDimensions,
     TextureFormat format) = 0;
 

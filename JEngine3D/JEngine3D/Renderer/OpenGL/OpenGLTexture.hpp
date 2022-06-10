@@ -10,14 +10,14 @@ class OpenGLTexture2D final : public ITexture2D
 {
 public:
   OpenGLTexture2D(const std::string_view &sourcePath,
-    const std::span<const uint8_t> &textureData,
+    const std::span<const std::byte> &textureData,
     const Size2DI &textureDimensions,
     TextureFormat format);
 
   virtual ~OpenGLTexture2D();// NOLINT
 
   void SetData(const std::string_view &sourcePath,
-    const std::span<const uint8_t> &data,
+    const std::span<const std::byte> &data,
     const Size2DI &textureDimensions,
     TextureFormat format) override;
 

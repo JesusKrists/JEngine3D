@@ -2,22 +2,39 @@
 
 #include <GL/glew.h>
 
+#include <Tracy.hpp>
+
 namespace JE {
 
 
 OpenGLVertexBuffer::OpenGLVertexBuffer(const JE::BufferLayout &layout) : IVertexBuffer(layout)
 {
+  ZoneScopedN("OpenGLVertexBuffer::OpenGLVertexBuffer");// NOLINT
   glGenBuffers(1, &m_RendererID);
 }
 
-OpenGLVertexBuffer::~OpenGLVertexBuffer() { glDeleteBuffers(1, &m_RendererID); }
-
-void OpenGLVertexBuffer::Bind() const { glBindBuffer(GL_ARRAY_BUFFER, m_RendererID); }
-
-void OpenGLVertexBuffer::Unbind() const { glBindBuffer(GL_ARRAY_BUFFER, 0); }
-
-void OpenGLVertexBuffer::SetData(const std::span<const uint8_t> &data)
+OpenGLVertexBuffer::~OpenGLVertexBuffer()
 {
+  ZoneScopedN("OpenGLVertexBuffer::~OpenGLVertexBuffer");// NOLINT
+  glDeleteBuffers(1, &m_RendererID);
+}
+
+void OpenGLVertexBuffer::Bind() const
+{
+  ZoneScopedN("OpenGLVertexBuffer::Bind");// NOLINT
+  glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
+}
+
+void OpenGLVertexBuffer::Unbind() const
+{
+  ZoneScopedN("OpenGLVertexBuffer::Unbind");// NOLINT
+  glBindBuffer(GL_ARRAY_BUFFER, 0);
+}
+
+void OpenGLVertexBuffer::SetData(const std::span<const std::byte> &data)
+{
+  ZoneScopedN("OpenGLVertexBuffer::SetData");// NOLINT
+
   glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
   if (m_TotalBufferSize < data.size()) {
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(data.size_bytes()), nullptr, GL_DYNAMIC_DRAW);
@@ -31,11 +48,16 @@ void OpenGLVertexBuffer::SetData(const std::span<const uint8_t> &data)
 
 ///////////////////////////////////////////////////////////////////////////////////////////////
 
-OpenGLIndexBuffer::OpenGLIndexBuffer() { glGenBuffers(1, &m_RendererID); }
+OpenGLIndexBuffer::OpenGLIndexBuffer()
+{
+  ZoneScopedN("OpenGLIndexBuffer::OpenGLIndexBuffer");// NOLINT
+  glGenBuffers(1, &m_RendererID);
+}
 
 OpenGLIndexBuffer::OpenGLIndexBuffer(const std::span<const uint32_t> &data)
   : m_IndexCount(data.size()), m_TotalBufferSize(m_IndexCount)
 {
+  ZoneScopedN("OpenGLIndexBuffer::OpenGLIndexBuffer(std::span data)");// NOLINT
   glGenBuffers(1, &m_RendererID);
 
   // GL_ELEMENT_ARRAY_BUFFER is not valid without an actively bound VAO
@@ -45,14 +67,27 @@ OpenGLIndexBuffer::OpenGLIndexBuffer(const std::span<const uint32_t> &data)
   glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-OpenGLIndexBuffer::~OpenGLIndexBuffer() { glDeleteBuffers(1, &m_RendererID); }
+OpenGLIndexBuffer::~OpenGLIndexBuffer()
+{
+  ZoneScopedN("OpenGLIndexBuffer::~OpenGLIndexBuffer");// NOLINT
+  glDeleteBuffers(1, &m_RendererID);
+}
 
-void OpenGLIndexBuffer::Bind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID); }
+void OpenGLIndexBuffer::Bind() const
+{
+  ZoneScopedN("OpenGLIndexBuffer::Bind");// NOLINT
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_RendererID);
+}
 
-void OpenGLIndexBuffer::Unbind() const { glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0); }
+void OpenGLIndexBuffer::Unbind() const
+{
+  ZoneScopedN("OpenGLIndexBuffer::Unbind");// NOLINT
+  glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+}
 
 void OpenGLIndexBuffer::SetData(const std::span<const uint32_t> &data)
 {
+  ZoneScopedN("OpenGLIndexBuffer::SetData");// NOLINT
   glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
   if (m_TotalBufferSize < data.size()) {
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(data.size_bytes()), nullptr, GL_DYNAMIC_DRAW);

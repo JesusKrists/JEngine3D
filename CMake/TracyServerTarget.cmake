@@ -74,7 +74,12 @@ add_executable(
   ${TracyServer_Common}
   ${TracyServer_zstd})
 
-target_compile_definitions(TracyServer PRIVATE IMGUI_ENABLE_FREETYPE DISPLAY_SERVER_X11 ZSTD_DISABLE_ASM)
+target_compile_definitions(
+  TracyServer
+  PRIVATE IMGUI_ENABLE_FREETYPE
+          DISPLAY_SERVER_X11
+          ZSTD_DISABLE_ASM
+          TRACY_NO_FILESELECTOR)
 target_include_directories(TracyServer PRIVATE /usr/include/freetype2 ${tracy_SOURCE_DIR}/imgui
                                                ${capstone_SOURCE_DIR}/include/capstone)
 target_link_libraries(TracyServer PRIVATE freetype glfw capstone)

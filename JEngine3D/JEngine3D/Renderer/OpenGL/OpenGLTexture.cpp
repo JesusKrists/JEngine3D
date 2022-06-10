@@ -37,7 +37,7 @@ static auto TextureFormatToOpenGLDataFormat(TextureFormat format) -> GLenum
 }
 
 OpenGLTexture2D::OpenGLTexture2D(const std::string_view &sourcePath,
-  const std::span<const uint8_t> &textureData,
+  const std::span<const std::byte> &textureData,
   const Size2DI &textureDimensions,
   TextureFormat format)
   : m_SourcePath(sourcePath), m_TextureSize(textureDimensions), m_Format(format)
@@ -67,7 +67,7 @@ OpenGLTexture2D::OpenGLTexture2D(const std::string_view &sourcePath,
 OpenGLTexture2D::~OpenGLTexture2D() { glDeleteTextures(1, &m_RendererID); }
 
 void OpenGLTexture2D::SetData(const std::string_view &sourcePath,
-  const std::span<const uint8_t> &textureData,
+  const std::span<const std::byte> &textureData,
   const Size2DI &textureDimensions,
   TextureFormat format)
 {

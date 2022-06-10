@@ -43,6 +43,7 @@ static void OpenGLMessageCallback(unsigned source,// NOLINT
 
 OpenGLRendererAPI::OpenGLRendererAPI()
 {
+  ZoneScopedN("OpenGLRendererAPI::OpenGLRendererAPI");// NOLINT
 #if defined(JE_DEBUG)
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
@@ -55,6 +56,7 @@ OpenGLRendererAPI::OpenGLRendererAPI()
 
 void OpenGLRendererAPI::SetViewport(const RectangleI &viewport)
 {
+  ZoneScopedN("OpenGLRendererAPI::SetViewport");// NOLINT
   glViewport(viewport.Position.X, viewport.Position.Y, viewport.Size.Width, viewport.Size.Height);
   if (RendererState().ClipTest) {
     glScissor(viewport.Position.X, viewport.Position.Y, viewport.Size.Width, viewport.Size.Height);
@@ -63,24 +65,33 @@ void OpenGLRendererAPI::SetViewport(const RectangleI &viewport)
 
 void OpenGLRendererAPI::SetClipRect(const RectangleI &clipRect)
 {
+  ZoneScopedN("OpenGLRendererAPI::SetClipRect");// NOLINT
   glScissor(clipRect.Position.X, clipRect.Position.Y, clipRect.Size.Width, clipRect.Size.Height);
 }
 
 void OpenGLRendererAPI::SetClearColor(const Color &color)
 {
+  ZoneScopedN("OpenGLRendererAPI::SetClearColor");// NOLINT
   glClearColor(color.RawColor.r, color.RawColor.g, color.RawColor.b, color.RawColor.a);// NOLINT
 }
 
-void OpenGLRendererAPI::Clear() { glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT); }// NOLINT
+void OpenGLRendererAPI::Clear()
+{
+  ZoneScopedN("OpenGLRendererAPI::Clear");// NOLINT
+  glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);// NOLINT
+}
 
 void OpenGLRendererAPI::BindTexture(uint32_t rendererID, uint8_t slot)// NOLINT
 {
+  ZoneScopedN("OpenGLRendererAPI::BindTexture");// NOLINT
   glActiveTexture(GL_TEXTURE0 + slot);
   glBindTexture(GL_TEXTURE_2D, rendererID);
 }
 
 void OpenGLRendererAPI::DrawIndexed(const IVertexArray &vertexArray, size_t indexCount)
 {
+  ZoneScopedN("OpenGLRendererAPI::DrawIndexed");// NOLINT
+
   vertexArray.Bind();
   glDrawElements(GL_TRIANGLES,
     static_cast<GLsizei>(indexCount != 0 ? indexCount : vertexArray.IndexBuffer().IndexCount()),
@@ -92,6 +103,7 @@ void OpenGLRendererAPI::DrawIndexed(const IVertexArray &vertexArray, size_t inde
 
 void OpenGLRendererAPI::DrawIndexed(const IVertexArray &vertexArray, size_t indexCount, size_t indexOffset)
 {
+  ZoneScopedN("OpenGLRendererAPI::DrawIndexed(offset)");// NOLINT
 
   vertexArray.Bind();
   glDrawElements(GL_TRIANGLES,
@@ -103,6 +115,7 @@ void OpenGLRendererAPI::DrawIndexed(const IVertexArray &vertexArray, size_t inde
 
 void OpenGLRendererAPI::UpdateRendererState()
 {
+  ZoneScopedN("OpenGLRendererAPI::UpdateRendererState");// NOLINT
   if (RendererState().DepthTest) {
     glEnable(GL_DEPTH_TEST);
   } else {

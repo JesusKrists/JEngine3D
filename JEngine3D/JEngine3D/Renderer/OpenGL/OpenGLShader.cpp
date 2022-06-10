@@ -8,6 +8,8 @@
 
 #include <glm/gtc/type_ptr.hpp>
 
+#include <Tracy.hpp>
+
 namespace JE {
 
 static void CheckShaderErrors(uint32_t rendererID, GLenum status)
@@ -53,6 +55,7 @@ OpenGLShader::OpenGLShader(const std::string_view &name,// NOLINT
   const std::string_view &fragmentSource)
   : m_Name(name), m_RendererID(glCreateProgram())
 {
+  ZoneScopedN("OpenGLShader::OpenGLShader");// NOLINT
   auto vertexShader = CreateShader(Type::VERTEX, vertexSource);
   auto fragmentShader = CreateShader(Type::FRAGMENT, fragmentSource);
 
@@ -66,21 +69,35 @@ OpenGLShader::OpenGLShader(const std::string_view &name,// NOLINT
   glDeleteShader(fragmentShader);
 }
 
-OpenGLShader::~OpenGLShader() { glDeleteProgram(m_RendererID); }
+OpenGLShader::~OpenGLShader()
+{
+  ZoneScopedN("OpenGLShader::~OpenGLShader");// NOLINT
+  glDeleteProgram(m_RendererID);
+}
 
-void OpenGLShader::Bind() const { glUseProgram(m_RendererID); }
+void OpenGLShader::Bind() const
+{
+  ZoneScopedN("OpenGLShader::Bind");// NOLINT
+  glUseProgram(m_RendererID);
+}
 
-void OpenGLShader::Unbind() const { glUseProgram(0); }
+void OpenGLShader::Unbind() const
+{
+  ZoneScopedN("OpenGLShader::Unbind");// NOLINT
+  glUseProgram(0);
+}
 
 
 void OpenGLShader::SetInt(const std::string_view &name, int value)
 {
+  ZoneScopedN("OpenGLShader::SetInt");// NOLINT
   auto location = GetUniformLocation(m_RendererID, name);
   glUniform1i(location, value);
 }
 
 void OpenGLShader::SetMat4(const std::string_view &name, const glm::mat4 &value)
 {
+  ZoneScopedN("OpenGLShader::SetMat4");// NOLINT
   auto location = GetUniformLocation(m_RendererID, name);
   glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(value));
 }

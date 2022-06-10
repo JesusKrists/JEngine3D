@@ -15,7 +15,7 @@ public:
   void Bind() const override;
   void Unbind() const override;
 
-  void SetData(const std::span<const uint8_t> &data) override;
+  void SetData(const std::span<const std::byte> &data) override;
 
 private:
   uint32_t m_RendererID = 0;

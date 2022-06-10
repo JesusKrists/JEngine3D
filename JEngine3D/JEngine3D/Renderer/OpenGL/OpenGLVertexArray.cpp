@@ -35,16 +35,33 @@ static auto ShaderDataTypeToOpenGLBaseType(ShaderDataType type) -> GLenum
   return 0;
 }
 
-OpenGLVertexArray::OpenGLVertexArray() { glGenVertexArrays(1, &m_RendererID); }
+OpenGLVertexArray::OpenGLVertexArray()
+{
+  ZoneScopedN("OpenGLVertexArray::OpenGLVertexArray");// NOLINT
+  glGenVertexArrays(1, &m_RendererID);
+}
 
-OpenGLVertexArray::~OpenGLVertexArray() { glDeleteVertexArrays(1, &m_RendererID); }
+OpenGLVertexArray::~OpenGLVertexArray()
+{
+  ZoneScopedN("OpenGLVertexArray::~OpenGLVertexArray");// NOLINT
+  glDeleteVertexArrays(1, &m_RendererID);
+}
 
-void OpenGLVertexArray::Bind() const { glBindVertexArray(m_RendererID); }
+void OpenGLVertexArray::Bind() const
+{
+  ZoneScopedN("OpenGLVertexArray::Bind");// NOLINT
+  glBindVertexArray(m_RendererID);
+}
 
-void OpenGLVertexArray::Unbind() const { glBindVertexArray(0); }
+void OpenGLVertexArray::Unbind() const
+{
+  ZoneScopedN("OpenGLVertexArray::Unbind");// NOLINT
+  glBindVertexArray(0);
+}
 
 void OpenGLVertexArray::ConfigureVertexBufferLayout(const BufferLayout &bufferLayout)
 {
+  ZoneScopedN("OpenGLVertexArray::ConfigureVertexBufferLayout");// NOLINT
   ASSERT(bufferLayout.Elements().size(), "Vertex Buffer has no layout!");
 
   for (const auto &element : bufferLayout) {

@@ -260,7 +260,7 @@ void ImGuiLayer::OnDestroy() { ImGui::DestroyContext(); }
 
 void ImGuiLayer::OnUpdate()
 {
-  ZoneScopedN("ImGuiLayer OnUpdate");// NOLINT
+  ZoneScopedN("ImGuiLayer::OnUpdate");// NOLINT
   auto &mainWindow = JE_APP.MainWindow();
   auto &graphicsContext = mainWindow.GraphicsContext();
   auto windowMinimized = mainWindow.Minimized();
