@@ -90,42 +90,40 @@ void UILayer::OnUpdate()
     rendererAPI.SetClearColor(CLEAR_COLOR);
     rendererAPI.Clear();
 
-    if (m_GameViewportFBO->Configuration().Size != JE::Size2DI{ 0, 0 }) {
-      m_GameViewportFBO->Bind();
-      rendererAPI.Clear();
-      m_GameViewportFBO->Unbind();
+    m_GameViewportFBO->Bind();
+    rendererAPI.Clear();
+    m_GameViewportFBO->Unbind();
 
 
-      renderer2D.BeginBatch(m_GameViewportFBO.get());
+    renderer2D.BeginBatch(m_GameViewportFBO.get());
 
-      auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
-      auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
-      auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
+    auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
+    auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
+    auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
 
-      auto vertex3 = JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
-      auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
-      auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
+    auto vertex3 = JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
+    auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
+    auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
 
-      constexpr auto position = glm::vec3{ -0.80F, -0.80F, 0.0F };
-      constexpr auto size = glm::vec2{ 0.15F, 0.15F };
-      constexpr auto color = JE::Color{ 1.0F, 0.0F, 1.0F, 1.0F };
+    constexpr auto position = glm::vec3{ -0.80F, -0.80F, 0.0F };
+    constexpr auto size = glm::vec2{ 0.15F, 0.15F };
+    constexpr auto color = JE::Color{ 1.0F, 0.0F, 1.0F, 1.0F };
 
-      // constexpr auto position2 = glm::vec3{ 0.0F, 0.0F, 0.0F };
-      constexpr auto color2 = JE::Color{ 1.0F, 1.0F, 1.0F, 1.0F };
+    // constexpr auto position2 = glm::vec3{ 0.0F, 0.0F, 0.0F };
+    constexpr auto color2 = JE::Color{ 1.0F, 1.0F, 1.0F, 1.0F };
 
-      renderer2D.DrawTriangle(vertex0, vertex1, vertex2, *m_TestTexture);
-      renderer2D.DrawTriangle(vertex3, vertex4, vertex5);
-      renderer2D.DrawQuad(position, size, color);
-      for (int y = 0; y < 10; y++) {// NOLINT
-        for (int x = 0; x < 10; x++) {// NOLINT
-          const auto newPosition =
-            glm::vec3{ -0.9F + (static_cast<float>(x) / 5), -0.9F + (static_cast<float>(y) / 5), 0 };
-          renderer2D.DrawQuad(newPosition, size, *m_MemeTexture, color2);
-        }
+    renderer2D.DrawTriangle(vertex0, vertex1, vertex2, *m_TestTexture);
+    renderer2D.DrawTriangle(vertex3, vertex4, vertex5);
+    renderer2D.DrawQuad(position, size, color);
+    for (int y = 0; y < 10; y++) {// NOLINT
+      for (int x = 0; x < 10; x++) {// NOLINT
+        const auto newPosition =
+          glm::vec3{ -0.9F + (static_cast<float>(x) / 5), -0.9F + (static_cast<float>(y) / 5), 0 };
+        renderer2D.DrawQuad(newPosition, size, *m_MemeTexture, color2);
       }
-
-      renderer2D.EndBatch();
     }
+
+    renderer2D.EndBatch();
   };
 
   Renderer2DTest();
@@ -146,9 +144,17 @@ void UILayer::OnEvent(JE::IEvent &event) { JE::UNUSED(event); }
 
 void UILayer::LoadImGuiSettings()// NOLINT(readability-convert-member-functions-to-static)
 {
-  if (std::filesystem::exists("imgui.ini")) { return; }
+  if (!std::filesystem::exists("imgui.ini")) { ImGui::LoadIniSettingsFromDisk("assets/imgui/default_layout.ini"); }
 
-  ImGui::LoadIniSettingsFromDisk("assets/imgui/default_layout.ini");
+  auto &imguiIO = ImGui::GetIO();
+
+  // Load default font
+  imguiIO.Fonts->AddFontDefault();
+
+  ImFontConfig fontConfig;
+  auto *font = imguiIO.Fonts->AddFontFromFileTTF("assets/fonts/SEGOEUI.TTF", 16.0f, &fontConfig);// NOLINT
+  imguiIO.Fonts->Build();
+  imguiIO.FontDefault = font;
 }
 
 void UILayer::RenderMainMenuBar()// NOLINT(readability-convert-member-functions-to-static)

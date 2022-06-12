@@ -188,6 +188,8 @@ void Application::Run(int32_t loopCount)
   ASSERT(!m_Running, "Engine already running");
   ASSERT(loopCount != 0, "Cannot run zero loops");
 
+  JE_APP.ImGuiLayer().Renderer().Initialize();
+
   m_Running = true;
 
   m_MainWindow.Focus();
