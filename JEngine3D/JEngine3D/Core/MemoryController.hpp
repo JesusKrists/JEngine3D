@@ -16,6 +16,7 @@ enum class MemoryTag {
   Unknown,
   App,
   Renderer,
+  Editor,
   Test,
 
   TAG_COUNT

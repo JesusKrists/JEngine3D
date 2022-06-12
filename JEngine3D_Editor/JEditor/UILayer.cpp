@@ -1,4 +1,6 @@
 #include "UILayer.hpp"
+#include "UI/ContentBrowserPanel.hpp"
+#include "UI/IPanel.hpp"
 
 #include <JEngine3D/Core/Base.hpp>
 #include <JEngine3D/Core/Application.hpp>
@@ -31,9 +33,6 @@ namespace JEditor {
 void UILayer::OnCreate()
 {
   ZoneScopedN("UILayer::OnCreate");// NOLINT
-  JE::ForEach(JE_APP.DebugViews(), [](JE::IImGuiDebugView &view) { view.Open(); });
-
-  LoadImGuiSettings();
 
   constexpr uint32_t WHITE_COLOR = 0xFFFFFFFF;
   m_TestTexture = JE::IRendererObjectCreator::Get().CreateTexture();
@@ -56,6 +55,12 @@ void UILayer::OnCreate()
 
   m_GameViewportFBO = JE::IRendererObjectCreator::Get().CreateFramebuffer({ m_GameViewportSize,// NOLINT
     { JE::FramebufferAttachmentFormat::RGBA8, JE::FramebufferAttachmentFormat::DEPTH24STENCIL8 } });
+
+
+  InitializeUI();
+  JE::ForEach(JE_APP.DebugViews(), [](JE::IImGuiDebugView &view) { view.Open(); });
+
+  LoadImGuiSettings();
 }
 
 void UILayer::OnDestroy() {}
@@ -136,11 +141,19 @@ void UILayer::OnImGuiRender()
 
   RenderMainMenuBar();
   RenderGameViewport();
+  ForEach(m_UIPanels, [](auto &view) {
+    if (view->IsOpen()) { view->Render(); }
+  });
 
   ImGui::ShowDemoWindow();
 }
 
 void UILayer::OnEvent(JE::IEvent &event) { JE::UNUSED(event); }
+
+void UILayer::InitializeUI()
+{
+  m_UIPanels.push_back(JE::CreatePolymorphicScope<ContentBrowserPanel, JE::MemoryTag::Editor, IPanel>());
+}
 
 void UILayer::LoadImGuiSettings()// NOLINT(readability-convert-member-functions-to-static)
 {
@@ -152,14 +165,29 @@ void UILayer::LoadImGuiSettings()// NOLINT(readability-convert-member-functions-
   imguiIO.Fonts->AddFontDefault();
 
   ImFontConfig fontConfig;
+  fontConfig.OversampleH = 4;
+  fontConfig.OversampleV = 2;
   auto *font = imguiIO.Fonts->AddFontFromFileTTF("assets/fonts/SEGOEUI.TTF", 16.0f, &fontConfig);// NOLINT
   imguiIO.Fonts->Build();
   imguiIO.FontDefault = font;
 }
 
-void UILayer::RenderMainMenuBar()// NOLINT(readability-convert-member-functions-to-static)
+// NOLINTNEXTLINE
+void UILayer::RenderMainMenuBar()
 {
   ZoneScopedN("UILayer::RenderMainMenuBar");// NOLINT
+  auto RenderMenuBarViews = [&]() {
+    JE::ForEach(m_UIPanels, [](auto &panel) {
+      if (ImGui::MenuItem(panel->Name().c_str(), nullptr, panel->IsOpen())) {
+        if (panel->IsOpen()) {
+          panel->Close();
+        } else {
+          panel->Open();
+        }
+      }
+    });
+  };
+
   auto RenderMenuBarDebugViews = [&]() {
     auto &views = JE_APP.DebugViews();
 
@@ -179,6 +207,12 @@ void UILayer::RenderMainMenuBar()// NOLINT(readability-convert-member-functions-
       if (ImGui::MenuItem("Reset Dock Layout")) { m_ResetDockLayout = true; }
       ImGui::EndMenu();
     }
+
+    if (ImGui::BeginMenu("Views")) {
+      RenderMenuBarViews();
+      ImGui::EndMenu();
+    }
+
     if (ImGui::BeginMenu("Debug")) {
       if (ImGui::BeginMenu("Views")) {
         RenderMenuBarDebugViews();
@@ -186,6 +220,7 @@ void UILayer::RenderMainMenuBar()// NOLINT(readability-convert-member-functions-
       }
       ImGui::EndMenu();
     }
+
     ImGui::EndMainMenuBar();
   }
 }

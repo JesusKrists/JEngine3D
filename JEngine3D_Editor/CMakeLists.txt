@@ -17,7 +17,7 @@ target_link_libraries(
   PRIVATE project_options project_warnings
   PUBLIC JEngine3D)
 
-add_executable(JEngine3D_Editor_Executable main.cpp)
+add_executable(JEngine3D_Editor_Executable JEditor/main.cpp)
 target_link_libraries(JEngine3D_Editor_Executable PRIVATE project_options project_warnings JEngine3D_Editor)
 target_link_system_libraries(JEngine3D_Editor_Executable PRIVATE docopt::docopt)
 
