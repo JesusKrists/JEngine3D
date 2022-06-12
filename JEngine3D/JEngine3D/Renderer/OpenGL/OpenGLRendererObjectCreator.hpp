@@ -20,7 +20,7 @@ public:
     const std::span<const std::byte> &textureData,
     const Size2DI &textureDimensions,
     TextureFormat format) -> Scope<ITexture2D, MemoryTag::Renderer> override;
-  [[nodiscard]] auto CreateTexture(TextureFormat format) -> Scope<ITexture2D, MemoryTag::Renderer> override;
+  [[nodiscard]] auto CreateTexture() -> Scope<ITexture2D, MemoryTag::Renderer> override;
 
   [[nodiscard]] auto CreateShader(const std::string_view &name,
     const std::string_view &vertexSource,

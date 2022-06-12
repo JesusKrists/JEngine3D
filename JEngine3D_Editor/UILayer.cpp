@@ -36,7 +36,8 @@ void UILayer::OnCreate()
   LoadImGuiSettings();
 
   constexpr uint32_t WHITE_COLOR = 0xFFFFFFFF;
-  m_TestTexture = JE::IRendererObjectCreator::Get().CreateTexture("UILayer test texture",
+  m_TestTexture = JE::IRendererObjectCreator::Get().CreateTexture();
+  m_TestTexture->SetData("UILayer test texture",
     { reinterpret_cast<const std::byte *>(&WHITE_COLOR), 4 },// NOLINT
     { 1, 1 },
     JE::TextureFormat::RGBA8);
@@ -48,7 +49,7 @@ void UILayer::OnCreate()
   unsigned char *data =
     stbi_load("assets/textures/testtexture.jpg", &imageSize.Width, &imageSize.Height, &imageChannels, 4);
   m_MemeTexture = JE::IRendererObjectCreator::Get().CreateTexture("assets/textures/testtexture.jpg",
-    { reinterpret_cast<const std::byte *>(data), static_cast<size_t>(imageSize.Width * imageSize.Height * 4) },
+    { reinterpret_cast<const std::byte *>(data), static_cast<size_t>(imageSize.Width * imageSize.Height * 4) },// NOLINT
     imageSize,
     JE::TextureFormat::RGBA8);
   stbi_image_free(data);

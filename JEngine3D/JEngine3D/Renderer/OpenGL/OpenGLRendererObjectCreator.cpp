@@ -42,9 +42,9 @@ auto OpenGLRendererObjectCreator::CreateTexture(const std::string_view &sourcePa
     sourcePath, textureData, textureDimensions, format);
 }
 
-auto OpenGLRendererObjectCreator::CreateTexture(TextureFormat format) -> Scope<ITexture2D, MemoryTag::Renderer>
+auto OpenGLRendererObjectCreator::CreateTexture() -> Scope<ITexture2D, MemoryTag::Renderer>
 {
-  return CreatePolymorphicScope<OpenGLTexture2D, MemoryTag::Renderer, ITexture2D>(format);
+  return CreatePolymorphicScope<OpenGLTexture2D, MemoryTag::Renderer, ITexture2D>();
 }
 
 auto OpenGLRendererObjectCreator::CreateShader(const std::string_view &name,

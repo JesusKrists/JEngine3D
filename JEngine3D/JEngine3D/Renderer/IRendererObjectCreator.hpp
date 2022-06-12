@@ -44,7 +44,7 @@ public:
     const std::span<const std::byte> &textureData,
     const Size2DI &textureDimensions,
     TextureFormat format) -> Scope<ITexture2D, MemoryTag::Renderer> = 0;
-  [[nodiscard]] virtual auto CreateTexture(TextureFormat format) -> Scope<ITexture2D, MemoryTag::Renderer> = 0;
+  [[nodiscard]] virtual auto CreateTexture() -> Scope<ITexture2D, MemoryTag::Renderer> = 0;
 
   [[nodiscard]] virtual auto CreateShader(const std::string_view &name,
     const std::string_view &vertexSource,

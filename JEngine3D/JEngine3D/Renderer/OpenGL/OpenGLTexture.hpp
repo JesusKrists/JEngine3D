@@ -14,7 +14,7 @@ public:
     const Size2DI &textureDimensions,
     TextureFormat format);
 
-  explicit OpenGLTexture2D(TextureFormat format);
+  OpenGLTexture2D();
 
   virtual ~OpenGLTexture2D();// NOLINT
 
@@ -34,7 +34,7 @@ private:
   std::string m_SourcePath;
   uint32_t m_RendererID = 0;
   Size2DI m_TextureSize = { 0, 0 };
-  TextureFormat m_Format;
+  TextureFormat m_Format = TextureFormat::RGBA8;
 };
 
 }// namespace JE
