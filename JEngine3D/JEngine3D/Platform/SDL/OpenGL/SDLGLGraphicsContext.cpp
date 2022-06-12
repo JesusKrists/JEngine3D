@@ -22,6 +22,8 @@ void SDLGLGraphicsContext::SwapBuffers()
   SDL_GL_SwapWindow(static_cast<SDL_Window *>(NativeWindowHandle()));
 }
 
+void SDLGLGraphicsContext::ResetViewport() { JE_APP.RendererAPI().SetViewport({ { 0, 0 }, DrawableSize() }); }
+
 void SDLGLGraphicsContext::EnableVSync()
 {
   Bind();
@@ -51,7 +53,7 @@ void SDLGLGraphicsContext::MakeContextCurrent()
     JE::Logger::CoreLogger().error("Failed to set OpenGL context - {}", SDL_GetError());
     DEBUGBREAK();
   }
-  JE_APP.RendererAPI().SetViewport({ { 0, 0 }, DrawableSize() });
+  ResetViewport();
 }
 
 }// namespace JE

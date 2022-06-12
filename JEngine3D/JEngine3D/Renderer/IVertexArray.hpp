@@ -22,7 +22,7 @@ public:
   virtual void ConfigureVertexBufferLayout(const BufferLayout &bufferLayout) = 0;
 
   virtual void Reset() = 0;
-  virtual void DeleteVertexArray() = 0;
+  virtual void Delete() = 0;
 
   [[nodiscard]] inline auto VertexBuffers() const -> const VertexBufferContainer & { return m_VertexBuffers; }
   inline void AddVertexBuffer(const IVertexBuffer &vertexBuffer)

@@ -52,6 +52,7 @@ public:
   [[nodiscard]] virtual auto DrawableSize() -> Size2DI = 0;
   virtual void Resize(const Size2DI &size) = 0;
   virtual void SwapBuffers() = 0;
+  virtual void ResetViewport() = 0;
 
   virtual void EnableVSync() = 0;
   virtual void DisableVSync() = 0;

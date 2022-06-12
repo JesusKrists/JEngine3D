@@ -1,6 +1,8 @@
 #pragma once
 
 #include "JEngine3D/Renderer/IRendererObjectCreator.hpp"
+#include <JEngine3D/Core/MemoryController.hpp>
+#include <JEngine3D/Renderer/ITexture.hpp>
 
 namespace JE {
 
@@ -18,10 +20,14 @@ public:
     const std::span<const std::byte> &textureData,
     const Size2DI &textureDimensions,
     TextureFormat format) -> Scope<ITexture2D, MemoryTag::Renderer> override;
+  [[nodiscard]] auto CreateTexture(TextureFormat format) -> Scope<ITexture2D, MemoryTag::Renderer> override;
 
   [[nodiscard]] auto CreateShader(const std::string_view &name,
     const std::string_view &vertexSource,
     const std::string_view &fragmentSource) -> Scope<IShader, MemoryTag::Renderer> override;
+
+  [[nodiscard]] auto CreateFramebuffer(const FramebufferConfiguration &configuration)
+    -> Scope<IFramebuffer, MemoryTag::Renderer> override;
 
 private:
   [[nodiscard]] auto CreateAPI() -> Scope<IRendererAPI, MemoryTag::Renderer> override;

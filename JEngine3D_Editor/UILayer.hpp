@@ -2,6 +2,7 @@
 
 #include <JEngine3D/Core/ILayer.hpp>
 #include <JEngine3D/Renderer/ITexture.hpp>
+#include <JEngine3D/Renderer/IFramebuffer.hpp>
 
 namespace JE {
 class IEvent;
@@ -33,9 +34,9 @@ private:
 
   JE::Scope<JE::ITexture2D, JE::MemoryTag::Renderer> m_TestTexture;
   JE::Scope<JE::ITexture2D, JE::MemoryTag::Renderer> m_MemeTexture;
+  JE::Scope<JE::IFramebuffer, JE::MemoryTag::Renderer> m_GameViewportFBO;
 
-  bool m_ResizeGameViewport = false;
-  JE::Size2DI m_GameViewportSize = { 0, 0 };
+  JE::Size2DI m_GameViewportSize = { 1280, 720 };// NOLINT
 };
 
 }// namespace JEditor

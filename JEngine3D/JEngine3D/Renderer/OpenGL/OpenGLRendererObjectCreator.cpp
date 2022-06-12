@@ -7,6 +7,7 @@
 #include "JEngine3D/Renderer/OpenGL/OpenGLTexture.hpp"
 #include "JEngine3D/Renderer/OpenGL/OpenGLRendererAPI.hpp"
 #include "JEngine3D/Renderer/OpenGL/OpenGLShader.hpp"
+#include "JEngine3D/Renderer/OpenGL/OpenGLFramebuffer.hpp"
 
 namespace JE {
 
@@ -41,11 +42,22 @@ auto OpenGLRendererObjectCreator::CreateTexture(const std::string_view &sourcePa
     sourcePath, textureData, textureDimensions, format);
 }
 
+auto OpenGLRendererObjectCreator::CreateTexture(TextureFormat format) -> Scope<ITexture2D, MemoryTag::Renderer>
+{
+  return CreatePolymorphicScope<OpenGLTexture2D, MemoryTag::Renderer, ITexture2D>(format);
+}
+
 auto OpenGLRendererObjectCreator::CreateShader(const std::string_view &name,
   const std::string_view &vertexSource,
   const std::string_view &fragmentSource) -> Scope<IShader, MemoryTag::Renderer>
 {
   return CreatePolymorphicScope<OpenGLShader, MemoryTag::Renderer, IShader>(name, vertexSource, fragmentSource);
+}
+
+[[nodiscard]] auto OpenGLRendererObjectCreator::CreateFramebuffer(const FramebufferConfiguration &configuration)
+  -> Scope<IFramebuffer, MemoryTag::Renderer>
+{
+  return CreatePolymorphicScope<OpenGLFramebuffer, MemoryTag::Renderer, IFramebuffer>(configuration);
 }
 
 auto OpenGLRendererObjectCreator::CreateAPI() -> Scope<IRendererAPI, MemoryTag::Renderer>

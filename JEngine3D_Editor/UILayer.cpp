@@ -5,6 +5,7 @@
 #include <JEngine3D/Debug/View/IImGuiDebugView.hpp>
 #include <JEngine3D/Core/ImGui/ImGuiLayer.hpp>
 #include <JEngine3D/Core/Types.hpp>
+#include <JEngine3D/Renderer/IFramebuffer.hpp>
 #include <JEngine3D/Renderer/ITexture.hpp>
 #include <JEngine3D/Renderer/Renderer2D.hpp>
 #include <JEngine3D/Renderer/IRendererObjectCreator.hpp>
@@ -51,6 +52,9 @@ void UILayer::OnCreate()
     imageSize,
     JE::TextureFormat::RGBA8);
   stbi_image_free(data);
+
+  m_GameViewportFBO = JE::IRendererObjectCreator::Get().CreateFramebuffer({ m_GameViewportSize,// NOLINT
+    { JE::FramebufferAttachmentFormat::RGBA8, JE::FramebufferAttachmentFormat::DEPTH24STENCIL8 } });
 }
 
 void UILayer::OnDestroy() {}
@@ -67,15 +71,15 @@ void UILayer::OnUpdate()
     if (ImGui::IsKeyDown(ImGui::GetKeyIndex(ImGuiKey_Escape)) && !JE_APP.ImGuiLayer().CaptureEvents()) {
       JE_APP.ImGuiLayer().SetCaptureEvents(true);
     }
+
+    if (m_GameViewportFBO->Configuration().Size != m_GameViewportSize) {
+      m_GameViewportFBO->Resize(m_GameViewportSize);
+    }
   };
   UpdateImGuiLayer();
 
   auto Renderer2DTest = [&]() {
     ZoneScopedN("Renderer2D Test");// NOLINT
-    if (m_ResizeGameViewport) {
-      // m_GameViewportFBO.Resize(m_GameViewportSize);
-      m_ResizeGameViewport = false;
-    }
 
     static constexpr auto CLEAR_COLOR = JE::Color{ 0.1F, 0.1F, 0.1F, 1.0F };
 
@@ -85,44 +89,13 @@ void UILayer::OnUpdate()
     rendererAPI.SetClearColor(CLEAR_COLOR);
     rendererAPI.Clear();
 
-    renderer2D.BeginBatch();
-
-    auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
-    auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
-    auto vertex2 = JE::Vertex{ glm::vec3{ 0.0F, 1.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
-
-    auto vertex3 = JE::Vertex{ glm::vec3{ -0.5F, -1.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
-    auto vertex4 = JE::Vertex{ glm::vec3{ 0.5F, -1.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
-    auto vertex5 = JE::Vertex{ glm::vec3{ 0.0F, 0.0F, 0.0F }, JE::Color{ 0.0F, 0.0F, 1.0F, 1.0F } };// NOLINT
-
-    constexpr auto position = glm::vec3{ -0.80F, -0.80F, 0.0F };
-    constexpr auto size = glm::vec2{ 0.15F, 0.15F };
-    constexpr auto color = JE::Color{ 1.0F, 0.0F, 1.0F, 1.0F };
-
-    // constexpr auto position2 = glm::vec3{ 0.0F, 0.0F, 0.0F };
-    constexpr auto color2 = JE::Color{ 1.0F, 1.0F, 1.0F, 1.0F };
-
-    renderer2D.DrawTriangle(vertex0, vertex1, vertex2, *m_TestTexture);
-    renderer2D.DrawTriangle(vertex3, vertex4, vertex5);
-    renderer2D.DrawQuad(position, size, color);
-    for (int y = 0; y < 10; y++) {// NOLINT
-      for (int x = 0; x < 10; x++) {// NOLINT
-        const auto newPosition =
-          glm::vec3{ -0.9F + (static_cast<float>(x) / 5), -0.9F + (static_cast<float>(y) / 5), 0 };
-        renderer2D.DrawQuad(newPosition, size, *m_MemeTexture, color2);
-      }
-    }
-
-    renderer2D.EndBatch();
-
-    /*if (m_GameViewportFBO.Size() != JE::Size2DI{ 0, 0 }) {
-      m_GameViewportFBO.Bind();
+    if (m_GameViewportFBO->Configuration().Size != JE::Size2DI{ 0, 0 }) {
+      m_GameViewportFBO->Bind();
       rendererAPI.Clear();
-      m_GameViewportFBO.Unbind();
+      m_GameViewportFBO->Unbind();
 
-      s_TestShader.Bind();
 
-      renderer2D.BeginBatch(&m_GameViewportFBO);
+      renderer2D.BeginBatch(m_GameViewportFBO.get());
 
       auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
       auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
@@ -151,9 +124,7 @@ void UILayer::OnUpdate()
       }
 
       renderer2D.EndBatch();
-
-      s_TestShader.Unbind();
-    }*/
+    }
   };
 
   Renderer2DTest();
@@ -230,17 +201,13 @@ void UILayer::RenderGameViewport()
     ImVec2 absoluteCursorStart = { absoluteCursorPos.x - 1, absoluteCursorPos.y - 1 };
     ImVec2 absoluteCursorEnd = { absoluteCursorPos.x + size.x + 1, absoluteCursorPos.y + size.y + 1 };
 
-    /*const auto &FrameBufferSize = m_GameViewportFBO.Size();
-    if (static_cast<int32_t>(size.x) != FrameBufferSize.Width
-        || static_cast<int32_t>(size.y) != FrameBufferSize.Height) {
-      m_ResizeGameViewport = true;
-      m_GameViewportSize = { static_cast<int32_t>(size.x), static_cast<int32_t>(size.y) };
-    }
+    m_GameViewportSize = { static_cast<int32_t>(size.x), static_cast<int32_t>(size.y) };
 
-    m_ImGuiSWTextureWrapper =
-      imgui_sw::Texture{ m_GameViewportFBO.PixelPtr(), FrameBufferSize.Width, FrameBufferSize.Height };
-    ImGui::Image(reinterpret_cast<ImTextureID>(&m_ImGuiSWTextureWrapper),// NOLINT
-      ImVec2{ static_cast<float>(FrameBufferSize.Width), static_cast<float>(FrameBufferSize.Height) });*/
+    ImGui::Image(m_GameViewportFBO->AttachmentRendererID(),
+      ImVec2{ static_cast<float>(m_GameViewportFBO->Configuration().Size.Width),
+        static_cast<float>(m_GameViewportFBO->Configuration().Size.Height) },
+      { 0, 1 },
+      { 1, 0 });
 
     if (!JE_APP.ImGuiLayer().CaptureEvents()) {
       ImGui::PushClipRect(absoluteCursorStart, absoluteCursorEnd, false);

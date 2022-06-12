@@ -5,7 +5,7 @@
 namespace JE {
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
-class OpenGLShader : public IShader
+class OpenGLShader final : public IShader
 {
 public:
   OpenGLShader(const std::string_view &name,

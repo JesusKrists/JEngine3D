@@ -127,9 +127,9 @@ void OpenGLVertexArray::Reset()
   }
 }
 
-void OpenGLVertexArray::DeleteVertexArray()
+void OpenGLVertexArray::Delete()
 {
-  ZoneScopedN("OpenGLVertexArray::DeleteVertexArray");// NOLINT
+  ZoneScopedN("OpenGLVertexArray::Delete");// NOLINT
   glDeleteVertexArrays(1, &m_RendererID);
   m_RendererID = 0;
   m_LocationIndex = 0;

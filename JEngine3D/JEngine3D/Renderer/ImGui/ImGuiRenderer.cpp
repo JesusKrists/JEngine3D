@@ -91,7 +91,7 @@ void ImGuiRenderer::RenderDrawData(const ImDrawData &drawData)
 
   JE_APP.RendererAPI().SetRendererState(m_PreviousRendererState);
 
-  m_VertexArray->DeleteVertexArray();
+  m_VertexArray->Delete();
 }
 
 void ImGuiRenderer::SetupRenderState(const ImDrawData &drawData)

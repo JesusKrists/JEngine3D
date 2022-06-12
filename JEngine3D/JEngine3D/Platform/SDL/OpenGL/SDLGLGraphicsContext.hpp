@@ -16,6 +16,7 @@ public:
   inline void Resize(const Size2DI &size) override { JE::UNUSED(size); }
 
   void SwapBuffers() override;
+  void ResetViewport() override;
 
   void EnableVSync() override;
   void DisableVSync() override;

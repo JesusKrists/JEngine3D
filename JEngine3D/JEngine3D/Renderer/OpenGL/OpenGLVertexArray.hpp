@@ -17,7 +17,7 @@ public:
   void ConfigureVertexBufferLayout(const BufferLayout &bufferLayout) override;
 
   void Reset() override;
-  void DeleteVertexArray() override;
+  void Delete() override;
 
 private:
   uint32_t m_RendererID = 0;

@@ -14,6 +14,8 @@ public:
     const Size2DI &textureDimensions,
     TextureFormat format);
 
+  explicit OpenGLTexture2D(TextureFormat format);
+
   virtual ~OpenGLTexture2D();// NOLINT
 
   void SetData(const std::string_view &sourcePath,
