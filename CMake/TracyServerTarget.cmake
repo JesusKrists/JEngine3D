@@ -84,4 +84,11 @@ target_include_directories(TracyServer PRIVATE /usr/include/freetype2 ${tracy_SO
                                                ${capstone_SOURCE_DIR}/include/capstone)
 target_link_libraries(TracyServer PRIVATE freetype glfw capstone)
 
+target_compile_options(TracyServer PRIVATE -O3)
+target_compile_options(glfw PRIVATE -O3)
+target_compile_options(capstone PRIVATE -O3)
+target_compile_definitions(TracyServer PRIVATE NDEBUG)
+target_compile_definitions(glfw PRIVATE NDEBUG)
+target_compile_definitions(capstone PRIVATE NDEBUG)
+
 disable_static_analysis(TracyServer)

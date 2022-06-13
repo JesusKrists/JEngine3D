@@ -36,7 +36,7 @@ if(ENABLE_DEBUG_BREAK)
   set(JEngine3D_DEFINITIONS ${JEngine3D_DEFINITIONS} JE_ENABLE_DEBUGBREAK)
 endif()
 
-target_compile_definitions(JEngine3D PUBLIC ${JEngine3D_DEFINITIONS} TRACY_ENABLE TRACY_CALLSTACK=32)
+target_compile_definitions(JEngine3D PUBLIC ${JEngine3D_DEFINITIONS} TRACY_ENABLE TRACY_CALLSTACK=16)
 
 #############################################################################################
 include(${CMAKE_SOURCE_DIR}/CMake/DisableStaticAnalysis.cmake)

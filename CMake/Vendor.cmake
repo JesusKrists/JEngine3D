@@ -106,12 +106,36 @@ include(${CMAKE_SOURCE_DIR}/CMake/STBTarget.cmake)
 
 ################################# Tracy profiler ##################################################################
 
+set(TRACY_NO_CALLSTACK_INLINES
+    ON
+    CACHE BOOL "Disable inline callstack functions" FORCE)
+#set(TRACY_NO_SYS_TRACE
+#    ON
+#    CACHE BOOL "Disable system trace sampling" FORCE)
+set(TRACY_NO_VSYNC_CAPTURE
+    ON
+    CACHE BOOL "Disable hw vsync event capture" FORCE)
+set(TRACY_NO_FRAME_IMAGE
+    ON
+    CACHE BOOL "Disable frame image support" FORCE)
+#set(TRACY_NO_EXIT
+#    ON
+#    CACHE BOOL "Disable client exit until all data is sent" FORCE)
+set(TRACY_ONLY_IPV4
+    ON
+    CACHE BOOL "Disable IPv6" FORCE)
+set(TRACY_ONLY_LOCALHOST
+    ON
+    CACHE BOOL "Only localhost network interface" FORCE)
+
 FetchContent_Declare(
   tracy
   GIT_REPOSITORY https://github.com/wolfpld/tracy.git
   GIT_TAG v0.8.1)
 
 FetchContent_MakeAvailable(tracy)
+
+#target_compile_definitions(TracyClient PUBLIC TRACY_NO_SYSTEM_TRACING)
 
 disable_static_analysis(TracyClient)
 
