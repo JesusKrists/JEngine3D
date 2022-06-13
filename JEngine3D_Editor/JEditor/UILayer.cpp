@@ -29,6 +29,7 @@ class IEvent;
 
 namespace JEditor {
 
+static constexpr auto GAME_VIEWPORT_OUTLINE_COLOR = IM_COL32(255, 255, 255, 127);// NOLINT
 
 void UILayer::OnCreate()
 {
@@ -53,12 +54,11 @@ void UILayer::OnCreate()
     JE::TextureFormat::RGBA8);
   stbi_image_free(data);
 
-  m_GameViewportFBO = JE::IRendererObjectCreator::Get().CreateFramebuffer({ m_GameViewportSize,// NOLINT
+  m_GameViewportFBO = JE::IRendererObjectCreator::Get().CreateFramebuffer({ m_GameViewportSize,
     { JE::FramebufferAttachmentFormat::RGBA8, JE::FramebufferAttachmentFormat::DEPTH24STENCIL8 } });
 
-
-  InitializeUI();
   JE::ForEach(JE_APP.DebugViews(), [](JE::IImGuiDebugView &view) { view.Open(); });
+  InitializeUI();
 
   LoadImGuiSettings();
 }
@@ -90,7 +90,7 @@ void UILayer::OnUpdate()
     static constexpr auto CLEAR_COLOR = JE::Color{ 0.1F, 0.1F, 0.1F, 1.0F };
 
     auto &rendererAPI = JE_APP.RendererAPI();
-    auto &renderer2D = JE_APP.Renderer2D();
+    // auto &renderer2D = JE_APP.Renderer2D();
 
     rendererAPI.SetClearColor(CLEAR_COLOR);
     rendererAPI.Clear();
@@ -100,7 +100,7 @@ void UILayer::OnUpdate()
     m_GameViewportFBO->Unbind();
 
 
-    renderer2D.BeginBatch(m_GameViewportFBO.get());
+    /*renderer2D.BeginBatch(m_GameViewportFBO.get());
 
     auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
     auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
@@ -128,7 +128,7 @@ void UILayer::OnUpdate()
       }
     }
 
-    renderer2D.EndBatch();
+    renderer2D.EndBatch();*/
   };
 
   Renderer2DTest();
@@ -161,12 +161,14 @@ void UILayer::LoadImGuiSettings()// NOLINT(readability-convert-member-functions-
 
   auto &imguiIO = ImGui::GetIO();
 
-  // Load default font
-  imguiIO.Fonts->AddFontDefault();
 
   ImFontConfig fontConfig;
   fontConfig.OversampleH = 4;
   fontConfig.OversampleV = 2;
+
+  // Load default font
+  imguiIO.Fonts->AddFontDefault(&fontConfig);
+
   auto *font = imguiIO.Fonts->AddFontFromFileTTF("assets/fonts/SEGOEUI.TTF", 16.0f, &fontConfig);// NOLINT
   imguiIO.Fonts->Build();
   imguiIO.FontDefault = font;
@@ -253,8 +255,7 @@ void UILayer::RenderGameViewport()
 
     if (!JE_APP.ImGuiLayer().CaptureEvents()) {
       ImGui::PushClipRect(absoluteCursorStart, absoluteCursorEnd, false);
-      ImGui::GetWindowDrawList()->AddRect(
-        absoluteCursorStart, absoluteCursorEnd, IM_COL32(255, 255, 255, 127));// NOLINT
+      ImGui::GetWindowDrawList()->AddRect(absoluteCursorStart, absoluteCursorEnd, GAME_VIEWPORT_OUTLINE_COLOR);// NOLINT
       ImGui::PopClipRect();
     }
 

@@ -15,6 +15,8 @@ namespace JEditor {
 
 class UILayer final : public JE::ILayer
 {
+  static constexpr auto INITIAL_GAME_VIEWPORT_SIZE = JE::Size2DI{ 1280, 720 };
+
 public:
   UILayer() : JE::ILayer("JEditor UI Layer") {}
 
@@ -41,7 +43,7 @@ private:
   JE::Scope<JE::ITexture2D, JE::MemoryTag::Renderer> m_TestTexture;
   JE::Scope<JE::ITexture2D, JE::MemoryTag::Renderer> m_MemeTexture;
   JE::Scope<JE::IFramebuffer, JE::MemoryTag::Renderer> m_GameViewportFBO;
-  JE::Size2DI m_GameViewportSize = { 1280, 720 };// NOLINT
+  JE::Size2DI m_GameViewportSize = INITIAL_GAME_VIEWPORT_SIZE;
 };
 
 }// namespace JEditor
