@@ -2,14 +2,16 @@
 
 #include <JEngine3D/Core/LoggerController.hpp>
 
+#include <filesystem>
 #include <imgui.h>
 #include <imgui_internal.h>
 
 namespace JEditor {
 
+static constexpr auto SCROLLBAR_BACKGROUND_COLOR = IM_COL32(0, 0, 0, 32);// NOLINT
 static constexpr auto CURRENT_DIR_OUTLINE_COLOR = IM_COL32(48, 48, 48, 255);// NOLINT
-static constexpr auto CURRENT_DIR_RECT_PADDING = 6;// NOLINT
 static constexpr auto BREADCRUMBS_START_OFFSET_X = 48;// NOLINT
+static constexpr auto FOLDER_TREE_WIDTH = 192;// NOLINT
 
 static ImFont *s_SmallFont = nullptr;// NOLINT
 
@@ -22,8 +24,6 @@ ContentBrowserPanel::ContentBrowserPanel() : IPanel("Content Browser")
 
   // Load default font
   s_SmallFont = imguiIO.Fonts->AddFontDefault(&fontConfigSmall);
-
-  JE::Logger::ClientLogger().info(m_CurrentFolder.c_str());
 }
 
 // NOLINTNEXTLINE
@@ -37,7 +37,8 @@ void ContentBrowserPanel::OnImGuiRender()
   auto RenderBreadCrumbs = [&]() {
     ImGui::PushStyleColor(ImGuiCol_Button, 0);
 
-    auto lastEntryString = CURRENT_DIR_TRIMMED.native().substr(CURRENT_DIR_TRIMMED.native().find_last_of('/') + 1);
+    const auto lastEntryString =
+      CURRENT_DIR_TRIMMED.native().substr(CURRENT_DIR_TRIMMED.native().find_last_of('/') + 1);
 
     std::filesystem::path currentDepthPath;
     bool firstEntry = true;
@@ -50,12 +51,16 @@ void ContentBrowserPanel::OnImGuiRender()
 
         ImGui::PushID(++index);
 
-        if (index != 1) { ImGui::SameLine(); }
+        if (index == 1) {
+          ImGui::SameLine(0, BREADCRUMBS_START_OFFSET_X);
+        } else {
+          ImGui::SameLine(0, 0);
+        }
         if (ImGui::Button(entry.c_str())) { ChangeDirectory(currentDepthPath); }
 
         if (lastEntryString != entry) {
           ImGui::PushFont(s_SmallFont);
-          ImGui::SameLine();
+          ImGui::SameLine(0, 0);
           ImGui::PushStyleColor(ImGuiCol_ButtonHovered, 0);
           ImGui::ArrowButtonEx("##BreadCrumbArrow",
             ImGuiDir_Right,
@@ -76,32 +81,97 @@ void ContentBrowserPanel::OnImGuiRender()
   };
 
   auto RenderTopBar = [&]() {
-    ImGui::BeginGroup();
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+    ImGui::BeginChild("TopBar",
+      ImVec2{ 0, TOP_BAR_ICON_SIZE.y + IMGUI_STYLE.FramePadding.y * 2 + IMGUI_STYLE.ScrollbarSize },
+      false,
+      ImGuiWindowFlags_HorizontalScrollbar);
+
+
     ImGui::PushStyleColor(ImGuiCol_Button, 0);
 
+    ImGui::SameLine();// NOLINT
+    ImGui::SetCursorPosY(IMGUI_STYLE.FramePadding.y);
     if (ImGui::ArrowButtonEx("##BackArrow", ImGuiDir_Left, TOP_BAR_ICON_SIZE)) {}
+
     ImGui::SameLine();
+    ImGui::SetCursorPosY(IMGUI_STYLE.FramePadding.y);
     if (ImGui::ArrowButtonEx("##ForwardArrow", ImGuiDir_Right, TOP_BAR_ICON_SIZE)) {}
 
-    ImGui::PopStyleColor();
-    ImGui::EndGroup();
-
-    ImGui::SameLine(0, 16);// NOLINT
+    ImGui::SameLine(0, 8);// NOLINT
+    ImGui::SetCursorPosY(IMGUI_STYLE.FramePadding.y);
     ImGui::TextUnformatted("Current Dir:");
 
-    ImGui::SameLine(0, 16);// NOLINT
-    ImGui::TextUnformatted(CURRENT_DIR_TRIMMED.c_str());
-    auto textRectMin = ImVec2{ ImGui::GetItemRectMin().x - CURRENT_DIR_RECT_PADDING,
-      ImGui::GetItemRectMin().y - (CURRENT_DIR_RECT_PADDING - 2) };
-    auto textRectMax = ImVec2{ ImGui::GetItemRectMax().x + CURRENT_DIR_RECT_PADDING,
-      ImGui::GetItemRectMax().y + CURRENT_DIR_RECT_PADDING };
-    ImGui::GetWindowDrawList()->AddRect(textRectMin, textRectMax, CURRENT_DIR_OUTLINE_COLOR);
+    ImGui::SameLine(0, 8);// NOLINT
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameBorderSize, 1);
+    ImGui::PushStyleVar(ImGuiStyleVar_FrameRounding, 4);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, 0);
+    ImGui::ButtonEx(CURRENT_DIR_TRIMMED.c_str(), ImVec2{ 0, 0 }, ImGuiItemFlags_Disabled);
+    ImGui::PopStyleColor();
+    ImGui::PopStyleVar(2);
 
-    ImGui::SameLine(0, BREADCRUMBS_START_OFFSET_X);
+    ImGui::PopStyleColor();
+
     RenderBreadCrumbs();
+
+    ImGui::EndChild();
+    ImGui::PopStyleVar();
   };
 
+  auto RenderFolderTree = [&]() {
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
+    ImGui::BeginChild("FolderTree", ImVec2{ FOLDER_TREE_WIDTH, 0 }, false, ImGuiWindowFlags_HorizontalScrollbar);
+
+    ImGui::SetNextItemOpen(true);
+    if (ImGui::TreeNodeEx(CONTENT_DIR.c_str(),
+          ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick// NOLINT
+            | ImGuiTreeNodeFlags_SpanFullWidth)) {
+      if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(CONTENT_DIR); }
+
+      RenderContentTreeEntryRecursive(CONTENT_FULL_PATH);
+
+      ImGui::TreePop();
+    }
+
+    ImGui::EndChild();
+    ImGui::PopStyleVar();
+  };
+
+  ImGui::PushStyleColor(ImGuiCol_ScrollbarBg, SCROLLBAR_BACKGROUND_COLOR);
+
   RenderTopBar();
+  RenderFolderTree();
+  ImGui::SameLine(0, 4);
+  ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
+
+  ImGui::PopStyleColor();
+}
+
+// NOLINTNEXTLINE
+void ContentBrowserPanel::RenderContentTreeEntryRecursive(const std::filesystem::path &path)
+{
+  for (const auto &entry : std::filesystem::directory_iterator{ path }) {
+    if (entry.is_directory()) {
+      const auto dirHasSubdirs = DirectoryHasSubdirectories(entry.path());
+      const auto entryLabel = entry.path().stem().native();
+
+      if (dirHasSubdirs) {
+        bool open = ImGui::TreeNodeEx(entryLabel.c_str(),
+          ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick// NOLINT
+            | ImGuiTreeNodeFlags_SpanFullWidth);
+        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(entry.path()); }
+        if (open) {
+          RenderContentTreeEntryRecursive(entry.path());
+          ImGui::TreePop();
+        }
+      } else {
+        ImGui::TreeNodeEx(entryLabel.c_str(),
+          ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_Bullet | ImGuiTreeNodeFlags_NoTreePushOnOpen// NOLINT
+            | ImGuiTreeNodeFlags_SpanFullWidth);
+        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(entry.path()); }
+      }
+    }
+  }
 }
 
 }// namespace JEditor

@@ -21,11 +21,22 @@ public:
 
 private:
   void OnImGuiRender() override;
+  void RenderContentTreeEntryRecursive(const std::filesystem::path &path);
 
   [[nodiscard]] inline auto TrimCurrentDirToContentDir() const -> std::filesystem::path
   {
     auto subStringIndex = m_CurrentFolder.native().find(CONTENT_HOME_FOLDER / CONTENT_DIR);
     return m_CurrentFolder.native().substr(subStringIndex + CONTENT_HOME_FOLDER.native().length());
+  }
+
+  [[nodiscard]] static inline auto DirectoryHasSubdirectories(const std::filesystem::path &path) -> bool
+  {
+    bool subdirectories = false;
+    for (const auto &entry : std::filesystem::directory_iterator{ path }) {
+      if (entry.is_directory()) { subdirectories = true; }
+    }
+
+    return subdirectories;
   }
 
   inline void ChangeDirectory(const std::filesystem::path &path) { m_CurrentFolder = ROOT_FULL_PATH / path; }
