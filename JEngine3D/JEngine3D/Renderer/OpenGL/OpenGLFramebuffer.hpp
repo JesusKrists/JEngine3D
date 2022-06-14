@@ -6,6 +6,7 @@
 
 namespace JE {
 
+// NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
 class OpenGLFramebuffer final : public IFramebuffer
 {
 public:
