@@ -24,7 +24,6 @@ FetchContent_Declare(
   GIT_TAG 8.1.1)
 
 FetchContent_MakeAvailable(fmt)
-
 disable_static_analysis(fmt)
 
 ########################## spdlog ######################################
@@ -37,7 +36,6 @@ FetchContent_Declare(
   GIT_TAG v1.10.0)
 
 FetchContent_MakeAvailable(spdlog)
-
 disable_static_analysis(spdlog)
 
 ########################## SDL2 ######################################
@@ -86,7 +84,6 @@ FetchContent_Declare(
   GIT_TAG glew-cmake-2.2.0)
 
 FetchContent_MakeAvailable(glew)
-
 disable_static_analysis(libglew_static)
 
 ################################# OpenGL Mathematics (glm) #####################################################
@@ -97,7 +94,6 @@ FetchContent_Declare(
   GIT_TAG 0.9.9.8)
 
 FetchContent_MakeAvailable(glm)
-
 disable_static_analysis(glm)
 
 ################################# STB Image #####################################################################
@@ -134,9 +130,7 @@ FetchContent_Declare(
   GIT_TAG v0.8.1)
 
 FetchContent_MakeAvailable(tracy)
-
-#target_compile_definitions(TracyClient PUBLIC TRACY_NO_SYSTEM_TRACING)
-
 disable_static_analysis(TracyClient)
+#target_compile_definitions(TracyClient PUBLIC TRACY_NO_SYSTEM_TRACING)
 
 include(${CMAKE_SOURCE_DIR}/CMake/TracyServerTarget.cmake)
