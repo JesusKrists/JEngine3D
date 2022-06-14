@@ -30,6 +30,14 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(capstone)
 disable_static_analysis(capstone)
 
+FetchContent_Declare(
+  freetype
+  GIT_REPOSITORY https://github.com/freetype/freetype.git
+  GIT_TAG VER-2-12-1)
+
+FetchContent_MakeAvailable(freetype)
+disable_static_analysis(freetype)
+
 set(TracyServer_SOURCES
     ${tracy_SOURCE_DIR}/profiler/src/HttpRequest.cpp
     ${tracy_SOURCE_DIR}/profiler/src/imgui_impl_glfw.cpp
@@ -65,6 +73,12 @@ file(
   ${tracy_SOURCE_DIR}/zstd/decompress/*.c
   ${tracy_SOURCE_DIR}/zstd/dictBuilder/*.c)
 
+if(WIN32)
+  set(TracyServer_NFD ${tracy_SOURCE_DIR}/nfd/nfd_win.cpp)
+elseif(UNIX AND NOT APPLE)
+  set(TracyServer_NFD ${tracy_SOURCE_DIR}/nfd/nfd_gtk.cpp)
+endif()
+
 add_executable(
   TracyServer
   ${TracyServer_SOURCES}
@@ -72,17 +86,17 @@ add_executable(
   ${TracyServer_ImGui}
   ${TracyServer_Server}
   ${TracyServer_Common}
-  ${TracyServer_zstd})
+  ${TracyServer_zstd}
+  ${TracyServer_NFD})
 
 target_compile_definitions(
   TracyServer
   PRIVATE IMGUI_ENABLE_FREETYPE
           DISPLAY_SERVER_X11
           ZSTD_DISABLE_ASM
-          TRACY_NO_FILESELECTOR)
-target_include_directories(TracyServer PRIVATE /usr/include/freetype2 ${tracy_SOURCE_DIR}/imgui
-                                               ${capstone_SOURCE_DIR}/include/capstone)
-target_link_libraries(TracyServer PRIVATE freetype glfw capstone)
+          GDK_WINDOWING_X11)
+target_include_directories(TracyServer PRIVATE ${tracy_SOURCE_DIR}/imgui ${capstone_SOURCE_DIR}/include/capstone)
+target_link_libraries(TracyServer PRIVATE glfw capstone freetype)
 
 target_compile_options(TracyServer PRIVATE -O3)
 target_compile_options(glfw PRIVATE -O3)
@@ -90,5 +104,15 @@ target_compile_options(capstone PRIVATE -O3)
 target_compile_definitions(TracyServer PRIVATE NDEBUG)
 target_compile_definitions(glfw PRIVATE NDEBUG)
 target_compile_definitions(capstone PRIVATE NDEBUG)
+
+if(UNIX AND NOT APPLE)
+  # Use the package PkgConfig to detect GTK+ headers/library files
+  find_package(PkgConfig REQUIRED)
+  pkg_check_modules(GTK3 REQUIRED gtk+-3.0)
+
+  target_include_directories(TracyServer PRIVATE ${GTK3_INCLUDE_DIRS})
+  target_link_directories(TracyServer PRIVATE ${GTK3_LIBRARY_DIRS})
+  target_link_libraries(TracyServer PRIVATE ${GTK3_LIBRARIES})
+endif()
 
 disable_static_analysis(TracyServer)

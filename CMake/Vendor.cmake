@@ -139,6 +139,4 @@ FetchContent_MakeAvailable(tracy)
 
 disable_static_analysis(TracyClient)
 
-if(UNIX AND NOT APPLE)
-  include(${CMAKE_SOURCE_DIR}/CMake/TracyServerTarget.cmake)
-endif()
+include(${CMAKE_SOURCE_DIR}/CMake/TracyServerTarget.cmake)
