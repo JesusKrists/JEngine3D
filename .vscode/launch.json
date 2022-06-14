@@ -40,6 +40,13 @@
             "name": "Debug JEngine3D Editor",
             "program": "${workspaceFolder}/out/build/JEngine3D_Editor/JEngine3D_Editor_Executable",
             "cwd": "${workspaceFolder}/out/build/JEngine3D_Editor/"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug JEngine3D Executable",
+            "program": "${workspaceFolder}/out/build/JEngine3D/JEngine3D_Executable",
+            "cwd": "${workspaceFolder}/out/build/JEngine3D/"
         }
     ]
 }

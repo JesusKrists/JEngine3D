@@ -1,4 +1,4 @@
-#pragma once
+#include <internal_use_only/config.hpp>// for project_name, project_version
 
 #include "JEngine3D/Core/Application.hpp"
 #include "JEngine3D/Core/Assert.hpp"
@@ -11,6 +11,9 @@
 #include "JEngine3D/Renderer/OpenGL/OpenGLRendererObjectCreator.hpp"
 
 #include <Tracy.hpp>
+
+
+#include <cr.h>
 
 namespace JE {
 
@@ -42,3 +45,41 @@ inline auto CreateApplication(const std::string_view &title) -> Scope<Applicatio
 }
 
 }// namespace JE
+
+
+static constexpr auto USAGE =
+  R"(JEngine3D Editor.
+
+      Usage:
+        None at the moment // TODO(JesusKrists) - Implement command line interface for editor to open projects etc.
+        
+      Options:
+        -h --help     Show this screen.
+        --version     Show version.
+  )";
+
+static constexpr auto MAIN_WINDOW_SIZE = JE::Size2DI{ 1600, 900 };
+
+// NOLINTNEXTLINE
+int main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv)
+{
+  const auto versionString = fmt::format("{} {}", JE::cmake::project_name, JE::cmake::project_version);
+
+  auto engine = JE::CreateApplication(versionString);
+  engine->MainWindow().SetSize(MAIN_WINDOW_SIZE);
+  engine->MainWindow().SetPosition(JE::IPlatformBackend::WINDOW_CENTER_POSITION);
+
+  cr_plugin ctx{};
+  // the full path to the live-reloadable application
+  cr_plugin_open(ctx, "/workspaces/JEngine3D/out/build/JEngine3D_Editor/libJEngine3D_Editor.so");
+
+  // call the update function at any frequency matters to you, this will give
+  // the real application a chance to run
+  cr_plugin_update(ctx);
+
+
+  engine->Run();
+
+  // at the end do not forget to cleanup the plugin context
+  cr_plugin_close(ctx);
+}

@@ -274,6 +274,7 @@ void ImGuiLayer::OnUpdate()
 void ImGuiLayer::OnImGuiRender()
 {
   // ImGui layer itself won't render anything
+  ImGui::ShowDemoWindow();
 }
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)

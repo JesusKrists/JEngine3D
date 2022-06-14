@@ -57,6 +57,9 @@ set(SDL_SENSOR
 set(SDL_LOCALE
     OFF
     CACHE BOOL "Disable locale subsystem" FORCE)
+set(SDL_STATIC_PIC
+    ON
+    CACHE BOOL "Build SDL2 static library with PIC" FORCE)
 
 FetchContent_Declare(
   SDL2
@@ -134,3 +137,7 @@ disable_static_analysis(TracyClient)
 #target_compile_definitions(TracyClient PUBLIC TRACY_NO_SYSTEM_TRACING)
 
 include(${CMAKE_SOURCE_DIR}/CMake/TracyServerTarget.cmake)
+
+################################ cr (Live reload) ###############################################
+
+include(${CMAKE_SOURCE_DIR}/CMake/CRTarget.cmake)

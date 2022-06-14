@@ -37,6 +37,8 @@ Application::Application(const std::string_view &title)
   AddInternalDebugViews();
 
   IPlatformBackend::Get().SetEventProcessor(this);
+
+  Logger::CoreLogger().debug("Application address: {}", fmt::ptr(this));
 }
 
 void Application::OnEvent(IEvent &event)
@@ -152,6 +154,7 @@ void Application::ProcessMainLoop()
     {
       ZoneScopedN("Make MainWindow Context Current");// NOLINT
       m_MainWindow.GraphicsContext().MakeCurrent();
+      m_RendererAPI->Clear();
     }
 
     {

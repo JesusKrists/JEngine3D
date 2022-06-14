@@ -1,7 +1,5 @@
 include_guard(GLOBAL)
 
-include(${CMAKE_SOURCE_DIR}/CMake/DisableStaticAnalysis.cmake)
-
 FetchContent_Declare(
   stb
   GIT_REPOSITORY https://github.com/nothings/stb.git

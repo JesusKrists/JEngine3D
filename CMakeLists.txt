@@ -48,7 +48,7 @@ if(ENABLE_TESTING)
   enable_testing()
 
   add_subdirectory(test/JEngine3D)
-  add_subdirectory(test/JEngine3D_Editor)
+  #add_subdirectory(test/JEngine3D_Editor)
 endif()
 
 if(ENABLE_FUZZING AND ENABLE_TESTING)
