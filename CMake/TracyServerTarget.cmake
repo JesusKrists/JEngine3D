@@ -89,12 +89,7 @@ add_executable(
   ${TracyServer_zstd}
   ${TracyServer_NFD})
 
-target_compile_definitions(
-  TracyServer
-  PRIVATE IMGUI_ENABLE_FREETYPE
-          DISPLAY_SERVER_X11
-          ZSTD_DISABLE_ASM
-          GDK_WINDOWING_X11)
+target_compile_definitions(TracyServer PRIVATE IMGUI_ENABLE_FREETYPE DISPLAY_SERVER_X11 ZSTD_DISABLE_ASM)
 target_include_directories(TracyServer PRIVATE ${tracy_SOURCE_DIR}/imgui ${capstone_SOURCE_DIR}/include/capstone)
 target_link_libraries(TracyServer PRIVATE glfw capstone freetype)
 
