@@ -11,17 +11,20 @@ target_link_system_libraries(
   SDL2-static
   libglew_static
   PUBLIC
+  CRTarget
   fmt::fmt
   spdlog
   ImGuiLibrary
   glm::glm
   STBTarget
   Tracy::TracyClient)
+target_compile_definitions(JEngine3D PRIVATE CR_HOST=CR_DISABLE)
 
 target_include_directories(JEngine3D PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
 
 target_include_directories(JEngine3D PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
+set(JEngine3D_DEFINITIONS ${JEngine3D_DEFINITIONS} TRACY_CALLSTACK=16)
 if(${CMAKE_BUILD_TYPE} STREQUAL Debug OR ${CMAKE_BUILD_TYPE} STREQUAL RelWithDebInfo)
   set(JEngine3D_DEFINITIONS ${JEngine3D_DEFINITIONS} JE_DEBUG)
 endif()
@@ -36,14 +39,13 @@ if(ENABLE_DEBUG_BREAK)
   set(JEngine3D_DEFINITIONS ${JEngine3D_DEFINITIONS} JE_ENABLE_DEBUGBREAK)
 endif()
 
-target_compile_definitions(JEngine3D PUBLIC ${JEngine3D_DEFINITIONS} TRACY_ENABLE TRACY_CALLSTACK=16)
+target_compile_definitions(JEngine3D PUBLIC ${JEngine3D_DEFINITIONS})
 
 add_executable(JEngine3D_Executable JEngine3D/Core/EntryPoint.cpp)
 target_link_libraries(JEngine3D_Executable PRIVATE project_options project_warnings JEngine3D)
-target_link_system_libraries(JEngine3D_Executable PRIVATE CRTarget)
 target_include_directories(JEngine3D_Executable
                            PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
-target_compile_definitions(JEngine3D_Executable PRIVATE CR_HOST)
+target_compile_definitions(JEngine3D_Executable PRIVATE CR_HOST=CR_DISABLE)
 
 #############################################################################################
 include(${CMAKE_SOURCE_DIR}/CMake/DisableStaticAnalysis.cmake)

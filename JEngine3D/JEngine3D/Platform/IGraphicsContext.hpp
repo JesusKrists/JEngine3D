@@ -34,6 +34,8 @@ public:
     if (s_CurrentContext != this) {
       s_CurrentContext = this;
       MakeContextCurrent();
+    } else {
+      ResetViewport();
     }
   }
 

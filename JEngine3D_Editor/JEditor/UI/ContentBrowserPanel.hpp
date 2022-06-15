@@ -1,5 +1,6 @@
 #pragma once
 
+#include <JEngine3D/Core/Application.hpp>
 #include "IPanel.hpp"
 
 #include <filesystem>
@@ -10,11 +11,9 @@ namespace JEditor {
 class ContentBrowserPanel : public IPanel
 {
 public:
-  const std::filesystem::path ROOT_FULL_PATH = std::filesystem::current_path();
-
   const std::filesystem::path CONTENT_HOME_FOLDER = "JEngine3D_Editor";
   const std::filesystem::path CONTENT_DIR = "assets";
-  const std::filesystem::path CONTENT_FULL_PATH = ROOT_FULL_PATH / CONTENT_DIR;
+  const std::filesystem::path CONTENT_FULL_PATH = JE_APP.WORKING_DIRECTORY / CONTENT_DIR;
 
   ContentBrowserPanel();
   virtual ~ContentBrowserPanel() = default;// NOLINT
@@ -39,7 +38,7 @@ private:
     return subdirectories;
   }
 
-  inline void ChangeDirectory(const std::filesystem::path &path) { m_CurrentFolder = ROOT_FULL_PATH / path; }
+  inline void ChangeDirectory(const std::filesystem::path &path) { m_CurrentFolder = JE_APP.WORKING_DIRECTORY / path; }
 
 
   std::filesystem::path m_CurrentFolder = CONTENT_FULL_PATH / "textures";

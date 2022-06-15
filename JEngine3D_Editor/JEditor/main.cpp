@@ -60,20 +60,24 @@ int main(int argc, const char **argv)
 #include <JEngine3D/Core/Assert.hpp>
 #include <JEngine3D/Core/Application.hpp>
 
-CR_EXPORT int cr_main([[maybe_unused]] cr_plugin *ctx, [[maybe_unused]] enum cr_op operation)// NOLINT
+
+CR_EXPORT int cr_main([[maybe_unused]] cr_plugin *ctx, [[maybe_unused]] cr_op operation)// NOLINT
 {
   ASSERT(ctx != nullptr, "No context passed!");
-  JE::Logger::ClientLogger().debug("DLL Application address: {}", fmt::ptr(&JE_APP));
-  /*switch (operation) {
-  case CR_LOAD:
-    return on_load(...);// loading back from a reload
-  case CR_UNLOAD:
-    return on_unload(...);// preparing to a new reload
-  case CR_CLOSE:
-    ...;// the plugin will close and not reload anymore
-  }
-  // CR_STEP
-  return on_update(...);*/
 
-  return 1;
+  switch (operation) {
+  case CR_LOAD:
+    JE::Logger::ClientLogger().debug("CR_LOAD: DLL Application address: {}", fmt::ptr(&JE_APP));
+    break;
+  case CR_UNLOAD:
+    JE::Logger::ClientLogger().debug("CR_UNLOAD: DLL Application address: {}", fmt::ptr(&JE_APP));
+    break;
+  case CR_CLOSE:
+    JE::Logger::ClientLogger().debug("CR_CLOSE: DLL Application address: {}", fmt::ptr(&JE_APP));
+    break;
+  default:
+    break;
+  }
+
+  return 0;
 }

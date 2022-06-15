@@ -1,14 +1,14 @@
 {
-   SDL_DBus_InitFalsePositives
-   Memcheck:Leak
-   ...
-   fun:SDL_DBus_Init
-}
-{
    X11_GL_LoadLibraryFalsePositives
    Memcheck:Leak
    ...
    fun:X11_GL_LoadLibrary
+}
+{
+   X11_GL_CreateContext
+   Memcheck:Leak
+   ...
+   fun:X11_GL_CreateContext
 }
 {
    X11_VideoInitFalsePositives
@@ -29,7 +29,38 @@
    fun:X11_InitKeyboard
 }
 {
-   UnknownFalsePositives
+   NvidiaFalsePositives
+   Memcheck:Leak
+   ...
+   obj:*libGLX_nvidia.so*
+}
+{
+   NvidiaFalsePositives2
+   Memcheck:Param
+   sendmsg(msg.msg_iov[0])
+   ...
+   obj:*libGLX_nvidia.so*
+}
+{
+   iris_dri.so_NvidiaDriverPossibly
+   Memcheck:Leak
+   ...
+   obj:*iris_dri.so
+}
+{
+   SDL_X11_BackendFalsePositive
+   Memcheck:Leak
+   ...
+   obj:*libxcb.so*
+}
+{
+   SDL_DBus_FalsePositives
+   Memcheck:Leak
+   ...
+   fun:SDL_DBus_*
+}
+{
+   Unknown1
    Memcheck:Leak
    match-leak-kinds: indirect
    fun:malloc
@@ -46,28 +77,11 @@
    obj:*
 }
 {
-   UnknownFalsePositives2
-   Memcheck:Leak
-   match-leak-kinds: definite
-   fun:malloc
-   obj:*
-   obj:*
-   obj:*
-   obj:*
-   obj:*
-   obj:*
-   obj:*
-   obj:*
-   obj:*
-   obj:*
-   obj:*
-}
-{
-   UnknownFalsePositives3
+   Unknown2
    Memcheck:Leak
    match-leak-kinds: indirect
-   fun:malloc
-   fun:strdup
+   fun:realloc
+   obj:*
    obj:*
    obj:*
    obj:*
@@ -80,7 +94,41 @@
    obj:*
 }
 {
-   UnknownFalsePositives4
+   Unknown3
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:realloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+}
+{
+   Unknown4
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:realloc
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+   obj:*
+}
+{
+   Unknown5
    Memcheck:Leak
    match-leak-kinds: definite
    fun:calloc
@@ -95,19 +143,6 @@
    obj:*
    obj:*
    obj:*
-}
-{
-   NvidiaFalsePositives
-   Memcheck:Leak
-   ...
-   obj:*libGLX_nvidia.so*
-}
-{
-   NvidiaFalsePositives2
-   Memcheck:Param
-   sendmsg(msg.msg_iov[0])
-   ...
-   obj:*libGLX_nvidia.so*
 }
 ################################################################################
 {

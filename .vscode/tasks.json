@@ -13,12 +13,21 @@
             "problemMatcher": []
         },
         {
-            "label": "Run JEngine3D_Editor with valgrind",
+            "label": "Run JEngine3D_Executable with valgrind",
             "type": "shell",
             "options": {
-                "cwd": "${workspaceFolder}/out/build/JEngine3D_Editor"
+                "cwd": "${workspaceFolder}/out/build/JEngine3D"
             },
-            "command": "valgrind --suppressions=/workspaces/JEngine3D/valgrind.supp --leak-check=full --show-leak-kinds=definite,indirect,possible --error-exitcode=1 --errors-for-leak-kinds=definite,indirect,possible --track-origins=yes ./JEngine3D_Editor_Executable",
+            "command": "valgrind --suppressions=/workspaces/JEngine3D/valgrind.supp --leak-check=full --show-leak-kinds=definite,indirect,possible --error-exitcode=1 --errors-for-leak-kinds=definite,indirect,possible --track-origins=yes ./JEngine3D_Executable",
+            "problemMatcher": []
+        },
+        {
+            "label": "Run JEngine3D_Executable with valgrind (Generate suppressions)",
+            "type": "shell",
+            "options": {
+                "cwd": "${workspaceFolder}/out/build/JEngine3D"
+            },
+            "command": "valgrind --suppressions=/workspaces/JEngine3D/valgrind.supp --gen-suppressions=all --leak-check=full --show-leak-kinds=definite,indirect,possible --error-exitcode=1 --errors-for-leak-kinds=definite,indirect,possible --track-origins=yes ./JEngine3D_Executable",
             "problemMatcher": []
         },
         {

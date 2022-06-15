@@ -104,6 +104,11 @@ disable_static_analysis(glm)
 include(${CMAKE_SOURCE_DIR}/CMake/STBTarget.cmake)
 
 ################################# Tracy profiler ##################################################################
+if(NOT ENABLE_TRACY_PROFILING)
+  set(TRACY_ENABLE
+      OFF
+      CACHE BOOL "Disable inline callstack functions" FORCE)
+endif()
 
 set(TRACY_NO_CALLSTACK_INLINES
     ON
@@ -136,7 +141,9 @@ FetchContent_MakeAvailable(tracy)
 disable_static_analysis(TracyClient)
 #target_compile_definitions(TracyClient PUBLIC TRACY_NO_SYSTEM_TRACING)
 
-include(${CMAKE_SOURCE_DIR}/CMake/TracyServerTarget.cmake)
+if(ENABLE_TRACY_PROFILING)
+  include(${CMAKE_SOURCE_DIR}/CMake/TracyServerTarget.cmake)
+endif()
 
 ################################ cr (Live reload) ###############################################
 

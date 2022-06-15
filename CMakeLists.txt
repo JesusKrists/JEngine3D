@@ -6,6 +6,10 @@ set(ENABLE_DEBUG_BREAK
     TRUE
     CACHE BOOL "Enable DEBUGBREAK to break in debugger")
 
+set(ENABLE_TRACY_PROFILING
+    FALSE
+    CACHE BOOL "Enable Tracy profiler")
+
 set(ENABLE_TESTING
     TRUE
     CACHE BOOL "Enable the tests")

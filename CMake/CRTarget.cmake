@@ -2,7 +2,7 @@ include_guard(GLOBAL)
 
 FetchContent_Declare(
   cr
-  GIT_REPOSITORY https://github.com/fungos/cr.git
+  GIT_REPOSITORY https://github.com/JesusKrists/cr.git
   GIT_TAG master)
 
 FetchContent_Populate(cr)
