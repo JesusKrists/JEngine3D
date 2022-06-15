@@ -161,17 +161,18 @@ void UILayer::LoadImGuiSettings()// NOLINT(readability-convert-member-functions-
 
   auto &imguiIO = ImGui::GetIO();
 
+  if (!imguiIO.Fonts->IsBuilt()) {
+    ImFontConfig fontConfig;
+    fontConfig.OversampleH = 4;
+    fontConfig.OversampleV = 2;
 
-  ImFontConfig fontConfig;
-  fontConfig.OversampleH = 4;
-  fontConfig.OversampleV = 2;
+    // Load default font
+    imguiIO.Fonts->AddFontDefault(&fontConfig);
 
-  // Load default font
-  imguiIO.Fonts->AddFontDefault(&fontConfig);
-
-  auto *font = imguiIO.Fonts->AddFontFromFileTTF("assets/fonts/SEGOEUI.TTF", 16.0f, &fontConfig);// NOLINT
-  imguiIO.Fonts->Build();
-  imguiIO.FontDefault = font;
+    auto *font = imguiIO.Fonts->AddFontFromFileTTF("assets/fonts/SEGOEUI.TTF", 16.0f, &fontConfig);// NOLINT
+    imguiIO.Fonts->Build();
+    imguiIO.FontDefault = font;
+  }
 }
 
 // NOLINTNEXTLINE

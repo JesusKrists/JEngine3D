@@ -19,11 +19,13 @@ ContentBrowserPanel::ContentBrowserPanel() : IPanel("Content Browser")
 {
   auto &imguiIO = ImGui::GetIO();
 
-  ImFontConfig fontConfigSmall;
-  fontConfigSmall.SizePixels = 12;// NOLINT
 
   // Load default font
-  s_SmallFont = imguiIO.Fonts->AddFontDefault(&fontConfigSmall);
+  if (!imguiIO.Fonts->IsBuilt()) {
+    ImFontConfig fontConfigSmall;
+    fontConfigSmall.SizePixels = 12;// NOLINT
+    s_SmallFont = imguiIO.Fonts->AddFontDefault(&fontConfigSmall);
+  }
 }
 
 // NOLINTNEXTLINE
