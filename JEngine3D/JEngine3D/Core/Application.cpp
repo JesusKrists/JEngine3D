@@ -33,8 +33,7 @@ Application::Application(const std::string_view &title)
   ASSERT(!s_ApplicationInstance, "Application instance already exists");
   s_ApplicationInstance = this;
 
-  PushOverlay(m_ImGuiLayer);
-
+  m_ImGuiLayer = &PushOverlay<JE::ImGuiLayer>();
   AddInternalDebugViews();
 
   IPlatformBackend::Get().SetEventProcessor(this);
@@ -46,8 +45,8 @@ Application::Application(const std::string_view &title)
 
 void Application::OnEvent(IEvent &event)
 {
-  ReverseForEach(m_LayerStack, [&](ILayer &layer) {
-    layer.OnEvent(event);
+  ReverseForEach(m_LayerStack, [&](Scope<ILayer, MemoryTag::App> &layer) {
+    layer->OnEvent(event);
     if (event.Handled()) { return; }
   });
 
@@ -75,18 +74,6 @@ void Application::OnEvent(IEvent &event)
     m_Running = false;
     return true;
   });
-}
-
-void Application::PushLayer(ILayer &layer)
-{
-  ZoneScoped;// NOLINT
-  m_LayerStack.PushLayer(layer);
-}
-
-void Application::PushOverlay(ILayer &layer)
-{
-  ZoneScoped;// NOLINT
-  m_LayerStack.PushOverlay(layer);
 }
 
 void Application::PopLayer(ILayer &layer)
@@ -164,14 +151,14 @@ void Application::ProcessMainLoop()
 
     {
       ZoneScopedN("OnUpdate");// NOLINT
-      ReverseForEach(m_LayerStack, [](ILayer &layer) { layer.OnUpdate(); });
+      ReverseForEach(m_LayerStack, [](Scope<ILayer, MemoryTag::App> &layer) { layer->OnUpdate(); });
     }
     {
       ZoneScopedN("ImGuiLayer Process and Render");// NOLINT
-      m_ImGuiLayer.Begin();
+      m_ImGuiLayer->Begin();
       {
         ZoneScopedN("OnImGuiRender");// NOLINT
-        ReverseForEach(m_LayerStack, [](ILayer &layer) { layer.OnImGuiRender(); });
+        ReverseForEach(m_LayerStack, [](Scope<ILayer, MemoryTag::App> &layer) { layer->OnImGuiRender(); });
       }
       {
         ZoneScopedN("DebugViewRender");// NOLINT
@@ -179,7 +166,7 @@ void Application::ProcessMainLoop()
           if (view.IsOpen()) { view.Render(); }
         });
       }
-      m_ImGuiLayer.End();
+      m_ImGuiLayer->End();
     }
   }
 

@@ -49,7 +49,8 @@ void ApplicationDebugView::OnImGuiRender()
   ImGui::Indent();
 
   ImGui::BeginChild("LayerList");
-  ForEach(app.Layers(), [](const ILayer &layer) { ImGui::TextUnformatted(layer.DebugName().c_str()); });
+  ForEach(app.Layers(),
+    [](const Scope<ILayer, MemoryTag::App> &layer) { ImGui::TextUnformatted(layer->DebugName().c_str()); });
   ImGui::EndChild();
 
   ImGui::Unindent();

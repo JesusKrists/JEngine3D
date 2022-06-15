@@ -61,8 +61,15 @@ public:
 
   void OnEvent(IEvent &event) override;
 
-  void PushLayer(ILayer &layer);
-  void PushOverlay(ILayer &layer);
+  template<typename DerivedLayer, typename... Args> inline auto PushLayer(Args &&...args) -> DerivedLayer &
+  {
+    return m_LayerStack.PushLayer<DerivedLayer>(std::forward<Args>(args)...);
+  }
+  template<typename DerivedLayer, typename... Args> inline auto PushOverlay(Args &&...args) -> DerivedLayer &
+  {
+    return m_LayerStack.PushOverlay<DerivedLayer>(std::forward<Args>(args)...);
+  }
+
   void PopLayer(ILayer &layer);
   void PopOverlay(ILayer &layer);
 
@@ -74,7 +81,7 @@ public:
   [[nodiscard]] inline auto MainWindow() -> Window & { return m_MainWindow; }
   [[nodiscard]] inline auto RendererAPI() -> JE::IRendererAPI & { return *m_RendererAPI; }
   [[nodiscard]] inline auto Renderer2D() -> JE::Renderer2D & { return m_Renderer2D; }
-  [[nodiscard]] inline auto ImGuiLayer() -> JE::ImGuiLayer & { return m_ImGuiLayer; }
+  [[nodiscard]] inline auto ImGuiLayer() -> JE::ImGuiLayer & { return *m_ImGuiLayer; }
   [[nodiscard]] inline auto Layers() -> LayerStack & { return m_LayerStack; }
   [[nodiscard]] inline auto DebugViews() -> DebugViewContainer & { return m_DebugViewContainer; }
 
@@ -95,7 +102,7 @@ private:
   Scope<IRendererAPI, MemoryTag::Renderer> m_RendererAPI;
   JE::Renderer2D m_Renderer2D;
 
-  JE::ImGuiLayer m_ImGuiLayer;
+  JE::ImGuiLayer *m_ImGuiLayer;
   LayerStack m_LayerStack;
 
   InternalDebugViews m_InternalDebugViews;

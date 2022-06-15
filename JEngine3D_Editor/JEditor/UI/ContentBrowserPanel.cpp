@@ -145,6 +145,8 @@ void ContentBrowserPanel::OnImGuiRender()
   ImGui::SeparatorEx(ImGuiSeparatorFlags_Vertical);
 
   ImGui::PopStyleColor();
+
+  ImGui::Button("Test Button");
 }
 
 // NOLINTNEXTLINE

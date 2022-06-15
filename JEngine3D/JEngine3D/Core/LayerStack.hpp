@@ -1,5 +1,6 @@
 
 #include "JEngine3D/Core/MemoryController.hpp"
+#include "JEngine3D/Core/ILayer.hpp"
 
 #include <stdint.h>// for uint32_t
 #include <functional>// for reference_wrapper
@@ -7,19 +8,30 @@
 
 namespace JE {
 
-class ILayer;
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
 class LayerStack
 {
 
-  using LayerContainer = Vector<std::reference_wrapper<ILayer>, MemoryTag::App>;
+  using LayerContainer = Vector<Scope<ILayer, MemoryTag::App>, MemoryTag::App>;
 
 public:
   ~LayerStack();
 
-  void PushLayer(ILayer &layer);
-  void PushOverlay(ILayer &layer);
+  template<typename DerivedLayer, typename... Args> inline auto PushLayer(Args &&...args) -> DerivedLayer &
+  {
+    auto layerIt = m_Layers.insert(std::begin(m_Layers) + m_LayerInsertIndex++,
+      CreatePolymorphicScope<DerivedLayer, MemoryTag::App, ILayer>(std::forward<Args>(args)...));
+    (*layerIt)->OnCreate();
+    return static_cast<DerivedLayer &>(*(layerIt->get()));
+  }
+  template<typename DerivedLayer, typename... Args> inline auto PushOverlay(Args &&...args) -> DerivedLayer &
+  {
+    m_Layers.push_back(CreatePolymorphicScope<DerivedLayer, MemoryTag::App, ILayer>(std::forward<Args>(args)...));
+    auto &layer = m_Layers.back();
+    layer->OnCreate();
+    return static_cast<DerivedLayer &>(*layer);
+  }
 
   void PopLayer(ILayer &layer);
   void PopOverlay(ILayer &layer);

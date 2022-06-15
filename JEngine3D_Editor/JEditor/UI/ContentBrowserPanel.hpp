@@ -11,7 +11,7 @@ namespace JEditor {
 class ContentBrowserPanel : public IPanel
 {
 public:
-  const std::filesystem::path CONTENT_HOME_FOLDER = "JEngine3D_Editor";
+  const std::filesystem::path CONTENT_HOME_FOLDER = "JEngine3D";
   const std::filesystem::path CONTENT_DIR = "assets";
   const std::filesystem::path CONTENT_FULL_PATH = JE_APP.WORKING_DIRECTORY / CONTENT_DIR;
 

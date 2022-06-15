@@ -219,19 +219,17 @@ TEST_CASE_METHOD(ApplicationTestsFixture, "JE::Application can push and pop laye
     bool m_OnUpdateCalled = false;
     bool m_OnImGuiRenderCalled = false;
     bool m_OnEventCalled = false;
+  };
 
-  } testLayer{ LAYER_NAME }, testOverlay{ OVERLAY_NAME };
+  auto &testLayer = m_App.PushLayer<TestLayer>(LAYER_NAME);
+  auto &testOverlay = m_App.PushOverlay<TestLayer>(OVERLAY_NAME);
 
   REQUIRE(testLayer.DebugName() == LAYER_NAME);
   REQUIRE(testOverlay.DebugName() == OVERLAY_NAME);
 
-
   auto &window = m_WindowController.CreateWindow(NEW_WINDOW_TITLE, NEW_WINDOW_SIZE);
   JE::MouseWheelEvent mouseWheelEvent{ window.NativeHandle(), 3 };
   m_Backend.PushEvent(mouseWheelEvent);
-
-  m_App.PushLayer(testLayer);
-  m_App.PushOverlay(testOverlay);
 
   m_App.Run(1);
 

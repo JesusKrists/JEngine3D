@@ -42,16 +42,17 @@ TEST_CASE_METHOD(LayerStackTestsFixture, "JE::LayerStack can push and pop layers
   private:
     bool m_OnCreateCalled = false;
     bool m_OnDestroyCalled = false;
-  } testLayer{ LAYER_NAME }, testOverlay{ OVERLAY_NAME };
+  };
 
 
   JE::LayerStack layerStack;
 
+  auto &testLayer = layerStack.PushLayer<TestLayer>(LAYER_NAME);
+  auto &testOverlay = layerStack.PushOverlay<TestLayer>(OVERLAY_NAME);
+
   REQUIRE(testLayer.DebugName() == LAYER_NAME);
   REQUIRE(testOverlay.DebugName() == OVERLAY_NAME);
 
-  layerStack.PushLayer(testLayer);
-  layerStack.PushOverlay(testOverlay);
 
   REQUIRE(!layerStack.Layers().empty());
   REQUIRE(testLayer.OnCreateCalled());

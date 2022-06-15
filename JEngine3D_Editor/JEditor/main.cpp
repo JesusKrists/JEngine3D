@@ -60,6 +60,9 @@ int main(int argc, const char **argv)
 #include <JEngine3D/Core/Assert.hpp>
 #include <JEngine3D/Core/Application.hpp>
 
+#include "UILayer.hpp"
+
+static JEditor::UILayer *s_UILayer = nullptr;// NOLINT
 
 CR_EXPORT int cr_main([[maybe_unused]] cr_plugin *ctx, [[maybe_unused]] cr_op operation)// NOLINT
 {
@@ -68,9 +71,11 @@ CR_EXPORT int cr_main([[maybe_unused]] cr_plugin *ctx, [[maybe_unused]] cr_op op
   switch (operation) {
   case CR_LOAD:
     JE::Logger::ClientLogger().debug("CR_LOAD: DLL Application address: {}", fmt::ptr(&JE_APP));
+    s_UILayer = &JE_APP.PushLayer<JEditor::UILayer>();
     break;
   case CR_UNLOAD:
     JE::Logger::ClientLogger().debug("CR_UNLOAD: DLL Application address: {}", fmt::ptr(&JE_APP));
+    JE_APP.PopLayer(*s_UILayer);
     break;
   case CR_CLOSE:
     JE::Logger::ClientLogger().debug("CR_CLOSE: DLL Application address: {}", fmt::ptr(&JE_APP));
