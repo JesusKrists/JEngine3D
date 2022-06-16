@@ -5,6 +5,7 @@ include(JEngine3D_Sources.cmake)
 
 add_library(JEngine3D SHARED ${JEngine3D_SOURCES} ${JEngine3D_HEADERS})
 target_link_libraries(JEngine3D PRIVATE project_options project_warnings)
+target_link_options(JEngine3D PUBLIC -shared-libsan)
 target_link_system_libraries(
   JEngine3D
   PRIVATE

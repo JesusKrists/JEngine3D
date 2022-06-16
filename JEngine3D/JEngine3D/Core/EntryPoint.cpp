@@ -15,7 +15,7 @@
 #include <cr.h>
 
 
-static constexpr auto USAGE =
+[[maybe_unused]] static constexpr auto USAGE =
   R"(JEngine3D.
 
       Usage:

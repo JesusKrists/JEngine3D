@@ -9,7 +9,7 @@
 namespace JEditor {
 
 static constexpr auto SCROLLBAR_BACKGROUND_COLOR = IM_COL32(0, 0, 0, 32);// NOLINT
-static constexpr auto CURRENT_DIR_OUTLINE_COLOR = IM_COL32(48, 48, 48, 255);// NOLINT
+// static constexpr auto CURRENT_DIR_OUTLINE_COLOR = IM_COL32(48, 48, 48, 255);// NOLINT
 static constexpr auto BREADCRUMBS_START_OFFSET_X = 48;// NOLINT
 static constexpr auto FOLDER_TREE_WIDTH = 192;// NOLINT
 
