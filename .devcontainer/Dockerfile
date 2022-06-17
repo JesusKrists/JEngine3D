@@ -62,6 +62,8 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
     libclang-10-dev clang-tidy-10 clang-format-10
 
+ENV CLANG_ASAN_PATH=/usr/lib/llvm-${LLVM_VER}/lib/clang/${LLVM_VER}.0.0/lib/linux
+
 
 RUN update-alternatives --install /usr/bin/clang-format clang-format $(which clang-format-15) 100
 # Set the default clang-tidy, so CMake can find it

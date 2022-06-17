@@ -1,3 +1,5 @@
+include(${CMAKE_SOURCE_DIR}/CMake/ClangRuntimeSanitizers.cmake)
+
 # configure files based on CMake configuration options
 add_subdirectory(configured_files)
 
@@ -5,7 +7,6 @@ include(JEngine3D_Sources.cmake)
 
 add_library(JEngine3D SHARED ${JEngine3D_SOURCES} ${JEngine3D_HEADERS})
 target_link_libraries(JEngine3D PRIVATE project_options project_warnings)
-target_link_options(JEngine3D PUBLIC -shared-libsan)
 target_link_system_libraries(
   JEngine3D
   PRIVATE
@@ -41,6 +42,12 @@ if(ENABLE_DEBUG_BREAK)
 endif()
 
 target_compile_definitions(JEngine3D PUBLIC ${JEngine3D_DEFINITIONS})
+
+if(OPT_ENABLE_SANITIZER_ADDRESS OR OPT_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
+  enable_clang_runtime_sanitizers(JEngine3D $ENV{CLANG_ASAN_PATH})
+endif()
+
+###############################################################################################
 
 add_executable(JEngine3D_Executable JEngine3D/Core/EntryPoint.cpp)
 target_link_libraries(JEngine3D_Executable PRIVATE project_options project_warnings JEngine3D)
