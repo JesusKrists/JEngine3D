@@ -5,6 +5,30 @@
     "version": "0.2.0",
     "configurations": [
         {
+            "name": "Debug JEngine3D Executable - GDB",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/out/build/JEngine3D/JEngine3D_Executable",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}/out/build/JEngine3D/",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
             "type": "lldb",
             "request": "launch",
             "name": "Debug JEngine3D Platform UnitTests",

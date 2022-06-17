@@ -60,6 +60,7 @@
 		"ms-python.python",
 		"ms-python.vscode-pylance",
 		"mutantdino.resourcemonitor",
+		"ms-vscode.cpptools",
 		// Custom extensions added by Jesus
 		"jeff-hykin.better-cpp-syntax",
 		"TabNine.tabnine-vscode",

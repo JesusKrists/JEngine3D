@@ -44,7 +44,7 @@ endif()
 target_compile_definitions(JEngine3D PUBLIC ${JEngine3D_DEFINITIONS})
 
 if(OPT_ENABLE_SANITIZER_ADDRESS OR OPT_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
-  enable_clang_runtime_sanitizers(JEngine3D $ENV{CLANG_ASAN_PATH})
+  enable_clang_runtime_sanitizers(JEngine3D)
 endif()
 
 ###############################################################################################

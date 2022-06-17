@@ -148,7 +148,7 @@ void ContentBrowserPanel::OnImGuiRender()
 
   ImGui::PopStyleColor();
 
-  ImGui::Button("Test Button");
+  // ImGui::Button("Test Button");
 }
 
 // NOLINTNEXTLINE
