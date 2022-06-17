@@ -152,3 +152,12 @@ include(${CMAKE_SOURCE_DIR}/CMake/CRTarget.cmake)
 ################################ Font icons headers #############################################
 
 include(${CMAKE_SOURCE_DIR}/CMake/FontIconsTarget.cmake)
+
+################################ SVG Renderer #####################################################
+
+FetchContent_Declare(
+  lunasvg
+  GIT_REPOSITORY https://github.com/sammycage/lunasvg.git
+  GIT_TAG master)
+
+FetchContent_MakeAvailable(lunasvg)

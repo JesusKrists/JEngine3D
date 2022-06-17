@@ -14,7 +14,8 @@ static constexpr auto SCROLLBAR_BACKGROUND_COLOR = IM_COL32(0, 0, 0, 32);// NOLI
 // static constexpr auto CURRENT_DIR_OUTLINE_COLOR = IM_COL32(48, 48, 48, 255);// NOLINT
 static constexpr auto BREADCRUMBS_START_OFFSET_X = 48;// NOLINT
 static constexpr auto FOLDER_TREE_WIDTH = 192;// NOLINT
-static constexpr auto FOLDER_CONTENT_ICON_SIZE = 128;
+static constexpr auto FOLDER_CONTENT_ICON_SIZE = 96;
+static constexpr auto FOLDER_CONTENT_ICON_HOVER_COLOR = IM_COL32(255, 255, 255, 48);// NOLINT
 
 ContentBrowserPanel::ContentBrowserPanel() : IPanel("Content Browser")
 {
@@ -24,8 +25,6 @@ ContentBrowserPanel::ContentBrowserPanel() : IPanel("Content Browser")
   // Load default font
   if (EditorState::Get().DefaultFont12 == nullptr) {
     ImFontConfig fontConfigSmall;
-    fontConfigSmall.OversampleH = 4;
-    fontConfigSmall.OversampleV = 2;
     fontConfigSmall.SizePixels = 12;// NOLINT
     EditorState::Get().DefaultFont12 = imguiIO.Fonts->AddFontDefault(&fontConfigSmall);
   }
@@ -69,7 +68,8 @@ void ContentBrowserPanel::OnImGuiRender()
           ImGui::PushStyleColor(ImGuiCol_ButtonHovered, 0);
           ImGui::ArrowButtonEx("##BreadCrumbArrow",
             ImGuiDir_Right,
-            ImVec2{ ImGui::GetFrameHeight(), ImGui::GetFrameHeight() },// NOLINT
+            ImVec2{ TOP_BAR_ICON_SIZE.x + IMGUI_STYLE.FramePadding.y * 2,
+              TOP_BAR_ICON_SIZE.y + IMGUI_STYLE.FramePadding.y * 2 },// NOLINT
             ImGuiItemFlags_Disabled);
           ImGui::PopStyleColor();
           ImGui::PopFont();
@@ -145,15 +145,69 @@ void ContentBrowserPanel::OnImGuiRender()
     ImGui::BeginChild("FolderContent");
 
     const auto FOLDER_ICON_TOTAL_WIDTH =
-      FOLDER_CONTENT_ICON_SIZE + IMGUI_STYLE.FramePadding.y * 2 + IMGUI_STYLE.ItemSpacing.y;
+      FOLDER_CONTENT_ICON_SIZE + IMGUI_STYLE.FramePadding.x * 2 + IMGUI_STYLE.ItemSpacing.x;
 
-    auto folderContentRegionSize = ImGui::GetContentRegionAvail();
-    auto iconsPerRow = static_cast<int>(folderContentRegionSize.x / FOLDER_ICON_TOTAL_WIDTH);
+    auto folderContentRegionSize = ImGui::GetWindowContentRegionMax();
+    auto iconsPerRow = std::max(1, static_cast<int>(folderContentRegionSize.x / FOLDER_ICON_TOTAL_WIDTH));
 
-    for (int i = 0; i < iconsPerRow; i++) {
-      ImGui::SameLine();
-      ImGui::Button("TestButton", ImVec2{ FOLDER_CONTENT_ICON_SIZE, FOLDER_CONTENT_ICON_SIZE });
-    };
+    ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
+    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { IMGUI_STYLE.ItemSpacing.x, -8 });// NOLINT
+    ImGui::PushStyleColor(ImGuiCol_Button, 0);
+    ImGui::PushStyleColor(ImGuiCol_ButtonHovered, 0);
+
+    int currentIcon = 0;
+    int currentIconIndex = 0;
+    for (const auto &entry : std::filesystem::directory_iterator{ m_CurrentFolder }) {
+      if (currentIcon++ != 0) { ImGui::SameLine(); }
+
+      ImGui::PushID(currentIconIndex++);
+
+      ImGui::BeginChild("FolderContentEntry",
+        { FOLDER_CONTENT_ICON_SIZE + IMGUI_STYLE.FramePadding.x * 2,
+          FOLDER_CONTENT_ICON_SIZE + ImGui::GetFontSize() + IMGUI_STYLE.ItemSpacing.y
+            + IMGUI_STYLE.FramePadding.y * 2 });
+
+
+      const auto windowWidth = ImGui::GetWindowSize().x;
+
+      if (ImGui::IsWindowHovered(ImGuiHoveredFlags_ChildWindows)) {
+        ImGui::GetWindowDrawList()->AddRectFilled(ImGui::GetWindowPos(),
+          { ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y },
+          FOLDER_CONTENT_ICON_HOVER_COLOR);
+      }
+
+      bool folder = entry.is_directory();
+      if (folder) {
+        auto folderName = entry.path().stem();
+        if (ImGui::ImageButton(EditorState::Get().FolderIconTexture->RendererID(),
+              ImVec2{ FOLDER_CONTENT_ICON_SIZE, FOLDER_CONTENT_ICON_SIZE })) {
+          ChangeDirectory(entry.path());
+        }
+
+        const auto textWidth = ImGui::CalcTextSize(folderName.c_str()).x;
+        ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5F);// NOLINT
+        ImGui::TextUnformatted(folderName.c_str());
+      } else {
+        auto fileExtension = entry.path().extension();
+        auto fileName = entry.path().stem();
+        ImGui::ImageButton(EditorState::Get().FileIconTexture->RendererID(),
+          ImVec2{ FOLDER_CONTENT_ICON_SIZE, FOLDER_CONTENT_ICON_SIZE });
+
+        const auto textWidth = ImGui::CalcTextSize(fileName.c_str()).x;
+        ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5F);// NOLINT
+        ImGui::TextUnformatted(fileName.c_str());
+      }
+
+      ImGui::EndChild();
+
+      ImGui::PopID();
+
+
+      if (currentIcon == iconsPerRow) { currentIcon = 0; }
+    }
+
+    ImGui::PopStyleColor(2);
+    ImGui::PopStyleVar(2);
 
     ImGui::EndChild();
   };
@@ -176,11 +230,12 @@ void ContentBrowserPanel::RenderContentTreeEntryRecursive(const std::filesystem:
   for (const auto &entry : std::filesystem::directory_iterator{ path }) {
     if (entry.is_directory()) {
       const auto dirHasSubdirs = DirectoryHasSubdirectories(entry.path());
-      const auto entryLabel = ICON_FA_FOLDER_OPEN "  " + entry.path().stem().native();
+      const auto entryLabel = entry.path().stem().native();
 
       if (dirHasSubdirs) {
 
-        bool open = ImGui::TreeNodeEx(entryLabel.c_str(),
+        bool open = ImGui::TreeNodeEx_IconText(EditorState::Get().FolderIconTexture->RendererID(),
+          entryLabel.c_str(),
           ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick// NOLINT
             | ImGuiTreeNodeFlags_SpanFullWidth);
         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(entry.path()); }
@@ -189,7 +244,8 @@ void ContentBrowserPanel::RenderContentTreeEntryRecursive(const std::filesystem:
           ImGui::TreePop();
         }
       } else {
-        ImGui::TreeNodeEx(entryLabel.c_str(),
+        ImGui::TreeNodeEx_IconText(EditorState::Get().FolderIconTexture->RendererID(),
+          entryLabel.c_str(),
           ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen// NOLINT
             | ImGuiTreeNodeFlags_SpanFullWidth);
         if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(entry.path()); }

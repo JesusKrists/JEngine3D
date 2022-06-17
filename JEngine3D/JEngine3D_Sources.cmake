@@ -43,7 +43,8 @@ set(JEngine3D_HEADERS
     JEngine3D/Renderer/IShader.hpp
     JEngine3D/Renderer/ITexture.hpp
     JEngine3D/Renderer/IVertexArray.hpp
-    JEngine3D/Renderer/Renderer2D.hpp)
+    JEngine3D/Renderer/Renderer2D.hpp
+    JEngine3D/Utility/ImageLoader.hpp)
 
 set(JEngine3D_SOURCES
     JEngine3D/Core/ImGui/ImGuiLayer.cpp
@@ -73,4 +74,5 @@ set(JEngine3D_SOURCES
     JEngine3D/Renderer/OpenGL/OpenGLTexture.cpp
     JEngine3D/Renderer/OpenGL/OpenGLVertexArray.cpp
     JEngine3D/Renderer/IRendererObjectCreator.cpp
-    JEngine3D/Renderer/Renderer2D.cpp)
+    JEngine3D/Renderer/Renderer2D.cpp
+    JEngine3D/Utility/ImageLoader.cpp)

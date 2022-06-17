@@ -19,7 +19,8 @@ target_link_system_libraries(
   ImGuiLibrary
   glm::glm
   STBTarget
-  Tracy::TracyClient)
+  Tracy::TracyClient
+  lunasvg)
 target_compile_definitions(JEngine3D PRIVATE CR_HOST=CR_DISABLE)
 
 target_include_directories(JEngine3D PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")

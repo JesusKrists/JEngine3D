@@ -1,6 +1,7 @@
 #include "UILayer.hpp"
 #include "UI/ContentBrowserPanel.hpp"
 #include "UI/IPanel.hpp"
+#include "JEditorState.hpp"
 
 #include <JEngine3D/Core/Base.hpp>
 #include <JEngine3D/Core/Application.hpp>
@@ -11,6 +12,7 @@
 #include <JEngine3D/Renderer/ITexture.hpp>
 #include <JEngine3D/Renderer/Renderer2D.hpp>
 #include <JEngine3D/Renderer/IRendererObjectCreator.hpp>
+#include <JEngine3D/Utility/ImageLoader.hpp>
 
 #include <imgui.h>
 #include <stb_image.h>
@@ -31,6 +33,7 @@ class IEvent;
 namespace JEditor {
 
 static constexpr auto GAME_VIEWPORT_OUTLINE_COLOR = IM_COL32(255, 255, 255, 127);// NOLINT
+static constexpr auto ICON_IMAGE_SIZE = JE::Size2DI{ 128, 128 };
 
 void UILayer::OnCreate()
 {
@@ -55,9 +58,6 @@ void UILayer::OnCreate()
     JE::TextureFormat::RGBA8);
   stbi_image_free(data);
 
-  m_GameViewportFBO = JE::IRendererObjectCreator::Get().CreateFramebuffer({ m_GameViewportSize,
-    { JE::FramebufferAttachmentFormat::RGBA8, JE::FramebufferAttachmentFormat::DEPTH24STENCIL8 } });
-
   JE::ForEach(JE_APP.DebugViews(), [](JE::IImGuiDebugView &view) { view.Open(); });
   InitializeUI();
 
@@ -79,8 +79,8 @@ void UILayer::OnUpdate()
       JE_APP.ImGuiLayer().SetCaptureEvents(true);
     }
 
-    if (m_GameViewportFBO->Configuration().Size != m_GameViewportSize) {
-      m_GameViewportFBO->Resize(m_GameViewportSize);
+    if (EditorState::Get().GameViewportFBO->Configuration().Size != m_GameViewportSize) {
+      EditorState::Get().GameViewportFBO->Resize(m_GameViewportSize);
     }
   };
   UpdateImGuiLayer();
@@ -96,12 +96,12 @@ void UILayer::OnUpdate()
     rendererAPI.SetClearColor(CLEAR_COLOR);
     rendererAPI.Clear();
 
-    m_GameViewportFBO->Bind();
+    EditorState::Get().GameViewportFBO->Bind();
     rendererAPI.Clear();
-    m_GameViewportFBO->Unbind();
+    EditorState::Get().GameViewportFBO->Unbind();
 
 
-    renderer2D.BeginBatch(m_GameViewportFBO.get());
+    renderer2D.BeginBatch(EditorState::Get().GameViewportFBO.get());
 
     auto vertex0 = JE::Vertex{ glm::vec3{ -0.5F, 0.0F, 0.0F }, JE::Color{ 1.0F, 0.0F, 0.0F, 1.0F } };// NOLINT
     auto vertex1 = JE::Vertex{ glm::vec3{ 0.5F, 0.0F, 0.0F }, JE::Color{ 0.0F, 1.0F, 0.0F, 1.0F } };// NOLINT
@@ -153,31 +153,63 @@ void UILayer::OnEvent(JE::IEvent &event) { JE::UNUSED(event); }
 
 void UILayer::InitializeUI()
 {
+
+  if (!EditorState::Get().GameViewportFBO) {
+    EditorState::Get().GameViewportFBO = JE::IRendererObjectCreator::Get().CreateFramebuffer({ m_GameViewportSize,
+      { JE::FramebufferAttachmentFormat::RGBA8, JE::FramebufferAttachmentFormat::DEPTH24STENCIL8 } });
+  }
+
+  LoadIcons();
+
   m_UIPanels.push_back(JE::CreatePolymorphicScope<ContentBrowserPanel, JE::MemoryTag::Editor, IPanel>());
+}
+
+void UILayer::LoadIcons()// NOLINT
+{
+  if (!EditorState::Get().FolderIconTexture) {
+
+    auto folderImage = JE::ImageLoader::LoadImageFromPath(
+      JE_APP.WORKING_DIRECTORY + "/" + "assets/EditorUI/textures/icons/folder.svg", JE::ImageConfig{ ICON_IMAGE_SIZE });
+
+    auto fileImage = JE::ImageLoader::LoadImageFromPath(
+      JE_APP.WORKING_DIRECTORY + "/" + "assets/EditorUI/textures/icons/file.svg", JE::ImageConfig{ ICON_IMAGE_SIZE });
+
+    EditorState::Get().FolderIconTexture =
+      JE::IRendererObjectCreator::Get().CreateTexture("assets/EditorUI/textures/icons/folder.svg",
+        folderImage.Data,
+        folderImage.Size,
+        JE::ImageFormatToTextureFormat(folderImage.Format));
+
+
+    EditorState::Get().FileIconTexture =
+      JE::IRendererObjectCreator::Get().CreateTexture("assets/EditorUI/textures/icons/file.svg",
+        fileImage.Data,
+        fileImage.Size,
+        JE::ImageFormatToTextureFormat(fileImage.Format));
+  }
 }
 
 void UILayer::LoadImGuiSettings()// NOLINT(readability-convert-member-functions-to-static)
 {
-  if (!std::filesystem::exists("imgui.ini")) { ImGui::LoadIniSettingsFromDisk("assets/imgui/default_layout.ini"); }
+  if (!std::filesystem::exists("imgui.ini")) {
+    ImGui::LoadIniSettingsFromDisk("assets/EditorUI/imgui/default_layout.ini");
+  }
 
   auto &imguiIO = ImGui::GetIO();
 
   if (!imguiIO.Fonts->IsBuilt()) {
-    ImFontConfig fontConfig;
-    fontConfig.OversampleH = 4;
-    fontConfig.OversampleV = 2;
-
     // Load default font
-    imguiIO.Fonts->AddFontDefault(&fontConfig);
+    imguiIO.Fonts->AddFontDefault();
 
-    auto *font = imguiIO.Fonts->AddFontFromFileTTF("assets/fonts/SEGOEUI.TTF", 16.0f, &fontConfig);// NOLINT
+    auto *font = imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/SEGOEUI.TTF", 16.0f);// NOLINT
     imguiIO.FontDefault = font;
 
     ImFontConfig iconFontConfig;
     iconFontConfig.MergeMode = true;
     iconFontConfig.GlyphMinAdvanceX = 16.0f;// NOLINT Use if you want to make the icon monospaced
     static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };// NOLINT
-    imguiIO.Fonts->AddFontFromFileTTF("assets/fonts/fa-regular-400.ttf", 16.0f, &iconFontConfig, icon_ranges);// NOLINT
+    imguiIO.Fonts->AddFontFromFileTTF(
+      "assets/EditorUI/fonts/fa-regular-400.ttf", 16.0f, &iconFontConfig, icon_ranges);// NOLINT
   }
 }
 
@@ -254,9 +286,9 @@ void UILayer::RenderGameViewport()
 
     m_GameViewportSize = { static_cast<int32_t>(size.x), static_cast<int32_t>(size.y) };
 
-    ImGui::Image(m_GameViewportFBO->AttachmentRendererID(),
-      ImVec2{ static_cast<float>(m_GameViewportFBO->Configuration().Size.Width),
-        static_cast<float>(m_GameViewportFBO->Configuration().Size.Height) },
+    ImGui::Image(EditorState::Get().GameViewportFBO->AttachmentRendererID(),
+      ImVec2{ static_cast<float>(EditorState::Get().GameViewportFBO->Configuration().Size.Width),
+        static_cast<float>(EditorState::Get().GameViewportFBO->Configuration().Size.Height) },
       { 0, 1 },
       { 1, 0 });
 

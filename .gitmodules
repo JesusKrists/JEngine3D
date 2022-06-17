@@ -1,3 +1,6 @@
+[submodule "project_options"]
+    path = out/build/_deps/_project_options-src
+    url = dummy_string_to_satisfy_vscode
 [submodule "Catch2"]
     path = out/build/_deps/catch2-src
     url = dummy_string_to_satisfy_vscode
@@ -33,4 +36,10 @@
     url = dummy_string_to_satisfy_vscode
 [submodule "cr"]
     path = out/build/_deps/cr-src
+    url = dummy_string_to_satisfy_vscode
+[submodule "lunasvg"]
+    path = out/build/_deps/lunasvg-src
+    url = dummy_string_to_satisfy_vscode
+[submodule "fonticons"]
+    path = out/build/_deps/fonticons-src
     url = dummy_string_to_satisfy_vscode

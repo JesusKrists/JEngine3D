@@ -30,6 +30,8 @@ public:
 
 private:
   void InitializeUI();
+  // cppcheck-suppress functionStatic
+  void LoadIcons();
 
   // cppcheck-suppress functionStatic
   void LoadImGuiSettings();
@@ -42,7 +44,6 @@ private:
 
   JE::Scope<JE::ITexture2D, JE::MemoryTag::Renderer> m_TestTexture;
   JE::Scope<JE::ITexture2D, JE::MemoryTag::Renderer> m_MemeTexture;
-  JE::Scope<JE::IFramebuffer, JE::MemoryTag::Renderer> m_GameViewportFBO;
   JE::Size2DI m_GameViewportSize = INITIAL_GAME_VIEWPORT_SIZE;
 };
 

@@ -3,6 +3,8 @@
 #include "main.h"
 
 #include <JEngine3D/Core/Assert.hpp>
+#include <JEngine3D/Renderer/IFramebuffer.hpp>
+#include <JEngine3D/Renderer/ITexture.hpp>
 
 #include <imgui.h>
 
@@ -22,6 +24,10 @@ struct EditorState
   /////////////////////////////////////////////////////////
 
   ImFont *DefaultFont12 = nullptr;
+  JE::Scope<JE::IFramebuffer, JE::MemoryTag::Renderer> GameViewportFBO;
+
+  JE::Scope<JE::ITexture2D, JE::MemoryTag::Renderer> FolderIconTexture;
+  JE::Scope<JE::ITexture2D, JE::MemoryTag::Renderer> FileIconTexture;
 
   //////////////////////////////////////////////////////////
 
