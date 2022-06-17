@@ -148,3 +148,7 @@ endif()
 ################################ cr (Live reload) ###############################################
 
 include(${CMAKE_SOURCE_DIR}/CMake/CRTarget.cmake)
+
+################################ Font icons headers #############################################
+
+include(${CMAKE_SOURCE_DIR}/CMake/FontIconsTarget.cmake)

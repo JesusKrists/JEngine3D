@@ -4,7 +4,7 @@ include(${CMAKE_SOURCE_DIR}/CMake/DisableStaticAnalysis.cmake)
 
 FetchContent_Declare(
   ImGui
-  GIT_REPOSITORY https://github.com/ocornut/imgui.git
+  GIT_REPOSITORY https://github.com/JesusKrists/imgui.git
   GIT_TAG docking)
 
 FetchContent_MakeAvailable(ImGui)

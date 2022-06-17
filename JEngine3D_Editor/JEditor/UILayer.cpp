@@ -14,6 +14,7 @@
 
 #include <imgui.h>
 #include <stb_image.h>
+#include <IconsFontAwesome6.h>
 
 #include <filesystem>
 
@@ -170,8 +171,13 @@ void UILayer::LoadImGuiSettings()// NOLINT(readability-convert-member-functions-
     imguiIO.Fonts->AddFontDefault(&fontConfig);
 
     auto *font = imguiIO.Fonts->AddFontFromFileTTF("assets/fonts/SEGOEUI.TTF", 16.0f, &fontConfig);// NOLINT
-    imguiIO.Fonts->Build();
     imguiIO.FontDefault = font;
+
+    ImFontConfig iconFontConfig;
+    iconFontConfig.MergeMode = true;
+    iconFontConfig.GlyphMinAdvanceX = 16.0f;// NOLINT Use if you want to make the icon monospaced
+    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };// NOLINT
+    imguiIO.Fonts->AddFontFromFileTTF("assets/fonts/fa-regular-400.ttf", 16.0f, &iconFontConfig, icon_ranges);// NOLINT
   }
 }
 

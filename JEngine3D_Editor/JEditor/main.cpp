@@ -54,31 +54,45 @@ int main(int argc, const char **argv)
 }
 */
 
-
-#include <cr.h>
+#include "main.h"
 
 #include <JEngine3D/Core/Assert.hpp>
 #include <JEngine3D/Core/Application.hpp>
 
+#include "JEditorState.hpp"
 #include "UILayer.hpp"
 
-static JEditor::UILayer *s_UILayer = nullptr;// NOLINT
+namespace JEditor {
 
-CR_EXPORT int cr_main([[maybe_unused]] cr_plugin *ctx, [[maybe_unused]] cr_op operation)// NOLINT
+EditorState *EditorState::s_StateInstance = nullptr;// NOLINT
+static UILayer *s_UILayer = nullptr;// NOLINT
+
+}// namespace JEditor
+
+auto cr_main(cr_plugin *ctx, cr_op operation) -> int
 {
   ASSERT(ctx != nullptr, "No context passed!");
 
   switch (operation) {
   case CR_LOAD:
     JE::Logger::ClientLogger().debug("CR_LOAD: DLL Application address: {}", fmt::ptr(&JE_APP));
-    s_UILayer = &JE_APP.PushLayer<JEditor::UILayer>();
+
+    JEditor::EditorState::s_StateInstance = ctx->CreateState<JEditor::EditorState>();
+    JEditor::s_UILayer = &JE_APP.PushLayer<JEditor::UILayer>();
+
     break;
   case CR_UNLOAD:
     JE::Logger::ClientLogger().debug("CR_UNLOAD: DLL Application address: {}", fmt::ptr(&JE_APP));
-    JE_APP.PopLayer(*s_UILayer);
+
+    JE_APP.PopLayer(*JEditor::s_UILayer);
+    JEditor::s_UILayer = nullptr;
+
     break;
   case CR_CLOSE:
     JE::Logger::ClientLogger().debug("CR_CLOSE: DLL Application address: {}", fmt::ptr(&JE_APP));
+
+    ctx->DeleteState(JEditor::EditorState::s_StateInstance);
+
     break;
   default:
     break;
