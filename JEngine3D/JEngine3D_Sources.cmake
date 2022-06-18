@@ -44,7 +44,8 @@ set(JEngine3D_HEADERS
     JEngine3D/Renderer/ITexture.hpp
     JEngine3D/Renderer/IVertexArray.hpp
     JEngine3D/Renderer/Renderer2D.hpp
-    JEngine3D/Utility/ImageLoader.hpp)
+    JEngine3D/Utility/ImageLoader.hpp
+    JEngine3D/Utility/Math.hpp)
 
 set(JEngine3D_SOURCES
     JEngine3D/Core/ImGui/ImGuiLayer.cpp

@@ -4,8 +4,10 @@
 
 #include <cstddef>// // IWYU pragma: keep
 #include <array>// IWYU pragma: export
+#include <functional>
 #include <utility>// IWYU pragma: export
 #include <vector>// IWYU pragma: export
+#include <unordered_map>// IWYU pragma: export
 #include <memory>// IWYU pragma: export
 #include <cstdint>
 #include <spdlog/spdlog.h>
@@ -141,5 +143,12 @@ inline auto CreateRef(Args &&...args) -> Ref<T, TAG>
 
 template<typename T, MemoryTag TAG = MemoryTag::Unknown>
 using Vector = std::vector<T, MemoryControllerAllocator<T, TAG>>;
+
+template<typename K,
+  typename V,
+  MemoryTag TAG = MemoryTag::Unknown,
+  typename Hash = std::hash<K>,
+  typename Pred = std::equal_to<K>>
+using UnorderedMap = std::unordered_map<K, V, Hash, Pred, MemoryControllerAllocator<std::pair<const K, V>, TAG>>;
 
 }// namespace JE

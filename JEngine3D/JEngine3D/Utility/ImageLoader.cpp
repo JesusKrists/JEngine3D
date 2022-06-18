@@ -19,8 +19,9 @@ auto ImageLoader::LoadImageFromPath(const std::filesystem::path &filePath, const
       static_cast<std::uint32_t>(config.SizePreference.Height));
     bitmap.convertToRGBA();
 
-    return Image{ { reinterpret_cast<std::byte *>(bitmap.data()),// NOLINT
-                    reinterpret_cast<std::byte *>(bitmap.data()) + (bitmap.width() * bitmap.height() * 4) },// NOLINT
+    return Image{ filePath.native(),
+      { reinterpret_cast<std::byte *>(bitmap.data()),// NOLINT
+        reinterpret_cast<std::byte *>(bitmap.data()) + (bitmap.width() * bitmap.height() * 4) },// NOLINT
       { static_cast<int32_t>(bitmap.width()), static_cast<int32_t>(bitmap.height()) },
       ImageFormat::RGBA8 };
   }

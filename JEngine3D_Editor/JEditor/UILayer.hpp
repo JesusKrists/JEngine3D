@@ -31,7 +31,7 @@ public:
 private:
   void InitializeUI();
   // cppcheck-suppress functionStatic
-  void LoadIcons();
+  void BuildIconMap();
 
   // cppcheck-suppress functionStatic
   void LoadImGuiSettings();

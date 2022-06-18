@@ -151,14 +151,14 @@ void Application::ProcessMainLoop()
 
     {
       ZoneScopedN("OnUpdate");// NOLINT
-      ReverseForEach(m_LayerStack, [](Scope<ILayer, MemoryTag::App> &layer) { layer->OnUpdate(); });
+      ForEach(m_LayerStack, [](Scope<ILayer, MemoryTag::App> &layer) { layer->OnUpdate(); });
     }
     {
       ZoneScopedN("ImGuiLayer Process and Render");// NOLINT
       m_ImGuiLayer->Begin();
       {
         ZoneScopedN("OnImGuiRender");// NOLINT
-        ReverseForEach(m_LayerStack, [](Scope<ILayer, MemoryTag::App> &layer) { layer->OnImGuiRender(); });
+        ForEach(m_LayerStack, [](Scope<ILayer, MemoryTag::App> &layer) { layer->OnImGuiRender(); });
       }
       {
         ZoneScopedN("DebugViewRender");// NOLINT

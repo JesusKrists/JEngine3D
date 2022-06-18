@@ -7,6 +7,7 @@
 #include "JEngine3D/Renderer/IVertexArray.hpp"
 #include "JEngine3D/Renderer/ITexture.hpp"
 #include "JEngine3D/Renderer/IFramebuffer.hpp"
+#include "JEngine3D/Utility/ImageLoader.hpp"
 
 namespace JE {
 
@@ -44,6 +45,7 @@ public:
     const std::span<const std::byte> &textureData,
     const Size2DI &textureDimensions,
     TextureFormat format) -> Scope<ITexture2D, MemoryTag::Renderer> = 0;
+  [[nodiscard]] virtual auto CreateTexture(const Image &sourceImage) -> Scope<ITexture2D, MemoryTag::Renderer> = 0;
   [[nodiscard]] virtual auto CreateTexture() -> Scope<ITexture2D, MemoryTag::Renderer> = 0;
 
   [[nodiscard]] virtual auto CreateShader(const std::string_view &name,

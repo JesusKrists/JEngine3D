@@ -159,33 +159,34 @@ void UILayer::InitializeUI()
       { JE::FramebufferAttachmentFormat::RGBA8, JE::FramebufferAttachmentFormat::DEPTH24STENCIL8 } });
   }
 
-  LoadIcons();
+  BuildIconMap();
 
   m_UIPanels.push_back(JE::CreatePolymorphicScope<ContentBrowserPanel, JE::MemoryTag::Editor, IPanel>());
 }
 
-void UILayer::LoadIcons()// NOLINT
+void UILayer::BuildIconMap()// NOLINT
 {
-  if (!EditorState::Get().FolderIconTexture) {
+  if (EditorState::Get().FileIconMap.empty()) {
 
     auto folderImage = JE::ImageLoader::LoadImageFromPath(
       JE_APP.WORKING_DIRECTORY + "/" + "assets/EditorUI/textures/icons/folder.svg", JE::ImageConfig{ ICON_IMAGE_SIZE });
 
-    auto fileImage = JE::ImageLoader::LoadImageFromPath(
+    auto svgImage = JE::ImageLoader::LoadImageFromPath(
+      JE_APP.WORKING_DIRECTORY + "/" + "assets/EditorUI/textures/icons/svgo.svg", JE::ImageConfig{ ICON_IMAGE_SIZE });
+
+    auto imageImage = JE::ImageLoader::LoadImageFromPath(
+      JE_APP.WORKING_DIRECTORY + "/" + "assets/EditorUI/textures/icons/image.svg", JE::ImageConfig{ ICON_IMAGE_SIZE });
+
+    auto unknownFileImage = JE::ImageLoader::LoadImageFromPath(
       JE_APP.WORKING_DIRECTORY + "/" + "assets/EditorUI/textures/icons/file.svg", JE::ImageConfig{ ICON_IMAGE_SIZE });
 
-    EditorState::Get().FolderIconTexture =
-      JE::IRendererObjectCreator::Get().CreateTexture("assets/EditorUI/textures/icons/folder.svg",
-        folderImage.Data,
-        folderImage.Size,
-        JE::ImageFormatToTextureFormat(folderImage.Format));
 
-
-    EditorState::Get().FileIconTexture =
-      JE::IRendererObjectCreator::Get().CreateTexture("assets/EditorUI/textures/icons/file.svg",
-        fileImage.Data,
-        fileImage.Size,
-        JE::ImageFormatToTextureFormat(fileImage.Format));
+    EditorState::Get().FileIconMap[FileExtension::FOLDER] =
+      JE::IRendererObjectCreator::Get().CreateTexture(folderImage);
+    EditorState::Get().FileIconMap[FileExtension::SVG] = JE::IRendererObjectCreator::Get().CreateTexture(svgImage);
+    EditorState::Get().FileIconMap[FileExtension::JPG] = JE::IRendererObjectCreator::Get().CreateTexture(imageImage);
+    EditorState::Get().FileIconMap[FileExtension::UNKNOWN] =
+      JE::IRendererObjectCreator::Get().CreateTexture(unknownFileImage);
   }
 }
 

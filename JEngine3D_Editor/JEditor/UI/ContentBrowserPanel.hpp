@@ -41,7 +41,7 @@ private:
   inline void ChangeDirectory(const std::filesystem::path &path) { m_CurrentFolder = JE_APP.WORKING_DIRECTORY / path; }
 
 
-  std::filesystem::path m_CurrentFolder = CONTENT_FULL_PATH / "textures";
+  std::filesystem::path m_CurrentFolder = CONTENT_FULL_PATH;
 };
 
 }// namespace JEditor

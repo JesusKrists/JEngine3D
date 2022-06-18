@@ -27,6 +27,7 @@ struct ImageConfig
 
 struct Image
 {
+  std::string SourcePath;
   Vector<std::byte, MemoryTag::App> Data;
   Size2DI Size = { 0, 0 };
   ImageFormat Format = ImageFormat::RGBA8;
