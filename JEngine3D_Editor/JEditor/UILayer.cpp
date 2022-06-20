@@ -71,7 +71,7 @@ void UILayer::OnUpdate()
   ZoneScopedN("UILayer::OnUpdate");// NOLINT
   auto UpdateImGuiLayer = [&]() {
     if (m_ResetDockLayout) {
-      ImGui::LoadIniSettingsFromDisk("assets/imgui/default_layout.ini");
+      ImGui::LoadIniSettingsFromDisk("assets/EditorUI/imgui/default_layout.ini");
       m_ResetDockLayout = false;
     }
 
