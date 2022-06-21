@@ -10,13 +10,17 @@
 
 namespace JEditor {
 
+static constexpr auto DISABLED_TEXT_COLOR = IM_COL32(255, 255, 255, 48);// NOLINT
 static constexpr auto SCROLLBAR_BACKGROUND_COLOR = IM_COL32(0, 0, 0, 32);// NOLINT
-// static constexpr auto CURRENT_DIR_OUTLINE_COLOR = IM_COL32(48, 48, 48, 255);// NOLINT
+
 static constexpr auto BREADCRUMBS_START_OFFSET_X = 48;// NOLINT
+
 static constexpr auto FOLDER_TREE_WIDTH = 192;// NOLINT
+
 static constexpr auto FOLDER_CONTENT_ICON_SIZE = 96;
 static constexpr auto FOLDER_CONTENT_ICON_HOVER_COLOR = IM_COL32(255, 255, 255, 48);// NOLINT
 static constexpr auto FOLDER_CONTENT_ICON_CLICKED_COLOR = IM_COL32(255, 255, 255, 72);// NOLINT
+static constexpr auto FOLDER_CONTENT_EXTENSION_BACKGROUND = IM_COL32(128, 128, 128, 192);// NOLINT
 
 ContentBrowserPanel::ContentBrowserPanel() : IPanel("Content Browser")
 {
@@ -29,6 +33,9 @@ ContentBrowserPanel::ContentBrowserPanel() : IPanel("Content Browser")
     fontConfigSmall.SizePixels = 12;// NOLINT
     EditorState::Get().DefaultFont12 = imguiIO.Fonts->AddFontDefault(&fontConfigSmall);
   }
+
+  m_NavigationStack.push_back(m_CurrentFolder);
+  m_CurrentNavigationPosition = std::begin(m_NavigationStack);
 }
 
 // NOLINTNEXTLINE
@@ -95,13 +102,35 @@ void ContentBrowserPanel::OnImGuiRender()
 
     ImGui::PushStyleColor(ImGuiCol_Button, 0);
 
+    bool backwardsDisabled = m_CurrentNavigationPosition == std::begin(m_NavigationStack);
+    bool forwardsDisabled = m_CurrentNavigationPosition == std::end(m_NavigationStack) - 1;
+
+    if (backwardsDisabled) {
+      ImGui::PushStyleColor(ImGuiCol_Text, DISABLED_TEXT_COLOR);
+      ImGui::PushStyleColor(ImGuiCol_ButtonHovered, 0);
+    }
     ImGui::SameLine();// NOLINT
     ImGui::SetCursorPosY(IMGUI_STYLE.FramePadding.y);
-    if (ImGui::ArrowButtonEx("##BackArrow", ImGuiDir_Left, TOP_BAR_ICON_SIZE, ImGuiItemFlags_Disabled)) {}
+    if (ImGui::ArrowButtonEx(
+          "##BackArrow", ImGuiDir_Left, TOP_BAR_ICON_SIZE, backwardsDisabled ? ImGuiItemFlags_Disabled : 0)) {
+      --m_CurrentNavigationPosition;
+      ChangeDirectoryToNavPos();
+    }
+    if (backwardsDisabled) { ImGui::PopStyleColor(2); }
 
+
+    if (forwardsDisabled) {
+      ImGui::PushStyleColor(ImGuiCol_Text, DISABLED_TEXT_COLOR);
+      ImGui::PushStyleColor(ImGuiCol_ButtonHovered, 0);
+    }
     ImGui::SameLine();
     ImGui::SetCursorPosY(IMGUI_STYLE.FramePadding.y);
-    if (ImGui::ArrowButtonEx("##ForwardArrow", ImGuiDir_Right, TOP_BAR_ICON_SIZE)) {}
+    if (ImGui::ArrowButtonEx(
+          "##ForwardArrow", ImGuiDir_Right, TOP_BAR_ICON_SIZE, forwardsDisabled ? ImGuiItemFlags_Disabled : 0)) {
+      ++m_CurrentNavigationPosition;
+      ChangeDirectoryToNavPos();
+    }
+    if (forwardsDisabled) { ImGui::PopStyleColor(2); }
 
     ImGui::SameLine(0, 8);// NOLINT
     ImGui::SetCursorPosY(IMGUI_STYLE.FramePadding.y);
@@ -208,10 +237,13 @@ void ContentBrowserPanel::OnImGuiRender()
 
         ImGui::PushFont(EditorState::Get().Segoe24Bold);
         const auto extensionTextSize = ImGui::CalcTextSize(fileExtension.c_str());
-        ImGui::GetWindowDrawList()->AddText(
-          ImGui::GetWindowPos() - extensionTextSize + FOLDER_ICON_SIZE + EXTENSION_TEXT_OFFSET,
-          ImGui::GetColorU32(ImGuiCol_Text),
-          fileExtension.c_str());
+        const auto textPos = ImGui::GetWindowPos() - extensionTextSize + FOLDER_ICON_SIZE + EXTENSION_TEXT_OFFSET;
+        ImGui::GetWindowDrawList()->AddRectFilled(
+          textPos - ImVec2{ IMGUI_STYLE.FramePadding.x, IMGUI_STYLE.FramePadding.y - 2 },
+          textPos + extensionTextSize + IMGUI_STYLE.FramePadding,
+          FOLDER_CONTENT_EXTENSION_BACKGROUND,
+          4);
+        ImGui::GetWindowDrawList()->AddText(textPos, ImGui::GetColorU32(ImGuiCol_Text), fileExtension.c_str());
         ImGui::PopFont();
 
         const auto textWidth = ImGui::CalcTextSize(fileName.c_str()).x;
