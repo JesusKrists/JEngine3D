@@ -200,6 +200,7 @@ void ContentBrowserPanel::OnImGuiRender()
         ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5F);// NOLINT
         ImGui::TextUnformatted(folderName.c_str());
       } else {
+        ImGui::BeginGroup();
         auto fileExtension = entry.path().extension();
         auto fileName = entry.path().stem();
         ImGui::ImageButton(
@@ -216,6 +217,16 @@ void ContentBrowserPanel::OnImGuiRender()
         const auto textWidth = ImGui::CalcTextSize(fileName.c_str()).x;
         ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5F);// NOLINT
         ImGui::TextUnformatted(fileName.c_str());
+        ImGui::EndGroup();
+
+        if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+          // Set payload to carry the index of our item (could be anything)
+          ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", entry.path().c_str(), entry.path().native().size());
+
+          ImGui::Text("%s%s", fileName.c_str(), fileExtension.c_str());// NOLINT
+
+          ImGui::EndDragDropSource();
+        }
       }
 
       ImGui::EndChild();
