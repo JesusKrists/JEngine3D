@@ -1,4 +1,5 @@
 set(JEngine3D_HEADERS
+    JEngine3D/Core/ImGui/config.hpp
     JEngine3D/Core/ImGui/ImGuiLayer.hpp
     JEngine3D/Core/ImGui/ImGuiSupport.hpp
     JEngine3D/Core/Application.hpp
@@ -26,7 +27,6 @@ set(JEngine3D_HEADERS
     JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContext.hpp
     JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContextCreator.hpp
     JEngine3D/Platform/SDL/SDLPlatformBackend.hpp
-    JEngine3D/Renderer/ImGui/config.hpp
     JEngine3D/Renderer/ImGui/ImGuiRenderer.hpp
     JEngine3D/Renderer/OpenGL/OpenGLBuffer.hpp
     JEngine3D/Renderer/OpenGL/OpenGLFramebuffer.hpp

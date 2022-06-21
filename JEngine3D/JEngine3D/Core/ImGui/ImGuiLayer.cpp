@@ -14,6 +14,7 @@
 #include "Roboto-Regular.embed"
 
 #include <imgui.h>
+#include <imgui_internal.h>
 #include <array>
 #include <cstddef>// IWYU pragma: keep
 
@@ -70,27 +71,25 @@ static void JEngine3DImGuiShowWindow(ImGuiViewport *viewport)
 static void JEngine3DImGuiSetWindowPosition(ImGuiViewport *viewport, ImVec2 pos)
 {
   auto &window = *static_cast<Window *>(viewport->PlatformHandle);
-  window.SetPosition(Position2DI{ static_cast<int32_t>(pos.x), static_cast<int32_t>(pos.y) });
+  window.SetPosition(pos);
 }
 
 static auto JEngine3DImGuiGetWindowPosition(ImGuiViewport *viewport) -> ImVec2
 {
   const auto &window = *static_cast<const Window *>(viewport->PlatformHandle);
-  const auto &pos = window.Position();
-  return ImVec2{ static_cast<float>(pos.X), static_cast<float>(pos.Y) };
+  return window.Position();
 }
 
 static void JEngine3DImGuiSetWindowSize(ImGuiViewport *viewport, ImVec2 size)
 {
   auto &window = *static_cast<Window *>(viewport->PlatformHandle);
-  window.SetSize(Size2DI{ static_cast<int32_t>(size.x), static_cast<int32_t>(size.y) });
+  window.SetSize(size);
 }
 
 static auto JEngine3DImGuiGetWindowSize(ImGuiViewport *viewport) -> ImVec2
 {
   const auto &window = *static_cast<const Window *>(viewport->PlatformHandle);
-  const auto &size = window.Size();
-  return ImVec2{ static_cast<float>(size.Width), static_cast<float>(size.Height) };
+  return window.Size();
 }
 
 static void JEngine3DImGuiSetWindowFocus(ImGuiViewport *viewport)
@@ -186,11 +185,12 @@ static void InitializeImGuiForJEngine3D()
     auto usableBounds = IPlatformBackend::Get().DisplayUsableBounds(i);
 
     ImGuiPlatformMonitor monitor;
-    monitor.MainPos = ImVec2(static_cast<float>(bounds.Position.X), static_cast<float>(bounds.Position.Y));
-    monitor.MainSize = ImVec2(static_cast<float>(bounds.Size.Width), static_cast<float>(bounds.Size.Height));
-    monitor.WorkPos = ImVec2(static_cast<float>(usableBounds.Position.X), static_cast<float>(usableBounds.Position.Y));
+    monitor.MainPos = ImVec2{ static_cast<float>(bounds.Position.X), static_cast<float>(bounds.Position.Y) };
+    monitor.MainSize = ImVec2{ static_cast<float>(bounds.Size.Width), static_cast<float>(bounds.Size.Height) };
+    monitor.WorkPos =
+      ImVec2{ static_cast<float>(usableBounds.Position.X), static_cast<float>(usableBounds.Position.Y) };
     monitor.WorkSize =
-      ImVec2(static_cast<float>(usableBounds.Size.Width), static_cast<float>(usableBounds.Size.Height));
+      ImVec2{ static_cast<float>(usableBounds.Size.Width), static_cast<float>(usableBounds.Size.Height) };
     monitor.DpiScale = IPlatformBackend::Get().DisplayDPI(i) / 96.0F;// NOLINT
     if (monitor.DpiScale == 0) { monitor.DpiScale = 96.0F; }// NOLINT
     platformIO.Monitors.push_back(monitor);
@@ -253,12 +253,9 @@ void ImGuiLayer::OnUpdate()
 
   ImGuiIO &imguiIO = ImGui::GetIO();
   if (!windowMinimized) {
-    imguiIO.DisplaySize =
-      ImVec2{ static_cast<float>(mainWindow.Size().Width), static_cast<float>(mainWindow.Size().Height) };
-
-    imguiIO.DisplayFramebufferScale =
-      ImVec2(static_cast<float>(graphicsContext.DrawableSize().Width) / imguiIO.DisplaySize.x,
-        static_cast<float>(graphicsContext.DrawableSize().Height) / imguiIO.DisplaySize.y);
+    imguiIO.DisplaySize = mainWindow.Size();
+    imguiIO.DisplayFramebufferScale = graphicsContext.DrawableSize();
+    imguiIO.DisplayFramebufferScale /= imguiIO.DisplaySize;
   } else {
     imguiIO.DisplaySize = ImVec2{ 0, 0 };
   }

@@ -29,11 +29,13 @@ set(ImGui_HEADERS
 add_library(ImGuiLibrary ${ImGui_SOURCES} ${ImGui_HEADERS})
 
 target_link_libraries(ImGuiLibrary PRIVATE project_options SDL2-static)
+target_include_system_library(ImGuiLibrary PUBLIC fmt::fmt)
+target_include_directories(ImGuiLibrary SYSTEM PUBLIC $<TARGET_PROPERTY:glm,INTERFACE_INCLUDE_DIRECTORIES>)
 
 target_include_directories(ImGuiLibrary PUBLIC ${imgui_SOURCE_DIR})
 target_include_directories(ImGuiLibrary PUBLIC ${imgui_SOURCE_DIR}/backends)
 
-target_include_directories(ImGuiLibrary PUBLIC ${CMAKE_SOURCE_DIR}/JEngine3D)
-target_compile_definitions(ImGuiLibrary PUBLIC "IMGUI_USER_CONFIG=\"JEngine3D/Renderer/ImGui/config.hpp\"")
+target_include_directories(ImGuiLibrary PRIVATE ${CMAKE_SOURCE_DIR}/JEngine3D)
+target_compile_definitions(ImGuiLibrary PUBLIC "IMGUI_USER_CONFIG=\"JEngine3D/Core/ImGui/config.hpp\"")
 
 disable_static_analysis(ImGuiLibrary)

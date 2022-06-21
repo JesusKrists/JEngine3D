@@ -8,7 +8,6 @@
 
 struct ImDrawData;
 struct ImDrawList;
-struct ImVec2;
 
 namespace JE {
 

@@ -19,6 +19,8 @@ enum FileExtension {
   FOLDER,
   SVG,
   JPG,
+  TTF,
+  INI,
 
   UNKNOWN,
   COUNT
@@ -30,6 +32,8 @@ inline auto StringToFileExtension(std::string extension) -> FileExtension
 
   if (extension == ".svg") { return FileExtension::SVG; }
   if (extension == ".jpg") { return FileExtension::JPG; }
+  if (extension == ".ttf") { return FileExtension::TTF; }
+  if (extension == ".ini") { return FileExtension::INI; }
 
   return FileExtension::UNKNOWN;
 }
@@ -47,6 +51,8 @@ struct EditorState
   /////////////////////////////////////////////////////////
 
   ImFont *DefaultFont12 = nullptr;
+  ImFont *Segoe16Bold = nullptr;
+  ImFont *Segoe24Bold = nullptr;
   JE::Scope<JE::IFramebuffer, JE::MemoryTag::Renderer> GameViewportFBO;
   JE::UnorderedMap<FileExtension, JE::Scope<JE::ITexture2D, JE::MemoryTag::Renderer>, JE::MemoryTag::Editor>
     FileIconMap;

@@ -60,10 +60,12 @@ target_compile_definitions(JEngine3D_Executable PRIVATE CR_HOST=CR_DISABLE)
 include(${CMAKE_SOURCE_DIR}/CMake/DisableStaticAnalysis.cmake)
 
 add_executable(ImGui_Reference_App JEngine3D/Core/ImGui/SDL_Opengl_Reference_App.cpp)
-target_link_libraries(
+target_link_system_libraries(
   ImGui_Reference_App
-  PRIVATE project_options
-          SDL2-static
-          ImGuiLibrary
-          libglew_static)
+  PRIVATE
+  project_options
+  SDL2-static
+  libglew_static
+  ImGuiLibrary)
+target_include_directories(ImGui_Reference_App PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
 disable_static_analysis(ImGui_Reference_App)

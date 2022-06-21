@@ -14,7 +14,7 @@ static constexpr auto MEMORYCONTROLLER_PARAMETER_ALIGNMENT_START = 150;
 void MemoryControllerDebugView::OnImGuiRender()
 {
   auto RenderMemoryControllerParameter =
-    [](const std::string &label, const std::string &parameter, const ImVec4 &parameterColor = PARAMETER_COLOR) {
+    [](const std::string &label, const std::string &parameter, const Color &parameterColor = PARAMETER_COLOR) {
       auto labelSize = ImGui::CalcTextSize(label.c_str());
 
       ImGui::TextUnformatted(label.c_str());

@@ -24,7 +24,7 @@ void Renderer2DDebugView::OnImGuiRender()
     };
 
   auto RenderRenderer2DParameter =
-    [](const std::string &label, const std::string &parameter, const ImVec4 &parameterColor = PARAMETER_COLOR) {
+    [](const std::string &label, const std::string &parameter, const Color &parameterColor = PARAMETER_COLOR) {
       auto labelSize = ImGui::CalcTextSize(label.c_str());
 
       ImGui::TextUnformatted(label.c_str());

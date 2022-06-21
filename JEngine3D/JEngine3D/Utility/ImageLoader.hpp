@@ -16,6 +16,10 @@ inline auto ImageFormatToTextureFormat(ImageFormat format) -> TextureFormat
   switch (format) {
   case ImageFormat::RGBA8:
     return TextureFormat::RGBA8;
+
+  default:
+    DEBUGBREAK();
+    return TextureFormat::RGBA8;
   }
 }
 

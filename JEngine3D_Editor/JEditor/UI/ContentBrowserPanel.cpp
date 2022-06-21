@@ -147,9 +147,11 @@ void ContentBrowserPanel::OnImGuiRender()
 
     const auto FOLDER_ICON_TOTAL_WIDTH =
       FOLDER_CONTENT_ICON_SIZE + IMGUI_STYLE.FramePadding.x * 2 + IMGUI_STYLE.ItemSpacing.x;
+    const auto FOLDER_ICON_SIZE = ImVec2{ FOLDER_CONTENT_ICON_SIZE, FOLDER_CONTENT_ICON_SIZE };
+    const auto EXTENSION_TEXT_OFFSET = ImVec2{ -12, -6 };
 
-    auto folderContentRegionSize = ImGui::GetWindowContentRegionMax();
-    auto iconsPerRow = std::max(1, static_cast<int>(folderContentRegionSize.x / FOLDER_ICON_TOTAL_WIDTH));
+    auto folderContentRegionWidth = ImGui::GetWindowWidth() + IMGUI_STYLE.ScrollbarSize;
+    auto iconsPerRow = std::max(1, static_cast<int>(folderContentRegionWidth / FOLDER_ICON_TOTAL_WIDTH));
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
     ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { IMGUI_STYLE.ItemSpacing.x, -8 });// NOLINT
@@ -183,16 +185,14 @@ void ContentBrowserPanel::OnImGuiRender()
       }
 
       if (highlight) {
-        ImGui::GetWindowDrawList()->AddRectFilled(ImGui::GetWindowPos(),
-          { ImGui::GetWindowPos().x + ImGui::GetWindowSize().x, ImGui::GetWindowPos().y + ImGui::GetWindowSize().y },
-          hightlightColor);
+        ImGui::GetWindowDrawList()->AddRectFilled(
+          ImGui::GetWindowPos(), ImGui::GetWindowPos() + ImGui::GetWindowSize(), hightlightColor);
       }
 
       bool folder = entry.is_directory();
       if (folder) {
         auto folderName = entry.path().stem();
-        if (ImGui::ImageButton(EditorState::Get().FileIconMap[FileExtension::FOLDER]->RendererID(),
-              ImVec2{ FOLDER_CONTENT_ICON_SIZE, FOLDER_CONTENT_ICON_SIZE })) {
+        if (ImGui::ImageButton(EditorState::Get().FileIconMap[FileExtension::FOLDER]->RendererID(), FOLDER_ICON_SIZE)) {
           ChangeDirectory(entry.path());
         }
 
@@ -202,8 +202,16 @@ void ContentBrowserPanel::OnImGuiRender()
       } else {
         auto fileExtension = entry.path().extension();
         auto fileName = entry.path().stem();
-        ImGui::ImageButton(EditorState::Get().FileIconMap[StringToFileExtension(fileExtension)]->RendererID(),
-          ImVec2{ FOLDER_CONTENT_ICON_SIZE, FOLDER_CONTENT_ICON_SIZE });
+        ImGui::ImageButton(
+          EditorState::Get().FileIconMap[StringToFileExtension(fileExtension)]->RendererID(), FOLDER_ICON_SIZE);
+
+        ImGui::PushFont(EditorState::Get().Segoe24Bold);
+        const auto extensionTextSize = ImGui::CalcTextSize(fileExtension.c_str());
+        ImGui::GetWindowDrawList()->AddText(
+          ImGui::GetWindowPos() - extensionTextSize + FOLDER_ICON_SIZE + EXTENSION_TEXT_OFFSET,
+          ImGui::GetColorU32(ImGuiCol_Text),
+          fileExtension.c_str());
+        ImGui::PopFont();
 
         const auto textWidth = ImGui::CalcTextSize(fileName.c_str()).x;
         ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5F);// NOLINT

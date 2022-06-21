@@ -58,10 +58,10 @@ void UILayer::OnCreate()
     JE::TextureFormat::RGBA8);
   stbi_image_free(data);
 
+  LoadImGuiSettings();
+
   JE::ForEach(JE_APP.DebugViews(), [](JE::IImGuiDebugView &view) { view.Open(); });
   InitializeUI();
-
-  LoadImGuiSettings();
 }
 
 void UILayer::OnDestroy() {}
@@ -154,6 +154,28 @@ void UILayer::OnEvent(JE::IEvent &event) { JE::UNUSED(event); }
 void UILayer::InitializeUI()
 {
 
+  auto &imguiIO = ImGui::GetIO();
+
+  if (!imguiIO.Fonts->IsBuilt()) {
+    // Load default font
+    imguiIO.Fonts->AddFontDefault();
+
+    auto *font = imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/SEGOEUI.TTF", 16.0f);// NOLINT
+    imguiIO.FontDefault = font;
+
+    ImFontConfig iconFontConfig;
+    iconFontConfig.MergeMode = true;
+    iconFontConfig.GlyphMinAdvanceX = 16.0f;// NOLINT Use if you want to make the icon monospaced
+    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };// NOLINT
+    imguiIO.Fonts->AddFontFromFileTTF(
+      "assets/EditorUI/fonts/fa-regular-400.ttf", 16.0f, &iconFontConfig, icon_ranges);// NOLINT
+
+    EditorState::Get().Segoe16Bold =
+      imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/SegoeBold.ttf", 16.0f);// NOLINT
+    EditorState::Get().Segoe24Bold =
+      imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/SegoeBold.ttf", 24.0f);// NOLINT
+  }
+
   if (!EditorState::Get().GameViewportFBO) {
     EditorState::Get().GameViewportFBO = JE::IRendererObjectCreator::Get().CreateFramebuffer({ m_GameViewportSize,
       { JE::FramebufferAttachmentFormat::RGBA8, JE::FramebufferAttachmentFormat::DEPTH24STENCIL8 } });
@@ -177,6 +199,13 @@ void UILayer::BuildIconMap()// NOLINT
     auto imageImage = JE::ImageLoader::LoadImageFromPath(
       JE_APP.WORKING_DIRECTORY + "/" + "assets/EditorUI/textures/icons/image.svg", JE::ImageConfig{ ICON_IMAGE_SIZE });
 
+    auto fontImage = JE::ImageLoader::LoadImageFromPath(
+      JE_APP.WORKING_DIRECTORY + "/" + "assets/EditorUI/textures/icons/font.svg", JE::ImageConfig{ ICON_IMAGE_SIZE });
+
+    auto iniImage =
+      JE::ImageLoader::LoadImageFromPath(JE_APP.WORKING_DIRECTORY + "/" + "assets/EditorUI/textures/icons/settings.svg",
+        JE::ImageConfig{ ICON_IMAGE_SIZE });
+
     auto unknownFileImage = JE::ImageLoader::LoadImageFromPath(
       JE_APP.WORKING_DIRECTORY + "/" + "assets/EditorUI/textures/icons/file.svg", JE::ImageConfig{ ICON_IMAGE_SIZE });
 
@@ -185,6 +214,8 @@ void UILayer::BuildIconMap()// NOLINT
       JE::IRendererObjectCreator::Get().CreateTexture(folderImage);
     EditorState::Get().FileIconMap[FileExtension::SVG] = JE::IRendererObjectCreator::Get().CreateTexture(svgImage);
     EditorState::Get().FileIconMap[FileExtension::JPG] = JE::IRendererObjectCreator::Get().CreateTexture(imageImage);
+    EditorState::Get().FileIconMap[FileExtension::TTF] = JE::IRendererObjectCreator::Get().CreateTexture(fontImage);
+    EditorState::Get().FileIconMap[FileExtension::INI] = JE::IRendererObjectCreator::Get().CreateTexture(iniImage);
     EditorState::Get().FileIconMap[FileExtension::UNKNOWN] =
       JE::IRendererObjectCreator::Get().CreateTexture(unknownFileImage);
   }
@@ -194,23 +225,6 @@ void UILayer::LoadImGuiSettings()// NOLINT(readability-convert-member-functions-
 {
   if (!std::filesystem::exists("imgui.ini")) {
     ImGui::LoadIniSettingsFromDisk("assets/EditorUI/imgui/default_layout.ini");
-  }
-
-  auto &imguiIO = ImGui::GetIO();
-
-  if (!imguiIO.Fonts->IsBuilt()) {
-    // Load default font
-    imguiIO.Fonts->AddFontDefault();
-
-    auto *font = imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/SEGOEUI.TTF", 16.0f);// NOLINT
-    imguiIO.FontDefault = font;
-
-    ImFontConfig iconFontConfig;
-    iconFontConfig.MergeMode = true;
-    iconFontConfig.GlyphMinAdvanceX = 16.0f;// NOLINT Use if you want to make the icon monospaced
-    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };// NOLINT
-    imguiIO.Fonts->AddFontFromFileTTF(
-      "assets/EditorUI/fonts/fa-regular-400.ttf", 16.0f, &iconFontConfig, icon_ranges);// NOLINT
   }
 }
 
@@ -288,8 +302,7 @@ void UILayer::RenderGameViewport()
     m_GameViewportSize = { static_cast<int32_t>(size.x), static_cast<int32_t>(size.y) };
 
     ImGui::Image(EditorState::Get().GameViewportFBO->AttachmentRendererID(),
-      ImVec2{ static_cast<float>(EditorState::Get().GameViewportFBO->Configuration().Size.Width),
-        static_cast<float>(EditorState::Get().GameViewportFBO->Configuration().Size.Height) },
+      EditorState::Get().GameViewportFBO->Configuration().Size,
       { 0, 1 },
       { 1, 0 });
 
