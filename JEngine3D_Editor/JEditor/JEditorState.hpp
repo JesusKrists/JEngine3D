@@ -18,6 +18,7 @@ namespace JEditor {
 
 enum FileExtension {
   FOLDER,
+  FOLDER_OPEN,
   SVG,
   JPG,
   TTF,

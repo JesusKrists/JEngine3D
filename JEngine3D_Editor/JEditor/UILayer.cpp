@@ -193,6 +193,10 @@ void UILayer::BuildIconMap()// NOLINT
     auto folderImage = JE::ImageLoader::LoadImageFromPath(
       JE_APP.WORKING_DIRECTORY + "/" + "assets/EditorUI/textures/icons/folder.svg", JE::ImageConfig{ ICON_IMAGE_SIZE });
 
+    auto folderOpenImage = JE::ImageLoader::LoadImageFromPath(
+      JE_APP.WORKING_DIRECTORY + "/" + "assets/EditorUI/textures/icons/folder-open.svg",
+      JE::ImageConfig{ ICON_IMAGE_SIZE });
+
     auto svgImage = JE::ImageLoader::LoadImageFromPath(
       JE_APP.WORKING_DIRECTORY + "/" + "assets/EditorUI/textures/icons/svgo.svg", JE::ImageConfig{ ICON_IMAGE_SIZE });
 
@@ -212,6 +216,8 @@ void UILayer::BuildIconMap()// NOLINT
 
     EditorState::Get().FileIconMap[FileExtension::FOLDER] =
       JE::IRendererObjectCreator::Get().CreateTexture(folderImage);
+    EditorState::Get().FileIconMap[FileExtension::FOLDER_OPEN] =
+      JE::IRendererObjectCreator::Get().CreateTexture(folderOpenImage);
     EditorState::Get().FileIconMap[FileExtension::SVG] = JE::IRendererObjectCreator::Get().CreateTexture(svgImage);
     EditorState::Get().FileIconMap[FileExtension::JPG] = JE::IRendererObjectCreator::Get().CreateTexture(imageImage);
     EditorState::Get().FileIconMap[FileExtension::TTF] = JE::IRendererObjectCreator::Get().CreateTexture(fontImage);

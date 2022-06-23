@@ -290,6 +290,7 @@ void ContentBrowserPanel::RenderContentTreeEntryRecursive(const FileSystemEntry 
 
       if (entry->Subdirectories) {
         bool open = ImGui::TreeNodeEx_IconText(EditorState::Get().FileIconMap[FileExtension::FOLDER]->RendererID(),
+          EditorState::Get().FileIconMap[FileExtension::FOLDER_OPEN]->RendererID(),
           entryLabel.c_str(),
           ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick// NOLINT
             | ImGuiTreeNodeFlags_SpanFullWidth);
