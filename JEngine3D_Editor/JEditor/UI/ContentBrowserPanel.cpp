@@ -174,7 +174,6 @@ void ContentBrowserPanel::OnImGuiRender()
     auto iconsPerRow = std::max(1, static_cast<int>(folderContentRegionWidth / FOLDER_ICON_TOTAL_WIDTH));
 
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, { 0, 0 });
-    ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { IMGUI_STYLE.ItemSpacing.x, -8 });// NOLINT
     ImGui::PushStyleColor(ImGuiCol_Button, 0);
     ImGui::PushStyleColor(ImGuiCol_ButtonHovered, 0);
     ImGui::PushStyleColor(ImGuiCol_ButtonActive, 0);
@@ -186,6 +185,7 @@ void ContentBrowserPanel::OnImGuiRender()
 
       ImGui::PushID(currentIconIndex++);
 
+      ImGui::PushStyleVar(ImGuiStyleVar_ItemSpacing, { IMGUI_STYLE.ItemSpacing.x, -8 });// NOLINT
       ImGui::BeginChild("FolderContentEntry",
         { FOLDER_CONTENT_ICON_SIZE + IMGUI_STYLE.FramePadding.x * 2,
           FOLDER_CONTENT_ICON_SIZE + ImGui::GetFontSize() + IMGUI_STYLE.ItemSpacing.y
@@ -254,6 +254,7 @@ void ContentBrowserPanel::OnImGuiRender()
         }
       }
 
+      ImGui::PopStyleVar();
       ImGui::EndChild();
 
       ImGui::PopID();
@@ -263,7 +264,7 @@ void ContentBrowserPanel::OnImGuiRender()
     }
 
     ImGui::PopStyleColor(3);
-    ImGui::PopStyleVar(2);
+    ImGui::PopStyleVar();
 
     ImGui::EndChild();
   };
