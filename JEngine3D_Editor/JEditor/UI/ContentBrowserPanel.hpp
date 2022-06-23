@@ -9,10 +9,21 @@
 
 namespace JEditor {
 
+struct FileSystemEntry
+{
+  FileSystemEntry(const std::filesystem::path &path, bool folder) : Path(path), Folder(folder) {}// NOLINT
+
+  std::filesystem::path Path;
+  bool Folder;
+  bool Subdirectories = false;
+  FileSystemEntry *Parent = nullptr;
+  JE::Vector<JE::Scope<FileSystemEntry, JE::MemoryTag::Editor>, JE::MemoryTag::Editor> Entries{};
+};
+
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
 class ContentBrowserPanel : public IPanel
 {
-  using NavigationStackContainer = JE::Deque<std::filesystem::path, JE::MemoryTag::Editor>;
+  using NavigationStackContainer = JE::Vector<const FileSystemEntry *, JE::MemoryTag::Editor>;
 
 public:
   const std::filesystem::path CONTENT_HOME_FOLDER = "JEngine3D";
@@ -24,40 +35,39 @@ public:
 
 private:
   void OnImGuiRender() override;
-  void RenderContentTreeEntryRecursive(const std::filesystem::path &path);
+  void RenderContentTreeEntryRecursive(const FileSystemEntry &folder);
+  void RefreshFilesystem();
+  void PopulateFolderEntryRecursive(FileSystemEntry &folder);
 
   [[nodiscard]] inline auto TrimCurrentDirToContentDir() const -> std::filesystem::path
   {
-    auto subStringIndex = m_CurrentFolder.native().find(CONTENT_HOME_FOLDER / CONTENT_DIR);
-    return m_CurrentFolder.native().substr(subStringIndex + CONTENT_HOME_FOLDER.native().length());
+    auto subStringIndex = (*m_CurrentNavigationPosition)->Path.native().find(CONTENT_HOME_FOLDER / CONTENT_DIR);
+    return (*m_CurrentNavigationPosition)->Path.native().substr(subStringIndex + CONTENT_HOME_FOLDER.native().length());
   }
 
-  [[nodiscard]] static inline auto DirectoryHasSubdirectories(const std::filesystem::path &path) -> bool
+
+  inline void ChangeDirectory(const FileSystemEntry *entry)
   {
-    bool subdirectories = false;
-    for (const auto &entry : std::filesystem::directory_iterator{ path }) {
-      if (entry.is_directory()) { subdirectories = true; }
-    }
+    if (*m_CurrentNavigationPosition != entry) {
+      m_NavigationStack.erase(std::next(m_CurrentNavigationPosition), std::end(m_NavigationStack));
+      m_NavigationStack.push_back(entry);
+      m_CurrentNavigationPosition = std::prev(std::end(m_NavigationStack));
 
-    return subdirectories;
-  }
-
-  inline void ChangeDirectoryToNavPos() { m_CurrentFolder = *m_CurrentNavigationPosition; }
-
-  inline void ChangeDirectory(const std::filesystem::path &path)
-  {
-    m_CurrentFolder = JE_APP.WORKING_DIRECTORY / path;
-
-    if (*m_CurrentNavigationPosition != m_CurrentFolder) {
-      m_NavigationStack.erase(m_CurrentNavigationPosition + 1, std::end(m_NavigationStack));
-      m_NavigationStack.push_back(m_CurrentFolder);
-      m_CurrentNavigationPosition = std::end(m_NavigationStack) - 1;
+      RebuildBreadcrumbsPaths();
     }
   }
 
+  inline void RebuildBreadcrumbsPaths()
+  {
+    m_BreadcrumbsPaths.clear();
+    for (const auto *entry = *m_CurrentNavigationPosition; entry != nullptr; entry = entry->Parent) {
+      m_BreadcrumbsPaths.insert(std::begin(m_BreadcrumbsPaths), entry);
+    }
+  }
 
-  std::filesystem::path m_CurrentFolder = CONTENT_FULL_PATH;
+  FileSystemEntry m_RootFolder = { CONTENT_FULL_PATH, true };
 
+  JE::Vector<const FileSystemEntry *, JE::MemoryTag::Editor> m_BreadcrumbsPaths;
   NavigationStackContainer m_NavigationStack;
   NavigationStackContainer::iterator m_CurrentNavigationPosition;
 };

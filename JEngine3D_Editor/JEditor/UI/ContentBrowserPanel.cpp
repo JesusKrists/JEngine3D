@@ -20,7 +20,7 @@ static constexpr auto FOLDER_TREE_WIDTH = 192;// NOLINT
 static constexpr auto FOLDER_CONTENT_ICON_SIZE = 96;
 static constexpr auto FOLDER_CONTENT_ICON_HOVER_COLOR = IM_COL32(255, 255, 255, 48);// NOLINT
 static constexpr auto FOLDER_CONTENT_ICON_CLICKED_COLOR = IM_COL32(255, 255, 255, 72);// NOLINT
-static constexpr auto FOLDER_CONTENT_EXTENSION_BACKGROUND = IM_COL32(128, 128, 128, 192);// NOLINT
+static constexpr auto FOLDER_CONTENT_EXTENSION_BACKGROUND = IM_COL32(96, 96, 96, 192);// NOLINT
 
 ContentBrowserPanel::ContentBrowserPanel() : IPanel("Content Browser")
 {
@@ -34,8 +34,11 @@ ContentBrowserPanel::ContentBrowserPanel() : IPanel("Content Browser")
     EditorState::Get().DefaultFont12 = imguiIO.Fonts->AddFontDefault(&fontConfigSmall);
   }
 
-  m_NavigationStack.push_back(m_CurrentFolder);
+  RefreshFilesystem();
+  m_NavigationStack.push_back(&m_RootFolder);
   m_CurrentNavigationPosition = std::begin(m_NavigationStack);
+
+  m_BreadcrumbsPaths.reserve(32);// NOLINT
 }
 
 // NOLINTNEXTLINE
@@ -49,28 +52,19 @@ void ContentBrowserPanel::OnImGuiRender()
   auto RenderBreadCrumbs = [&]() {
     ImGui::PushStyleColor(ImGuiCol_Button, 0);
 
-    const auto lastEntryString =
-      CURRENT_DIR_TRIMMED.native().substr(CURRENT_DIR_TRIMMED.native().find_last_of('/') + 1);
 
-    std::filesystem::path currentDepthPath;
-    bool firstEntry = true;
     int index = 0;
-    for (const auto &entry : CURRENT_DIR_TRIMMED) {
-      if (lastEntryString == entry && index == 0) { break; }
-
-      if (!firstEntry) {
-        currentDepthPath /= entry;
-
-        ImGui::PushID(++index);
-
-        if (index == 1) {
+    if (m_BreadcrumbsPaths.size() > 1) {
+      for (const auto &entry : m_BreadcrumbsPaths) {
+        ImGui::PushID(index);
+        if (index++ == 0) {
           ImGui::SameLine(0, BREADCRUMBS_START_OFFSET_X);
         } else {
           ImGui::SameLine(0, 0);
         }
-        if (ImGui::Button(entry.c_str())) { ChangeDirectory(currentDepthPath); }
+        if (ImGui::Button(entry->Path.stem().c_str())) { ChangeDirectory(entry); }
 
-        if (lastEntryString != entry) {
+        if (entry != m_BreadcrumbsPaths.back()) {
           ImGui::PushFont(EditorState::Get().DefaultFont12);
           ImGui::SameLine(0, 0);
           ImGui::PushStyleColor(ImGuiCol_ButtonHovered, 0);
@@ -82,11 +76,8 @@ void ContentBrowserPanel::OnImGuiRender()
           ImGui::PopStyleColor();
           ImGui::PopFont();
         }
-
         ImGui::PopID();
       }
-
-      firstEntry = false;
     }
 
     ImGui::PopStyleColor();
@@ -103,7 +94,7 @@ void ContentBrowserPanel::OnImGuiRender()
     ImGui::PushStyleColor(ImGuiCol_Button, 0);
 
     bool backwardsDisabled = m_CurrentNavigationPosition == std::begin(m_NavigationStack);
-    bool forwardsDisabled = m_CurrentNavigationPosition == std::end(m_NavigationStack) - 1;
+    bool forwardsDisabled = m_CurrentNavigationPosition == std::prev(std::end(m_NavigationStack));
 
     if (backwardsDisabled) {
       ImGui::PushStyleColor(ImGuiCol_Text, DISABLED_TEXT_COLOR);
@@ -114,7 +105,7 @@ void ContentBrowserPanel::OnImGuiRender()
     if (ImGui::ArrowButtonEx(
           "##BackArrow", ImGuiDir_Left, TOP_BAR_ICON_SIZE, backwardsDisabled ? ImGuiItemFlags_Disabled : 0)) {
       --m_CurrentNavigationPosition;
-      ChangeDirectoryToNavPos();
+      RebuildBreadcrumbsPaths();
     }
     if (backwardsDisabled) { ImGui::PopStyleColor(2); }
 
@@ -128,7 +119,7 @@ void ContentBrowserPanel::OnImGuiRender()
     if (ImGui::ArrowButtonEx(
           "##ForwardArrow", ImGuiDir_Right, TOP_BAR_ICON_SIZE, forwardsDisabled ? ImGuiItemFlags_Disabled : 0)) {
       ++m_CurrentNavigationPosition;
-      ChangeDirectoryToNavPos();
+      RebuildBreadcrumbsPaths();
     }
     if (forwardsDisabled) { ImGui::PopStyleColor(2); }
 
@@ -160,9 +151,9 @@ void ContentBrowserPanel::OnImGuiRender()
     if (ImGui::TreeNodeEx(CONTENT_DIR.c_str(),
           ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick// NOLINT
             | ImGuiTreeNodeFlags_SpanFullWidth)) {
-      if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(CONTENT_DIR); }
+      if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(&m_RootFolder); }
 
-      RenderContentTreeEntryRecursive(CONTENT_FULL_PATH);
+      RenderContentTreeEntryRecursive(m_RootFolder);
 
       ImGui::TreePop();
     }
@@ -190,7 +181,7 @@ void ContentBrowserPanel::OnImGuiRender()
 
     int currentIcon = 0;
     int currentIconIndex = 0;
-    for (const auto &entry : std::filesystem::directory_iterator{ m_CurrentFolder }) {
+    for (const auto &entry : (*m_CurrentNavigationPosition)->Entries) {
       if (currentIcon++ != 0) { ImGui::SameLine(); }
 
       ImGui::PushID(currentIconIndex++);
@@ -218,11 +209,11 @@ void ContentBrowserPanel::OnImGuiRender()
           ImGui::GetWindowPos(), ImGui::GetWindowPos() + ImGui::GetWindowSize(), hightlightColor);
       }
 
-      bool folder = entry.is_directory();
+      bool folder = entry->Folder;
       if (folder) {
-        auto folderName = entry.path().stem();
+        auto folderName = entry->Path.stem();
         if (ImGui::ImageButton(EditorState::Get().FileIconMap[FileExtension::FOLDER]->RendererID(), FOLDER_ICON_SIZE)) {
-          ChangeDirectory(entry.path());
+          ChangeDirectory(entry.get());
         }
 
         const auto textWidth = ImGui::CalcTextSize(folderName.c_str()).x;
@@ -230,20 +221,22 @@ void ContentBrowserPanel::OnImGuiRender()
         ImGui::TextUnformatted(folderName.c_str());
       } else {
         ImGui::BeginGroup();
-        auto fileExtension = entry.path().extension();
-        auto fileName = entry.path().stem();
+        const auto FILE_EXTENSION = entry->Path.extension().native();
+        const auto FILE_EXTENSION_UPPER = JE::ToUpper(entry->Path.extension().native());
+        auto fileName = entry->Path.stem();
         ImGui::ImageButton(
-          EditorState::Get().FileIconMap[StringToFileExtension(fileExtension)]->RendererID(), FOLDER_ICON_SIZE);
+          EditorState::Get().FileIconMap[StringToFileExtension(FILE_EXTENSION)]->RendererID(), FOLDER_ICON_SIZE);
 
         ImGui::PushFont(EditorState::Get().Segoe24Bold);
-        const auto extensionTextSize = ImGui::CalcTextSize(fileExtension.c_str());
+        const auto extensionTextSize = ImGui::CalcTextSize(FILE_EXTENSION_UPPER.c_str() + 1);// NOLINT Skip the .
         const auto textPos = ImGui::GetWindowPos() - extensionTextSize + FOLDER_ICON_SIZE + EXTENSION_TEXT_OFFSET;
         ImGui::GetWindowDrawList()->AddRectFilled(
-          textPos - ImVec2{ IMGUI_STYLE.FramePadding.x, IMGUI_STYLE.FramePadding.y - 2 },
-          textPos + extensionTextSize + IMGUI_STYLE.FramePadding,
+          textPos - ImVec2{ IMGUI_STYLE.FramePadding.x, IMGUI_STYLE.FramePadding.y - 4 },
+          textPos + extensionTextSize + ImVec2{ IMGUI_STYLE.FramePadding.x, IMGUI_STYLE.FramePadding.y - 2 },
           FOLDER_CONTENT_EXTENSION_BACKGROUND,
-          4);
-        ImGui::GetWindowDrawList()->AddText(textPos, ImGui::GetColorU32(ImGuiCol_Text), fileExtension.c_str());
+          2);
+        ImGui::GetWindowDrawList()->AddText(
+          textPos, ImGui::GetColorU32(ImGuiCol_Text), FILE_EXTENSION_UPPER.c_str() + 1);// NOLINT Skip the .
         ImGui::PopFont();
 
         const auto textWidth = ImGui::CalcTextSize(fileName.c_str()).x;
@@ -253,9 +246,9 @@ void ContentBrowserPanel::OnImGuiRender()
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
           // Set payload to carry the index of our item (could be anything)
-          ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", entry.path().c_str(), entry.path().native().size());
+          ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", entry->Path.c_str(), entry->Path.native().size());
 
-          ImGui::Text("%s%s", fileName.c_str(), fileExtension.c_str());// NOLINT
+          ImGui::Text("%s%s", fileName.c_str(), FILE_EXTENSION.c_str());// NOLINT
 
           ImGui::EndDragDropSource();
         }
@@ -288,21 +281,20 @@ void ContentBrowserPanel::OnImGuiRender()
 }
 
 // NOLINTNEXTLINE
-void ContentBrowserPanel::RenderContentTreeEntryRecursive(const std::filesystem::path &path)
+void ContentBrowserPanel::RenderContentTreeEntryRecursive(const FileSystemEntry &folder)
 {
-  for (const auto &entry : std::filesystem::directory_iterator{ path }) {
-    if (entry.is_directory()) {
-      const auto dirHasSubdirs = DirectoryHasSubdirectories(entry.path());
-      const auto entryLabel = entry.path().stem().native();
+  for (const auto &entry : folder.Entries) {
+    if (entry->Folder) {
+      const auto entryLabel = entry->Path.stem().native();
 
-      if (dirHasSubdirs) {
+      if (entry->Subdirectories) {
         bool open = ImGui::TreeNodeEx_IconText(EditorState::Get().FileIconMap[FileExtension::FOLDER]->RendererID(),
           entryLabel.c_str(),
           ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick// NOLINT
             | ImGuiTreeNodeFlags_SpanFullWidth);
-        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(entry.path()); }
+        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(entry.get()); }
         if (open) {
-          RenderContentTreeEntryRecursive(entry.path());
+          RenderContentTreeEntryRecursive(*entry);
           ImGui::TreePop();
         }
       } else {
@@ -310,8 +302,25 @@ void ContentBrowserPanel::RenderContentTreeEntryRecursive(const std::filesystem:
           entryLabel.c_str(),
           ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen// NOLINT
             | ImGuiTreeNodeFlags_SpanFullWidth);
-        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(entry.path()); }
+        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(entry.get()); }
       }
+    }
+  }
+}
+
+void ContentBrowserPanel::RefreshFilesystem() { PopulateFolderEntryRecursive(m_RootFolder); }
+
+void ContentBrowserPanel::PopulateFolderEntryRecursive(FileSystemEntry &folder)// NOLINT
+{
+  for (const auto &entry : std::filesystem::directory_iterator{ folder.Path }) {
+    folder.Entries.push_back(
+      JE::CreateScope<FileSystemEntry, JE::MemoryTag::Editor>(entry.path(), entry.is_directory()));
+    if (entry.is_directory()) {
+      folder.Subdirectories = true;
+
+      auto &newEntry = folder.Entries.back();
+      newEntry->Parent = &folder;
+      PopulateFolderEntryRecursive(*newEntry);
     }
   }
 }

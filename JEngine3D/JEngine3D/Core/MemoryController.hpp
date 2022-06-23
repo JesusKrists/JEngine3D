@@ -5,6 +5,7 @@
 #include <cstddef>// // IWYU pragma: keep
 #include <array>// IWYU pragma: export
 #include <deque>
+#include <list>
 #include <functional>
 #include <utility>// IWYU pragma: export
 #include <vector>// IWYU pragma: export
@@ -153,5 +154,7 @@ template<typename K,
 using UnorderedMap = std::unordered_map<K, V, Hash, Pred, MemoryControllerAllocator<std::pair<const K, V>, TAG>>;
 
 template<typename T, MemoryTag TAG = MemoryTag::Unknown> using Deque = std::deque<T, MemoryControllerAllocator<T, TAG>>;
+
+template<typename T, MemoryTag TAG = MemoryTag::Unknown> using List = std::list<T, MemoryControllerAllocator<T, TAG>>;
 
 }// namespace JE

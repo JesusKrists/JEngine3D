@@ -6,6 +6,7 @@
 #include <JEngine3D/Core/MemoryController.hpp>
 #include <JEngine3D/Renderer/IFramebuffer.hpp>
 #include <JEngine3D/Renderer/ITexture.hpp>
+#include <JEngine3D/Utility/StringManipulation.hpp>
 
 #include <algorithm>
 #include <cctype>
@@ -26,14 +27,14 @@ enum FileExtension {
   COUNT
 };
 
-inline auto StringToFileExtension(std::string extension) -> FileExtension
+inline auto StringToFileExtension(const std::string_view &extension) -> FileExtension
 {
-  std::transform(std::begin(extension), std::end(extension), std::begin(extension), ::tolower);
+  auto extensionLower = JE::ToLower(extension);
 
-  if (extension == ".svg") { return FileExtension::SVG; }
-  if (extension == ".jpg") { return FileExtension::JPG; }
-  if (extension == ".ttf") { return FileExtension::TTF; }
-  if (extension == ".ini") { return FileExtension::INI; }
+  if (extensionLower == ".svg") { return FileExtension::SVG; }
+  if (extensionLower == ".jpg") { return FileExtension::JPG; }
+  if (extensionLower == ".ttf") { return FileExtension::TTF; }
+  if (extensionLower == ".ini") { return FileExtension::INI; }
 
   return FileExtension::UNKNOWN;
 }

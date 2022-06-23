@@ -2,6 +2,7 @@
 
 #include <JEngine3D/Core/Base.hpp>
 #include <JEngine3D/Core/Assert.hpp>
+#include <JEngine3D/Utility/StringManipulation.hpp>
 
 #include <lunasvg.h>
 
@@ -9,9 +10,9 @@ namespace JE {
 
 auto ImageLoader::LoadImageFromPath(const std::filesystem::path &filePath, const ImageConfig &config) -> Image
 {
-  auto fileExtension = filePath.extension();
+  auto fileExtension = ToLower(filePath.extension().native());
 
-  if (fileExtension.native() == ".svg") {
+  if (fileExtension == ".svg") {
     ASSERT(config.SizePreference.Width != 0 && config.SizePreference.Height != 0, "SVG requires a size preference");
 
     auto document = lunasvg::Document::loadFromFile(filePath.native());
