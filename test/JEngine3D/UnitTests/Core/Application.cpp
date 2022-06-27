@@ -19,7 +19,7 @@ public:
   static constexpr auto NEW_WINDOW_SIZE = JE::Size2DI{ 320, 240 };
   static constexpr auto NEW_WINDOW_RESIZE = JE::Size2DI{ 640, 480 };
 
-  ApplicationTestsFixture() : m_App(DEFAULT_TITLE) { m_Backend.PollEvents(); }
+  ApplicationTestsFixture() : m_App(DEFAULT_TITLE, true) { m_Backend.PollEvents(); }
 
 protected:
   JE::Application m_App;
@@ -190,7 +190,7 @@ TEST_CASE_METHOD(ApplicationTestsFixture, "JE::Application can push and pop laye
   class TestLayer : public JE::ILayer
   {
   public:
-    explicit TestLayer(const std::string_view &name) : ILayer(name) {}
+    explicit TestLayer(const std::string_view &name, bool &onDestroy) : ILayer(name), m_OnDestroyCalled(onDestroy) {}
 
     void OnCreate() override { m_OnCreateCalled = true; }
     void OnDestroy() override { m_OnDestroyCalled = true; }
@@ -205,7 +205,6 @@ TEST_CASE_METHOD(ApplicationTestsFixture, "JE::Application can push and pop laye
     }
 
     [[nodiscard]] inline auto OnCreateCalled() const -> bool { return m_OnCreateCalled; }
-    [[nodiscard]] inline auto OnDestroyCalled() const -> bool { return m_OnDestroyCalled; }
 
     [[nodiscard]] inline auto OnUpdateCalled() const -> bool { return m_OnUpdateCalled; }
     [[nodiscard]] inline auto OnImGuiRenderCalled() const -> bool { return m_OnImGuiRenderCalled; }
@@ -214,14 +213,16 @@ TEST_CASE_METHOD(ApplicationTestsFixture, "JE::Application can push and pop laye
 
   private:
     bool m_OnCreateCalled = false;
-    bool m_OnDestroyCalled = false;
+    bool &m_OnDestroyCalled;
     bool m_OnUpdateCalled = false;
     bool m_OnImGuiRenderCalled = false;
     bool m_OnEventCalled = false;
   };
 
-  auto &testLayer = m_App.PushLayer<TestLayer>(LAYER_NAME);
-  auto &testOverlay = m_App.PushOverlay<TestLayer>(OVERLAY_NAME);
+  bool testLayerOnDestroyCalled = false;
+  bool testOverlayOnDestroyCalled = false;
+  auto &testLayer = m_App.PushLayer<TestLayer>(LAYER_NAME, testLayerOnDestroyCalled);
+  auto &testOverlay = m_App.PushOverlay<TestLayer>(OVERLAY_NAME, testOverlayOnDestroyCalled);
 
   REQUIRE(testLayer.DebugName() == LAYER_NAME);
   REQUIRE(testOverlay.DebugName() == OVERLAY_NAME);
@@ -244,8 +245,8 @@ TEST_CASE_METHOD(ApplicationTestsFixture, "JE::Application can push and pop laye
   m_App.PopLayer(testLayer);
   m_App.PopOverlay(testOverlay);
 
-  REQUIRE(testLayer.OnDestroyCalled());
-  REQUIRE(testOverlay.OnDestroyCalled());
+  REQUIRE(testLayerOnDestroyCalled);
+  REQUIRE(testOverlayOnDestroyCalled);
 }
 
 TEST_CASE_METHOD(ApplicationTestsFixture, "JE::Application updates delta time", "[JE::Application]")

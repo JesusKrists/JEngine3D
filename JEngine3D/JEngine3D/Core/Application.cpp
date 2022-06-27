@@ -22,13 +22,12 @@ namespace JE {
 
 Application *Application::s_ApplicationInstance = nullptr;// NOLINT
 
-Application::Application(const std::string_view &title)
-  : m_MainPluginContext(CreateScope<cr_plugin, MemoryTag::App>()),
-    m_MainWindow(WindowController::Get().CreateWindow(title,
-      DEFAULT_SIZE,
-      IPlatformBackend::WINDOW_CENTER_POSITION,
-      MAIN_WINDOW_CONFIG)),
-    m_RendererAPI(IRendererObjectCreator::Get().CreateAPI())
+Application::Application(const std::string_view &title, bool testMode)
+  : m_MainWindow(WindowController::Get().CreateWindow(title,
+    DEFAULT_SIZE,
+    IPlatformBackend::WINDOW_CENTER_POSITION,
+    MAIN_WINDOW_CONFIG)),
+    m_RendererAPI(IRendererObjectCreator::Get().CreateAPI()), m_TestMode(testMode)
 {
   ZoneScopedN("Application::Application");// NOLINT
 
@@ -42,7 +41,7 @@ Application::Application(const std::string_view &title)
 
   Logger::CoreLogger().debug("Application address: {}", fmt::ptr(this));
 
-  m_MainPluginContext->Open(WORKING_DIRECTORY + "/" CR_PLUGIN("JEngine3D_Editor"));
+  if (!m_TestMode) { m_MainPluginContext.Open(WORKING_DIRECTORY + "/" CR_PLUGIN("JEngine3D_Editor")); }
 }
 
 void Application::OnEvent(IEvent &event)
@@ -123,7 +122,7 @@ void Application::ProcessMainLoop()
   ++m_ProcessCount;
 
   {
-    m_MainPluginContext->Update();
+    m_MainPluginContext.Update();
 
     ZoneScopedN("Pre-Frame Setup");// NOLINT
 
@@ -186,7 +185,7 @@ void Application::Run(int32_t loopCount)
   ASSERT(loopCount != 0, "Cannot run zero loops");
 
   // Initial main plugin load
-  m_MainPluginContext->Update();
+  m_MainPluginContext.Update();
 
   JE_APP.ImGuiLayer().Renderer().Initialize();
 

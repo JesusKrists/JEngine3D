@@ -25,7 +25,7 @@ TEST_CASE_METHOD(LayerStackTestsFixture, "JE::LayerStack can push and pop layers
   class TestLayer : public JE::ILayer
   {
   public:
-    explicit TestLayer(const std::string_view &name) : ILayer(name) {}
+    explicit TestLayer(const std::string_view &name, bool &onDestroy) : ILayer(name), m_OnDestroyCalled(onDestroy) {}
 
     void OnCreate() override { m_OnCreateCalled = true; }
     void OnDestroy() override { m_OnDestroyCalled = true; }
@@ -40,14 +40,16 @@ TEST_CASE_METHOD(LayerStackTestsFixture, "JE::LayerStack can push and pop layers
 
   private:
     bool m_OnCreateCalled = false;
-    bool m_OnDestroyCalled = false;
+    bool &m_OnDestroyCalled;
   };
 
 
   JE::LayerStack layerStack;
 
-  auto &testLayer = layerStack.PushLayer<TestLayer>(LAYER_NAME);
-  auto &testOverlay = layerStack.PushOverlay<TestLayer>(OVERLAY_NAME);
+  bool testLayerOnDestroyCalled = false;
+  bool testOverlayOnDestroyCalled = false;
+  auto &testLayer = layerStack.PushLayer<TestLayer>(LAYER_NAME, testLayerOnDestroyCalled);
+  auto &testOverlay = layerStack.PushOverlay<TestLayer>(OVERLAY_NAME, testOverlayOnDestroyCalled);
 
   REQUIRE(testLayer.DebugName() == LAYER_NAME);
   REQUIRE(testOverlay.DebugName() == OVERLAY_NAME);
@@ -61,6 +63,6 @@ TEST_CASE_METHOD(LayerStackTestsFixture, "JE::LayerStack can push and pop layers
   layerStack.PopOverlay(testOverlay);
 
   REQUIRE(layerStack.Layers().empty());
-  REQUIRE(testLayer.OnDestroyCalled());
-  REQUIRE(testOverlay.OnDestroyCalled());
+  REQUIRE(testLayerOnDestroyCalled);
+  REQUIRE(testOverlayOnDestroyCalled);
 }

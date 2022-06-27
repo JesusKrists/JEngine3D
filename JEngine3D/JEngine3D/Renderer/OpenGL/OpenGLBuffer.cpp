@@ -55,7 +55,7 @@ OpenGLIndexBuffer::OpenGLIndexBuffer()
 }
 
 OpenGLIndexBuffer::OpenGLIndexBuffer(const std::span<const uint32_t> &data)
-  : m_IndexCount(data.size()), m_TotalBufferSize(m_IndexCount)
+  : IIndexBuffer(data.size()), m_TotalBufferSize(IndexCount())
 {
   ZoneScopedN("OpenGLIndexBuffer::OpenGLIndexBuffer(std::span data)");// NOLINT
   glGenBuffers(1, &m_RendererID);
@@ -85,9 +85,9 @@ void OpenGLIndexBuffer::Unbind() const
   glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 }
 
-void OpenGLIndexBuffer::SetData(const std::span<const uint32_t> &data)
+void OpenGLIndexBuffer::UploadData(const std::span<const uint32_t> &data)
 {
-  ZoneScopedN("OpenGLIndexBuffer::SetData");// NOLINT
+  ZoneScopedN("OpenGLIndexBuffer::UploadData");// NOLINT
   glBindBuffer(GL_ARRAY_BUFFER, m_RendererID);
   if (m_TotalBufferSize < data.size()) {
     glBufferData(GL_ARRAY_BUFFER, static_cast<GLsizeiptr>(data.size_bytes()), nullptr, GL_DYNAMIC_DRAW);
@@ -96,8 +96,6 @@ void OpenGLIndexBuffer::SetData(const std::span<const uint32_t> &data)
 
   glBufferSubData(GL_ARRAY_BUFFER, 0, static_cast<GLsizeiptr>(data.size_bytes()), data.data());
   glBindBuffer(GL_ARRAY_BUFFER, 0);
-
-  m_IndexCount = data.size();
 }
 
 }// namespace JE

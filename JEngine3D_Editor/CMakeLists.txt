@@ -22,29 +22,3 @@ target_link_libraries(
 target_include_directories(JEngine3D_Editor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(JEngine3D_Editor
                            PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
-
-add_custom_command(
-  TARGET JEngine3D_Editor
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets/
-          $<TARGET_FILE_DIR:JEngine3D_Executable>/assets/)
-
-add_custom_command(
-  TARGET JEngine3D_Editor
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:JEngine3D_Editor> $<TARGET_FILE_DIR:JEngine3D_Executable>)
-
-# add_executable(JEngine3D_Editor_Executable JEditor/main.cpp)
-# target_link_libraries(JEngine3D_Editor_Executable PRIVATE project_options project_warnings JEngine3D_Editor)
-# target_link_system_libraries(JEngine3D_Editor_Executable PRIVATE docopt::docopt)
-
-# target_include_directories(JEngine3D_Editor
-#  PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
-# target_include_directories(JEngine3D_Editor_Executable
-#  PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
-
-# add_custom_command(
-# TARGET JEngine3D_Editor_Executable
-# POST_BUILD
-# COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_CURRENT_SOURCE_DIR}/assets/
-# $<TARGET_FILE_DIR:JEngine3D_Editor>/assets/)

@@ -36,13 +36,10 @@ public:
   void Bind() const override;
   void Unbind() const override;
 
-  void SetData(const std::span<const uint32_t> &data) override;
-
-  [[nodiscard]] inline auto IndexCount() const -> size_t override { return m_IndexCount; }
-
 private:
+  void UploadData(const std::span<const uint32_t> &data) override;
+
   uint32_t m_RendererID = 0;
-  size_t m_IndexCount = 0;
   size_t m_TotalBufferSize = 0;
 };
 

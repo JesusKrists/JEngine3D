@@ -1,7 +1,7 @@
 #pragma once
 
-#include "JEngine3D/Core/Base.hpp"
-#include "JEngine3D/Core/Types.hpp"
+#include <JEngine3D/Core/Base.hpp>
+#include <JEngine3D/Core/Types.hpp>
 #include <JEngine3D/Platform/IPlatformBackend.hpp>// for IPlatformBackend
 #include <JEngine3D/Core/Events.hpp>
 

@@ -150,14 +150,24 @@ private:
 class IIndexBuffer
 {
 public:
+  IIndexBuffer() = default;
+  explicit IIndexBuffer(size_t indexCount) : m_IndexCount(indexCount) {}
   virtual ~IIndexBuffer() = default;
 
   virtual void Bind() const = 0;
   virtual void Unbind() const = 0;
 
-  virtual void SetData(const std::span<const uint32_t> &data) = 0;
+  inline void SetData(const std::span<const uint32_t> &data)
+  {
+    m_IndexCount = data.size();
+    UploadData(data);
+  }
+  [[nodiscard]] inline auto IndexCount() const -> size_t { return m_IndexCount; }
 
-  [[nodiscard]] virtual auto IndexCount() const -> size_t = 0;
+protected:
+  virtual void UploadData(const std::span<const uint32_t> &data) = 0;
+
+  size_t m_IndexCount = 0;
 };
 
 

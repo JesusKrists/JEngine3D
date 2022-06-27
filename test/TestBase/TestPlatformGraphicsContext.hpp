@@ -2,7 +2,7 @@
 
 #include <JEngine3D/Platform/IGraphicsContext.hpp>
 
-class TestPlatformGraphicsContext : public JE::IGraphicsContext
+class TestPlatformGraphicsContext final : public JE::IGraphicsContext
 {
   using IGraphicsContext::IGraphicsContext;
 

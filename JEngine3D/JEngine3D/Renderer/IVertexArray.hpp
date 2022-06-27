@@ -19,8 +19,6 @@ public:
   virtual void Bind() const = 0;
   virtual void Unbind() const = 0;
 
-  virtual void ConfigureVertexBufferLayout(const BufferLayout &bufferLayout) = 0;
-
   virtual void Reset() = 0;
   virtual void Delete() = 0;
 
@@ -45,6 +43,8 @@ public:
   }
 
 protected:
+  virtual void ConfigureVertexBufferLayout(const BufferLayout &bufferLayout) = 0;
+
   inline void ConfigureVertexBuffer(const IVertexBuffer &vertexBuffer)
   {
     Bind();

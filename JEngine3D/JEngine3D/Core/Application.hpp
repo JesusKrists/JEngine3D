@@ -50,7 +50,7 @@ public:
   static constexpr auto MAIN_WINDOW_CONFIG = WindowConfiguration{ true };
   const std::string WORKING_DIRECTORY = std::filesystem::current_path();
 
-  explicit Application(const std::string_view &title);
+  explicit Application(const std::string_view &title, bool testMode = false);
   virtual ~Application() = default;// NOLINT
 
   [[nodiscard]] static inline auto Get() -> Application &
@@ -97,7 +97,7 @@ private:
   void UpdateDeltaTime();
   void ProcessMainLoop();
 
-  Scope<cr_plugin, MemoryTag::App> m_MainPluginContext;
+  cr_plugin m_MainPluginContext;
   Window &m_MainWindow;
   Scope<IRendererAPI, MemoryTag::Renderer> m_RendererAPI;
   JE::Renderer2D m_Renderer2D;
@@ -108,6 +108,7 @@ private:
   InternalDebugViews m_InternalDebugViews;
   DebugViewContainer m_DebugViewContainer;
 
+  bool m_TestMode = false;
   bool m_Running = false;
   double m_DeltaTime = 0;
   bool m_Focused = false;

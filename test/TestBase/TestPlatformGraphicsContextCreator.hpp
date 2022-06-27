@@ -3,7 +3,7 @@
 #include <JEngine3D/Platform/IGraphicsContextCreator.hpp>
 #include "TestPlatformGraphicsContext.hpp"
 
-class TestPlatformGraphicsContextCreator : public JE::IGraphicsContextCreator
+class TestPlatformGraphicsContextCreator final : public JE::IGraphicsContextCreator
 {
 public:
   [[nodiscard]] inline auto CreateContext(JE::IPlatformBackend::NativeWindowHandle handle)

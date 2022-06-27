@@ -14,10 +14,11 @@ public:
   void Bind() const override;
   void Unbind() const override;
 
-  void ConfigureVertexBufferLayout(const BufferLayout &bufferLayout) override;
-
   void Reset() override;
   void Delete() override;
+
+protected:
+  void ConfigureVertexBufferLayout(const BufferLayout &bufferLayout) override;
 
 private:
   uint32_t m_RendererID = 0;
