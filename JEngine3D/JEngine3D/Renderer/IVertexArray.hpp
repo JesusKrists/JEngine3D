@@ -33,7 +33,7 @@ public:
   [[nodiscard]] inline auto IndexBuffer() const -> const IIndexBuffer &
   {
     ASSERT(m_IndexBuffer != nullptr, "No IndexBuffer set for VAO");
-    return *m_IndexBuffer;
+    return *m_IndexBuffer;// NOLINT(clang-analyzer-core.uninitialized.UndefReturn)
   }
   inline void SetIndexBuffer(const IIndexBuffer &indexBuffer)
   {
