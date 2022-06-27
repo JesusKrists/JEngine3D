@@ -20,6 +20,16 @@ auto SDLGLGraphicsContextCreator::CreateContext(IPlatformBackend::NativeWindowHa
 {
   auto *previousContext = IGraphicsContext::CurrentContext();
 
+
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MAJOR_VERSION, 4);
+#if defined(JE_PLATFORM_APPLE)
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 1);// NOLINT
+#else
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_MINOR_VERSION, 3);// NOLINT
+#endif
+  SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
+  SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
+
   SDL_GL_SetAttribute(SDL_GL_SHARE_WITH_CURRENT_CONTEXT, SDL_TRUE);
   auto *glContext = SDL_GL_CreateContext(static_cast<SDL_Window *>(handle));
   if (glContext == nullptr) {

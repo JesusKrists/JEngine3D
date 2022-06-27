@@ -48,6 +48,13 @@
    obj:*iris_dri.so
 }
 {
+   swrast_dri.so_NvidiaDriverPossibly
+   Memcheck:Leak
+   ...
+   obj:*swrast_dri.so
+}
+
+{
    SDL_X11_BackendFalsePositive
    Memcheck:Leak
    ...
