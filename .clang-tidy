@@ -11,7 +11,9 @@ Checks: "*,
         -readability-static-accessed-through-instance,
         -readability-avoid-const-params-in-decls,
         -cppcoreguidelines-non-private-member-variables-in-classes,
-        -misc-non-private-member-variables-in-classes
+        -misc-non-private-member-variables-in-classes,
+        -readability-named-parameter,
+        -hicpp-named-parameter
 "
 WarningsAsErrors: ''
 HeaderFilterRegex: '(JEngine3D[/\\\\]JEngine3D|JEngine3D_Editor)(?!.*\/build)'

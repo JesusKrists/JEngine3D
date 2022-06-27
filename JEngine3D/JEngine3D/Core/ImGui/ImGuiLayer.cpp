@@ -111,23 +111,20 @@ static void JEngine3DImGuiSetWindowTitle(ImGuiViewport *viewport, const char *ti
   window.SetTitle(title);
 }
 
-static void JEngine3DImGuiPlatformRenderWindow(ImGuiViewport *viewport,
-  void *)// NOLINT(readability-named-parameter, hicpp-named-parameter)
+static void JEngine3DImGuiPlatformRenderWindow(ImGuiViewport *viewport, void *)
 {
   auto &window = *static_cast<Window *>(viewport->PlatformHandle);
   window.GraphicsContext().MakeCurrent();
 }
 
-static void JEngine3DImGuiSwapBuffers(ImGuiViewport *viewport,
-  void *)// NOLINT(readability-named-parameter, hicpp-named-parameter)
+static void JEngine3DImGuiSwapBuffers(ImGuiViewport *viewport, void *)
 {
   auto &window = *static_cast<Window *>(viewport->PlatformHandle);
   window.GraphicsContext().MakeCurrent();
   window.GraphicsContext().SwapBuffers();
 }
 
-static void JEngine3DImGuiRendererRenderWindow(ImGuiViewport *viewport,
-  void *)// NOLINT(readability-named-parameter, hicpp-named-parameter)
+static void JEngine3DImGuiRendererRenderWindow(ImGuiViewport *viewport, void *)
 {
   JE_APP.ImGuiLayer().Renderer().RenderDrawData(*viewport->DrawData);
 }
