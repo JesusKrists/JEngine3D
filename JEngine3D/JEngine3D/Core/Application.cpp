@@ -1,18 +1,14 @@
 #include "Application.hpp"
 
-#include "JEngine3D/Core/Base.hpp"// for ForEach
-#include "JEngine3D/Core/Events.hpp"// for EventDispatcher
 #include "JEngine3D/Core/ILayer.hpp"// for EventDispatcher
 #include "JEngine3D/Core/WindowController.hpp"// for WindowController
 #include "JEngine3D/Core/InputController.hpp"// for InputController
-#include "JEngine3D/Platform/IPlatformBackend.hpp"// for IPlatformBackend
 #include "JEngine3D/Platform/IGraphicsContext.hpp"
 
 #include "JEngine3D/Debug/View/IImGuiDebugView.hpp"
 
 #include "JEngine3D/Renderer/IRendererObjectCreator.hpp"
 #include "JEngine3D/Core/ImGui/ImGuiLayer.hpp"// for ImGuiLayer
-#include "JEngine3D/Core/LoggerController.hpp"// for Logger
 #include "JEngine3D/Renderer/IRendererAPI.hpp"// for IRendererAPI
 #include "JEngine3D/Renderer/ImGui/ImGuiRenderer.hpp"// for ImGuiRenderer
 

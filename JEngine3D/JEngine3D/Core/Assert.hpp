@@ -1,6 +1,5 @@
 #pragma once
 
-#include "JEngine3D/Core/Base.hpp"
 #include "JEngine3D/Core/LoggerController.hpp"
 
 #include <iostream>// IWYU pragma: export

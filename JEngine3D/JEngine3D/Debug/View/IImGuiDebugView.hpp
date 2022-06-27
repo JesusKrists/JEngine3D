@@ -3,7 +3,6 @@
 #include <string>
 
 #include <imgui.h>
-#include "JEngine3D/Core/Types.hpp"
 
 namespace JE {
 

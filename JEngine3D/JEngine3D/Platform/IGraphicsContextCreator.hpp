@@ -1,6 +1,5 @@
 #pragma once
 
-#include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Platform/IPlatformBackend.hpp"
 #include "JEngine3D/Core/MemoryController.hpp"// for Scope, MemoryTag
 

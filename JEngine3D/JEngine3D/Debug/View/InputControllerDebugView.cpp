@@ -1,7 +1,5 @@
 #include "InputControllerDebugView.hpp"
 
-#include "JEngine3D/Core/Base.hpp"// for UNUSED
-#include "JEngine3D/Core/Events.hpp"// for JEngine3DKeyCodeToString
 #include "JEngine3D/Core/InputController.hpp"
 
 #include <string>// for string, allocator

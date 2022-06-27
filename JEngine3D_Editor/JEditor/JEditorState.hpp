@@ -3,7 +3,6 @@
 #include "main.h"
 
 #include <JEngine3D/Core/Assert.hpp>
-#include <JEngine3D/Core/MemoryController.hpp>
 #include <JEngine3D/Renderer/IFramebuffer.hpp>
 #include <JEngine3D/Renderer/ITexture.hpp>
 #include <JEngine3D/Utility/StringManipulation.hpp>

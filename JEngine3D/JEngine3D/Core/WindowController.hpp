@@ -1,9 +1,6 @@
 #pragma once
 
-#include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
-#include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Core/MemoryController.hpp"
-#include "JEngine3D/Platform/IPlatformBackend.hpp"
 #include "JEngine3D/Core/Events.hpp"
 
 namespace JE {

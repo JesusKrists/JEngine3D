@@ -1,8 +1,9 @@
+#pragma once
 
 #include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Core/ILayer.hpp"
 
-#include <stdint.h>// for uint32_t
+#include <cstdint>// for uint32_t
 #include <iterator>// for begin, end, rbegin, rend
 
 namespace JE {

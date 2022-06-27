@@ -2,16 +2,12 @@
 
 #include "JEngine3D/Core/Events.hpp"
 #include "JEngine3D/Core/LayerStack.hpp"
-#include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
-#include "JEngine3D/Core/MemoryController.hpp"
-#include "JEngine3D/Core/Types.hpp"// for Size2D, int32_t, string_view
 
 #include "JEngine3D/Debug/View/ApplicationDebugView.hpp"
 #include "JEngine3D/Debug/View/InputControllerDebugView.hpp"
 #include "JEngine3D/Debug/View/MemoryControllerDebugView.hpp"
 #include "JEngine3D/Debug/View/Renderer2DDebugView.hpp"
 #include "JEngine3D/Debug/View/WindowControllerDebugView.hpp"
-#include "JEngine3D/Platform/IPlatformBackend.hpp"
 
 
 #include "JEngine3D/Renderer/Renderer2D.hpp"

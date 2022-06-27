@@ -1,9 +1,5 @@
 #include "InputController.hpp"
 
-#include "JEngine3D/Core/Types.hpp"
-#include "JEngine3D/Platform/IPlatformBackend.hpp"// for IPlatformBackend
-#include "JEngine3D/Core/LoggerController.hpp"// for Logger
-
 
 #include <iterator>// for end
 #include <utility>// for pair

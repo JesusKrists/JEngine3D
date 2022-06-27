@@ -1,12 +1,7 @@
 #include "ImGuiLayer.hpp"
 
-#include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
 #include "JEngine3D/Core/Application.hpp"// for ASSERT_, ASSERT
-#include "JEngine3D/Core/Base.hpp"
-#include "JEngine3D/Core/Types.hpp"// for int32_t, basic_st...
-#include "JEngine3D/Platform/IPlatformBackend.hpp"// for IPlatformBackend
-#include "JEngine3D/Platform/IGraphicsContext.hpp"// for IPlatformBackend
-#include "JEngine3D/Core/Events.hpp"// for MousePressEvent
+#include "JEngine3D/Platform/IGraphicsContext.hpp"// for IGraphicsContext
 #include "JEngine3D/Core/WindowController.hpp"// for MousePressEvent
 #include "JEngine3D/Core/ImGui/ImGuiSupport.hpp"
 

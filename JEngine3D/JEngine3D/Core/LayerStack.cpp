@@ -1,8 +1,5 @@
 #include "LayerStack.hpp"
 
-#include "JEngine3D/Core/Base.hpp"// for find_if, ForEach
-#include "JEngine3D/Core/ILayer.hpp"// for ILayer
-
 namespace JE {
 
 

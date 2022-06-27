@@ -1,6 +1,6 @@
 #include "OpenGLVertexArray.hpp"
 
-#include "JEngine3D/Core/Base.hpp"
+
 #include "JEngine3D/Renderer/IBuffer.hpp"
 
 #include <GL/glew.h>

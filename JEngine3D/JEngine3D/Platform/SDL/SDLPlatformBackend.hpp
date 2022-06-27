@@ -1,7 +1,6 @@
 #pragma once
 
 #include "JEngine3D/Platform/IPlatformBackend.hpp"
-#include "JEngine3D/Core/Types.hpp"// for Size2D
 
 
 namespace JE {

@@ -56,7 +56,6 @@ int main(int argc, const char **argv)
 
 #include "main.h"
 
-#include <JEngine3D/Core/Assert.hpp>
 #include <JEngine3D/Core/Application.hpp>
 
 #include "JEditorState.hpp"

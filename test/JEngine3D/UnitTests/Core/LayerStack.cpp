@@ -3,7 +3,6 @@
 #include <JEngine3D/Core/Base.hpp>
 #include <JEngine3D/Core/ILayer.hpp>// for ILayer
 #include <JEngine3D/Core/LayerStack.hpp>
-#include <JEngine3D/Core/MemoryController.hpp>// for Vector
 #include <JEngine3D/Core/Types.hpp>// for operator==, char_traits
 
 

@@ -1,8 +1,6 @@
 #pragma once
 
-#include "JEngine3D/Platform/IPlatformBackend.hpp"
 #include "JEngine3D/Platform/IGraphicsContextCreator.hpp"
-#include "JEngine3D/Core/Types.hpp"
 
 #include "JEngine3D/Renderer/IDrawTarget.hpp"
 

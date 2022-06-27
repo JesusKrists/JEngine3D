@@ -1,7 +1,5 @@
 #include "OpenGLRendererObjectCreator.hpp"
 
-#include "JEngine3D/Core/MemoryController.hpp"
-
 #include "JEngine3D/Renderer/OpenGL/OpenGLBuffer.hpp"
 #include "JEngine3D/Renderer/OpenGL/OpenGLVertexArray.hpp"
 #include "JEngine3D/Renderer/OpenGL/OpenGLTexture.hpp"

@@ -2,8 +2,6 @@
 
 #include "JEngine3D/Core/WindowController.hpp"
 #include "JEngine3D/Platform/IGraphicsContext.hpp"
-#include "JEngine3D/Core/Base.hpp"// for FindIf, ForEach
-#include "JEngine3D/Core/MemoryController.hpp"// for Scope, MemoryTag
 
 #include <string>
 #include <iterator>// for end

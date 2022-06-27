@@ -1,6 +1,5 @@
 #include "ImageLoader.hpp"
 
-#include <JEngine3D/Core/Base.hpp>
 #include <JEngine3D/Core/Assert.hpp>
 #include <JEngine3D/Utility/StringManipulation.hpp>
 

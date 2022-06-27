@@ -1,7 +1,6 @@
 #pragma once
 
 #include <JEngine3D/Core/Application.hpp>
-#include <JEngine3D/Core/MemoryController.hpp>
 #include "IPanel.hpp"
 
 #include <filesystem>

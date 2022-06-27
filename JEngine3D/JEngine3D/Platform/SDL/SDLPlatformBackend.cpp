@@ -1,10 +1,6 @@
 #include "SDLPlatformBackend.hpp"
 
-#include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
 #include "JEngine3D/Core/Events.hpp"
-#include "JEngine3D/Core/LoggerController.hpp"// for Logger
-#include "JEngine3D/Core/Base.hpp"// for UNUSED
-#include "JEngine3D/Core/Types.hpp"
 
 #include <exception>// for exception
 #include <cstring>// IWYU pragma: keep

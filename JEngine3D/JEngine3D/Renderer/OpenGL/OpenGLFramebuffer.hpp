@@ -2,7 +2,6 @@
 
 #include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Renderer/IFramebuffer.hpp"
-#include "JEngine3D/Core/MemoryController.hpp"
 
 namespace JE {
 

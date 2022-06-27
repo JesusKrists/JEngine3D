@@ -1,10 +1,7 @@
 #pragma once
 
+#include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Core/Events.hpp"
-#include "JEngine3D/Core/Types.hpp"
-#include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
-
-#include <unordered_map>
 
 namespace JE {
 
@@ -32,12 +29,15 @@ public:
   [[nodiscard]] inline auto RelativeMousePosition() const -> const Position2DI & { return m_RelativeMousePosition; }
   [[nodiscard]] inline auto MouseScrollAmount() const -> int32_t { return m_ScrollAmount; }
 
-  [[nodiscard]] inline auto KeyMap() const -> const std::unordered_map<KeyCode, bool> & { return m_KeyMap; }
-  [[nodiscard]] inline auto MouseMap() const -> const std::unordered_map<MouseButton, bool> & { return m_MouseMap; }
+  [[nodiscard]] inline auto KeyMap() const -> const UnorderedMap<KeyCode, bool, MemoryTag::App> & { return m_KeyMap; }
+  [[nodiscard]] inline auto MouseMap() const -> const UnorderedMap<MouseButton, bool, MemoryTag::App> &
+  {
+    return m_MouseMap;
+  }
 
 private:
-  std::unordered_map<KeyCode, bool> m_KeyMap;
-  std::unordered_map<MouseButton, bool> m_MouseMap;
+  UnorderedMap<KeyCode, bool, MemoryTag::App> m_KeyMap;
+  UnorderedMap<MouseButton, bool, MemoryTag::App> m_MouseMap;
 
   Position2DI m_MousePosition = { 0, 0 };
   Position2DI m_RelativeMousePosition = { 0, 0 };

@@ -1,10 +1,10 @@
 #pragma once
 
-#include "JEngine3D/Core/Events.hpp"
-
 #include <string>
 
 namespace JE {
+
+class IEvent;
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
 class ILayer

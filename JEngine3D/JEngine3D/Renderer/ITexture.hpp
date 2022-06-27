@@ -1,6 +1,6 @@
 #pragma once
 
-#include "JEngine3D/Core/Base.hpp"
+
 #include "JEngine3D/Core/Types.hpp"
 
 #include <span>

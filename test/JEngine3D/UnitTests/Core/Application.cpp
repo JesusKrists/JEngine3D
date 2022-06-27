@@ -2,7 +2,6 @@
 
 #include "TestBase/TestPlatformBackendFixture.hpp"
 
-#include <JEngine3D/Core/Base.hpp>// for UNUSED
 #include <JEngine3D/Core/Types.hpp>// for operator==, char_traits
 #include <JEngine3D/Core/Events.hpp>
 #include <JEngine3D/Core/WindowController.hpp>

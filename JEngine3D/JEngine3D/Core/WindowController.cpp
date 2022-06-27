@@ -1,8 +1,5 @@
 #include "WindowController.hpp"
 
-#include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
-#include "JEngine3D/Core/Base.hpp"// for FindIf
-#include "JEngine3D/Core/LoggerController.hpp"// for Logger
 #include "JEngine3D/Platform/IGraphicsContext.hpp"
 #include "JEngine3D/Platform/IGraphicsContextCreator.hpp"
 

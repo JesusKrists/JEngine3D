@@ -1,6 +1,5 @@
 #include "OpenGLShader.hpp"
 
-#include "JEngine3D/Core/Base.hpp"
 #include "JEngine3D/Core/LoggerController.hpp"
 
 #include <GL/glew.h>

@@ -1,6 +1,5 @@
 #pragma once
 
-#include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Renderer/IVertexArray.hpp"
 #include "JEngine3D/Renderer/IRendererObjectCreator.hpp"
 #include "JEngine3D/Renderer/ITexture.hpp"

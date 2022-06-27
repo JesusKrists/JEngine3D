@@ -3,11 +3,9 @@
 #include "UI/IPanel.hpp"
 #include "JEditorState.hpp"
 
-#include <JEngine3D/Core/Base.hpp>
 #include <JEngine3D/Core/Application.hpp>
 #include <JEngine3D/Debug/View/IImGuiDebugView.hpp>
 #include <JEngine3D/Core/ImGui/ImGuiLayer.hpp>
-#include <JEngine3D/Core/Types.hpp>
 #include <JEngine3D/Renderer/IFramebuffer.hpp>
 #include <JEngine3D/Renderer/ITexture.hpp>
 #include <JEngine3D/Renderer/Renderer2D.hpp>

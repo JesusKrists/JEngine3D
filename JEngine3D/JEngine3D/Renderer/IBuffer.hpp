@@ -1,7 +1,5 @@
 #pragma once
 
-#include "JEngine3D/Core/Base.hpp"
-#include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Core/MemoryController.hpp"
 
 #include <span>

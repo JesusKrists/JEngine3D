@@ -1,7 +1,5 @@
 #include "OpenGLTexture.hpp"
 
-#include "JEngine3D/Core/Base.hpp"
-#include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Renderer/ITexture.hpp"
 #include "JEngine3D/Core/Application.hpp"
 

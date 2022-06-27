@@ -1,9 +1,8 @@
 #include "OpenGLRendererAPI.hpp"
 
-#include "JEngine3D/Core/Base.hpp"
+
 #include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Renderer/IVertexArray.hpp"
-#include "JEngine3D/Core/LoggerController.hpp"// for Logger
 #include "JEngine3D/Renderer/IBuffer.hpp"// for IIndexBuffer
 
 #include <glm/glm.hpp>

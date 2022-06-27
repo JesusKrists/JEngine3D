@@ -1,9 +1,5 @@
 #pragma once
 
-#include "JEngine3D/Core/Base.hpp"
-#include "JEngine3D/Core/Assert.hpp"
-#include "JEngine3D/Core/Types.hpp"
-#include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Renderer/IRendererAPI.hpp"
 #include "JEngine3D/Renderer/ITexture.hpp"
 #include "JEngine3D/Renderer/IShader.hpp"

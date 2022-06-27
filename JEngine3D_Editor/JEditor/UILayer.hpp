@@ -1,7 +1,6 @@
 #pragma once
 
 #include <JEngine3D/Core/ILayer.hpp>
-#include <JEngine3D/Core/MemoryController.hpp>
 #include <JEngine3D/Renderer/ITexture.hpp>
 #include <JEngine3D/Renderer/IFramebuffer.hpp>
 

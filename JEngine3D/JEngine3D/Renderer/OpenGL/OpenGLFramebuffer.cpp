@@ -1,11 +1,9 @@
 #include "OpenGLFramebuffer.hpp"
 
-#include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Core/Application.hpp"
 
 #include <GL/glew.h>
 
-#include <JEngine3D/Core/Base.hpp>
 #include <JEngine3D/Platform/IGraphicsContext.hpp>
 #include <JEngine3D/Renderer/IFramebuffer.hpp>
 #include <Tracy.hpp>

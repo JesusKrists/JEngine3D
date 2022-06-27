@@ -1,7 +1,6 @@
 #include "SDLGLGraphicsContext.hpp"
 
 #include "JEngine3D/Core/Application.hpp"
-#include "JEngine3D/Core/LoggerController.hpp"// for Logger
 #include "JEngine3D/Renderer/IRendererAPI.hpp"// for IRendererAPI
 
 #include <exception>// for exception

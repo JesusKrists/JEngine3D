@@ -31,7 +31,7 @@ class IFramebuffer : public IDrawTarget
 {
 public:
   explicit IFramebuffer(const FramebufferConfiguration &configuration) : m_Configuration(configuration) {}// NOLINT
-  virtual ~IFramebuffer() = default;
+  virtual ~IFramebuffer() = default;// NOLINT
 
   virtual auto ReadPixel(uint32_t attachmentIndex, const Position2DI &pixel) -> int = 0;
   virtual void ClearAttachment(uint32_t attachmentIndex, int value) = 0;

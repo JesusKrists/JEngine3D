@@ -1,7 +1,6 @@
 #pragma once
 
 #include "JEngine3D/Platform/IPlatformBackend.hpp"
-#include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Core/KeyCodes.hpp"// IWYU pragma: export
 #include "JEngine3D/Core/MouseButtons.hpp"// IWYU pragma: export
 
