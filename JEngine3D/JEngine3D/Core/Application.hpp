@@ -48,7 +48,7 @@ class Application final : public IEventProcessor
 public:
   static constexpr auto DEFAULT_SIZE = Size2DI{ 640, 480 };
   static constexpr auto MAIN_WINDOW_CONFIG = WindowConfiguration{ true };
-  const std::string WORKING_DIRECTORY = std::filesystem::current_path();
+  const std::string WORKING_DIRECTORY = std::filesystem::current_path().generic_string();
 
   explicit Application(const std::string_view &title, bool testMode = false);
   virtual ~Application() = default;// NOLINT
