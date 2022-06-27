@@ -157,7 +157,7 @@ include(${CMAKE_SOURCE_DIR}/CMake/FontIconsTarget.cmake)
 
 FetchContent_Declare(
   lunasvg
-  GIT_REPOSITORY https://github.com/sammycage/lunasvg.git
+  GIT_REPOSITORY https://github.com/JesusKrists/lunasvg.git
   GIT_TAG master)
 
 FetchContent_MakeAvailable(lunasvg)
