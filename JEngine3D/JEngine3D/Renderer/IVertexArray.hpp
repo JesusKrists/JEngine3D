@@ -54,6 +54,7 @@ protected:
     Unbind();
   }
 
+  // cppcheck-suppress functionConst
   inline void ConfigureIndexBuffer(const IIndexBuffer &indexBuffer)// NOLINT
   {
     Bind();

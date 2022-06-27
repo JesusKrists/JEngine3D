@@ -106,7 +106,7 @@ auto OpenGLFramebuffer::ReadPixel(uint32_t attachmentIndex, const Position2DI &p
   return pixelData;
 }
 
-void OpenGLFramebuffer::ClearAttachment(uint32_t attachmentIndex, int value)
+void OpenGLFramebuffer::ClearAttachment(uint32_t attachmentIndex, int value)// NOLINT
 {
   ZoneScopedN("OpenGLFramebuffer::ClearAttachment");// NOLINT
 

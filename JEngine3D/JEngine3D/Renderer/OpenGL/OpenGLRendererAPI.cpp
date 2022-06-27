@@ -3,8 +3,13 @@
 #include "JEngine3D/Core/Base.hpp"
 #include "JEngine3D/Core/Types.hpp"
 #include "JEngine3D/Renderer/IVertexArray.hpp"
+#include "JEngine3D/Core/LoggerController.hpp"// for Logger
+#include "JEngine3D/Renderer/IBuffer.hpp"// for IIndexBuffer
 
+#include <glm/glm.hpp>
 #include <GL/glew.h>
+
+#include <Tracy.hpp>// for ZoneScopedN
 
 namespace JE {
 
@@ -51,7 +56,7 @@ OpenGLRendererAPI::OpenGLRendererAPI()
   glDebugMessageControl(GL_DONT_CARE, GL_DONT_CARE, GL_DEBUG_SEVERITY_NOTIFICATION, 0, nullptr, GL_FALSE);
 #endif
 
-  UpdateRendererState();
+  OpenGLRendererAPI::UpdateRendererState();
 }
 
 void OpenGLRendererAPI::SetViewport(const RectangleI &viewport)

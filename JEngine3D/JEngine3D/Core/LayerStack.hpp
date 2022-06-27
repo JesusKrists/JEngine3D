@@ -3,7 +3,6 @@
 #include "JEngine3D/Core/ILayer.hpp"
 
 #include <stdint.h>// for uint32_t
-#include <functional>// for reference_wrapper
 #include <iterator>// for begin, end, rbegin, rend
 
 namespace JE {

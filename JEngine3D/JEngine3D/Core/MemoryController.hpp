@@ -12,6 +12,8 @@
 #include <unordered_map>// IWYU pragma: export
 #include <memory>// IWYU pragma: export
 #include <cstdint>
+#include <iterator>// for pair
+#include <string_view>// for hash
 #include <spdlog/spdlog.h>
 
 namespace JE {
@@ -98,6 +100,11 @@ private:
 
 template<typename T, MemoryTag TAG = MemoryTag::Unknown> struct MemoryControllerAllocator : public std::allocator<T>
 {
+  MemoryControllerAllocator() {}// NOLINT
+
+  // cppcheck-suppress noExplicitConstructor
+  template<class U> MemoryControllerAllocator(MemoryControllerAllocator<U, TAG> const &) {}// NOLINT
+
   template<class U> struct rebind
   {
     using other = MemoryControllerAllocator<U, TAG>;
@@ -125,13 +132,13 @@ using Scope = std::unique_ptr<T, MemoryControllerAllocator<T, TAG>>;
 template<typename T, MemoryTag TAG = MemoryTag::Unknown, typename... Args>
 inline auto CreateScope(Args &&...args) -> Scope<T, TAG>
 {
-  return Scope<T, TAG>(new (MemoryController::Allocate<T, TAG>(1)) T(std::forward<Args>(args)...));
+  return Scope<T, TAG>{ new (MemoryController::Allocate<T, TAG>(1)) T(std::forward<Args>(args)...) };
 }
 
 template<typename T, MemoryTag TAG = MemoryTag::Unknown, typename BaseType, typename... Args>
 inline auto CreatePolymorphicScope(Args &&...args) -> Scope<BaseType, TAG>
 {
-  return Scope<BaseType, TAG>(new (MemoryController::Allocate<T, TAG>(1)) T(std::forward<Args>(args)...));
+  return Scope<BaseType, TAG>{ new (MemoryController::Allocate<T, TAG>(1)) T(std::forward<Args>(args)...) };
 }
 
 template<typename T, MemoryTag TAG = MemoryTag::Unknown> using Ref = std::shared_ptr<T>;
@@ -158,3 +165,13 @@ template<typename T, MemoryTag TAG = MemoryTag::Unknown> using Deque = std::dequ
 template<typename T, MemoryTag TAG = MemoryTag::Unknown> using List = std::list<T, MemoryControllerAllocator<T, TAG>>;
 
 }// namespace JE
+
+
+namespace std {
+
+template<typename T, JE::MemoryTag TAG> struct hash<JE::Scope<T, TAG>>
+{
+  auto operator()(const JE::Scope<T, TAG> &val) const -> size_t { return hash<T *>(val.get()); }
+};
+
+}// namespace std

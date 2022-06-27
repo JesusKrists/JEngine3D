@@ -161,3 +161,4 @@ FetchContent_Declare(
   GIT_TAG master)
 
 FetchContent_MakeAvailable(lunasvg)
+disable_static_analysis(lunasvg)

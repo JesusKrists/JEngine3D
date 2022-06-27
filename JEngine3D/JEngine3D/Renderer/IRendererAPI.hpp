@@ -2,6 +2,9 @@
 
 #include "JEngine3D/Core/MemoryController.hpp"
 
+#include <cstddef>// for size_t
+#include <cstdint>// for uint32_t, uint8_t
+
 #include <Tracy.hpp>
 
 namespace JE {

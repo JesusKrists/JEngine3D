@@ -1,7 +1,10 @@
 #pragma once
 
-#include "JEngine3D/Core/Base.hpp"
 #include "JEngine3D/Renderer/IBuffer.hpp"
+
+#include <cstdint>// for uint32_t
+#include <cstddef>// for size_t, byte
+#include <span>// for span
 
 namespace JE {
 

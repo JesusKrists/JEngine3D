@@ -1,9 +1,16 @@
 #include "SDLGLGraphicsContext.hpp"
 
 #include "JEngine3D/Core/Application.hpp"
+#include "JEngine3D/Core/LoggerController.hpp"// for Logger
+#include "JEngine3D/Renderer/IRendererAPI.hpp"// for IRendererAPI
 
+#include <exception>// for exception
 #include <cstring>// IWYU pragma: keep
 #include <SDL_video.h>// for SDL_GL_DeleteContext, SDL_GL_MakeCurrent, SDL...
+#include <SDL_error.h>// for SDL_GetError
+
+
+#include <Tracy.hpp>// for ZoneScopedN
 
 namespace JE {
 

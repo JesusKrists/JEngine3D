@@ -53,8 +53,8 @@ void ContentBrowserPanel::OnImGuiRender()
     ImGui::PushStyleColor(ImGuiCol_Button, 0);
 
 
-    int index = 0;
     if (m_BreadcrumbsPaths.size() > 1) {
+      int index = 0;
       for (const auto &entry : m_BreadcrumbsPaths) {
         ImGui::PushID(index);
         if (index++ == 0) {

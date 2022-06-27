@@ -1,7 +1,5 @@
 #pragma once
 
-#include "JEngine3D/Core/Assert.hpp"
-#include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Platform/IPlatformBackend.hpp"
 #include "JEngine3D/Platform/IGraphicsContextCreator.hpp"
 #include "JEngine3D/Core/Types.hpp"
@@ -9,8 +7,6 @@
 #include "JEngine3D/Renderer/IDrawTarget.hpp"
 
 namespace JE {
-
-class Window;
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
 class IGraphicsContext : public IDrawTarget

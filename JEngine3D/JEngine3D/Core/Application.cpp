@@ -11,9 +11,15 @@
 #include "JEngine3D/Debug/View/IImGuiDebugView.hpp"
 
 #include "JEngine3D/Renderer/IRendererObjectCreator.hpp"
+#include "JEngine3D/Core/ImGui/ImGuiLayer.hpp"// for ImGuiLayer
+#include "JEngine3D/Core/LoggerController.hpp"// for Logger
+#include "JEngine3D/Renderer/IRendererAPI.hpp"// for IRendererAPI
+#include "JEngine3D/Renderer/ImGui/ImGuiRenderer.hpp"// for ImGuiRenderer
 
-#include <iterator>// for rbegin, rend
 
+#include <exception>// for exception
+#include <fmt/format.h>// for ptr
+#include <cr.h>// for cr_plugin
 #include <Tracy.hpp>
 
 namespace JE {

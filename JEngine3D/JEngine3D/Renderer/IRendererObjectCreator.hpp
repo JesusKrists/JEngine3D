@@ -2,16 +2,24 @@
 
 #include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Core/MemoryController.hpp"// for Scope, MemoryTag
-#include "JEngine3D/Renderer/IBuffer.hpp"
-#include "JEngine3D/Renderer/IShader.hpp"
-#include "JEngine3D/Renderer/IVertexArray.hpp"
-#include "JEngine3D/Renderer/ITexture.hpp"
-#include "JEngine3D/Renderer/IFramebuffer.hpp"
-#include "JEngine3D/Utility/ImageLoader.hpp"
+#include "JEngine3D/Core/Types.hpp"
+#include <cstddef>// for byte
+#include <span>
 
 namespace JE {
 
 class IRendererAPI;
+class BufferLayout;
+class IVertexBuffer;
+class IIndexBuffer;
+class IVertexArray;
+class ITexture2D;
+class IShader;
+class IFramebuffer;
+struct FramebufferConfiguration;
+struct Image;
+enum class TextureFormat;
+
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
 class IRendererObjectCreator

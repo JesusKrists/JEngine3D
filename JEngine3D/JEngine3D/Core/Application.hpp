@@ -5,7 +5,6 @@
 #include "JEngine3D/Core/Assert.hpp"// for ASSERT_, ASSERT
 #include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Core/Types.hpp"// for Size2D, int32_t, string_view
-#include "JEngine3D/Core/ImGui/ImGuiLayer.hpp"
 
 #include "JEngine3D/Debug/View/ApplicationDebugView.hpp"
 #include "JEngine3D/Debug/View/InputControllerDebugView.hpp"
@@ -14,21 +13,26 @@
 #include "JEngine3D/Debug/View/WindowControllerDebugView.hpp"
 #include "JEngine3D/Platform/IPlatformBackend.hpp"
 
-#include "JEngine3D/Renderer/IRendererAPI.hpp"
+
 #include "JEngine3D/Renderer/Renderer2D.hpp"
 
 #include <functional>// for reference_wrapper
 #include <filesystem>
 
-#include <cr.h>
+#include <cr.h>// IWYU pragma: keep
+
+namespace JE {
+class Application;
+}
 
 #define JE_APP JE::Application::Get()// NOLINT
 
 namespace JE {
 
-
 class Window;
 class ILayer;
+class IRendererAPI;
+class ImGuiLayer;
 class IImGuiDebugView;
 
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)

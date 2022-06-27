@@ -8,6 +8,8 @@
 #include <exception>// for exception
 #include <cstring>// IWYU pragma: keep
 #include <SDL_video.h>// for SDL_GL_Cr...
+#include <SDL_error.h>
+#include <SDL_stdinc.h>
 
 #include <GL/glew.h>
 

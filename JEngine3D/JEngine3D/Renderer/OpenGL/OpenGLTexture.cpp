@@ -68,7 +68,7 @@ OpenGLTexture2D::OpenGLTexture2D() : m_SourcePath("temporary") { glGenTextures(1
 OpenGLTexture2D::~OpenGLTexture2D() { glDeleteTextures(1, &m_RendererID); }
 
 void OpenGLTexture2D::SetData(const std::string_view &sourcePath,
-  const std::span<const std::byte> &textureData,
+  const std::span<const std::byte> &data,
   const Size2DI &textureDimensions,
   TextureFormat format)
 {
@@ -86,7 +86,7 @@ void OpenGLTexture2D::SetData(const std::string_view &sourcePath,
     0,
     TextureFormatToOpenGLDataFormat(m_Format),
     GL_UNSIGNED_BYTE,
-    textureData.data());
+    data.data());
 
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
   glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);

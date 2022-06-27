@@ -1,18 +1,15 @@
 #include <internal_use_only/config.hpp>// for project_name, project_version
 
 #include "JEngine3D/Core/Application.hpp"
-#include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Core/LoggerController.hpp"
 #include "JEngine3D/Core/WindowController.hpp"
 #include "JEngine3D/Core/InputController.hpp"
+#include "JEngine3D/Core/Types.hpp"
+#include "JEngine3D/Platform/IPlatformBackend.hpp"
 #include "JEngine3D/Platform/SDL/SDLPlatformBackend.hpp"
 #include "JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContextCreator.hpp"
 #include "JEngine3D/Renderer/OpenGL/OpenGLRendererObjectCreator.hpp"
-
-#include <Tracy.hpp>
-
-#include <cr.h>
 
 
 [[maybe_unused]] static constexpr auto USAGE =
