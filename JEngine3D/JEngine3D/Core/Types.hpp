@@ -1,5 +1,6 @@
 #pragma once
 
+#include <sstream>
 #include <cstdint>// IWYU pragma: export
 #include <string>// IWYU pragma: export
 #include <string_view>// IWYU pragma: export

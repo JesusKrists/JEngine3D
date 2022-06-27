@@ -76,7 +76,8 @@ auto cr_main(cr_plugin *ctx, cr_op operation) -> int
   case CR_LOAD:
     JE::Logger::ClientLogger().debug("CR_LOAD: DLL Application address: {}", fmt::ptr(&JE_APP));
 
-    JEditor::EditorState::s_StateInstance = ctx->CreateState<JEditor::EditorState>();
+    JEditor::EditorState::s_StateInstance =
+      ctx->CreateState<JEditor::EditorState>();// NOLINT(clang-analyzer-core.CallAndMessage)
     JEditor::s_UILayer = &JE_APP.PushLayer<JEditor::UILayer>();
 
     break;
@@ -90,7 +91,7 @@ auto cr_main(cr_plugin *ctx, cr_op operation) -> int
   case CR_CLOSE:
     JE::Logger::ClientLogger().debug("CR_CLOSE: DLL Application address: {}", fmt::ptr(&JE_APP));
 
-    ctx->DeleteState(JEditor::EditorState::s_StateInstance);
+    ctx->DeleteState(JEditor::EditorState::s_StateInstance);// NOLINT(clang-analyzer-core.CallAndMessage)
 
     break;
   default:
