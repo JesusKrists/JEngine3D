@@ -29,6 +29,7 @@ public:
   // cppcheck-suppress functionStatic
   void End();
 
+  // cppcheck-suppress functionConst
   [[nodiscard]] inline auto Renderer() -> ImGuiRenderer & { return m_ImGuiRenderer; }
 
 private:

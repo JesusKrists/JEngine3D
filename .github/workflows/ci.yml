@@ -147,7 +147,7 @@ jobs:
 
           cppcheck: true
 
-          gcovr: true
+          gcovr: 5.0
           opencppcoverage: true
 
       - name: Setup Cpp - Linux clang
@@ -157,7 +157,7 @@ jobs:
           cmake: true
           ninja: true
           ccache: true
-          gcovr: true
+          gcovr: 5.0
           opencppcoverage: true
 
       - name: Install valgrind
