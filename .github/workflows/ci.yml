@@ -269,7 +269,7 @@ jobs:
             ctest -C ${{matrix.build_type}} --verbose
 
       - name: Unix - Get Test coverage
-        if: runner.os != 'Windows'
+        if: runner.os != 'Windows' && matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF'
         working-directory: ./build
         run: |
           gcovr -j ${{env.nproc}} --delete --root ../ --print-summary --xml-pretty --xml coverage.xml --sonarqube coverage_sonarqube.xml . --gcov-executable '${{ matrix.gcov_executable }}'
@@ -327,6 +327,7 @@ jobs:
           path: ./build
 
       - name: Publish to codecov
+        if: matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF'
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
