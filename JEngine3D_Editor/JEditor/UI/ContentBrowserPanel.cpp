@@ -26,6 +26,21 @@ ContentBrowserPanel::ContentBrowserPanel() : IPanel("Content Browser")
 {
   auto &imguiIO = ImGui::GetIO();
 
+  if (EditorState::Get().DefaultFont == nullptr) {
+    EditorState::Get().DefaultFont = imguiIO.Fonts->AddFontDefault();
+    ImFontConfig iconFontConfig;
+    iconFontConfig.MergeMode = true;
+    iconFontConfig.GlyphMinAdvanceX = 13.0F;// NOLINT Use if you want to make the icon monospaced
+    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };// NOLINT
+    imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAS,
+      13.0F,// NOLINT
+      &iconFontConfig,
+      icon_ranges);// NOLINT
+    imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAR,
+      13.0F,// NOLINT
+      &iconFontConfig,
+      icon_ranges);// NOLINT
+  }
 
   // Load default font
   if (EditorState::Get().DefaultFont12 == nullptr) {
@@ -34,11 +49,8 @@ ContentBrowserPanel::ContentBrowserPanel() : IPanel("Content Browser")
     EditorState::Get().DefaultFont12 = imguiIO.Fonts->AddFontDefault(&fontConfigSmall);
   }
 
-  RefreshFilesystem();
-  m_NavigationStack.push_back(&m_RootFolder);
-  m_CurrentNavigationPosition = std::begin(m_NavigationStack);
-
   m_BreadcrumbsPaths.reserve(32);// NOLINT
+  RefreshFilesystem();
 }
 
 // NOLINTNEXTLINE
@@ -123,8 +135,15 @@ void ContentBrowserPanel::OnImGuiRender()
     }
     if (forwardsDisabled) { ImGui::PopStyleColor(2); }
 
-    ImGui::SameLine(0, 8);// NOLINT
+    ImGui::SameLine();
     ImGui::SetCursorPosY(IMGUI_STYLE.FramePadding.y);
+    ImGui::PushFont(EditorState::Get().DefaultFont);
+    ImGui::PushStyleVar(ImGuiStyleVar_FramePadding, ImVec2{ 2, 3 });
+    if (ImGui::Button(ICON_FA_ARROWS_ROTATE, TOP_BAR_ICON_SIZE)) { RefreshFilesystem(); }
+    ImGui::PopStyleVar();
+    ImGui::PopFont();
+
+    ImGui::SameLine(0, 24);// NOLINT
     ImGui::TextUnformatted("Current Dir:");
 
     ImGui::SameLine(0, 8);// NOLINT
@@ -147,10 +166,15 @@ void ContentBrowserPanel::OnImGuiRender()
     ImGui::PushStyleVar(ImGuiStyleVar_WindowPadding, ImVec2{ 0, 0 });
     ImGui::BeginChild("FolderTree", ImVec2{ FOLDER_TREE_WIDTH, 0 }, false, ImGuiWindowFlags_HorizontalScrollbar);
 
+    int treeFlags =
+      ImGuiTreeNodeFlags_SpanFullWidth | ImGuiTreeNodeFlags_DefaultOpen | ImGuiTreeNodeFlags_OpenOnDoubleClick;// NOLINT
+    treeFlags |= (*m_CurrentNavigationPosition == &m_RootFolder) ? ImGuiTreeNodeFlags_Selected : 0;// NOLINT
+
     ImGui::SetNextItemOpen(true);
-    if (ImGui::TreeNodeEx(CONTENT_DIR.c_str(),
-          ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick// NOLINT
-            | ImGuiTreeNodeFlags_SpanFullWidth)) {
+    if (ImGui::TreeNodeEx_IconText(EditorState::Get().FileIconMap[FileExtension::FOLDER]->RendererID(),
+          EditorState::Get().FileIconMap[FileExtension::FOLDER_OPEN]->RendererID(),
+          CONTENT_DIR.c_str(),
+          treeFlags)) {
       if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(&m_RootFolder); }
 
       RenderContentTreeEntryRecursive(m_RootFolder);
@@ -288,29 +312,35 @@ void ContentBrowserPanel::RenderContentTreeEntryRecursive(const FileSystemEntry 
     if (entry->Folder) {
       const auto entryLabel = entry->Path.stem().native();
 
-      if (entry->Subdirectories) {
-        bool open = ImGui::TreeNodeEx_IconText(EditorState::Get().FileIconMap[FileExtension::FOLDER]->RendererID(),
-          EditorState::Get().FileIconMap[FileExtension::FOLDER_OPEN]->RendererID(),
-          entryLabel.c_str(),
-          ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick// NOLINT
-            | ImGuiTreeNodeFlags_SpanFullWidth);
-        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(entry.get()); }
-        if (open) {
-          RenderContentTreeEntryRecursive(*entry);
-          ImGui::TreePop();
-        }
-      } else {
-        ImGui::TreeNodeEx_IconText(EditorState::Get().FileIconMap[FileExtension::FOLDER]->RendererID(),
-          entryLabel.c_str(),
-          ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen// NOLINT
-            | ImGuiTreeNodeFlags_SpanFullWidth);
-        if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(entry.get()); }
+      int treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick// NOLINT
+                      | ImGuiTreeNodeFlags_SpanFullWidth;
+      treeFlags |= (*m_CurrentNavigationPosition == entry.get()) ? ImGuiTreeNodeFlags_Selected : 0;// NOLINT
+      treeFlags |= !entry->Subdirectories ? ImGuiTreeNodeFlags_Leaf | ImGuiTreeNodeFlags_NoTreePushOnOpen : 0;// NOLINT
+
+      bool open = ImGui::TreeNodeEx_IconText(EditorState::Get().FileIconMap[FileExtension::FOLDER]->RendererID(),
+        EditorState::Get().FileIconMap[FileExtension::FOLDER_OPEN]->RendererID(),
+        entryLabel.c_str(),
+        treeFlags);
+      if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(entry.get()); }
+      if (open && entry->Subdirectories) {
+        RenderContentTreeEntryRecursive(*entry);
+        ImGui::TreePop();
       }
     }
   }
 }
 
-void ContentBrowserPanel::RefreshFilesystem() { PopulateFolderEntryRecursive(m_RootFolder); }
+void ContentBrowserPanel::RefreshFilesystem()
+{
+  m_RootFolder.Entries.clear();
+  PopulateFolderEntryRecursive(m_RootFolder);
+
+  m_NavigationStack.clear();
+  m_NavigationStack.push_back(&m_RootFolder);
+  m_CurrentNavigationPosition = std::begin(m_NavigationStack);
+
+  RebuildBreadcrumbsPaths();
+}
 
 void ContentBrowserPanel::PopulateFolderEntryRecursive(FileSystemEntry &folder)// NOLINT
 {

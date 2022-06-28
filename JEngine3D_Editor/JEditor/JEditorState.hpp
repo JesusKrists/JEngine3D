@@ -51,6 +51,7 @@ struct EditorState
 
   /////////////////////////////////////////////////////////
 
+  ImFont *DefaultFont = nullptr;
   ImFont *DefaultFont12 = nullptr;
   ImFont *Segoe16Bold = nullptr;
   ImFont *Segoe24Bold = nullptr;

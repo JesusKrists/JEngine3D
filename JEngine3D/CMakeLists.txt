@@ -64,17 +64,6 @@ target_include_directories(JEngine3D_Executable
                            PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
 target_compile_definitions(JEngine3D_Executable PRIVATE CR_HOST=CR_DISABLE)
 
-add_custom_command(
-  TARGET JEngine3D_Executable
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/JEngine3D_Editor/assets/
-          $<TARGET_FILE_DIR:JEngine3D_Executable>/assets/)
-
-add_custom_command(
-  TARGET JEngine3D_Executable
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:JEngine3D_Editor> $<TARGET_FILE_DIR:JEngine3D_Executable>)
-
 #############################################################################################
 include(${CMAKE_SOURCE_DIR}/CMake/DisableStaticAnalysis.cmake)
 

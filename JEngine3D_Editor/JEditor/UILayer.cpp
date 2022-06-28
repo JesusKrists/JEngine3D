@@ -156,7 +156,6 @@ void UILayer::InitializeUI()
 
   if (!imguiIO.Fonts->IsBuilt()) {
     // Load default font
-    imguiIO.Fonts->AddFontDefault();
 
     auto *font = imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/SEGOEUI.TTF", 16.0f);// NOLINT
     imguiIO.FontDefault = font;
@@ -166,7 +165,9 @@ void UILayer::InitializeUI()
     iconFontConfig.GlyphMinAdvanceX = 16.0f;// NOLINT Use if you want to make the icon monospaced
     static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };// NOLINT
     imguiIO.Fonts->AddFontFromFileTTF(
-      "assets/EditorUI/fonts/fa-regular-400.ttf", 16.0f, &iconFontConfig, icon_ranges);// NOLINT
+      "assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAS, 16.0f, &iconFontConfig, icon_ranges);// NOLINT
+    imguiIO.Fonts->AddFontFromFileTTF(
+      "assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAR, 16.0f, &iconFontConfig, icon_ranges);// NOLINT
 
     EditorState::Get().Segoe16Bold =
       imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/SegoeBold.ttf", 16.0f);// NOLINT
