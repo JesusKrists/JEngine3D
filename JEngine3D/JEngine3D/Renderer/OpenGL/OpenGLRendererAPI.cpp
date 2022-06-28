@@ -48,7 +48,7 @@ namespace JE {
 OpenGLRendererAPI::OpenGLRendererAPI()
 {
   ZoneScopedN("OpenGLRendererAPI::OpenGLRendererAPI");// NOLINT
-#if defined(JE_DEBUG)
+#if defined(JE_DEBUG) && !defined(JE_PLATFORM_APPLE)
   glEnable(GL_DEBUG_OUTPUT);
   glEnable(GL_DEBUG_OUTPUT_SYNCHRONOUS);
   glDebugMessageCallback(OpenGLMessageCallback, nullptr);

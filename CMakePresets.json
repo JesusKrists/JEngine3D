@@ -164,6 +164,19 @@
             }
         },
         {
+            "name": "linux-gcc-dist-nostaticanalysis",
+            "displayName": "gcc Dist No Static Analysis",
+            "description": "Target Linux with the gcc compiler, debug build type",
+            "inherits": "conf-linux-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc-11",
+                "CMAKE_CXX_COMPILER": "g++-11",
+                "CMAKE_BUILD_TYPE": "Release",
+                "OPT_ENABLE_CLANG_TIDY": "FALSE",
+                "OPT_ENABLE_CPPCHECK": "FALSE"
+            }
+        },
+        {
             "name": "linux-clang-debug",
             "displayName": "clang Debug",
             "description": "Target Linux with the clang compiler, debug build type",
@@ -274,6 +287,13 @@
             "description": "Enable output and stop on failure",
             "inherits": "test-common",
             "configurePreset": "linux-gcc-release"
+        },
+        {
+            "name": "test-linux-gcc-release",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "linux-gcc-dist-nostaticanalysis"
         },
         {
             "name": "test-linux-clang-debug",

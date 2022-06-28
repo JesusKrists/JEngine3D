@@ -4,3 +4,4 @@ leak:X11_VideoInit
 leak:libGLX_nvidia.so
 leak:OpenGLRendererAPI
 leak:OpenGLShader
+leak:libnvidia-glcore.so*
