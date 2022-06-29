@@ -3,6 +3,11 @@
 #include "JEngine3D/Core/Assert.hpp"
 #include "JEngine3D/Core/Types.hpp"
 
+
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+
 namespace JE {
 
 class IEventProcessor;

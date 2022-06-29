@@ -3,6 +3,10 @@
 #include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Core/Events.hpp"
 
+#ifdef CreateWindow
+#undef CreateWindow
+#endif
+
 namespace JE {
 
 class IGraphicsContext;
