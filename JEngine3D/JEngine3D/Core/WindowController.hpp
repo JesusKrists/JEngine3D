@@ -81,7 +81,7 @@ public:
   auto CreateWindow(const std::string_view &title,
     const Size2DI &size,
     const Position2DI &position = IPlatformBackend::WINDOW_CENTER_POSITION,
-    const WindowConfiguration &config = {}) -> Window &;
+    const WindowConfiguration &config = WindowConfiguration()) -> Window &;
   void DestroyWindow(Window &window);
   [[nodiscard]] inline auto Windows() const -> const WindowContainer & { return m_Windows; }
   [[nodiscard]] auto WindowFromNativeHandle(IPlatformBackend::NativeWindowHandle handle) -> Window &;

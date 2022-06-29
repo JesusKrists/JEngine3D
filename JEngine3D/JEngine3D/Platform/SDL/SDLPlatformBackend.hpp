@@ -20,7 +20,7 @@ public:
   [[nodiscard]] auto CreateWindow(const std::string_view &title,
     const Size2DI &size,
     const Position2DI &position = WINDOW_CENTER_POSITION,
-    const WindowConfiguration &config = {}) -> NativeWindowHandle override;
+    const WindowConfiguration &config = WindowConfiguration()) -> NativeWindowHandle override;
   void DestroyWindow(NativeWindowHandle handle) override;
   [[nodiscard]] auto ValidWindowHandle(NativeWindowHandle handle) -> bool override;
 
