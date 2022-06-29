@@ -16,6 +16,7 @@
 
 namespace JEditor {
 
+
 enum class FileExtension {
   FOLDER,
   FOLDER_OPEN,
