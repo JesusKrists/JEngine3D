@@ -40,8 +40,9 @@ private:
 
   [[nodiscard]] inline auto TrimCurrentDirToContentDir() const -> std::filesystem::path
   {
-    auto subStringIndex = (*m_CurrentNavigationPosition)->Path.native().find(CONTENT_HOME_FOLDER / CONTENT_DIR);
-    return (*m_CurrentNavigationPosition)->Path.native().substr(subStringIndex + CONTENT_HOME_FOLDER.native().length());
+    const auto CURRENT_DIR_FULL_PATH = (*m_CurrentNavigationPosition)->Path.generic_string();
+    auto subStringIndex = CURRENT_DIR_FULL_PATH.find(CONTENT_HOME_FOLDER / CONTENT_DIR);
+    return CURRENT_DIR_FULL_PATH.substr(subStringIndex + CONTENT_HOME_FOLDER.native().length());
   }
 
 

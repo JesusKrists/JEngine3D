@@ -68,13 +68,15 @@ void ContentBrowserPanel::OnImGuiRender()
     if (m_BreadcrumbsPaths.size() > 1) {
       int index = 0;
       for (const auto &entry : m_BreadcrumbsPaths) {
+        const auto FOLDER_NAME = entry->Path.stem().generic_string();
+
         ImGui::PushID(index);
         if (index++ == 0) {
           ImGui::SameLine(0, BREADCRUMBS_START_OFFSET_X);
         } else {
           ImGui::SameLine(0, 0);
         }
-        if (ImGui::Button(entry->Path.stem().c_str())) { ChangeDirectory(entry); }
+        if (ImGui::Button(FOLDER_NAME.c_str())) { ChangeDirectory(entry); }
 
         if (entry != m_BreadcrumbsPaths.back()) {
           ImGui::PushFont(EditorState::Get().DefaultFont12);
@@ -235,19 +237,19 @@ void ContentBrowserPanel::OnImGuiRender()
 
       bool folder = entry->Folder;
       if (folder) {
-        auto folderName = entry->Path.stem();
+        const auto FOLDER_NAME = entry->Path.stem().generic_string();
         if (ImGui::ImageButton(EditorState::Get().FileIconMap[FileExtension::FOLDER]->RendererID(), FOLDER_ICON_SIZE)) {
           ChangeDirectory(entry.get());
         }
 
-        const auto textWidth = ImGui::CalcTextSize(folderName.c_str()).x;
+        const auto textWidth = ImGui::CalcTextSize(FOLDER_NAME.c_str()).x;
         ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5F);// NOLINT
-        ImGui::TextUnformatted(folderName.c_str());
+        ImGui::TextUnformatted(FOLDER_NAME.c_str());
       } else {
         ImGui::BeginGroup();
-        const auto FILE_EXTENSION = entry->Path.extension().native();
-        const auto FILE_EXTENSION_UPPER = JE::ToUpper(entry->Path.extension().native());
-        auto fileName = entry->Path.stem();
+        const auto FILE_EXTENSION = entry->Path.extension().generic_string();
+        const auto FILE_EXTENSION_UPPER = JE::ToUpper(FILE_EXTENSION);
+        const auto FILE_NAME = entry->Path.stem().generic_string();
         ImGui::ImageButton(
           EditorState::Get().FileIconMap[StringToFileExtension(FILE_EXTENSION)]->RendererID(), FOLDER_ICON_SIZE);
 
@@ -263,16 +265,17 @@ void ContentBrowserPanel::OnImGuiRender()
           textPos, ImGui::GetColorU32(ImGuiCol_Text), FILE_EXTENSION_UPPER.c_str() + 1);// NOLINT Skip the .
         ImGui::PopFont();
 
-        const auto textWidth = ImGui::CalcTextSize(fileName.c_str()).x;
+        const auto textWidth = ImGui::CalcTextSize(FILE_NAME.c_str()).x;
         ImGui::SetCursorPosX((windowWidth - textWidth) * 0.5F);// NOLINT
-        ImGui::TextUnformatted(fileName.c_str());
+        ImGui::TextUnformatted(FILE_NAME.c_str());
         ImGui::EndGroup();
 
         if (ImGui::BeginDragDropSource(ImGuiDragDropFlags_SourceAllowNullID)) {
+          const auto FULL_PATH = entry->Path.generic_string();
           // Set payload to carry the index of our item (could be anything)
-          ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", entry->Path.c_str(), entry->Path.native().size());
+          ImGui::SetDragDropPayload("CONTENT_BROWSER_ITEM", FULL_PATH.c_str(), FULL_PATH.size());
 
-          ImGui::Text("%s%s", fileName.c_str(), FILE_EXTENSION.c_str());// NOLINT
+          ImGui::Text("%s%s", FILE_NAME.c_str(), FILE_EXTENSION.c_str());// NOLINT
 
           ImGui::EndDragDropSource();
         }
@@ -310,7 +313,7 @@ void ContentBrowserPanel::RenderContentTreeEntryRecursive(const FileSystemEntry 
 {
   for (const auto &entry : folder.Entries) {
     if (entry->Folder) {
-      const auto entryLabel = entry->Path.stem().native();
+      const auto FOLDER_NAME = entry->Path.stem().generic_string();
 
       int treeFlags = ImGuiTreeNodeFlags_OpenOnArrow | ImGuiTreeNodeFlags_OpenOnDoubleClick// NOLINT
                       | ImGuiTreeNodeFlags_SpanFullWidth;
@@ -319,7 +322,7 @@ void ContentBrowserPanel::RenderContentTreeEntryRecursive(const FileSystemEntry 
 
       bool open = ImGui::TreeNodeEx_IconText(EditorState::Get().FileIconMap[FileExtension::FOLDER]->RendererID(),
         EditorState::Get().FileIconMap[FileExtension::FOLDER_OPEN]->RendererID(),
-        entryLabel.c_str(),
+        FOLDER_NAME.c_str(),
         treeFlags);
       if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(entry.get()); }
       if (open && entry->Subdirectories) {
