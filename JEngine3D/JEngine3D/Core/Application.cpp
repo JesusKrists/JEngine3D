@@ -41,7 +41,13 @@ Application::Application(const std::string_view &title, bool testMode)
 
   Logger::CoreLogger().debug("Application address: {}", fmt::ptr(this));
 
-  if (!m_TestMode) { m_MainPluginContext.Open(WORKING_DIRECTORY + "/" CR_PLUGIN("JEngine3D_Editor")); }
+  if (!m_TestMode) {
+#if defined(JE_DEBUG)
+    m_MainPluginContext.Open(WORKING_DIRECTORY + "/" CR_PLUGIN("JEngine3D_Editord"));
+#else
+    m_MainPluginContext.Open(WORKING_DIRECTORY + "/" CR_PLUGIN("JEngine3D_Editor"));
+#endif
+  }
 }
 
 void Application::OnEvent(IEvent &event)

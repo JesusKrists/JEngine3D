@@ -23,6 +23,9 @@ target_include_directories(JEngine3D_Editor PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 target_include_directories(JEngine3D_Editor
                            PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
 
+set_target_properties(JEngine3D_Editor PROPERTIES DEBUG_POSTFIX "d")
+set_target_properties(JEngine3D_Editor PROPERTIES RELWITHDEBINFO_POSTFIX "d")
+
 add_custom_command(
   TARGET JEngine3D_Editor
   POST_BUILD

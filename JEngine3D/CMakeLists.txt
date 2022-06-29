@@ -51,6 +51,9 @@ if(OPT_ENABLE_SANITIZER_ADDRESS OR OPT_ENABLE_SANITIZER_UNDEFINED_BEHAVIOR)
   enable_clang_runtime_sanitizers(JEngine3D)
 endif()
 
+set_target_properties(JEngine3D PROPERTIES DEBUG_POSTFIX "d")
+set_target_properties(JEngine3D PROPERTIES RELWITHDEBINFO_POSTFIX "d")
+
 ###############################################################################################
 
 add_executable(JEngine3D_Executable JEngine3D/Core/EntryPoint.cpp)

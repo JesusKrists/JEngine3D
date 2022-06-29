@@ -53,7 +53,7 @@ public:
   [[nodiscard]] virtual auto CreateWindow(const std::string_view &title,
     const Size2DI &size,
     const Position2DI &position = WINDOW_CENTER_POSITION,
-    const WindowConfiguration &config = WindowConfiguration{}) -> NativeWindowHandle = 0;
+    const WindowConfiguration &config = {}) -> NativeWindowHandle = 0;
   virtual void DestroyWindow(NativeWindowHandle handle) = 0;
   [[nodiscard]] virtual auto ValidWindowHandle(NativeWindowHandle handle) -> bool = 0;
 

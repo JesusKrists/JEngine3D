@@ -19,3 +19,6 @@ disable_static_analysis(ImGui_SWLibrary)
 
 target_link_libraries(ImGui_SWLibrary PRIVATE project_options ImGuiLibrary)
 target_include_directories(ImGui_SWLibrary PUBLIC ${imgui_sw_SOURCE_DIR}/src)
+
+set_target_properties(ImGui_SWLibrary PROPERTIES DEBUG_POSTFIX "d")
+set_target_properties(ImGui_SWLibrary PROPERTIES RELWITHDEBINFO_POSTFIX "d")

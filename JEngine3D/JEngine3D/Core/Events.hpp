@@ -212,7 +212,7 @@ class KeyPressEvent final : public IKeyboardEvent
 public:
   KeyPressEvent(IPlatformBackend::NativeWindowHandle handle,
     KeyCode key,
-    const KeyModifiers &modifiers = KeyModifiers{},
+    const KeyModifiers &modifiers = {},
     int32_t repeat = 0)
     : IKeyboardEvent(handle), m_Key(key), m_Modifiers(modifiers), m_Repeat(repeat)
   {}
@@ -233,7 +233,7 @@ class KeyReleaseEvent final : public IKeyboardEvent
 public:
   KeyReleaseEvent(IPlatformBackend::NativeWindowHandle handle,
     KeyCode key,
-    const KeyModifiers &modifiers = KeyModifiers{},
+    const KeyModifiers &modifiers = {},
     int32_t repeat = 0)
     : IKeyboardEvent(handle), m_Key(key), m_Modifiers(modifiers), m_Repeat(repeat)
   {}

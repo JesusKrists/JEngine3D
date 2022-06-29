@@ -39,3 +39,6 @@ target_include_directories(ImGuiLibrary PRIVATE ${CMAKE_SOURCE_DIR}/JEngine3D)
 target_compile_definitions(ImGuiLibrary PUBLIC "IMGUI_USER_CONFIG=\"JEngine3D/Core/ImGui/config.hpp\"")
 
 disable_static_analysis(ImGuiLibrary)
+
+set_target_properties(ImGuiLibrary PROPERTIES DEBUG_POSTFIX "d")
+set_target_properties(ImGuiLibrary PROPERTIES RELWITHDEBINFO_POSTFIX "d")
