@@ -164,7 +164,7 @@ public:
   }
   [[nodiscard]] inline auto IndexCount() const -> size_t { return m_IndexCount; }
 
-protected:
+private:
   virtual void UploadData(const std::span<const uint32_t> &data) = 0;
 
   size_t m_IndexCount = 0;

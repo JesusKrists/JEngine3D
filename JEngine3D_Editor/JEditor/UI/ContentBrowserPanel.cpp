@@ -31,7 +31,7 @@ ContentBrowserPanel::ContentBrowserPanel() : IPanel("Content Browser")
     ImFontConfig iconFontConfig;
     iconFontConfig.MergeMode = true;
     iconFontConfig.GlyphMinAdvanceX = 13.0F;// NOLINT Use if you want to make the icon monospaced
-    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };// NOLINT
+    static constexpr ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };// NOLINT
     imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAS,
       13.0F,// NOLINT
       &iconFontConfig,
@@ -56,7 +56,7 @@ ContentBrowserPanel::ContentBrowserPanel() : IPanel("Content Browser")
 // NOLINTNEXTLINE
 void ContentBrowserPanel::OnImGuiRender()
 {
-  static const ImVec2 TOP_BAR_ICON_SIZE = { ImGui::GetFontSize(), ImGui::GetFontSize() };
+  const ImVec2 TOP_BAR_ICON_SIZE = { ImGui::GetFontSize(), ImGui::GetFontSize() };
   const auto CURRENT_DIR_TRIMMED = TrimCurrentDirToContentDir();
 
   const ImGuiStyle &IMGUI_STYLE = ImGui::GetCurrentContext()->Style;
@@ -350,7 +350,7 @@ void ContentBrowserPanel::PopulateFolderEntryRecursive(FileSystemEntry &folder)/
     if (entry.is_directory()) {
       folder.Subdirectories = true;
 
-      auto &newEntry = folder.Entries.back();
+      const auto &newEntry = folder.Entries.back();
       newEntry->Parent = &folder;
       PopulateFolderEntryRecursive(*newEntry);
     }

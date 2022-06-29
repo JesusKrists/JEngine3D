@@ -23,5 +23,6 @@ public:
   inline void Bind() const override {}
   inline void Unbind() const override {}
 
+private:
   inline void UploadData(const std::span<const uint32_t> &data) override { JE::UNUSED(data); }
 };

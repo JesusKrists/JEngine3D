@@ -27,7 +27,7 @@ Application::Application(const std::string_view &title, bool testMode)
     DEFAULT_SIZE,
     IPlatformBackend::WINDOW_CENTER_POSITION,
     MAIN_WINDOW_CONFIG)),
-    m_RendererAPI(IRendererObjectCreator::Get().CreateAPI()), m_TestMode(testMode)
+    m_TestMode(testMode)
 {
   ZoneScopedN("Application::Application");// NOLINT
 
@@ -46,7 +46,7 @@ Application::Application(const std::string_view &title, bool testMode)
 
 void Application::OnEvent(IEvent &event)
 {
-  ReverseForEach(m_LayerStack, [&](Scope<ILayer, MemoryTag::App> &layer) {
+  ReverseForEach(m_LayerStack, [&](const Scope<ILayer, MemoryTag::App> &layer) {
     layer->OnEvent(event);
     if (event.Handled()) { return; }
   });
@@ -152,14 +152,14 @@ void Application::ProcessMainLoop()
 
     {
       ZoneScopedN("OnUpdate");// NOLINT
-      ForEach(m_LayerStack, [](Scope<ILayer, MemoryTag::App> &layer) { layer->OnUpdate(); });
+      ForEach(m_LayerStack, [](const Scope<ILayer, MemoryTag::App> &layer) { layer->OnUpdate(); });
     }
     {
       ZoneScopedN("ImGuiLayer Process and Render");// NOLINT
       m_ImGuiLayer->Begin();
       {
         ZoneScopedN("OnImGuiRender");// NOLINT
-        ForEach(m_LayerStack, [](Scope<ILayer, MemoryTag::App> &layer) { layer->OnImGuiRender(); });
+        ForEach(m_LayerStack, [](const Scope<ILayer, MemoryTag::App> &layer) { layer->OnImGuiRender(); });
       }
       {
         ZoneScopedN("DebugViewRender");// NOLINT

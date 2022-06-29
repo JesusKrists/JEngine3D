@@ -5,7 +5,7 @@ namespace JE {
 
 LayerStack::~LayerStack()
 {
-  ReverseForEach(m_Layers, [](Scope<ILayer, MemoryTag::App> &layer) { layer->OnDestroy(); });
+  ReverseForEach(m_Layers, [](const Scope<ILayer, MemoryTag::App> &layer) { layer->OnDestroy(); });
 }
 
 void LayerStack::PopLayer(ILayer &layer)

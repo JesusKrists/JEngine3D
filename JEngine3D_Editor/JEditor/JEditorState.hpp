@@ -5,6 +5,7 @@
 #include <JEngine3D/Core/Assert.hpp>
 #include <JEngine3D/Renderer/IFramebuffer.hpp>
 #include <JEngine3D/Renderer/ITexture.hpp>
+#include <JEngine3D/Utility/ImageLoader.hpp>
 #include <JEngine3D/Utility/StringManipulation.hpp>
 
 #include <algorithm>
@@ -15,7 +16,7 @@
 
 namespace JEditor {
 
-enum FileExtension {
+enum class FileExtension {
   FOLDER,
   FOLDER_OPEN,
   SVG,
@@ -31,10 +32,10 @@ inline auto StringToFileExtension(const std::string_view &extension) -> FileExte
 {
   auto extensionLower = JE::ToLower(extension);
 
-  if (extensionLower == ".svg") { return FileExtension::SVG; }
-  if (extensionLower == ".jpg") { return FileExtension::JPG; }
-  if (extensionLower == ".ttf") { return FileExtension::TTF; }
-  if (extensionLower == ".ini") { return FileExtension::INI; }
+  if (extensionLower == JE::SVG_EXTENSION_STR) { return FileExtension::SVG; }
+  if (extensionLower == JE::JPG_EXTENSION_STR) { return FileExtension::JPG; }
+  if (extensionLower == JE::TTF_EXTENSION_STR) { return FileExtension::TTF; }
+  if (extensionLower == JE::INI_EXTENSION_STR) { return FileExtension::INI; }
 
   return FileExtension::UNKNOWN;
 }

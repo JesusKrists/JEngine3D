@@ -25,7 +25,7 @@ static void CheckShaderErrors(uint32_t rendererID, GLenum status)
     glGetShaderInfoLog(rendererID, infoLog.size(), nullptr, infoLog.data());
     Logger::CoreLogger().error("Failed to compile/link shader: {}", infoLog.data());
     DEBUGBREAK();
-  };
+  }
 }
 
 static auto GetUniformLocation(uint32_t rendererID, const std::string_view &uniformName) -> int32_t

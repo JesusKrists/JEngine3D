@@ -28,7 +28,7 @@ public:
   template<typename DerivedLayer, typename... Args> inline auto PushOverlay(Args &&...args) -> DerivedLayer &
   {
     m_Layers.push_back(CreatePolymorphicScope<DerivedLayer, MemoryTag::App, ILayer>(std::forward<Args>(args)...));
-    auto &layer = m_Layers.back();
+    const auto &layer = m_Layers.back();
     layer->OnCreate();
     return static_cast<DerivedLayer &>(*layer);
   }

@@ -100,7 +100,7 @@ private:
 
 template<typename T, MemoryTag TAG = MemoryTag::Unknown> struct MemoryControllerAllocator : public std::allocator<T>
 {
-  MemoryControllerAllocator() {}// NOLINT
+  MemoryControllerAllocator() = default;
 
   // cppcheck-suppress noExplicitConstructor
   template<class U> MemoryControllerAllocator(MemoryControllerAllocator<U, TAG> const &) {}// NOLINT
@@ -171,7 +171,7 @@ namespace std {
 
 template<typename T, JE::MemoryTag TAG> struct hash<JE::Scope<T, TAG>>
 {
-  auto operator()(const JE::Scope<T, TAG> &val) const -> size_t { return hash<T *>(val.get()); }
+  inline auto operator()(const JE::Scope<T, TAG> &val) const -> size_t { return hash<T *>(val.get()); }
 };
 
 }// namespace std

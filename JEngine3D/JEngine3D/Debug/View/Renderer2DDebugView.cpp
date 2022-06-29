@@ -18,7 +18,7 @@ void Renderer2DDebugView::OnImGuiRender()
 {
   auto RenderRenderer2DModifiableIntParameter =
     [](const std::string &label, size_t parameterValue, size_t min, size_t max, auto setterFunc) {// NOLINT
-      int newValue = static_cast<int>(parameterValue);
+      auto newValue = static_cast<int>(parameterValue);
       ImGui::SliderInt(label.c_str(), &newValue, static_cast<int>(min), static_cast<int>(max));
       if (static_cast<size_t>(newValue) != parameterValue) { setterFunc(static_cast<size_t>(newValue)); }
     };

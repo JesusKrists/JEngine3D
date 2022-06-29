@@ -11,7 +11,7 @@ auto ImageLoader::LoadImageFromPath(const std::filesystem::path &filePath, const
 {
   auto fileExtension = ToLower(filePath.extension().native());
 
-  if (fileExtension == ".svg") {
+  if (fileExtension == SVG_EXTENSION_STR) {
     ASSERT(config.SizePreference.Width != 0 && config.SizePreference.Height != 0, "SVG requires a size preference");
 
     auto document = lunasvg::Document::loadFromFile(filePath.native());

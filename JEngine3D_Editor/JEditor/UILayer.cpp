@@ -163,7 +163,7 @@ void UILayer::InitializeUI()
     ImFontConfig iconFontConfig;
     iconFontConfig.MergeMode = true;
     iconFontConfig.GlyphMinAdvanceX = 16.0f;// NOLINT Use if you want to make the icon monospaced
-    static const ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };// NOLINT
+    static constexpr ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };// NOLINT
     imguiIO.Fonts->AddFontFromFileTTF(
       "assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAS, 16.0f, &iconFontConfig, icon_ranges);// NOLINT
     imguiIO.Fonts->AddFontFromFileTTF(

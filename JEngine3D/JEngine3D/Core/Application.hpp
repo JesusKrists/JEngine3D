@@ -105,7 +105,7 @@ private:
 
   cr_plugin m_MainPluginContext;
   Window &m_MainWindow;
-  Scope<IRendererAPI, MemoryTag::Renderer> m_RendererAPI;
+  Scope<IRendererAPI, MemoryTag::Renderer> m_RendererAPI = IRendererObjectCreator::Get().CreateAPI();
   JE::Renderer2D m_Renderer2D;
 
   JE::ImGuiLayer *m_ImGuiLayer;
