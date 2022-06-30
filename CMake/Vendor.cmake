@@ -135,7 +135,7 @@ set(TRACY_ONLY_LOCALHOST
 FetchContent_Declare(
   tracy
   GIT_REPOSITORY https://github.com/wolfpld/tracy.git
-  GIT_TAG v0.8.1)
+  GIT_TAG v0.8.2)
 
 FetchContent_MakeAvailable(tracy)
 disable_static_analysis(TracyClient)

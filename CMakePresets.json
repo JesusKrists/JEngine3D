@@ -47,6 +47,9 @@
                 "microsoft.com/VisualStudioRemoteSettings/CMake/1.0": {
                     "sourceDir": "$env{HOME}/.vs/$ms{projectDirName}"
                 }
+            },
+            "cacheVariables": {
+                "ENABLE_TRACY_PROFILING": "TRUE"
             }
         },
         {
