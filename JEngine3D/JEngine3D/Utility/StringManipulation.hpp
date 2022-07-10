@@ -2,6 +2,7 @@
 
 #include <iterator>
 #include <string>
+#include <algorithm>
 
 namespace JE {
 

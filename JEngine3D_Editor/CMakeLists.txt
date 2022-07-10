@@ -32,7 +32,7 @@ add_custom_command(
   COMMAND ${CMAKE_COMMAND} -E copy_directory ${CMAKE_SOURCE_DIR}/JEngine3D_Editor/assets/
           $<TARGET_FILE_DIR:JEngine3D_Executable>/assets/)
 
-add_custom_command(
-  TARGET JEngine3D_Editor
-  POST_BUILD
-  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:JEngine3D_Editor> $<TARGET_FILE_DIR:JEngine3D_Executable>)
+#add_custom_command(
+#  TARGET JEngine3D_Editor
+#  POST_BUILD
+#  COMMAND ${CMAKE_COMMAND} -E copy $<TARGET_FILE:JEngine3D_Editor> $<TARGET_FILE_DIR:JEngine3D_Executable>)

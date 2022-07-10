@@ -18,6 +18,9 @@ if(NOT MSVC AND NOT XCODE)
 endif()
 
 ########################## fmt ########################################
+set(BUILD_SHARED_LIBS_BEFORE ${BUILD_SHARED_LIBS})
+set(BUILD_SHARED_LIBS ON)
+
 FetchContent_Declare(
   fmt
   GIT_REPOSITORY https://github.com/fmtlib/fmt.git
@@ -26,10 +29,15 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(fmt)
 disable_static_analysis(fmt)
 
+set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_BEFORE})
+
 ########################## spdlog ######################################
 set(SPDLOG_FMT_EXTERNAL
     ON
     CACHE BOOL "Enable external fmtlib" FORCE)
+set(SPDLOG_BUILD_SHARED
+    ON
+    CACHE BOOL "Enable shared library" FORCE)
 FetchContent_Declare(
   spdlog
   GIT_REPOSITORY https://github.com/gabime/spdlog.git
@@ -68,8 +76,22 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(SDL2)
 
+target_compile_definitions(SDL2-static PUBLIC SDL_STATIC_LIB)
+#target_compile_definitions(SDL2 PUBLIC SDL_STATIC_LIB)
+
+if(MSVC)
+  if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
+    target_link_libraries(SDL2-static PRIVATE msvcrtd ucrtd vcruntimed)
+    #target_link_libraries(SDL2 PRIVATE msvcrtd ucrtd vcruntimed)
+  else()
+    target_link_libraries(SDL2-static PRIVATE msvcrt ucrt vcruntime)
+    #target_link_libraries(SDL2 PRIVATE msvcrt ucrt vcruntime)
+  endif()
+endif()
+
 disable_static_analysis(SDL2main)
 disable_static_analysis(SDL2-static)
+#disable_static_analysis(SDL2)
 
 ############################## ImGui #############################################
 
@@ -132,6 +154,9 @@ set(TRACY_ONLY_LOCALHOST
     ON
     CACHE BOOL "Only localhost network interface" FORCE)
 
+set(BUILD_SHARED_LIBS_BEFORE ${BUILD_SHARED_LIBS})
+set(BUILD_SHARED_LIBS ON)
+
 FetchContent_Declare(
   tracy
   GIT_REPOSITORY https://github.com/wolfpld/tracy.git
@@ -140,6 +165,8 @@ FetchContent_Declare(
 FetchContent_MakeAvailable(tracy)
 disable_static_analysis(TracyClient)
 #target_compile_definitions(TracyClient PUBLIC TRACY_NO_SYSTEM_TRACING)
+
+set(BUILD_SHARED_LIBS ${BUILD_SHARED_LIBS_BEFORE})
 
 if(ENABLE_TRACY_PROFILING)
   include(${CMAKE_SOURCE_DIR}/CMake/TracyServerTarget.cmake)
@@ -162,3 +189,53 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(lunasvg)
 disable_static_analysis(lunasvg)
+
+############################### System include interface library ###################################
+
+add_library(VENDOR_SYSTEM_INCLUDES INTERFACE)
+
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:docopt_s,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM INTERFACE $<TARGET_PROPERTY:fmt,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:spdlog,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:SDL2-static,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:ImGuiLibrary,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:libglew_static,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:TracyClient,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:lunasvg,INTERFACE_INCLUDE_DIRECTORIES>)
+
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:docopt_s,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:fmt,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:spdlog,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:SDL2-static,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:ImGuiLibrary,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:libglew_static,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:TracyClient,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
+target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
+                           INTERFACE $<TARGET_PROPERTY:lunasvg,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
+
+target_compile_definitions(VENDOR_SYSTEM_INCLUDES INTERFACE $<TARGET_PROPERTY:docopt_s,INTERFACE_COMPILE_DEFINITIONS>)
+target_compile_definitions(VENDOR_SYSTEM_INCLUDES INTERFACE $<TARGET_PROPERTY:fmt,INTERFACE_COMPILE_DEFINITIONS>)
+target_compile_definitions(VENDOR_SYSTEM_INCLUDES INTERFACE $<TARGET_PROPERTY:spdlog,INTERFACE_COMPILE_DEFINITIONS>)
+target_compile_definitions(VENDOR_SYSTEM_INCLUDES
+                           INTERFACE $<TARGET_PROPERTY:SDL2-static,INTERFACE_COMPILE_DEFINITIONS>)
+target_compile_definitions(VENDOR_SYSTEM_INCLUDES
+                           INTERFACE $<TARGET_PROPERTY:ImGuiLibrary,INTERFACE_COMPILE_DEFINITIONS>)
+target_compile_definitions(VENDOR_SYSTEM_INCLUDES
+                           INTERFACE $<TARGET_PROPERTY:libglew_static,INTERFACE_COMPILE_DEFINITIONS>)
+target_compile_definitions(VENDOR_SYSTEM_INCLUDES
+                           INTERFACE $<TARGET_PROPERTY:TracyClient,INTERFACE_COMPILE_DEFINITIONS>)
+target_compile_definitions(VENDOR_SYSTEM_INCLUDES INTERFACE $<TARGET_PROPERTY:lunasvg,INTERFACE_COMPILE_DEFINITIONS>)

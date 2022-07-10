@@ -13,7 +13,6 @@ CMakeUserPresets.json
 *~
 _ReSharper*
 *.log
-.vscode/settings.json
 
 # OS Generated Files
 .DS_Store

@@ -38,10 +38,11 @@ private:
   void RefreshFilesystem();
   void PopulateFolderEntryRecursive(FileSystemEntry &folder);
 
-  [[nodiscard]] inline auto TrimCurrentDirToContentDir() const -> std::filesystem::path
+  [[nodiscard]] inline auto TrimCurrentDirToContentDir() const -> std::string
   {
     const auto CURRENT_DIR_FULL_PATH = (*m_CurrentNavigationPosition)->Path.generic_string();
-    auto subStringIndex = CURRENT_DIR_FULL_PATH.find(CONTENT_HOME_FOLDER / CONTENT_DIR);
+    const auto findPath = CONTENT_HOME_FOLDER / CONTENT_DIR;
+    const auto subStringIndex = CURRENT_DIR_FULL_PATH.find(findPath.generic_string());
     return CURRENT_DIR_FULL_PATH.substr(subStringIndex + CONTENT_HOME_FOLDER.native().length());
   }
 

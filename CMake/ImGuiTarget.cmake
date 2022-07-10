@@ -14,9 +14,9 @@ set(ImGui_SOURCES
     ${imgui_SOURCE_DIR}/imgui_demo.cpp
     ${imgui_SOURCE_DIR}/imgui_draw.cpp
     ${imgui_SOURCE_DIR}/imgui_tables.cpp
-    ${imgui_SOURCE_DIR}/imgui_widgets.cpp
-    ${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
-    ${imgui_SOURCE_DIR}/backends/imgui_impl_sdl.cpp)
+    ${imgui_SOURCE_DIR}/imgui_widgets.cpp)
+#${imgui_SOURCE_DIR}/backends/imgui_impl_opengl3.cpp
+#${imgui_SOURCE_DIR}/backends/imgui_impl_sdl.cpp)
 
 set(ImGui_HEADERS
     ${imgui_SOURCE_DIR}/imconfig.h
@@ -26,10 +26,12 @@ set(ImGui_HEADERS
     ${imgui_SOURCE_DIR}/imstb_textedit.h
     ${imgui_SOURCE_DIR}/imstb_truetype.h)
 
-add_library(ImGuiLibrary ${ImGui_SOURCES} ${ImGui_HEADERS})
+add_library(ImGuiLibrary SHARED ${ImGui_SOURCES} ${ImGui_HEADERS})
 
-target_link_libraries(ImGuiLibrary PRIVATE project_options SDL2-static)
-target_include_system_library(ImGuiLibrary PUBLIC fmt::fmt)
+target_link_libraries(ImGuiLibrary PRIVATE project_options)
+
+target_include_directories(ImGuiLibrary SYSTEM PUBLIC $<TARGET_PROPERTY:fmt,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(ImGuiLibrary SYSTEM PUBLIC $<TARGET_PROPERTY:SDL2-static,INTERFACE_INCLUDE_DIRECTORIES>)
 target_include_directories(ImGuiLibrary SYSTEM PUBLIC $<TARGET_PROPERTY:glm,INTERFACE_INCLUDE_DIRECTORIES>)
 
 target_include_directories(ImGuiLibrary PUBLIC ${imgui_SOURCE_DIR})

@@ -7,7 +7,5 @@ FetchContent_Declare(
 
 FetchContent_Populate(cr)
 
-set(cr_headers ${cr_SOURCE_DIR}/cr.h)
-
-add_library(CRTarget INTERFACE ${cr_headers})
+add_library(CRTarget INTERFACE)
 target_include_directories(CRTarget INTERFACE ${cr_SOURCE_DIR})

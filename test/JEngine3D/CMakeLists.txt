@@ -27,7 +27,6 @@ catch_discover_tests(
 
 add_executable(JEngine3D_Platform_tests ${UNITTEST_PLATFORM_SOURCES})
 target_link_libraries(JEngine3D_Platform_tests PRIVATE project_warnings project_options JEngine3D_catch_base)
-target_link_system_libraries(JEngine3D_Platform_tests PRIVATE SDL2-static)
 disable_static_analysis(JEngine3D_Platform_tests)
 
 # automatically discover tests that are defined in catch based test files you can modify the unittests. Set TEST_PREFIX

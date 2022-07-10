@@ -13,6 +13,9 @@ set(MEMORYCHECK_COMMAND_OPTIONS
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_C_STANDARD 11)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
+set(CMAKE_WINDOWS_EXPORT_ALL_SYMBOLS ON)
+set(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
+set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR})
 
 # strongly encouraged to enable this globally to avoid conflicts between
 # -Wpedantic being enabled and -std=c++20 and -std=gnu++20 for example
@@ -24,9 +27,12 @@ set(CMAKE_C_EXTENSIONS ON)
 set(WARNINGS_AS_ERRORS_DEVELOPER_DEFAULT TRUE)
 set(ENABLE_INCLUDE_WHAT_YOU_USE_DEVELOPER_DEFAULT FALSE)
 
-set(ENABLE_PCH_USER_DEFAULT TRUE) # TODO(JesusKrists) - Create proper precompiled headers for JEngine3D targets
-set(ENABLE_UNITY_USER_DEFAULT TRUE
-)# TODO(JesusKrists) - ENABLE_UNITY does not work, have to set unity build manually on target
+# Fix MSVC toolchain stuff with this workaround (By default this is set to AMD64, which is incorrect)
+if(MSVC)
+  set(CMAKE_SYSTEM_PROCESSOR
+      ${MSVC_CXX_ARCHITECTURE_ID}
+      CACHE STRING "MSVC compiler path stuff" FORCE)
+endif()
 
 # Add project_options v0.20.0
 # https://github.com/aminya/project_options
@@ -133,5 +139,13 @@ if(${CMAKE_BUILD_TYPE} STREQUAL Debug OR ${CMAKE_BUILD_TYPE} STREQUAL RelWithDeb
     if(CMAKE_CXX_COMPILER_ID MATCHES ".*Clang.*")
       target_compile_options(project_options INTERFACE -mno-omit-leaf-frame-pointer)
     endif()
+  endif()
+endif()
+
+if(MSVC)
+  if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
+    target_link_libraries(project_options INTERFACE msvcrtd ucrtd vcruntimed)
+  else()
+    target_link_libraries(project_options INTERFACE msvcrt ucrt vcruntime)
   endif()
 endif()

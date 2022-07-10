@@ -42,7 +42,7 @@ private:
   std::shared_ptr<spdlog::logger> m_ClientLogger;
   std::shared_ptr<spdlog::logger> m_TestLogger;
 
-  static LoggerController *s_LoggerControllerInstance;// NOLINT
+  JAPI static LoggerController *s_LoggerControllerInstance;// NOLINT
 };
 
 

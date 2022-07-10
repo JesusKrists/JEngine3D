@@ -20,7 +20,7 @@
 
 namespace JE {
 
-Application *Application::s_ApplicationInstance = nullptr;// NOLINT
+JAPI Application *Application::s_ApplicationInstance = nullptr;// NOLINT
 
 Application::Application(const std::string_view &title, bool testMode)
   : m_MainWindow(WindowController::Get().CreateWindow(title,

@@ -175,7 +175,7 @@ void ContentBrowserPanel::OnImGuiRender()
     ImGui::SetNextItemOpen(true);
     if (ImGui::TreeNodeEx_IconText(EditorState::Get().FileIconMap[FileExtension::FOLDER]->RendererID(),
           EditorState::Get().FileIconMap[FileExtension::FOLDER_OPEN]->RendererID(),
-          CONTENT_DIR.c_str(),
+          CONTENT_DIR.generic_string().c_str(),
           treeFlags)) {
       if (ImGui::IsItemClicked() && !ImGui::IsItemToggledOpen()) { ChangeDirectory(&m_RootFolder); }
 

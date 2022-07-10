@@ -2,6 +2,6 @@
 
 namespace JE {
 
-IGraphicsContext *IGraphicsContext::s_CurrentContext = nullptr;// NOLINT
+JAPI IGraphicsContext *IGraphicsContext::s_CurrentContext = nullptr;// NOLINT
 
 }

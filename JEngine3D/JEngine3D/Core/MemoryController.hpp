@@ -95,7 +95,7 @@ private:
   int64_t m_TotalAllocationCount = 0;
   int64_t m_TotalDeallocationCount = 0;
 
-  static MemoryController *s_MemoryControllerInstance;// NOLINT
+  JAPI static MemoryController *s_MemoryControllerInstance;// NOLINT
 };
 
 template<typename T, MemoryTag TAG = MemoryTag::Unknown> struct MemoryControllerAllocator : public std::allocator<T>

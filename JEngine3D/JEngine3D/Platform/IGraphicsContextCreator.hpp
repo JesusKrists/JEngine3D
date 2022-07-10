@@ -32,7 +32,7 @@ public:
     -> Scope<IGraphicsContext, MemoryTag::App> = 0;
 
 private:
-  static IGraphicsContextCreator *s_GraphicsContextCreatorInstance;// NOLINT
+  JAPI static IGraphicsContextCreator *s_GraphicsContextCreatorInstance;// NOLINT
 };
 
 }// namespace JE

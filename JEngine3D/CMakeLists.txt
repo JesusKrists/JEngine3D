@@ -12,16 +12,16 @@ target_link_system_libraries(
   PRIVATE
   SDL2-static
   libglew_static
+  lunasvg
   PUBLIC
-  CRTarget
   fmt::fmt
   spdlog
   ImGuiLibrary
-  glm::glm
-  STBTarget
   Tracy::TracyClient
-  lunasvg)
-target_compile_definitions(JEngine3D PRIVATE CR_HOST=CR_DISABLE)
+  CRTarget
+  STBTarget # Make this a private link when implented stb into JEngine3D properly (currently used in JEngine3D_Editor)
+  glm::glm)
+target_compile_definitions(JEngine3D PRIVATE CR_HOST=CR_DISABLE JE_EXPORT)
 
 target_include_directories(JEngine3D PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
 
@@ -68,15 +68,15 @@ target_include_directories(JEngine3D_Executable
 target_compile_definitions(JEngine3D_Executable PRIVATE CR_HOST=CR_DISABLE)
 
 #############################################################################################
-include(${CMAKE_SOURCE_DIR}/CMake/DisableStaticAnalysis.cmake)
+#include(${CMAKE_SOURCE_DIR}/CMake/DisableStaticAnalysis.cmake)
 
-add_executable(ImGui_Reference_App JEngine3D/Core/ImGui/SDL_Opengl_Reference_App.cpp)
-target_link_system_libraries(
-  ImGui_Reference_App
-  PRIVATE
-  project_options
-  SDL2-static
-  libglew_static
-  ImGuiLibrary)
-target_include_directories(ImGui_Reference_App PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
-disable_static_analysis(ImGui_Reference_App)
+#add_executable(ImGui_Reference_App JEngine3D/Core/ImGui/SDL_Opengl_Reference_App.cpp)
+#target_link_system_libraries(
+#  ImGui_Reference_App
+#  PRIVATE
+#  project_options
+#  SDL2-static
+#  libglew_static
+#  ImGuiLibrary)
+#target_include_directories(ImGui_Reference_App PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+#disable_static_analysis(ImGui_Reference_App)

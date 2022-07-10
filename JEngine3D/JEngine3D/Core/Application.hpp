@@ -120,7 +120,7 @@ private:
   bool m_Focused = false;
   int64_t m_ProcessCount = 0;
 
-  static Application *s_ApplicationInstance;// NOLINT
+  JAPI static Application *s_ApplicationInstance;// NOLINT
 };
 
 

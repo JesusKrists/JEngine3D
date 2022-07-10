@@ -1,5 +1,16 @@
 #pragma once
 
+
+#if defined(_MSC_VER)
+#if defined(JE_EXPORT)
+#define JAPI __declspec(dllexport)
+#else
+#define JAPI __declspec(dllimport)
+#endif
+#else
+#define JAPI
+#endif
+
 #if defined(JE_DEBUG)
 #if defined(JE_PLATFORM_UNIX)
 #include <csignal>// IWYU pragma: export

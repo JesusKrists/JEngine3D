@@ -2,6 +2,6 @@
 
 namespace JE {
 
-IPlatformBackend *IPlatformBackend::s_PlatformBackendInstance = nullptr;// NOLINT
+JAPI IPlatformBackend *IPlatformBackend::s_PlatformBackendInstance = nullptr;// NOLINT
 
 }

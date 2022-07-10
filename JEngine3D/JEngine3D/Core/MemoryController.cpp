@@ -6,7 +6,7 @@
 
 namespace JE {
 
-MemoryController *MemoryController::s_MemoryControllerInstance = nullptr;// NOLINT
+JAPI MemoryController *MemoryController::s_MemoryControllerInstance = nullptr;// NOLINT
 
 MemoryController::MemoryController()
 {

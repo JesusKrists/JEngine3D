@@ -18,7 +18,7 @@
 
 namespace JE {
 
-LoggerController *LoggerController::s_LoggerControllerInstance = nullptr;// NOLINT
+JAPI LoggerController *LoggerController::s_LoggerControllerInstance = nullptr;// NOLINT
 
 LoggerController::LoggerController()
 {

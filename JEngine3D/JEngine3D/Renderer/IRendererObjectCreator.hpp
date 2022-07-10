@@ -66,7 +66,7 @@ public:
 private:
   [[nodiscard]] virtual auto CreateAPI() -> Scope<IRendererAPI, MemoryTag::Renderer> = 0;
 
-  static IRendererObjectCreator *s_RendererObjectCreatorInstance;// NOLINT
+  JAPI static IRendererObjectCreator *s_RendererObjectCreatorInstance;// NOLINT
 };
 
 }// namespace JE

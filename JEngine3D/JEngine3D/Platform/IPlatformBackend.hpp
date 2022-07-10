@@ -105,7 +105,7 @@ public:
 private:
   IEventProcessor *m_EventProcessor = nullptr;
 
-  static IPlatformBackend *s_PlatformBackendInstance;// NOLINT
+  JAPI static IPlatformBackend *s_PlatformBackendInstance;// NOLINT
 };
 
 }// namespace JE

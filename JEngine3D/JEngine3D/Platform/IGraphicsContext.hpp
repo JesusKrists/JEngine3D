@@ -63,7 +63,7 @@ private:
   IGraphicsContextCreator::NativeContextHandle m_ContextHandle;
   IGraphicsContext *m_PreviousContext = nullptr;
 
-  static IGraphicsContext *s_CurrentContext;// NOLINT
+  JAPI static IGraphicsContext *s_CurrentContext;// NOLINT
 };
 
 }// namespace JE
