@@ -65,6 +65,19 @@
             }
         },
         {
+            "name": "windows-msvc-debug-tracy",
+            "displayName": "msvc Debug Tracy",
+            "description": "Target Windows with the msvc compiler, debug build type",
+            "inherits": "conf-windows-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "cl",
+                "CMAKE_CXX_COMPILER": "cl",
+                "CMAKE_BUILD_TYPE": "Debug",
+                "ENABLE_DEVELOPER_MODE": "FALSE",
+                "ENABLE_TRACY_PROFILING": "TRUE"
+            }
+        },
+        {
             "name": "windows-msvc-release",
             "displayName": "msvc Release",
             "description": "Target Windows with the msvc compiler, release build type",

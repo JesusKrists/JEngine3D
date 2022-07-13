@@ -93,9 +93,17 @@ target_compile_definitions(TracyServer PRIVATE IMGUI_ENABLE_FREETYPE DISPLAY_SER
 target_include_directories(TracyServer PRIVATE ${tracy_SOURCE_DIR}/imgui ${capstone_SOURCE_DIR}/include/capstone)
 target_link_libraries(TracyServer PRIVATE glfw capstone freetype)
 
-target_compile_options(TracyServer PRIVATE -O3)
-target_compile_options(glfw PRIVATE -O3)
-target_compile_options(capstone PRIVATE -O3)
+if(NOT MSVC)
+  target_compile_options(TracyServer PRIVATE -O3)
+  target_compile_options(glfw PRIVATE -O3)
+  target_compile_options(capstone PRIVATE -O3)
+endif()
+
+if(MSVC)
+  target_compile_definitions(TracyServer PRIVATE NOMINMAX)
+  target_link_libraries(TracyServer PRIVATE Ws2_32)
+endif()
+
 target_compile_definitions(TracyServer PRIVATE NDEBUG)
 target_compile_definitions(glfw PRIVATE NDEBUG)
 target_compile_definitions(capstone PRIVATE NDEBUG)
