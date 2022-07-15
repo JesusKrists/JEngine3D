@@ -1,4 +1,4 @@
 {
     "cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
-    "cmake.configureOnOpen": true
+    "cmake.configureOnOpen": false
 }

@@ -22,6 +22,7 @@
 #define JE_STRINGIFY_MACRO(x) #x// NOLINT
 
 #include <algorithm>// IWYU pragma: export
+#include <iterator>// IWYU pragma: export
 
 
 namespace JE {

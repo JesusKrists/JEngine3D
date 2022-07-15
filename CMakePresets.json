@@ -122,15 +122,51 @@
             }
         },
         {
-            "name": "windows-gcc-debug-SW",
-            "displayName": "gcc Debug SW Context",
+            "name": "windows-gcc-debug",
+            "displayName": "gcc Debug",
+            "description": "Target Windows with the gcc compiler, debug build type",
+            "inherits": "conf-windows-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_BUILD_TYPE": "Debug"
+            }
+        },
+        {
+            "name": "windows-gcc-release",
+            "displayName": "gcc Release",
+            "description": "Target Windows with the gcc compiler, debug build type",
+            "inherits": "conf-windows-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo"
+            }
+        },
+        {
+            "name": "windows-gcc-debug-nostaticanalysis",
+            "displayName": "gcc Debug NoStaticAnalysis",
             "description": "Target Windows with the gcc compiler, debug build type",
             "inherits": "conf-windows-common",
             "cacheVariables": {
                 "CMAKE_C_COMPILER": "gcc",
                 "CMAKE_CXX_COMPILER": "g++",
                 "CMAKE_BUILD_TYPE": "Debug",
-                "USE_SDL_SOFTWARE_CONTEXT": "TRUE"
+                "OPT_ENABLE_CLANG_TIDY": "FALSE",
+                "OPT_ENABLE_CPPCHECK": "FALSE"
+            }
+        },
+        {
+            "name": "windows-gcc-release-nostaticanalysis",
+            "displayName": "gcc Release NoStaticAnalysis",
+            "description": "Target Windows with the gcc compiler, debug build type",
+            "inherits": "conf-windows-common",
+            "cacheVariables": {
+                "CMAKE_C_COMPILER": "gcc",
+                "CMAKE_CXX_COMPILER": "g++",
+                "CMAKE_BUILD_TYPE": "RelWithDebInfo",
+                "OPT_ENABLE_CLANG_TIDY": "FALSE",
+                "OPT_ENABLE_CPPCHECK": "FALSE"
             }
         },
         {

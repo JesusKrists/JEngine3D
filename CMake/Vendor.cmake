@@ -65,6 +65,12 @@ set(SDL_SENSOR
 set(SDL_LOCALE
     OFF
     CACHE BOOL "Disable locale subsystem" FORCE)
+set(SDL_HAPTIC
+    OFF
+    CACHE BOOL "Disable haptic subsystem" FORCE)
+set(SDL_JOYSTICK
+    OFF
+    CACHE BOOL "Disable joystick subsystem" FORCE)
 set(SDL_STATIC_PIC
     ON
     CACHE BOOL "Build SDL2 static library with PIC" FORCE)
