@@ -159,8 +159,8 @@ set(BUILD_SHARED_LIBS ON)
 
 FetchContent_Declare(
   tracy
-  GIT_REPOSITORY https://github.com/wolfpld/tracy.git
-  GIT_TAG v0.8.2)
+  GIT_REPOSITORY https://github.com/JesusKrists/tracy.git
+  GIT_TAG master)
 
 FetchContent_MakeAvailable(tracy)
 disable_static_analysis(TracyClient)

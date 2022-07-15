@@ -5,3 +5,4 @@ leak:libGLX_nvidia.so
 leak:OpenGLRendererAPI
 leak:OpenGLShader
 leak:libnvidia-glcore.so*
+leak:X11_SuspendScreenSaver

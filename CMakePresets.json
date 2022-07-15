@@ -265,6 +265,13 @@
             "configurePreset": "windows-msvc-debug"
         },
         {
+            "name": "test-windows-msvc-debug",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "windows-msvc-debug-tracy"
+        },
+        {
             "name": "test-windows-msvc-release",
             "displayName": "Strict",
             "description": "Enable output and stop on failure",

@@ -182,7 +182,7 @@ void Application::ProcessMainLoop()
     m_MainWindow.GraphicsContext().SwapBuffers();
   }
 
-  FrameMark
+  FrameMark;
 }
 
 void Application::Run(int32_t loopCount)

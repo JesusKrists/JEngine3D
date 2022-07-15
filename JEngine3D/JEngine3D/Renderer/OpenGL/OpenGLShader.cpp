@@ -22,7 +22,7 @@ static void CheckShaderErrors(uint32_t rendererID, GLenum status)
   }
   if (success == 0) {
     std::array<char, 512> infoLog{};// NOLINT
-    glGetShaderInfoLog(rendererID, infoLog.size(), nullptr, infoLog.data());
+    glGetShaderInfoLog(rendererID, static_cast<GLsizei>(infoLog.size()), nullptr, infoLog.data());
     Logger::CoreLogger().error("Failed to compile/link shader: {}", infoLog.data());
     DEBUGBREAK();
   }
