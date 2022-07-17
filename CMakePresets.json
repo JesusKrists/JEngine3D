@@ -329,6 +329,13 @@
             "configurePreset": "windows-clang-release"
         },
         {
+            "name": "test-windows-gcc-debug",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "windows-gcc-debug"
+        },
+        {
             "name": "test-linux-gcc-debug",
             "displayName": "Strict",
             "description": "Enable output and stop on failure",

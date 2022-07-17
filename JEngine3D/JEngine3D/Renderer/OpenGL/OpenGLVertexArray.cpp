@@ -62,7 +62,7 @@ void OpenGLVertexArray::Unbind() const
 void OpenGLVertexArray::ConfigureVertexBufferLayout(const BufferLayout &bufferLayout)
 {
   ZoneScopedN("OpenGLVertexArray::ConfigureVertexBufferLayout");// NOLINT
-  ASSERT(bufferLayout.Elements().size(), "Vertex Buffer has no layout!");
+  ASSERT(!bufferLayout.Elements().empty(), "Vertex Buffer has no layout!");
 
   for (const auto &element : bufferLayout) {
     switch (element.Type) {

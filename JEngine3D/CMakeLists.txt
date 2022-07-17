@@ -10,7 +10,7 @@ target_link_libraries(JEngine3D PRIVATE project_options project_warnings)
 target_link_system_libraries(
   JEngine3D
   PRIVATE
-  SDL2-static
+  SDL2::SDL2
   libglew_static
   lunasvg
   PUBLIC

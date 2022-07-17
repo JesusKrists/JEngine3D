@@ -100,7 +100,7 @@ void Renderer2D::Flush()
 {
   ZoneScopedN("Renderer2D::Flush");// NOLINT
   ASSERT(Data.Target != nullptr, "IDrawTarget is missing");
-  ASSERT(Data.TriangleIndices.size() != 0, "Nothing has been drawn");
+  ASSERT(!Data.TriangleIndices.empty(), "Nothing will been drawn");
 
   Data.Stats.FrameTriangleVertexCount += Data.TriangleVertices.size();
   Data.Stats.FrameTriangleIndexCount += Data.TriangleIndices.size();

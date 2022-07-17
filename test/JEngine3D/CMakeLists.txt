@@ -5,7 +5,7 @@ include(Catch)
 include(${CMAKE_SOURCE_DIR}/CMake/DisableStaticAnalysis.cmake)
 
 add_library(JEngine3D_catch_base INTERFACE)
-target_link_system_libraries(JEngine3D_catch_base INTERFACE Catch2WithMain)
+target_link_system_libraries(JEngine3D_catch_base INTERFACE Catch2JEngine3DMain)
 target_link_libraries(JEngine3D_catch_base INTERFACE JEngine3D)
 target_include_directories(JEngine3D_catch_base INTERFACE ${CMAKE_SOURCE_DIR}/test)
 

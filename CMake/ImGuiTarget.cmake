@@ -31,7 +31,7 @@ add_library(ImGuiLibrary SHARED ${ImGui_SOURCES} ${ImGui_HEADERS})
 target_link_libraries(ImGuiLibrary PRIVATE project_options)
 
 target_include_directories(ImGuiLibrary SYSTEM PUBLIC $<TARGET_PROPERTY:fmt,INTERFACE_INCLUDE_DIRECTORIES>)
-target_include_directories(ImGuiLibrary SYSTEM PUBLIC $<TARGET_PROPERTY:SDL2-static,INTERFACE_INCLUDE_DIRECTORIES>)
+target_include_directories(ImGuiLibrary SYSTEM PUBLIC $<TARGET_PROPERTY:SDL2,INTERFACE_INCLUDE_DIRECTORIES>)
 target_include_directories(ImGuiLibrary SYSTEM PUBLIC $<TARGET_PROPERTY:glm,INTERFACE_INCLUDE_DIRECTORIES>)
 
 target_include_directories(ImGuiLibrary PUBLIC ${imgui_SOURCE_DIR})

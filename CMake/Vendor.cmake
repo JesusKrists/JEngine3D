@@ -9,13 +9,13 @@ FetchContent_Declare(
   GIT_TAG v0.6.3)
 
 FetchContent_MakeAvailable(docopt)
-add_library(docopt::docopt ALIAS docopt_s)
-
 disable_static_analysis(docopt)
 disable_static_analysis(docopt_s)
 if(NOT MSVC AND NOT XCODE)
   disable_static_analysis(docopt_o)
 endif()
+
+add_library(docopt::docopt ALIAS docopt_s)
 
 ########################## fmt ########################################
 set(BUILD_SHARED_LIBS_BEFORE ${BUILD_SHARED_LIBS})
@@ -47,9 +47,15 @@ FetchContent_MakeAvailable(spdlog)
 disable_static_analysis(spdlog)
 
 ########################## SDL2 ######################################
-set(SDL_SHARED_ENABLED_BY_DEFAULT
+set(SDL_STATIC_ENABLED_BY_DEFAULT
     OFF
-    CACHE BOOL "Disable shared build of SDL2" FORCE)
+    CACHE BOOL "Disable static build" FORCE)
+set(SDL_STATIC
+    OFF
+    CACHE BOOL "Disable static build" FORCE)
+set(SDL2_DISABLE_SDL2MAIN
+    ON
+    CACHE BOOL "Disable SDL2main build" FORCE)
 set(SDL_AUDIO
     OFF
     CACHE BOOL "Disable audio subsystem" FORCE)
@@ -65,15 +71,6 @@ set(SDL_SENSOR
 set(SDL_LOCALE
     OFF
     CACHE BOOL "Disable locale subsystem" FORCE)
-set(SDL_HAPTIC
-    OFF
-    CACHE BOOL "Disable haptic subsystem" FORCE)
-set(SDL_JOYSTICK
-    OFF
-    CACHE BOOL "Disable joystick subsystem" FORCE)
-set(SDL_STATIC_PIC
-    ON
-    CACHE BOOL "Build SDL2 static library with PIC" FORCE)
 
 FetchContent_Declare(
   SDL2
@@ -81,23 +78,17 @@ FetchContent_Declare(
   GIT_TAG release-2.0.22)
 
 FetchContent_MakeAvailable(SDL2)
+disable_static_analysis(SDL2)
 
-target_compile_definitions(SDL2-static PUBLIC SDL_STATIC_LIB)
-#target_compile_definitions(SDL2 PUBLIC SDL_STATIC_LIB)
+target_compile_definitions(SDL2 PUBLIC SDL_STATIC_LIB)
 
 if(MSVC)
   if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
-    target_link_libraries(SDL2-static PRIVATE msvcrtd ucrtd vcruntimed)
-    #target_link_libraries(SDL2 PRIVATE msvcrtd ucrtd vcruntimed)
+    target_link_libraries(SDL2 PRIVATE msvcrtd ucrtd vcruntimed)
   else()
-    target_link_libraries(SDL2-static PRIVATE msvcrt ucrt vcruntime)
-    #target_link_libraries(SDL2 PRIVATE msvcrt ucrt vcruntime)
+    target_link_libraries(SDL2 PRIVATE msvcrt ucrt vcruntime)
   endif()
 endif()
-
-disable_static_analysis(SDL2main)
-disable_static_analysis(SDL2-static)
-#disable_static_analysis(SDL2)
 
 ############################## ImGui #############################################
 
@@ -195,53 +186,3 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(lunasvg)
 disable_static_analysis(lunasvg)
-
-############################### System include interface library ###################################
-
-add_library(VENDOR_SYSTEM_INCLUDES INTERFACE)
-
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:docopt_s,INTERFACE_INCLUDE_DIRECTORIES>)
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM INTERFACE $<TARGET_PROPERTY:fmt,INTERFACE_INCLUDE_DIRECTORIES>)
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:spdlog,INTERFACE_INCLUDE_DIRECTORIES>)
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:SDL2-static,INTERFACE_INCLUDE_DIRECTORIES>)
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:ImGuiLibrary,INTERFACE_INCLUDE_DIRECTORIES>)
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:libglew_static,INTERFACE_INCLUDE_DIRECTORIES>)
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:TracyClient,INTERFACE_INCLUDE_DIRECTORIES>)
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:lunasvg,INTERFACE_INCLUDE_DIRECTORIES>)
-
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:docopt_s,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:fmt,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:spdlog,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:SDL2-static,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:ImGuiLibrary,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:libglew_static,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:TracyClient,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
-target_include_directories(VENDOR_SYSTEM_INCLUDES SYSTEM
-                           INTERFACE $<TARGET_PROPERTY:lunasvg,INTERFACE_SYSTEM_INCLUDE_DIRECTORIES>)
-
-target_compile_definitions(VENDOR_SYSTEM_INCLUDES INTERFACE $<TARGET_PROPERTY:docopt_s,INTERFACE_COMPILE_DEFINITIONS>)
-target_compile_definitions(VENDOR_SYSTEM_INCLUDES INTERFACE $<TARGET_PROPERTY:fmt,INTERFACE_COMPILE_DEFINITIONS>)
-target_compile_definitions(VENDOR_SYSTEM_INCLUDES INTERFACE $<TARGET_PROPERTY:spdlog,INTERFACE_COMPILE_DEFINITIONS>)
-target_compile_definitions(VENDOR_SYSTEM_INCLUDES
-                           INTERFACE $<TARGET_PROPERTY:SDL2-static,INTERFACE_COMPILE_DEFINITIONS>)
-target_compile_definitions(VENDOR_SYSTEM_INCLUDES
-                           INTERFACE $<TARGET_PROPERTY:ImGuiLibrary,INTERFACE_COMPILE_DEFINITIONS>)
-target_compile_definitions(VENDOR_SYSTEM_INCLUDES
-                           INTERFACE $<TARGET_PROPERTY:libglew_static,INTERFACE_COMPILE_DEFINITIONS>)
-target_compile_definitions(VENDOR_SYSTEM_INCLUDES
-                           INTERFACE $<TARGET_PROPERTY:TracyClient,INTERFACE_COMPILE_DEFINITIONS>)
-target_compile_definitions(VENDOR_SYSTEM_INCLUDES INTERFACE $<TARGET_PROPERTY:lunasvg,INTERFACE_COMPILE_DEFINITIONS>)
