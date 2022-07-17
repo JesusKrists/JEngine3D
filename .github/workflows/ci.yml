@@ -244,21 +244,21 @@ jobs:
         run: |
           CC=clang-${{ env.LLVM_VER }} CXX=clang++-${{ env.LLVM_VER }} cmake -S . -B ./build -G "${{matrix.generator}}" -DCMAKE_BUILD_TYPE:STRING=${{matrix.build_type}} -DENABLE_DEVELOPER_MODE:BOOL=${{matrix.developer_mode}} -DOPT_ENABLE_COVERAGE:BOOL=${{ matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF' }} -DGIT_SHA:STRING=${{ github.sha }} -DOPT_ENABLE_INCLUDE_WHAT_YOU_USE:BOOL=OFF -DENABLE_DEBUG_BREAK:BOOL=OFF
                     
-      - name: Windows - Install Mesa
-        if: runner.os == 'Windows'
-        shell: cmd
-        working-directory: ./build
-        run: |
-          curl.exe -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/20.3.2/mesa3d-20.3.2-release-msvc.7z
-          "C:\Program Files\7-Zip\7z.exe" x mesa.7z
-          mklink opengl32.dll "x64\opengl32.dll"
-          mklink libglapi.dll "x64\libglapi.dll"
-
       - name: Build (Regular)
         if: matrix.sonarcloud_build == 'OFF' || matrix.sonarcloud_build == ''
         # Execute the build.  You can specify a specific target with "--target <NAME>"
         run: |
           cmake --build ./build --config ${{matrix.build_type}}
+
+      - name: Windows - Install Mesa
+        if: runner.os == 'Windows'
+        shell: cmd
+        working-directory: ./build/${{matrix.build_type}}
+        run: |
+          curl.exe -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/20.3.2/mesa3d-20.3.2-release-msvc.7z
+          "C:\Program Files\7-Zip\7z.exe" x mesa.7z
+          mklink opengl32.dll "x64\opengl32.dll"
+          mklink libglapi.dll "x64\libglapi.dll"
 
       - name: Build (SonarCloud)
         if: matrix.sonarcloud_build == 'ON'
@@ -294,11 +294,11 @@ jobs:
           run: |
             ctest -C ${{matrix.build_type}} -D NightlyMemCheck --verbose
           
-      - name: Windows - Test
+      - name: Windows - Test and coverage
         if: runner.os == 'Windows'
         working-directory: ./build
         run: |
-          ctest -C ${{matrix.build_type}} --verbose
+          OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest -C ${{matrix.build_type}} --verbose
 
       - name: Run sonar-scanner
         if: matrix.sonarcloud_build == 'ON'
@@ -336,7 +336,7 @@ jobs:
           path: ./build
 
       - name: Publish to codecov
-        if: matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF' && runner.os != 'Windows'
+        if: matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF'
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
