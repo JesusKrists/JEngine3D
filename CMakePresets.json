@@ -61,7 +61,9 @@
                 "CMAKE_C_COMPILER": "cl",
                 "CMAKE_CXX_COMPILER": "cl",
                 "CMAKE_BUILD_TYPE": "Debug",
-                "ENABLE_DEVELOPER_MODE": "FALSE"
+                "OPT_ENABLE_CLANG_TIDY": "FALSE",
+                "OPT_ENABLE_CPPCHECK": "FALSE",
+                "OPT_ENABLE_SANITIZER_ADDRESS": "FALSE"
             }
         },
         {
@@ -73,7 +75,9 @@
                 "CMAKE_C_COMPILER": "cl",
                 "CMAKE_CXX_COMPILER": "cl",
                 "CMAKE_BUILD_TYPE": "Debug",
-                "ENABLE_DEVELOPER_MODE": "FALSE",
+                "OPT_ENABLE_CLANG_TIDY": "FALSE",
+                "OPT_ENABLE_CPPCHECK": "FALSE",
+                "OPT_ENABLE_SANITIZER_ADDRESS": "FALSE",
                 "ENABLE_TRACY_PROFILING": "TRUE"
             }
         },
@@ -86,7 +90,9 @@
                 "CMAKE_C_COMPILER": "cl",
                 "CMAKE_CXX_COMPILER": "cl",
                 "CMAKE_BUILD_TYPE": "RelWithDebInfo",
-                "ENABLE_DEVELOPER_MODE": "FALSE"
+                "OPT_ENABLE_CLANG_TIDY": "FALSE",
+                "OPT_ENABLE_CPPCHECK": "FALSE",
+                "OPT_ENABLE_SANITIZER_ADDRESS": "FALSE"
             }
         },
         {

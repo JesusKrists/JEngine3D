@@ -285,11 +285,11 @@ jobs:
           run: |
             ctest -C ${{matrix.build_type}} -D NightlyMemCheck --verbose
           
-      - name: Windows - Test and coverage
+      - name: Windows - Test
         if: runner.os == 'Windows'
         working-directory: ./build
         run: |
-          OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest -C ${{matrix.build_type}} --verbose
+          ctest -C ${{matrix.build_type}} --verbose
 
       - name: Run sonar-scanner
         if: matrix.sonarcloud_build == 'ON'
@@ -318,16 +318,9 @@ jobs:
         with:
           name: Valgrind-Logs-${{ matrix.build_type }}-${{ matrix.compiler }}
           path: ./build/Testing
-          
-      - name: Windows - Upload Build folder
-        if: (runner.os == 'Windows' && matrix.developer_mode == 'ON' && matrix.build_type == 'Debug') && always()
-        uses: actions/upload-artifact@v3
-        with:
-          name: Windows-Build-Debug-ASAN
-          path: ./build
 
       - name: Publish to codecov
-        if: matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF'
+        if: matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF' && runner.os != 'Windows'
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}

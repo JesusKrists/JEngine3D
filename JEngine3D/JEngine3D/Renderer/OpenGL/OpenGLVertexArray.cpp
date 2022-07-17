@@ -5,6 +5,11 @@
 
 #include <GL/glew.h>
 
+#if defined(_MSC_VER)
+#pragma warning(push)
+#pragma warning(disable : 4312)
+#endif
+
 namespace JE {
 
 static auto ShaderDataTypeToOpenGLBaseType(ShaderDataType type) -> GLenum
@@ -136,3 +141,8 @@ void OpenGLVertexArray::Delete()
 }
 
 }// namespace JE
+
+
+#if defined(_MSC_VER)
+#pragma warning(pop)
+#endif

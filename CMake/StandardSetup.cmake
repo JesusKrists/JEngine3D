@@ -148,4 +148,6 @@ if(MSVC)
   else()
     target_link_libraries(project_options INTERFACE msvcrt ucrt vcruntime)
   endif()
+
+  target_compile_definitions(project_options INTERFACE _DISABLE_VECTOR_ANNOTATION)
 endif()
