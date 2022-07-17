@@ -246,10 +246,10 @@ jobs:
                     
       - name: Windows - Install Mesa
         if: runner.os == 'Windows'
-        working-directory: ./build
         shell: cmd
+        working-directory: ./build
         run: |
-          curl.exe -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/22.1.4/mesa3d-22.1.4-release-msvc.7z
+          curl.exe -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/20.3.2/mesa3d-20.3.2-release-msvc.7z
           "C:\Program Files\7-Zip\7z.exe" x mesa.7z
           mklink opengl32.dll "x64\opengl32.dll"
           mklink libglapi.dll "x64\libglapi.dll"
@@ -294,11 +294,11 @@ jobs:
           run: |
             ctest -C ${{matrix.build_type}} -D NightlyMemCheck --verbose
           
-      - name: Windows - Test and coverage
+      - name: Windows - Test
         if: runner.os == 'Windows'
         working-directory: ./build
         run: |
-          OpenCppCoverage.exe --export_type cobertura:coverage.xml --cover_children -- ctest -C ${{matrix.build_type}} --verbose
+          ctest -C ${{matrix.build_type}} --verbose
 
       - name: Run sonar-scanner
         if: matrix.sonarcloud_build == 'ON'
@@ -329,7 +329,7 @@ jobs:
           path: ./build/Testing
 
       - name: Publish to codecov
-        if: matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF'
+        if: matrix.build_type == 'Debug' && matrix.developer_mode == 'OFF' && runner.os != 'Windows'
         uses: codecov/codecov-action@v2
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
