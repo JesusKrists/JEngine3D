@@ -247,6 +247,7 @@ jobs:
       - name: Windows - Install Mesa
         if: runner.os == 'Windows'
         working-directory: ./build
+        shell: cmd
         run: |
           curl.exe -L --output mesa.7z --url https://github.com/pal1000/mesa-dist-win/releases/download/22.1.4/mesa3d-22.1.4-release-msvc.7z
           "C:\Program Files\7-Zip\7z.exe" x mesa.7z
