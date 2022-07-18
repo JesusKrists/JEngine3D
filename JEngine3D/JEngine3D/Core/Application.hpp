@@ -15,8 +15,6 @@
 #include <functional>// for reference_wrapper
 #include <filesystem>
 
-#include <cr.h>// IWYU pragma: keep
-
 namespace JE {
 class Application;
 }
@@ -50,7 +48,7 @@ public:
   static constexpr auto MAIN_WINDOW_CONFIG = WindowConfiguration{ true };
   const std::string WORKING_DIRECTORY = std::filesystem::current_path().generic_string();
 
-  explicit Application(const std::string_view &title, bool testMode = false);
+  explicit Application(const std::string_view &title);
   virtual ~Application() = default;// NOLINT
 
   [[nodiscard]] static inline auto Get() -> Application &
@@ -94,6 +92,7 @@ public:
 
   [[nodiscard]] inline auto Running() const -> bool { return m_Running; }
   [[nodiscard]] inline auto DeltaTime() const -> double { return m_DeltaTime; }
+  [[nodiscard]] inline auto Uptime() const -> double { return m_Uptime; }
   [[nodiscard]] inline auto Focused() const -> bool { return m_Focused; }
   [[nodiscard]] inline auto TotalFrameCount() const -> int64_t { return m_ProcessCount; }
 
@@ -103,7 +102,6 @@ private:
   void UpdateDeltaTime();
   void ProcessMainLoop();
 
-  cr_plugin m_MainPluginContext;
   Window &m_MainWindow;
   Scope<IRendererAPI, MemoryTag::Renderer> m_RendererAPI = IRendererObjectCreator::Get().CreateAPI();
   JE::Renderer2D m_Renderer2D;
@@ -114,9 +112,9 @@ private:
   InternalDebugViews m_InternalDebugViews;
   DebugViewContainer m_DebugViewContainer;
 
-  bool m_TestMode = false;
   bool m_Running = false;
   double m_DeltaTime = 0;
+  double m_Uptime = 0;
   bool m_Focused = false;
   int64_t m_ProcessCount = 0;
 

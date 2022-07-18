@@ -42,7 +42,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv)
   const auto options =
     docopt::docopt(USAGE, std::vector<std::string>{ std::next(argv), std::next(argv, argc) }, true, versionString);
 
-  bool testMode = [&options]() {
+  [[maybe_unused]] bool testMode = [&options]() {
     auto it = options.find("--test");// NOLINT
     return it->second.asBool();
   }();
@@ -58,7 +58,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char **argv)
   JE::InputController s_InputController;
 
 
-  JE::Application engine{ versionString, testMode };
+  JE::Application engine{ versionString };
   engine.MainWindow().SetSize(MAIN_WINDOW_SIZE);
   engine.MainWindow().SetPosition(JE::IPlatformBackend::WINDOW_CENTER_POSITION);
   engine.Run();
