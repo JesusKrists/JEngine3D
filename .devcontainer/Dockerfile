@@ -98,7 +98,7 @@ ENV CPPCHECK_BUILD ${CPPCHECK}/build
 ENV CPPCHECK_SRC ${CPPCHECK}/cppcheck-src
 RUN mkdir -p ${CPPCHECK_BUILD}
 RUN apt-get install libxml2-utils && apt-get install libz3-dev libtinyxml2-dev && apt-get install libpcre3-dev
-RUN git clone --branch 2.7 https://github.com/danmar/cppcheck.git ${CPPCHECK_SRC}
+RUN git clone --branch 2.8 https://github.com/danmar/cppcheck.git ${CPPCHECK_SRC}
 RUN CC=clang-15 CXX=clang++-15 cmake -S ${CPPCHECK_SRC} -B ${CPPCHECK_BUILD} -G "Unix Makefiles" -DHAVE_RULES=On -DBUILD_GUI=Off
 RUN cmake --build ${CPPCHECK_BUILD} -j
 RUN cmake --install ${CPPCHECK_BUILD}
