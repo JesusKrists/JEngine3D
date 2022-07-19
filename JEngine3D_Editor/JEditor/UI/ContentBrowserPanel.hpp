@@ -25,7 +25,7 @@ class ContentBrowserPanel : public IPanel
   using NavigationStackContainer = JE::Vector<const FileSystemEntry *, JE::MemoryTag::Editor>;
 
 public:
-  const std::filesystem::path CONTENT_HOME_FOLDER = "JEngine3D";
+  const std::filesystem::path CONTENT_HOME_FOLDER = JE_APP.WORKING_DIRECTORY;
   const std::filesystem::path CONTENT_DIR = "assets";
   const std::filesystem::path CONTENT_FULL_PATH = JE_APP.WORKING_DIRECTORY / CONTENT_DIR;
 
