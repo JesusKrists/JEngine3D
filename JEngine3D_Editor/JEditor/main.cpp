@@ -1,5 +1,3 @@
-
-
 #include "JEditorState.hpp"
 #include "UILayer.hpp"
 #include <JEngine3D/Core/Application.hpp>
