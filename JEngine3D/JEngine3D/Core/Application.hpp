@@ -2,6 +2,7 @@
 
 #include "JEngine3D/Core/Events.hpp"
 #include "JEngine3D/Core/LayerStack.hpp"
+#include "JEngine3D/Core/PluginController.hpp"
 
 #include "JEngine3D/Debug/View/ApplicationDebugView.hpp"
 #include "JEngine3D/Debug/View/InputControllerDebugView.hpp"
@@ -48,7 +49,7 @@ public:
   static constexpr auto MAIN_WINDOW_CONFIG = WindowConfiguration{ true };
   const std::string WORKING_DIRECTORY = std::filesystem::current_path().generic_string();
 
-  explicit Application(const std::string_view &title);
+  explicit Application(const std::string_view &title, bool testMode = false);
   virtual ~Application() = default;// NOLINT
 
   [[nodiscard]] static inline auto Get() -> Application &
@@ -111,6 +112,8 @@ private:
 
   InternalDebugViews m_InternalDebugViews;
   DebugViewContainer m_DebugViewContainer;
+
+  NativePluginController m_NativePluginController;
 
   bool m_Running = false;
   double m_DeltaTime = 0;

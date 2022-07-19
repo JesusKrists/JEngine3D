@@ -1,5 +1,4 @@
 set(JEngine3D_Editor_HEADERS
-    JEditor/main.h
     JEditor/JEditorState.hpp
     JEditor/UILayer.hpp
     JEditor/UI/IPanel.hpp

@@ -77,13 +77,20 @@ public:
     return Get().Deallocate(static_cast<void *>(memory), TAG);
   }
 
+  template<typename T> [[nodiscard]] static inline auto Contains(T *memory) -> bool
+  {
+    return Get().Contains(static_cast<void *>(memory));
+  }
+
   [[nodiscard]] inline auto MemoryEntries() const -> const MemoryEntryContainer & { return m_MemoryEntries; }
   [[nodiscard]] inline auto TotalAllocCount() const -> int64_t { return m_TotalAllocationCount; }
   [[nodiscard]] inline auto TotalDeallocCount() const -> int64_t { return m_TotalDeallocationCount; }
 
+
 private:
   auto Allocate(size_t byteCount, MemoryTag tag) -> void *;
   void Deallocate(void *memory, MemoryTag tag);
+  auto Contains(void *memory) -> bool;
 
 
   inline auto GetMemoryEntryContainer(MemoryTag tag) -> std::vector<MemoryEntry> &

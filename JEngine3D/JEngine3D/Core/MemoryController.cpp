@@ -63,4 +63,11 @@ void MemoryController::Deallocate(void *memory, MemoryTag tag)
   memoryEntryContainer.erase(memoryEntry);
 }
 
+auto MemoryController::Contains(void *memory) -> bool
+{
+  return FindIf(m_MemoryEntries, [&](const std::vector<MemoryEntry> &entries) {
+    return FindIf(entries, [&](const MemoryEntry &entry) { return entry.Memory == memory; }) != std::end(entries);
+  }) != std::end(m_MemoryEntries);
+}
+
 }// namespace JE

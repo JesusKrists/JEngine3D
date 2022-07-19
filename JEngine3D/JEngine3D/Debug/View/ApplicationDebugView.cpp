@@ -35,6 +35,7 @@ void ApplicationDebugView::OnImGuiRender()
   RenderApplicationParameter("Running:", fmt::format("{}", app.Running()), app.Running() ? TRUE_COLOR : FALSE_COLOR);
   RenderApplicationParameter("Focused:", fmt::format("{}", app.Focused()), app.Focused() ? TRUE_COLOR : FALSE_COLOR);
   RenderApplicationParameter("Delta Time:", fmt::format("{}ms", app.DeltaTime() * MILISECONDS));
+  RenderApplicationParameter("Uptime:", fmt::format("{}s", app.Uptime()));
   RenderApplicationParameter("Total Frame Count:", fmt::format("{}", app.TotalFrameCount()));
   RenderApplicationParameter("ImGui Capturing Events:",
     fmt::format("{}", app.ImGuiLayer().CaptureEvents()),

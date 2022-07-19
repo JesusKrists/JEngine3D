@@ -21,7 +21,7 @@ target_link_system_libraries(
   CRTarget
   STBTarget # Make this a private link when implented stb into JEngine3D properly (currently used in JEngine3D_Editor)
   glm::glm)
-target_compile_definitions(JEngine3D PRIVATE CR_HOST=CR_DISABLE JE_EXPORT)
+target_compile_definitions(JEngine3D PRIVATE JE_EXPORT)
 
 target_include_directories(JEngine3D PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
 
@@ -65,7 +65,6 @@ target_link_libraries(
           docopt::docopt)
 target_include_directories(JEngine3D_Executable
                            PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
-target_compile_definitions(JEngine3D_Executable PRIVATE CR_HOST=CR_DISABLE)
 
 #############################################################################################
 #include(${CMAKE_SOURCE_DIR}/CMake/DisableStaticAnalysis.cmake)

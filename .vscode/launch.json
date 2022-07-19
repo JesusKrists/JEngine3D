@@ -8,12 +8,32 @@
             "name": "Debug JEngine3D Executable - GDB",
             "type": "cppdbg",
             "request": "launch",
-            "program": "${workspaceFolder}/out/build/JEngine3D/JEngine3D_Executable",
+            "program": "${workspaceFolder}/out/build/JEngine3D_Executable",
             "args": [],
             "stopAtEntry": false,
-            "cwd": "${workspaceFolder}/out/build/JEngine3D/",
+            "cwd": "${workspaceFolder}/out/build/",
             "environment": [],
             "externalConsole": false,
+            "MIMode": "gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                },
+                {
+                    "description": "Set Disassembly Flavor to Intel",
+                    "text": "-gdb-set disassembly-flavor intel",
+                    "ignoreFailures": true
+                }
+            ]
+        },
+        {
+            "name": "Debug JEngine3D Executable - GDB Attach",
+            "type": "cppdbg",
+            "request": "attach",
+            "processId": "${command:pickProcess}",
+            "program": "${workspaceRoot}/out/build/JEngine3D_Executable",
             "MIMode": "gdb",
             "setupCommands": [
                 {
@@ -32,7 +52,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug JEngine3D Platform UnitTests",
-            "program": "${workspaceFolder}/out/build/test/JEngine3D/JEngine3D_Platform_tests",
+            "program": "${workspaceFolder}/out/build/JEngine3D_Platform_tests",
             "args": [
                 "\"JE::IPlatformBackend Polls events to EventProcessor (Fake Window Focus Gained)\""
             ],
@@ -42,7 +62,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug JEngine3D UnitTests",
-            "program": "${workspaceFolder}/out/build/test/JEngine3D/JEngine3D_tests",
+            "program": "${workspaceFolder}/out/build/JEngine3D_tests",
             "args": [
                 "\"JE::WindowController processes WindowCloseEvent\""
             ],
@@ -52,7 +72,7 @@
             "type": "lldb",
             "request": "launch",
             "name": "Debug JEngine3D IntegrationTests",
-            "program": "${workspaceFolder}/out/build/test/JEngine3D/JEngine3D_Integration_tests",
+            "program": "${workspaceFolder}/out/build/JEngine3D_Integration_tests",
             "args": [
                 "\"JE::WindowController processes WindowMaximizedEvent\""
             ],
@@ -61,15 +81,8 @@
         {
             "type": "lldb",
             "request": "launch",
-            "name": "Debug JEngine3D Editor",
-            "program": "${workspaceFolder}/out/build/JEngine3D_Editor/JEngine3D_Editor_Executable",
-            "cwd": "${workspaceFolder}/out/build/JEngine3D_Editor/"
-        },
-        {
-            "type": "lldb",
-            "request": "launch",
             "name": "Debug JEngine3D Executable",
-            "program": "${workspaceFolder}/out/build/JEngine3D/JEngine3D_Executable",
+            "program": "${workspaceFolder}/out/build/JEngine3D_Executable",
             "cwd": "${workspaceFolder}/out/build/JEngine3D/"
         }
     ]

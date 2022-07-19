@@ -1,7 +1,5 @@
 #pragma once
 
-#include "main.h"
-
 #include <JEngine3D/Core/Assert.hpp>
 #include <JEngine3D/Renderer/IFramebuffer.hpp>
 #include <JEngine3D/Renderer/ITexture.hpp>
@@ -42,8 +40,6 @@ inline auto StringToFileExtension(const std::string_view &extension) -> FileExte
 
 struct EditorState
 {
-  friend auto ::cr_main(cr_plugin *, cr_op operation) -> int;
-
   [[nodiscard]] static inline auto Get() -> EditorState &
   {
     ASSERT(s_StateInstance, "State instance is null");

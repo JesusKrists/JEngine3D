@@ -15,14 +15,13 @@
 
 #include <exception>// for exception
 #include <fmt/format.h>// for ptr
-#include <cr.h>// for cr_plugin
 #include <Tracy.hpp>
 
 namespace JE {
 
 JAPI Application *Application::s_ApplicationInstance = nullptr;// NOLINT
 
-Application::Application(const std::string_view &title)
+Application::Application(const std::string_view &title, bool testMode)
   : m_MainWindow(WindowController::Get().CreateWindow(title,
     DEFAULT_SIZE,
     IPlatformBackend::WINDOW_CENTER_POSITION,
@@ -33,19 +32,28 @@ Application::Application(const std::string_view &title)
   ASSERT(!s_ApplicationInstance, "Application instance already exists");
   s_ApplicationInstance = this;
 
+  Logger::CoreLogger().debug("Application address: {}", fmt::ptr(this));
+
   m_ImGuiLayer = &PushOverlay<JE::ImGuiLayer>();
   AddInternalDebugViews();
 
   IPlatformBackend::Get().SetEventProcessor(this);
 
-  Logger::CoreLogger().debug("Application address: {}", fmt::ptr(this));
+  // m_NativePluginController.LoadPlugins();
+  if (!testMode) {
+#if defined(JE_DEBUG)
+    m_NativePluginController.LoadPlugin(WORKING_DIRECTORY + "/" NATIVE_PLUGIN_NAME("JEngine3D_Editord"));
+#else
+    m_NativePluginController.LoadPlugin(WORKING_DIRECTORY + "/" NATIVE_PLUGIN_NAME("JEngine3D_Editor"));
+#endif
+  }
 }
 
 void Application::OnEvent(IEvent &event)
 {
   ReverseForEach(m_LayerStack, [&](const Scope<ILayer, MemoryTag::App> &layer) {
-    layer->OnEvent(event);
     if (event.Handled()) { return; }
+    layer->OnEvent(event);
   });
 
   if (event.Category() == EventCategory::Window) {
@@ -72,6 +80,12 @@ void Application::OnEvent(IEvent &event)
     m_Running = false;
     return true;
   });
+
+  ForEach(
+    m_NativePluginController.Plugins(), [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App> &plugin) {
+      if (event.Handled()) { return; }
+      plugin->PluginInterface->OnEvent(event);
+    });
 }
 
 void Application::PopLayer(ILayer &layer)
@@ -117,10 +131,13 @@ void Application::UpdateDeltaTime()
 void Application::ProcessMainLoop()
 {
   ++m_ProcessCount;
-  m_Uptime += DeltaTime();
+  m_Uptime += m_DeltaTime;
+
 
   {
     ZoneScopedN("Pre-Frame Setup");// NOLINT
+
+    m_NativePluginController.UpdatePlugins();
 
     UpdateAppFocus();
 
@@ -149,6 +166,10 @@ void Application::ProcessMainLoop()
     {
       ZoneScopedN("OnUpdate");// NOLINT
       ForEach(m_LayerStack, [](const Scope<ILayer, MemoryTag::App> &layer) { layer->OnUpdate(); });
+      ForEach(m_NativePluginController.Plugins(),
+        [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App> &plugin) {
+          plugin->PluginInterface->OnUpdate();
+        });
     }
     {
       ZoneScopedN("ImGuiLayer Process and Render");// NOLINT
@@ -156,6 +177,10 @@ void Application::ProcessMainLoop()
       {
         ZoneScopedN("OnImGuiRender");// NOLINT
         ForEach(m_LayerStack, [](const Scope<ILayer, MemoryTag::App> &layer) { layer->OnImGuiRender(); });
+        ForEach(m_NativePluginController.Plugins(),
+          [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App> &plugin) {
+            plugin->PluginInterface->OnImGuiRender();
+          });
       }
       {
         ZoneScopedN("DebugViewRender");// NOLINT
