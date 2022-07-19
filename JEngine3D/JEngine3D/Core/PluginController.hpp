@@ -31,22 +31,47 @@
 
 namespace JE {
 
+class PluginInterface;
+
 // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
 class INativePlugin
 {
 public:
   virtual ~INativePlugin() = default;
 
-  virtual void OnCreate() = 0;
-  virtual void OnDestroy() = 0;
+  virtual void OnCreate(PluginInterface &plugin) = 0;
+  virtual void OnDestroy(PluginInterface &plugin) = 0;
 
-  virtual void PreReload() = 0;
-  virtual void PostReload() = 0;
+  virtual void PreReload(PluginInterface &plugin) = 0;
 
   virtual void OnUpdate() = 0;
   virtual void OnImGuiRender() = 0;
 
   virtual void OnEvent(IEvent &event) = 0;
+};
+
+
+class PluginInterface
+{
+public:
+  template<typename T> inline auto CreateState() -> T *
+  {
+    if (!m_StateData) {
+      m_StateData = new (MemoryController::Allocate<T, MemoryTag::App>(1)) T();// NOLINT
+    }
+    return static_cast<T *>(m_StateData);
+  }
+
+  template<typename T> inline void DestroyState()
+  {
+    if (m_StateData) {
+      static_cast<T *>(m_StateData)->~T();
+      MemoryController::Deallocate<T, MemoryTag::App>(static_cast<T *>(m_StateData));
+    }
+  }
+
+private:
+  void *m_StateData = nullptr;
 };
 
 class NativePluginController
@@ -60,10 +85,11 @@ public:
     static constexpr auto RELOAD_TRY_COUNT = 10;
 
     cr_plugin PluginHandle;
-    Scope<INativePlugin, MemoryTag::App> PluginInterface;
+    Scope<INativePlugin, MemoryTag::App> Implementation;
+    PluginInterface Interface;
 
-    inline void DestroyPluginInterface() { PluginInterface.reset(); }
-    inline void CreatePluginInterface() { PluginInterface.reset(PluginHandle.CreatePlugin<INativePlugin *>()); }
+    inline void DestroyPluginInterface() { Implementation.reset(); }
+    inline void CreatePluginInterface() { Implementation.reset(PluginHandle.CreatePlugin<INativePlugin *>()); }
 
     inline void Reload()
     {
@@ -79,7 +105,7 @@ public:
       CreatePluginInterface();
     }
 
-    ~PluginEntry() { PluginInterface->OnDestroy(); }
+    ~PluginEntry() { Implementation->OnDestroy(Interface); }
   };
   using NativePluginContainer = Vector<Scope<PluginEntry, MemoryTag::App>, MemoryTag::App>;
 

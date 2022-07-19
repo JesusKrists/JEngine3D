@@ -40,6 +40,8 @@ inline auto StringToFileExtension(const std::string_view &extension) -> FileExte
 
 struct EditorState
 {
+  friend class EditorPlugin;
+
   [[nodiscard]] static inline auto Get() -> EditorState &
   {
     ASSERT(s_StateInstance, "State instance is null");

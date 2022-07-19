@@ -21,9 +21,9 @@ void NativePluginController::LoadPlugin(const std::filesystem::path &fullPath)
 
   plugin->CreatePluginInterface();
   ASSERT(
-    MemoryController::Contains(plugin->PluginInterface.get()), "Plugin has to be created with JE::MemoryController");
+    MemoryController::Contains(plugin->Implementation.get()), "Plugin has to be created with JE::MemoryController");
 
-  plugin->PluginInterface->OnCreate();
+  plugin->Implementation->OnCreate(plugin->Interface);
 }
 
 // NOLINTNEXTLINE
@@ -38,9 +38,9 @@ void NativePluginController::UpdatePlugins()
   if (s_LastUpdateTimestamp + PLUGIN_UPDATE_FREQUENCY_S <= JE_APP.Uptime()) {
     ForEach(m_Plugins, [](Scope<PluginEntry, MemoryTag::App> &plugin) {
       if (plugin->PluginHandle.PluginUpdated()) {
-        plugin->PluginInterface->PreReload();
+        plugin->Implementation->PreReload(plugin->Interface);
         plugin->Reload();
-        plugin->PluginInterface->PostReload();
+        plugin->Implementation->OnCreate(plugin->Interface);
       }
     });
     s_LastUpdateTimestamp = JE_APP.Uptime();

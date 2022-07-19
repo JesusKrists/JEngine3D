@@ -84,7 +84,7 @@ void Application::OnEvent(IEvent &event)
   ForEach(
     m_NativePluginController.Plugins(), [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App> &plugin) {
       if (event.Handled()) { return; }
-      plugin->PluginInterface->OnEvent(event);
+      plugin->Implementation->OnEvent(event);
     });
 }
 
@@ -168,7 +168,7 @@ void Application::ProcessMainLoop()
       ForEach(m_LayerStack, [](const Scope<ILayer, MemoryTag::App> &layer) { layer->OnUpdate(); });
       ForEach(m_NativePluginController.Plugins(),
         [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App> &plugin) {
-          plugin->PluginInterface->OnUpdate();
+          plugin->Implementation->OnUpdate();
         });
     }
     {
@@ -179,7 +179,7 @@ void Application::ProcessMainLoop()
         ForEach(m_LayerStack, [](const Scope<ILayer, MemoryTag::App> &layer) { layer->OnImGuiRender(); });
         ForEach(m_NativePluginController.Plugins(),
           [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App> &plugin) {
-            plugin->PluginInterface->OnImGuiRender();
+            plugin->Implementation->OnImGuiRender();
           });
       }
       {

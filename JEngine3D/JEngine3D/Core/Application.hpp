@@ -108,12 +108,11 @@ private:
   JE::Renderer2D m_Renderer2D;
 
   JE::ImGuiLayer *m_ImGuiLayer;
+  NativePluginController m_NativePluginController;
   LayerStack m_LayerStack;
 
   InternalDebugViews m_InternalDebugViews;
   DebugViewContainer m_DebugViewContainer;
-
-  NativePluginController m_NativePluginController;
 
   bool m_Running = false;
   double m_DeltaTime = 0;

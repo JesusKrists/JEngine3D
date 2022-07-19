@@ -182,7 +182,8 @@
                 "CMAKE_CXX_COMPILER": "g++-11",
                 "CMAKE_BUILD_TYPE": "Debug",
                 "OPT_ENABLE_CLANG_TIDY": "FALSE",
-                "OPT_ENABLE_CPPCHECK": "FALSE"
+                "OPT_ENABLE_CPPCHECK": "FALSE",
+                "ENABLE_TRACY_PROFILING": "TRUE"
             }
         },
         {
