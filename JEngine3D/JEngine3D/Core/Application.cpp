@@ -19,205 +19,199 @@
 
 namespace JE {
 
-JAPI Application *Application::s_ApplicationInstance = nullptr;// NOLINT
+    JAPI Application* Application::s_ApplicationInstance = nullptr;// NOLINT
 
-Application::Application(const std::string_view &title, bool testMode)
-  : m_MainWindow(WindowController::Get().CreateWindow(title,
-    DEFAULT_SIZE,
-    IPlatformBackend::WINDOW_CENTER_POSITION,
-    MAIN_WINDOW_CONFIG))
-{
-  ZoneScopedN("Application::Application");// NOLINT
+    Application::Application(const std::string_view& title, bool testMode)
+        : m_MainWindow(WindowController::Get().CreateWindow(title, DEFAULT_SIZE, IPlatform::WINDOW_CENTER_POSITION, MAIN_WINDOW_CONFIG))
+    {
+        ZoneScopedN("Application::Application");// NOLINT
 
-  ASSERT(!s_ApplicationInstance, "Application instance already exists");
-  s_ApplicationInstance = this;
+        ASSERT(!s_ApplicationInstance, "Application instance already exists");
+        s_ApplicationInstance = this;
 
-  Logger::CoreLogger().debug("Application address: {}", fmt::ptr(this));
+        Logger::CoreLogger().debug("Application address: {}", fmt::ptr(this));
 
-  m_ImGuiLayer = &PushOverlay<JE::ImGuiLayer>();
-  AddInternalDebugViews();
+        m_ImGuiLayer = &PushOverlay<JE::ImGuiLayer>();
+        AddInternalDebugViews();
 
-  IPlatformBackend::Get().SetEventProcessor(this);
+        IPlatform::Get().SetEventProcessor(this);
 
-  // m_NativePluginController.LoadPlugins();
-  if (!testMode) {
+        // m_NativePluginController.LoadPlugins();
+        if (!testMode) {
 #if defined(JE_DEBUG)
-    m_NativePluginController.LoadPlugin(WORKING_DIRECTORY + "/" NATIVE_PLUGIN_NAME("JEngine3D_Editord"));
+            m_NativePluginController.LoadPlugin(WORKING_DIRECTORY + "/" NATIVE_PLUGIN_NAME("JEngine3D_Editord"));
 #else
-    m_NativePluginController.LoadPlugin(WORKING_DIRECTORY + "/" NATIVE_PLUGIN_NAME("JEngine3D_Editor"));
+            m_NativePluginController.LoadPlugin(WORKING_DIRECTORY + "/" NATIVE_PLUGIN_NAME("JEngine3D_Editor"));
 #endif
-  }
-}
-
-void Application::OnEvent(IEvent &event)
-{
-  ReverseForEach(m_LayerStack, [&](const Scope<ILayer, MemoryTag::App> &layer) {
-    if (event.Handled()) { return; }
-    layer->OnEvent(event);
-  });
-
-  if (event.Category() == EventCategory::Window) {
-    EventDispatcher dispatcher{ event };
-    dispatcher.Dispatch<EventType::WindowClose>([&](const IEvent &evnt) {
-      const auto &closeEvent =
-        static_cast<const WindowCloseEvent &>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-      if (closeEvent.NativeWindowHandle() == m_MainWindow.NativeHandle()) { m_Running = false; }
-      return false;
-    });
-
-    WindowController::Get().OnEvent(event);
-    if (event.Handled()) { return; }
-  }
-
-  if (event.Category() == EventCategory::Keyboard || event.Category() == EventCategory::Mouse) {
-    InputController::Get().OnEvent(event);
-    if (event.Handled()) { return; }
-  }
-
-  EventDispatcher dispatcher{ event };
-
-  dispatcher.Dispatch<EventType::Quit>([&](const IEvent &) {
-    m_Running = false;
-    return true;
-  });
-
-  ForEach(
-    m_NativePluginController.Plugins(), [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App> &plugin) {
-      if (event.Handled()) { return; }
-      plugin->Implementation->OnEvent(event);
-    });
-}
-
-void Application::PopLayer(ILayer &layer)
-{
-  ZoneScoped;// NOLINT
-  m_LayerStack.PopLayer(layer);
-}
-
-void Application::PopOverlay(ILayer &layer)
-{
-  ZoneScoped;// NOLINT
-  m_LayerStack.PopOverlay(layer);
-}
-
-void Application::AddDebugView(IImGuiDebugView &view) { m_DebugViewContainer.emplace_back(view); }
-
-void Application::AddInternalDebugViews()
-{
-  AddDebugView(m_InternalDebugViews.applicationDebugView);
-  AddDebugView(m_InternalDebugViews.inputControllerDebugView);
-  AddDebugView(m_InternalDebugViews.memoryControllerDebugView);
-  AddDebugView(m_InternalDebugViews.renderer2DDebugView);
-  AddDebugView(m_InternalDebugViews.windowControllerDebugView);
-}
-
-void Application::UpdateAppFocus()
-{
-  auto *focusedNativeWindow = IPlatformBackend::Get().FocusedWindow();
-  m_Focused = focusedNativeWindow != nullptr;
-}
-
-void Application::UpdateDeltaTime()
-{
-  static auto s_LastFrameTicks = IPlatformBackend::Get().CurrentTicks();
-  auto currentTicks = IPlatformBackend::Get().CurrentTicks();
-
-  m_DeltaTime =
-    static_cast<double>(currentTicks - s_LastFrameTicks) / static_cast<double>(IPlatformBackend::Get().TickFrequency());
-
-  s_LastFrameTicks = currentTicks;
-}
-
-void Application::ProcessMainLoop()
-{
-  ++m_ProcessCount;
-  m_Uptime += m_DeltaTime;
-
-
-  {
-    ZoneScopedN("Pre-Frame Setup");// NOLINT
-
-    m_NativePluginController.UpdatePlugins();
-
-    UpdateAppFocus();
-
-    UpdateDeltaTime();
-
-    InputController::Get().NewFrame();
-    m_Renderer2D.NewFrame();
-  }
-
-  {
-    ZoneScopedN("Event Poll");// NOLINT
-
-    IPlatformBackend::Get().PollEvents();
-    if (!m_Running) { return; }
-  }
-
-  {
-    ZoneScopedN("Layer & ImGui Processing");// NOLINT
-
-    {
-      ZoneScopedN("Make MainWindow Context Current");// NOLINT
-      m_MainWindow.GraphicsContext().MakeCurrent();
-      m_RendererAPI->Clear();
+        }
     }
 
+    void Application::OnEvent(IEvent& event)
     {
-      ZoneScopedN("OnUpdate");// NOLINT
-      ForEach(m_LayerStack, [](const Scope<ILayer, MemoryTag::App> &layer) { layer->OnUpdate(); });
-      ForEach(m_NativePluginController.Plugins(),
-        [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App> &plugin) {
-          plugin->Implementation->OnUpdate();
+        ForEach(m_NativePluginController.Plugins(), [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App>& plugin) {
+            if (event.Handled()) { return; }
+            plugin->Implementation->OnEvent(event);
+        });
+
+        ReverseForEach(m_LayerStack, [&](const Scope<ILayer, MemoryTag::App>& layer) {
+            if (event.Handled()) { return; }
+            layer->OnEvent(event);
+        });
+
+        if (event.Category() == EventCategory::Window) {
+            EventDispatcher dispatcher{ event };
+            dispatcher.Dispatch<EventType::WindowClose>([&](const IEvent& evnt) {
+                const auto& closeEvent =
+                static_cast<const WindowCloseEvent&>(evnt);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                if (closeEvent.NativeWindowHandle() == m_MainWindow.NativeHandle()) { m_Running = false; }
+                return false;
+            });
+
+            WindowController::Get().OnEvent(event);
+            if (event.Handled()) { return; }
+        }
+
+        if (event.Category() == EventCategory::Keyboard || event.Category() == EventCategory::Mouse) {
+            InputController::Get().OnEvent(event);
+            if (event.Handled()) { return; }
+        }
+
+        EventDispatcher dispatcher{ event };
+
+        dispatcher.Dispatch<EventType::Quit>([&](const IEvent&) {
+            m_Running = false;
+            return true;
         });
     }
+
+    void Application::PopLayer(ILayer& layer)
     {
-      ZoneScopedN("ImGuiLayer Process and Render");// NOLINT
-      m_ImGuiLayer->Begin();
-      {
-        ZoneScopedN("OnImGuiRender");// NOLINT
-        ForEach(m_LayerStack, [](const Scope<ILayer, MemoryTag::App> &layer) { layer->OnImGuiRender(); });
-        ForEach(m_NativePluginController.Plugins(),
-          [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App> &plugin) {
-            plugin->Implementation->OnImGuiRender();
-          });
-      }
-      {
-        ZoneScopedN("DebugViewRender");// NOLINT
-        ForEach(m_DebugViewContainer, [](IImGuiDebugView &view) {
-          if (view.IsOpen()) { view.Render(); }
-        });
-      }
-      m_ImGuiLayer->End();
+        ZoneScoped;// NOLINT
+        m_LayerStack.PopLayer(layer);
     }
-  }
 
-  {
-    ZoneScopedN("MainWindow SwapBuffers");// NOLINT
-    m_MainWindow.GraphicsContext().SwapBuffers();
-  }
+    void Application::PopOverlay(ILayer& layer)
+    {
+        ZoneScoped;// NOLINT
+        m_LayerStack.PopOverlay(layer);
+    }
 
-  FrameMark;
-}
+    void Application::AddDebugView(IImGuiDebugView& view) { m_DebugViewContainer.emplace_back(view); }
 
-void Application::Run(int32_t loopCount)
-{
-  ASSERT(!m_Running, "Engine already running");
-  ASSERT(loopCount != 0, "Cannot run zero loops");
+    void Application::AddInternalDebugViews()
+    {
+        AddDebugView(m_InternalDebugViews.applicationDebugView);
+        AddDebugView(m_InternalDebugViews.inputControllerDebugView);
+        AddDebugView(m_InternalDebugViews.memoryControllerDebugView);
+        AddDebugView(m_InternalDebugViews.renderer2DDebugView);
+        AddDebugView(m_InternalDebugViews.windowControllerDebugView);
+    }
 
-  JE_APP.ImGuiLayer().Renderer().Initialize();
+    void Application::UpdateAppFocus()
+    {
+        auto* focusedNativeWindow = IPlatform::Get().FocusedWindow();
+        m_Focused                 = focusedNativeWindow != nullptr;
+    }
 
-  m_Running = true;
+    void Application::UpdateDeltaTime()
+    {
+        static auto s_LastFrameTicks = IPlatform::Get().CurrentTicks();
+        auto        currentTicks     = IPlatform::Get().CurrentTicks();
 
-  m_MainWindow.Focus();
+        m_DeltaTime = static_cast<double>(currentTicks - s_LastFrameTicks) / static_cast<double>(IPlatform::Get().TickFrequency());
 
-  if (loopCount < 0) {
-    while (m_Running) { ProcessMainLoop(); }
-  } else {
-    while (m_Running && ((loopCount--) != 0)) { ProcessMainLoop(); }
-  }
+        s_LastFrameTicks = currentTicks;
+    }
 
-  m_Running = false;
-}
+    void Application::ProcessMainLoop()
+    {
+        ++m_ProcessCount;
+        m_Uptime += m_DeltaTime;
+
+
+        {
+            ZoneScopedN("Pre-Frame Setup");// NOLINT
+
+            m_NativePluginController.UpdatePlugins();
+
+            UpdateAppFocus();
+
+            UpdateDeltaTime();
+
+            InputController::Get().NewFrame();
+            m_Renderer2D.NewFrame();
+        }
+
+        {
+            ZoneScopedN("Event Poll");// NOLINT
+
+            IPlatform::Get().PollEvents();
+            if (!m_Running) { return; }
+        }
+
+        {
+            ZoneScopedN("Layer & ImGui Processing");// NOLINT
+
+            {
+                ZoneScopedN("Make MainWindow Context Current");// NOLINT
+                m_MainWindow.GraphicsContext().MakeCurrent();
+                m_RendererAPI->Clear();
+            }
+
+            {
+                ZoneScopedN("OnUpdate");// NOLINT
+                ForEach(m_LayerStack, [](const Scope<ILayer, MemoryTag::App>& layer) { layer->OnUpdate(); });
+                ForEach(m_NativePluginController.Plugins(), [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App>& plugin) {
+                    plugin->Implementation->OnUpdate();
+                });
+            }
+            {
+                ZoneScopedN("ImGuiLayer Process and Render");// NOLINT
+                m_ImGuiLayer->Begin();
+                {
+                    ZoneScopedN("OnImGuiRender");// NOLINT
+                    ForEach(m_LayerStack, [](const Scope<ILayer, MemoryTag::App>& layer) { layer->OnImGuiRender(); });
+                    ForEach(m_NativePluginController.Plugins(),
+                            [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App>& plugin) {
+                                plugin->Implementation->OnImGuiRender();
+                            });
+                }
+                {
+                    ZoneScopedN("DebugViewRender");// NOLINT
+                    ForEach(m_DebugViewContainer, [](IImGuiDebugView& view) {
+                        if (view.IsOpen()) { view.Render(); }
+                    });
+                }
+                m_ImGuiLayer->End();
+            }
+        }
+
+        {
+            ZoneScopedN("MainWindow SwapBuffers");// NOLINT
+            m_MainWindow.GraphicsContext().SwapBuffers();
+        }
+
+        FrameMark;
+    }
+
+    void Application::Run(int32_t loopCount)
+    {
+        ASSERT(!m_Running, "Engine already running");
+        ASSERT(loopCount != 0, "Cannot run zero loops");
+
+        JE_APP.ImGuiLayer().Renderer().Initialize();
+
+        m_Running = true;
+
+        m_MainWindow.Focus();
+
+        if (loopCount < 0) {
+            while (m_Running) { ProcessMainLoop(); }
+        } else {
+            while (m_Running && ((loopCount--) != 0)) { ProcessMainLoop(); }
+        }
+
+        m_Running = false;
+    }
 
 }// namespace JE

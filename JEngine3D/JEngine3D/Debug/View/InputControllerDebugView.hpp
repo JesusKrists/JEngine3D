@@ -4,13 +4,13 @@
 
 namespace JE {
 
-class InputControllerDebugView final : public IImGuiDebugView
-{
-public:
-  InputControllerDebugView() : IImGuiDebugView("InputControllerDebugView") {}
+    class InputControllerDebugView final : public IImGuiDebugView
+    {
+    public:
+        InputControllerDebugView() : IImGuiDebugView("InputControllerDebugView") {}
 
-private:
-  void OnImGuiRender() override;
-};
+    private:
+        void OnImGuiRender() override;
+    };
 
 }// namespace JE

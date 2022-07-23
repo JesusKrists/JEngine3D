@@ -6,21 +6,21 @@
 
 namespace JE {
 
-template<typename... Args>
-inline void ASSERT_([[maybe_unused]] bool check,
-  [[maybe_unused]] const char *assertion,// NOLINT(bugprone-easily-swappable-parameters)
-  [[maybe_unused]] const char *file,
-  [[maybe_unused]] int line,
-  [[maybe_unused]] Args &&...args)
-{
+    template<typename... Args>
+    inline void ASSERT_([[maybe_unused]] bool        check,
+                        [[maybe_unused]] const char* assertion,// NOLINT(bugprone-easily-swappable-parameters)
+                        [[maybe_unused]] const char* file,
+                        [[maybe_unused]] int         line,
+                        [[maybe_unused]] Args&&... args)
+    {
 #if defined(JE_ENABLE_ASSERTS)
-  if (!check) {
-    JE::Logger::CoreLogger().critical(
-      "Assertion '{0}' failed at {1}:{2} | {3}", assertion, file, line, std::forward<Args>(args)...);
-    DEBUGBREAK();
-  }
+        if (!check) {
+            JE::Logger::CoreLogger().critical(
+            "Assertion '{0}' failed at {1}:{2} | {3}", assertion, file, line, std::forward<Args>(args)...);
+            DEBUGBREAK();
+        }
 #endif
-}
+    }
 
 }// namespace JE
 

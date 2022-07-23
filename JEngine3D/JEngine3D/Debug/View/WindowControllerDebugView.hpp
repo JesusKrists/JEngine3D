@@ -5,13 +5,13 @@
 
 namespace JE {
 
-class WindowControllerDebugView final : public IImGuiDebugView
-{
-public:
-  WindowControllerDebugView() : IImGuiDebugView("WindowControllerDebugView") {}
+    class WindowControllerDebugView final : public IImGuiDebugView
+    {
+    public:
+        WindowControllerDebugView() : IImGuiDebugView("WindowControllerDebugView") {}
 
-private:
-  void OnImGuiRender() override;
-};
+    private:
+        void OnImGuiRender() override;
+    };
 
 }// namespace JE

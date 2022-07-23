@@ -2,961 +2,935 @@
 
 #include <JEngine3D/Core/LoggerController.hpp>// for LoggerController
 #include <JEngine3D/Core/MemoryController.hpp>// for MemoryController
-#include <JEngine3D/Platform/IPlatformBackend.hpp>// for IPlatformBackend
-#include <JEngine3D/Platform/SDL/SDLPlatformBackend.hpp>// for SDLPlatformBackend
+#include <JEngine3D/Platform/IPlatform.hpp>// for IPlatformBackend
+#include <JEngine3D/Platform/SDL/SDLPlatform.hpp>// for SDLPlatformBackend
 #include <JEngine3D/Core/Types.hpp>// for Size2DI
 #include <JEngine3D/Core/Events.hpp>
 
-template<typename BackendImpl> class IPlatformBackendTestsFixture
+template<typename BackendImpl>
+class IPlatformBackendTestsFixture
 {
 public:
-  static constexpr auto TEST_WINDOW_SIZE = JE::Size2DI{ 800, 600 };
-  static constexpr auto TEST_WINDOW_TITLE = std::string_view{ "Test Window" };
-  static constexpr auto TEST_WINDOW_POSITION = JE::Position2DI{ 100, 100 };
+    static constexpr auto TEST_WINDOW_SIZE     = JE::Size2DI{ 800, 600 };
+    static constexpr auto TEST_WINDOW_TITLE    = std::string_view{ "Test Window" };
+    static constexpr auto TEST_WINDOW_POSITION = JE::Position2DI{ 100, 100 };
 
-  static constexpr auto NEW_WINDOW_SIZE = JE::Size2DI{ 640, 480 };
-  static constexpr auto NEW_WINDOW_TITLE = std::string_view{ "Test Window - New" };
-  static constexpr auto NEW_WINDOW_POSITION = JE::Position2DI{ 150, 150 };
+    static constexpr auto NEW_WINDOW_SIZE     = JE::Size2DI{ 640, 480 };
+    static constexpr auto NEW_WINDOW_TITLE    = std::string_view{ "Test Window - New" };
+    static constexpr auto NEW_WINDOW_POSITION = JE::Position2DI{ 150, 150 };
 
-  static constexpr auto CLIPBOARD_TEXT = std::string_view{ "Clipboard TEXT test!" };
-  static constexpr auto TEXT_INPUT_TEXT = std::string_view{ "Text input text!" };
+    static constexpr auto CLIPBOARD_TEXT  = std::string_view{ "Clipboard TEXT test!" };
+    static constexpr auto TEXT_INPUT_TEXT = std::string_view{ "Text input text!" };
 
-  static constexpr auto DELAY_COUNT_MS = 1100;
+    static constexpr auto DELAY_COUNT_MS = 1100;
 
 protected:
-  JE::MemoryController m_MemoryController;
-  JE::LoggerController m_LoggerController;
-  BackendImpl m_Backend;
+    JE::MemoryController m_MemoryController;
+    JE::LoggerController m_LoggerController;
+    BackendImpl          m_Backend;
 };
 
-using Backend = JE::SDLPlatformBackend;
+using Backend = JE::SDLPlatform;
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates singleton instance which can be accessed",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend creates singleton instance which can be accessed",
+                 "[JE::IPlatformBackend]")
 {
-  REQUIRE(&JE::IPlatformBackend::Get() == &m_Backend);
+    REQUIRE(&JE::IPlatform::Get() == &m_Backend);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates a Window and returns a valid WindowHandle",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend creates a Window and returns a valid WindowHandle",
+                 "[JE::IPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+    auto* windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
-  REQUIRE(m_Backend.ValidWindowHandle(windowHandle));
-  REQUIRE(m_Backend.WindowPosition(windowHandle) != JE::IPlatformBackend::WINDOW_CENTER_POSITION);
-  REQUIRE(!m_Backend.WindowMinimized(windowHandle));
-  REQUIRE(!m_Backend.WindowHidden(windowHandle));
+    REQUIRE(m_Backend.ValidWindowHandle(windowHandle));
+    REQUIRE(m_Backend.WindowPosition(windowHandle) != JE::IPlatform::WINDOW_CENTER_POSITION);
+    REQUIRE(!m_Backend.WindowMinimized(windowHandle));
+    REQUIRE(!m_Backend.WindowHidden(windowHandle));
 
-  m_Backend.DestroyWindow(windowHandle);
+    m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates a Window and can query the size",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend creates a Window and can query the size",
+                 "[JE::IPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+    auto* windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
-  REQUIRE(m_Backend.WindowSize(windowHandle) == TEST_WINDOW_SIZE);
+    REQUIRE(m_Backend.WindowSize(windowHandle) == TEST_WINDOW_SIZE);
 
-  m_Backend.DestroyWindow(windowHandle);
+    m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates a Window and can set window size",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend creates a Window and can set window size",
+                 "[JE::IPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-  m_Backend.SetWindowSize(windowHandle, NEW_WINDOW_SIZE);
+    auto* windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+    m_Backend.SetWindowSize(windowHandle, NEW_WINDOW_SIZE);
 
-  REQUIRE(m_Backend.WindowSize(windowHandle) == NEW_WINDOW_SIZE);
+    REQUIRE(m_Backend.WindowSize(windowHandle) == NEW_WINDOW_SIZE);
 
-  m_Backend.DestroyWindow(windowHandle);
+    m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates a Window and can query window title",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend creates a Window and can query window title",
+                 "[JE::IPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+    auto* windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
-  REQUIRE(m_Backend.WindowTitle(windowHandle) == TEST_WINDOW_TITLE);
+    REQUIRE(m_Backend.WindowTitle(windowHandle) == TEST_WINDOW_TITLE);
 
-  m_Backend.DestroyWindow(windowHandle);
+    m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates a Window and can set window title",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend creates a Window and can set window title",
+                 "[JE::IPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-  m_Backend.SetWindowTitle(windowHandle, NEW_WINDOW_TITLE);
+    auto* windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+    m_Backend.SetWindowTitle(windowHandle, NEW_WINDOW_TITLE);
 
-  REQUIRE(m_Backend.WindowTitle(windowHandle) == NEW_WINDOW_TITLE);
+    REQUIRE(m_Backend.WindowTitle(windowHandle) == NEW_WINDOW_TITLE);
 
-  m_Backend.DestroyWindow(windowHandle);
+    m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates a Window and query window position",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend creates a Window and query window position",
+                 "[JE::IPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+    auto* windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
 
-  REQUIRE(m_Backend.WindowPosition(windowHandle) == TEST_WINDOW_POSITION);
+    REQUIRE(m_Backend.WindowPosition(windowHandle) == TEST_WINDOW_POSITION);
 
-  m_Backend.DestroyWindow(windowHandle);
+    m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates a Window and can set window position",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend creates a Window and can set window position",
+                 "[JE::IPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+    auto* windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
 
-  m_Backend.SetWindowPosition(windowHandle, NEW_WINDOW_POSITION);
+    m_Backend.SetWindowPosition(windowHandle, NEW_WINDOW_POSITION);
 
-  CHECK_NOFAIL(m_Backend.WindowPosition(windowHandle) == NEW_WINDOW_POSITION);
+    CHECK_NOFAIL(m_Backend.WindowPosition(windowHandle) == NEW_WINDOW_POSITION);
 
-  m_Backend.DestroyWindow(windowHandle);
+    m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates a Window and can show window",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend creates a Window and can show window",
+                 "[JE::IPlatformBackend]")
 {
-  JE::WindowConfiguration config{};
-  config.Hidden = true;
-  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION, config);
-  REQUIRE(m_Backend.WindowHidden(windowHandle));
+    JE::WindowConfiguration config{};
+    config.Hidden      = true;
+    auto* windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION, config);
+    REQUIRE(m_Backend.WindowHidden(windowHandle));
 
-  m_Backend.ShowWindow(windowHandle);
+    m_Backend.ShowWindow(windowHandle);
 
-  REQUIRE(!m_Backend.WindowHidden(windowHandle));
+    REQUIRE(!m_Backend.WindowHidden(windowHandle));
 
-  m_Backend.DestroyWindow(windowHandle);
+    m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates a Window and can hide window",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend creates a Window and can hide window",
+                 "[JE::IPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
-  REQUIRE(!m_Backend.WindowHidden(windowHandle));
+    auto* windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+    REQUIRE(!m_Backend.WindowHidden(windowHandle));
 
-  m_Backend.HideWindow(windowHandle);
+    m_Backend.HideWindow(windowHandle);
 
-  REQUIRE(m_Backend.WindowHidden(windowHandle));
+    REQUIRE(m_Backend.WindowHidden(windowHandle));
 
-  m_Backend.DestroyWindow(windowHandle);
+    m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates a Window and can focus window",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend creates a Window and can focus window",
+                 "[JE::IPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
-  auto *windowHandle2 = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
-  CHECK_NOFAIL(m_Backend.WindowFocused(windowHandle2));
+    auto* windowHandle  = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+    auto* windowHandle2 = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+    CHECK_NOFAIL(m_Backend.WindowFocused(windowHandle2));
 
-  m_Backend.FocusWindow(windowHandle);
+    m_Backend.FocusWindow(windowHandle);
 
-  CHECK_NOFAIL(m_Backend.WindowFocused(windowHandle));
-  CHECK_NOFAIL(m_Backend.FocusedWindow() == windowHandle);
+    CHECK_NOFAIL(m_Backend.WindowFocused(windowHandle));
+    CHECK_NOFAIL(m_Backend.FocusedWindow() == windowHandle);
 
-  m_Backend.DestroyWindow(windowHandle);
-  m_Backend.DestroyWindow(windowHandle2);
+    m_Backend.DestroyWindow(windowHandle);
+    m_Backend.DestroyWindow(windowHandle2);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend creates a Window and can Minimize and Maximize",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend creates a Window and can Minimize and Maximize",
+                 "[JE::IPlatformBackend]")
 {
-  auto *windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
-  CHECK_NOFAIL(!m_Backend.WindowMinimized(windowHandle));
+    auto* windowHandle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE, TEST_WINDOW_POSITION);
+    CHECK_NOFAIL(!m_Backend.WindowMinimized(windowHandle));
 
-  m_Backend.MinimizeWindow(windowHandle);
+    m_Backend.MinimizeWindow(windowHandle);
 
-  CHECK_NOFAIL(m_Backend.WindowMinimized(windowHandle));
+    CHECK_NOFAIL(m_Backend.WindowMinimized(windowHandle));
 
-  m_Backend.MaximizeWindow(windowHandle);
+    m_Backend.MaximizeWindow(windowHandle);
 
-  CHECK_NOFAIL(!m_Backend.WindowMinimized(windowHandle));
+    CHECK_NOFAIL(!m_Backend.WindowMinimized(windowHandle));
 
-  m_Backend.DestroyWindow(windowHandle);
+    m_Backend.DestroyWindow(windowHandle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Quit)",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Quit)",
+                 "[JE::IPlatformBackend]")
 {
-
-  class QuitChecker final : public JE::IEventProcessor
-  {
-  public:
-    inline void OnEvent(JE::IEvent &event) override { m_QuitEventReceived = (event.Type() == JE::EventType::Quit); }
-    [[nodiscard]] inline auto QuitEventReceived() const -> bool { return m_QuitEventReceived; }
-
-  private:
-    bool m_QuitEventReceived = false;
-  } checker;
-  m_Backend.SetEventProcessor(&checker);
-
-  JE::QuitEvent event;
-  m_Backend.PushEvent(event);
-
-  m_Backend.PollEvents();
-
-  REQUIRE(checker.QuitEventReceived());
-}
-
-TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Size changed)",
-  "[JE::IPlatformBackend]")
-{
-
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class WindowResizeChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit WindowResizeChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
+    class QuitChecker final : public JE::IEventProcessor
     {
-      if (event.Type() == JE::EventType::WindowResize) {
-        const auto &resizeEvent =
-          static_cast<const JE::WindowResizeEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (resizeEvent.NativeWindowHandle() == m_Handle && resizeEvent.Size() == NEW_WINDOW_SIZE) {
-          m_WindowResizeEventReceived = true;
+    public:
+        inline void               OnEvent(JE::IEvent& event) override { m_QuitEventReceived = (event.Type() == JE::EventType::Quit); }
+        [[nodiscard]] inline auto QuitEventReceived() const -> bool { return m_QuitEventReceived; }
+
+    private:
+        bool m_QuitEventReceived = false;
+    } checker;
+    m_Backend.SetEventProcessor(&checker);
+
+    JE::QuitEvent event;
+    m_Backend.PushEvent(event);
+
+    m_Backend.PollEvents();
+
+    REQUIRE(checker.QuitEventReceived());
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Size changed)",
+                 "[JE::IPlatformBackend]")
+{
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+    class WindowResizeChecker final : public JE::IEventProcessor
+    {
+    public:
+        explicit WindowResizeChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::WindowResize) {
+                const auto& resizeEvent =
+                static_cast<const JE::WindowResizeEvent&>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                if (resizeEvent.NativeWindowHandle() == m_Handle && resizeEvent.Size() == NEW_WINDOW_SIZE) {
+                    m_WindowResizeEventReceived = true;
+                }
+            }
         }
-      }
-    }
 
-    [[nodiscard]] inline auto WindowResizeEventReceived() const -> bool { return m_WindowResizeEventReceived; }
+        [[nodiscard]] inline auto WindowResizeEventReceived() const -> bool { return m_WindowResizeEventReceived; }
 
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_WindowResizeEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_WindowResizeEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
 
 
-  JE::WindowResizeEvent event{ handle, NEW_WINDOW_SIZE };
-  m_Backend.PushEvent(event);
+    JE::WindowResizeEvent event{ handle, NEW_WINDOW_SIZE };
+    m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents();
+    m_Backend.PollEvents();
 
-  REQUIRE(checker.WindowResizeEventReceived());
+    REQUIRE(checker.WindowResizeEventReceived());
 
-  m_Backend.DestroyWindow(handle);
+    m_Backend.DestroyWindow(handle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Close)",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Close)",
+                 "[JE::IPlatformBackend]")
 {
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class WindowCloseChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit WindowCloseChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
+    class WindowCloseChecker final : public JE::IEventProcessor
     {
-      if (event.Type() == JE::EventType::WindowClose) {
-        const auto &resizeEvent =
-          static_cast<const JE::WindowCloseEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (resizeEvent.NativeWindowHandle() == m_Handle) { m_WindowCloseEventReceived = true; }
-      }
-    }
+    public:
+        explicit WindowCloseChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
 
-    [[nodiscard]] inline auto WindowCloseEventReceived() const -> bool { return m_WindowCloseEventReceived; }
-
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_WindowCloseEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
-
-
-  JE::WindowCloseEvent event{ handle };
-  m_Backend.PushEvent(event);
-
-  m_Backend.PollEvents();
-
-  REQUIRE(checker.WindowCloseEventReceived());
-
-  m_Backend.DestroyWindow(handle);
-}
-
-TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Move)",
-  "[JE::IPlatformBackend]")
-{
-
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class WindowMoveChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit WindowMoveChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
-    {
-      if (event.Type() == JE::EventType::WindowMove) {
-        const auto &moveEvent =
-          static_cast<const JE::WindowMoveEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (moveEvent.NativeWindowHandle() == m_Handle && moveEvent.Position() == NEW_WINDOW_POSITION) {
-          m_WindowMoveEventReceived = true;
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::WindowClose) {
+                const auto& resizeEvent =
+                static_cast<const JE::WindowCloseEvent&>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                if (resizeEvent.NativeWindowHandle() == m_Handle) { m_WindowCloseEventReceived = true; }
+            }
         }
-      }
-    }
 
-    [[nodiscard]] inline auto WindowMoveEventReceived() const -> bool { return m_WindowMoveEventReceived; }
+        [[nodiscard]] inline auto WindowCloseEventReceived() const -> bool { return m_WindowCloseEventReceived; }
 
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_WindowMoveEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_WindowCloseEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
 
-  m_Backend.PollEvents();
 
-  JE::WindowMoveEvent event{ handle, NEW_WINDOW_POSITION };
-  m_Backend.PushEvent(event);
+    JE::WindowCloseEvent event{ handle };
+    m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents();
+    m_Backend.PollEvents();
 
-  REQUIRE(checker.WindowMoveEventReceived());
+    REQUIRE(checker.WindowCloseEventReceived());
 
-  m_Backend.DestroyWindow(handle);
+    m_Backend.DestroyWindow(handle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Hide)",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Move)",
+                 "[JE::IPlatformBackend]")
 {
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class WindowHideChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit WindowHideChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
+    class WindowMoveChecker final : public JE::IEventProcessor
     {
-      if (event.Type() == JE::EventType::WindowHide) {
-        const auto &hideEvent =
-          static_cast<const JE::WindowHideEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (hideEvent.NativeWindowHandle() == m_Handle) { m_WindowHideEventReceived = true; }
-      }
-    }
-
-    [[nodiscard]] inline auto WindowHideEventReceived() const -> bool { return m_WindowHideEventReceived; }
-
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_WindowHideEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
-
-
-  JE::WindowHideEvent event{ handle };
-  m_Backend.PushEvent(event);
-
-  m_Backend.PollEvents();
-
-  REQUIRE(checker.WindowHideEventReceived());
-
-  m_Backend.DestroyWindow(handle);
-}
-
-TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Show)",
-  "[JE::IPlatformBackend]")
-{
-
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class WindowShowChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit WindowShowChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
-    {
-      if (event.Type() == JE::EventType::WindowShow) {
-        const auto &showEvent =
-          static_cast<const JE::WindowShowEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (showEvent.NativeWindowHandle() == m_Handle) { m_WindowShowEventReceived = true; }
-      }
-    }
-
-    [[nodiscard]] inline auto WindowShowEventReceived() const -> bool { return m_WindowShowEventReceived; }
-
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_WindowShowEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
-
-
-  JE::WindowShowEvent event{ handle };
-  m_Backend.PushEvent(event);
-
-  m_Backend.PollEvents();
-
-  REQUIRE(checker.WindowShowEventReceived());
-
-  m_Backend.DestroyWindow(handle);
-}
-
-TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Focus Gained)",
-  "[JE::IPlatformBackend]")
-{
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class WindowFocusGainedChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit WindowFocusGainedChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
-    {
-      if (event.Type() == JE::EventType::WindowFocusGained) {
-        const auto &focusEvent =
-          static_cast<const JE::WindowFocusGainedEvent &>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-            event);
-        if (focusEvent.NativeWindowHandle() == m_Handle) { m_WindowFocusGainedEventReceived = true; }
-      }
-    }
-
-    [[nodiscard]] inline auto WindowFocusGainedEventReceived() const -> bool
-    {
-      return m_WindowFocusGainedEventReceived;
-    }
-
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_WindowFocusGainedEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
-
-
-  JE::WindowFocusGainedEvent event{ handle };
-  m_Backend.PushEvent(event);
-
-  m_Backend.PollEvents();
-
-  REQUIRE(checker.WindowFocusGainedEventReceived());
-
-  m_Backend.DestroyWindow(handle);
-}
-
-TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Focus Lost)",
-  "[JE::IPlatformBackend]")
-{
-
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class WindowFocusLostChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit WindowFocusLostChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
-    {
-      if (event.Type() == JE::EventType::WindowFocusLost) {
-        const auto &focusEvent =
-          static_cast<const JE::WindowFocusLostEvent &>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-            event);
-        if (focusEvent.NativeWindowHandle() == m_Handle) { m_WindowFocusLostEventReceived = true; }
-      }
-    }
-
-    [[nodiscard]] inline auto WindowFocusLostEventReceived() const -> bool { return m_WindowFocusLostEventReceived; }
-
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_WindowFocusLostEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
-
-
-  JE::WindowFocusLostEvent event{ handle };
-  m_Backend.PushEvent(event);
-
-  m_Backend.PollEvents();
-
-  REQUIRE(checker.WindowFocusLostEventReceived());
-
-  m_Backend.DestroyWindow(handle);
-}
-
-TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Minimized)",
-  "[JE::IPlatformBackend]")
-{
-
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class WindowMinimizedChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit WindowMinimizedChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
-    {
-      if (event.Type() == JE::EventType::WindowMinimized) {
-        const auto &minimizeEvent =
-          static_cast<const JE::WindowMinimizedEvent &>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-            event);
-        if (minimizeEvent.NativeWindowHandle() == m_Handle) { m_WindowMinimizedEventReceived = true; }
-      }
-    }
-
-    [[nodiscard]] inline auto WindowMinimizedEventReceived() const -> bool { return m_WindowMinimizedEventReceived; }
-
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_WindowMinimizedEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
-
-
-  JE::WindowMinimizedEvent event{ handle };
-  m_Backend.PushEvent(event);
-
-  m_Backend.PollEvents();
-
-  REQUIRE(checker.WindowMinimizedEventReceived());
-
-  m_Backend.DestroyWindow(handle);
-}
-
-TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Maximized)",
-  "[JE::IPlatformBackend]")
-{
-
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class WindowMaximizedChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit WindowMaximizedChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
-    {
-      if (event.Type() == JE::EventType::WindowMaximized) {
-        const auto &maximizeEvent =
-          static_cast<const JE::WindowMaximizedEvent &>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-            event);
-        if (maximizeEvent.NativeWindowHandle() == m_Handle) { m_WindowMaximizedEventReceived = true; }
-      }
-    }
-
-    [[nodiscard]] inline auto WindowMaximizedEventReceived() const -> bool { return m_WindowMaximizedEventReceived; }
-
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_WindowMaximizedEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
-
-
-  JE::WindowMaximizedEvent event{ handle };
-  m_Backend.PushEvent(event);
-
-  m_Backend.PollEvents();
-
-  REQUIRE(checker.WindowMaximizedEventReceived());
-
-  m_Backend.DestroyWindow(handle);
-}
-
-TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Restored)",
-  "[JE::IPlatformBackend]")
-{
-
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class WindowRestoredChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit WindowRestoredChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
-    {
-      if (event.Type() == JE::EventType::WindowRestored) {
-        const auto &restoreEvent =
-          static_cast<const JE::WindowRestoredEvent &>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-            event);
-        if (restoreEvent.NativeWindowHandle() == m_Handle) { m_WindowRestoredEventReceived = true; }
-      }
-    }
-
-    [[nodiscard]] inline auto WindowRestoredEventReceived() const -> bool { return m_WindowRestoredEventReceived; }
-
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_WindowRestoredEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
-
-
-  JE::WindowRestoredEvent event{ handle };
-  m_Backend.PushEvent(event);
-
-  m_Backend.PollEvents();
-
-  REQUIRE(checker.WindowRestoredEventReceived());
-
-  m_Backend.DestroyWindow(handle);
-}
-
-TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Key press)",
-  "[JE::IPlatformBackend]")
-{
-
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class KeyPressChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit KeyPressChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
-    {
-      if (event.Type() == JE::EventType::KeyPress) {
-        const auto &keyPressEvent =
-          static_cast<const JE::KeyPressEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (keyPressEvent.WindowHandle() == m_Handle && keyPressEvent.Key() == JE::KeyCode::Mode
-            && keyPressEvent.Repeat() == 1) {
-          if (keyPressEvent.Modifiers().Ctrl && keyPressEvent.Modifiers().Shift && keyPressEvent.Modifiers().Alt
-              && !keyPressEvent.Modifiers().Super) {
-            m_KeyPressEventReceived = true;
-          }
+    public:
+        explicit WindowMoveChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::WindowMove) {
+                const auto& moveEvent =
+                static_cast<const JE::WindowMoveEvent&>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                if (moveEvent.NativeWindowHandle() == m_Handle && moveEvent.Position() == NEW_WINDOW_POSITION) {
+                    m_WindowMoveEventReceived = true;
+                }
+            }
         }
-      }
-    }
 
-    [[nodiscard]] inline auto KeyPressEventReceived() const -> bool { return m_KeyPressEventReceived; }
+        [[nodiscard]] inline auto WindowMoveEventReceived() const -> bool { return m_WindowMoveEventReceived; }
 
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_KeyPressEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_WindowMoveEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
 
-  JE::KeyModifiers modifiers = { true, true, true, false };
-  JE::KeyPressEvent event{ handle, JE::KeyCode::Mode, modifiers, 1 };
-  m_Backend.PushEvent(event);
+    m_Backend.PollEvents();
 
-  m_Backend.PollEvents();
+    JE::WindowMoveEvent event{ handle, NEW_WINDOW_POSITION };
+    m_Backend.PushEvent(event);
 
-  REQUIRE(checker.KeyPressEventReceived());
+    m_Backend.PollEvents();
 
-  m_Backend.DestroyWindow(handle);
+    REQUIRE(checker.WindowMoveEventReceived());
+
+    m_Backend.DestroyWindow(handle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Key release)",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Hide)",
+                 "[JE::IPlatformBackend]")
 {
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class KeyReleaseChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit KeyReleaseChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
+    class WindowHideChecker final : public JE::IEventProcessor
     {
-      if (event.Type() == JE::EventType::KeyRelease) {
-        const auto &keyReleaseEvent =
-          static_cast<const JE::KeyReleaseEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (keyReleaseEvent.WindowHandle() == m_Handle && keyReleaseEvent.Key() == JE::KeyCode::KeyPadXOR
-            && keyReleaseEvent.Repeat() == 0) {
-          if (keyReleaseEvent.Modifiers().Ctrl && !keyReleaseEvent.Modifiers().Shift && keyReleaseEvent.Modifiers().Alt
-              && keyReleaseEvent.Modifiers().Super) {
-            m_KeyReleaseEventReceived = true;
-          }
+    public:
+        explicit WindowHideChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::WindowHide) {
+                const auto& hideEvent =
+                static_cast<const JE::WindowHideEvent&>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                if (hideEvent.NativeWindowHandle() == m_Handle) { m_WindowHideEventReceived = true; }
+            }
         }
-      }
-    }
 
-    [[nodiscard]] inline auto KeyReleaseEventReceived() const -> bool { return m_KeyReleaseEventReceived; }
+        [[nodiscard]] inline auto WindowHideEventReceived() const -> bool { return m_WindowHideEventReceived; }
 
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_KeyReleaseEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_WindowHideEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
 
-  JE::KeyModifiers modifiers = { true, false, true, true };
-  JE::KeyReleaseEvent event{ handle, JE::KeyCode::KeyPadXOR, modifiers, 0 };
-  m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents();
+    JE::WindowHideEvent event{ handle };
+    m_Backend.PushEvent(event);
 
-  REQUIRE(checker.KeyReleaseEventReceived());
+    m_Backend.PollEvents();
 
-  m_Backend.DestroyWindow(handle);
+    REQUIRE(checker.WindowHideEventReceived());
+
+    m_Backend.DestroyWindow(handle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Text input)",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Show)",
+                 "[JE::IPlatformBackend]")
 {
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class TextInputChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit TextInputChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
+    class WindowShowChecker final : public JE::IEventProcessor
     {
-      if (event.Type() == JE::EventType::TextInput) {
-        const auto &textInputEvent =
-          static_cast<const JE::TextInputEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (textInputEvent.WindowHandle() == m_Handle && textInputEvent.Text() == TEXT_INPUT_TEXT) {
-          m_TextInputEventReceived = true;
+    public:
+        explicit WindowShowChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::WindowShow) {
+                const auto& showEvent =
+                static_cast<const JE::WindowShowEvent&>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                if (showEvent.NativeWindowHandle() == m_Handle) { m_WindowShowEventReceived = true; }
+            }
         }
-      }
-    }
 
-    [[nodiscard]] inline auto TextInputEventReceived() const -> bool { return m_TextInputEventReceived; }
+        [[nodiscard]] inline auto WindowShowEventReceived() const -> bool { return m_WindowShowEventReceived; }
 
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_TextInputEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_WindowShowEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
 
-  JE::TextInputEvent event{ handle, TEXT_INPUT_TEXT };
-  m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents();
+    JE::WindowShowEvent event{ handle };
+    m_Backend.PushEvent(event);
 
-  REQUIRE(checker.TextInputEventReceived());
+    m_Backend.PollEvents();
 
-  m_Backend.DestroyWindow(handle);
+    REQUIRE(checker.WindowShowEventReceived());
+
+    m_Backend.DestroyWindow(handle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Mouse press)",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Focus Gained)",
+                 "[JE::IPlatformBackend]")
 {
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
-  static constexpr auto CLICK_POSITION = JE::Position2DI{ 640, 480 };
-
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class MousePressChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit MousePressChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
+    class WindowFocusGainedChecker final : public JE::IEventProcessor
     {
-      if (event.Type() == JE::EventType::MousePress) {
-        const auto &mousePressEvent =
-          static_cast<const JE::MousePressEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (mousePressEvent.WindowHandle() == m_Handle && mousePressEvent.Button() == JE::MouseButton::Middle
-            && mousePressEvent.Clicks() == 1 && mousePressEvent.Position() == CLICK_POSITION) {
-          m_MousePressEventReceived = true;
+    public:
+        explicit WindowFocusGainedChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::WindowFocusGained) {
+                const auto& focusEvent =
+                static_cast<const JE::WindowFocusGainedEvent&>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                event);
+                if (focusEvent.NativeWindowHandle() == m_Handle) { m_WindowFocusGainedEventReceived = true; }
+            }
         }
-      }
-    }
 
-    [[nodiscard]] inline auto MousePressEventReceived() const -> bool { return m_MousePressEventReceived; }
+        [[nodiscard]] inline auto WindowFocusGainedEventReceived() const -> bool { return m_WindowFocusGainedEventReceived; }
 
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_MousePressEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_WindowFocusGainedEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
 
-  JE::MousePressEvent event{ handle, CLICK_POSITION, JE::MouseButton::Middle, 1 };
-  m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents();
+    JE::WindowFocusGainedEvent event{ handle };
+    m_Backend.PushEvent(event);
 
-  REQUIRE(checker.MousePressEventReceived());
+    m_Backend.PollEvents();
 
-  m_Backend.DestroyWindow(handle);
+    REQUIRE(checker.WindowFocusGainedEventReceived());
+
+    m_Backend.DestroyWindow(handle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Mouse release)",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Focus Lost)",
+                 "[JE::IPlatformBackend]")
 {
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
-  static constexpr auto CLICK_POSITION = JE::Position2DI{ 640, 480 };
-
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class MouseReleaseChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit MouseReleaseChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
+    class WindowFocusLostChecker final : public JE::IEventProcessor
     {
-      if (event.Type() == JE::EventType::MouseRelease) {
-        const auto &mouseReleaseEvent =
-          static_cast<const JE::MouseReleaseEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (mouseReleaseEvent.WindowHandle() == m_Handle && mouseReleaseEvent.Button() == JE::MouseButton::Left
-            && mouseReleaseEvent.Clicks() == 1 && mouseReleaseEvent.Position() == CLICK_POSITION) {
-          m_MouseReleaseEventReceived = true;
+    public:
+        explicit WindowFocusLostChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::WindowFocusLost) {
+                const auto& focusEvent =
+                static_cast<const JE::WindowFocusLostEvent&>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                event);
+                if (focusEvent.NativeWindowHandle() == m_Handle) { m_WindowFocusLostEventReceived = true; }
+            }
         }
-      }
-    }
 
-    [[nodiscard]] inline auto MouseReleaseEventReceived() const -> bool { return m_MouseReleaseEventReceived; }
+        [[nodiscard]] inline auto WindowFocusLostEventReceived() const -> bool { return m_WindowFocusLostEventReceived; }
 
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_MouseReleaseEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_WindowFocusLostEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
 
-  JE::MouseReleaseEvent event{ handle, CLICK_POSITION, JE::MouseButton::Left, 1 };
-  m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents();
+    JE::WindowFocusLostEvent event{ handle };
+    m_Backend.PushEvent(event);
 
-  REQUIRE(checker.MouseReleaseEventReceived());
+    m_Backend.PollEvents();
 
-  m_Backend.DestroyWindow(handle);
+    REQUIRE(checker.WindowFocusLostEventReceived());
+
+    m_Backend.DestroyWindow(handle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Mouse move)",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Minimized)",
+                 "[JE::IPlatformBackend]")
 {
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
-  static constexpr auto INITIAL_POSITION = JE::Position2DI{ 320, 240 };
-  static constexpr auto MOVE_POSITION = JE::Position2DI{ 640, 480 };
-
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class MouseMoveChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit MouseMoveChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
+    class WindowMinimizedChecker final : public JE::IEventProcessor
     {
-      if (event.Type() == JE::EventType::MouseMove) {
-        const auto &mouseMoveEvent =
-          static_cast<const JE::MouseMoveEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (mouseMoveEvent.WindowHandle() == m_Handle && mouseMoveEvent.Position() == MOVE_POSITION
-            && mouseMoveEvent.RelativePosition()
-                 == JE::Position2DI{ MOVE_POSITION.X - INITIAL_POSITION.X, MOVE_POSITION.Y - INITIAL_POSITION.Y }) {
-          m_MouseMoveEventReceived = true;
+    public:
+        explicit WindowMinimizedChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::WindowMinimized) {
+                const auto& minimizeEvent =
+                static_cast<const JE::WindowMinimizedEvent&>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                event);
+                if (minimizeEvent.NativeWindowHandle() == m_Handle) { m_WindowMinimizedEventReceived = true; }
+            }
         }
-      }
-    }
 
-    [[nodiscard]] inline auto MouseMoveEventReceived() const -> bool { return m_MouseMoveEventReceived; }
+        [[nodiscard]] inline auto WindowMinimizedEventReceived() const -> bool { return m_WindowMinimizedEventReceived; }
 
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_MouseMoveEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_WindowMinimizedEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
 
-  JE::MouseMoveEvent event{
-    handle, MOVE_POSITION, JE::Position2DI{ MOVE_POSITION.X - INITIAL_POSITION.X, MOVE_POSITION.Y - INITIAL_POSITION.Y }
-  };
-  m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents();
+    JE::WindowMinimizedEvent event{ handle };
+    m_Backend.PushEvent(event);
 
-  REQUIRE(checker.MouseMoveEventReceived());
+    m_Backend.PollEvents();
 
-  m_Backend.DestroyWindow(handle);
+    REQUIRE(checker.WindowMinimizedEventReceived());
+
+    m_Backend.DestroyWindow(handle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Polls events to EventProcessor (Fake Mouse wheel)",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Maximized)",
+                 "[JE::IPlatformBackend]")
 {
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
 
-  auto *handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
-
-  class MouseWheelChecker final : public JE::IEventProcessor
-  {
-  public:
-    explicit MouseWheelChecker(JE::IPlatformBackend::NativeWindowHandle handle) : m_Handle(handle) {}
-
-    inline void OnEvent(JE::IEvent &event) override
+    class WindowMaximizedChecker final : public JE::IEventProcessor
     {
-      if (event.Type() == JE::EventType::MouseWheel) {
-        const auto &mouseWheelEvent =
-          static_cast<const JE::MouseWheelEvent &>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
-        if (mouseWheelEvent.WindowHandle() == m_Handle && mouseWheelEvent.ScrollAmount() == 1) {
-          m_MouseWheelEventReceived = true;
+    public:
+        explicit WindowMaximizedChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::WindowMaximized) {
+                const auto& maximizeEvent =
+                static_cast<const JE::WindowMaximizedEvent&>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                event);
+                if (maximizeEvent.NativeWindowHandle() == m_Handle) { m_WindowMaximizedEventReceived = true; }
+            }
         }
-      }
-    }
 
-    [[nodiscard]] inline auto MouseWheelEventReceived() const -> bool { return m_MouseWheelEventReceived; }
+        [[nodiscard]] inline auto WindowMaximizedEventReceived() const -> bool { return m_WindowMaximizedEventReceived; }
 
-  private:
-    JE::IPlatformBackend::NativeWindowHandle m_Handle;
-    bool m_MouseWheelEventReceived = false;
-  } checker{ handle };
-  m_Backend.SetEventProcessor(&checker);
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_WindowMaximizedEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
 
-  JE::MouseWheelEvent event{ handle, 1 };
-  m_Backend.PushEvent(event);
 
-  m_Backend.PollEvents();
+    JE::WindowMaximizedEvent event{ handle };
+    m_Backend.PushEvent(event);
 
-  REQUIRE(checker.MouseWheelEventReceived());
+    m_Backend.PollEvents();
 
-  m_Backend.DestroyWindow(handle);
+    REQUIRE(checker.WindowMaximizedEventReceived());
+
+    m_Backend.DestroyWindow(handle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend Returns current ticks (not 0) and tick frequency (not 0)",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Window Restored)",
+                 "[JE::IPlatformBackend]")
 {
-  REQUIRE(m_Backend.CurrentTicks() != 0);
-  REQUIRE(m_Backend.TickFrequency() != 0);
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+    class WindowRestoredChecker final : public JE::IEventProcessor
+    {
+    public:
+        explicit WindowRestoredChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::WindowRestored) {
+                const auto& restoreEvent =
+                static_cast<const JE::WindowRestoredEvent&>(// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                event);
+                if (restoreEvent.NativeWindowHandle() == m_Handle) { m_WindowRestoredEventReceived = true; }
+            }
+        }
+
+        [[nodiscard]] inline auto WindowRestoredEventReceived() const -> bool { return m_WindowRestoredEventReceived; }
+
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_WindowRestoredEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
+
+
+    JE::WindowRestoredEvent event{ handle };
+    m_Backend.PushEvent(event);
+
+    m_Backend.PollEvents();
+
+    REQUIRE(checker.WindowRestoredEventReceived());
+
+    m_Backend.DestroyWindow(handle);
 }
 
 TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend return clipboard text",
-  "[JE::IPlatformBackend]")
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Key press)",
+                 "[JE::IPlatformBackend]")
 {
-  m_Backend.SetClipboardText(CLIPBOARD_TEXT);
-  REQUIRE(m_Backend.ClipboardText() == CLIPBOARD_TEXT);
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+    class KeyPressChecker final : public JE::IEventProcessor
+    {
+    public:
+        explicit KeyPressChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::KeyPress) {
+                const auto& keyPressEvent =
+                static_cast<const JE::KeyPressEvent&>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                if (keyPressEvent.WindowHandle() == m_Handle && keyPressEvent.Key() == JE::KeyCode::Mode && keyPressEvent.Repeat() == 1) {
+                    if (keyPressEvent.Modifiers().Ctrl && keyPressEvent.Modifiers().Shift && keyPressEvent.Modifiers().Alt
+                        && !keyPressEvent.Modifiers().Super) {
+                        m_KeyPressEventReceived = true;
+                    }
+                }
+            }
+        }
+
+        [[nodiscard]] inline auto KeyPressEventReceived() const -> bool { return m_KeyPressEventReceived; }
+
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_KeyPressEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
+
+    JE::KeyModifiers  modifiers = { true, true, true, false };
+    JE::KeyPressEvent event{ handle, JE::KeyCode::Mode, modifiers, 1 };
+    m_Backend.PushEvent(event);
+
+    m_Backend.PollEvents();
+
+    REQUIRE(checker.KeyPressEventReceived());
+
+    m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Key release)",
+                 "[JE::IPlatformBackend]")
+{
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+    class KeyReleaseChecker final : public JE::IEventProcessor
+    {
+    public:
+        explicit KeyReleaseChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::KeyRelease) {
+                const auto& keyReleaseEvent =
+                static_cast<const JE::KeyReleaseEvent&>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                if (keyReleaseEvent.WindowHandle() == m_Handle && keyReleaseEvent.Key() == JE::KeyCode::KeyPadXOR
+                    && keyReleaseEvent.Repeat() == 0) {
+                    if (keyReleaseEvent.Modifiers().Ctrl && !keyReleaseEvent.Modifiers().Shift && keyReleaseEvent.Modifiers().Alt
+                        && keyReleaseEvent.Modifiers().Super) {
+                        m_KeyReleaseEventReceived = true;
+                    }
+                }
+            }
+        }
+
+        [[nodiscard]] inline auto KeyReleaseEventReceived() const -> bool { return m_KeyReleaseEventReceived; }
+
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_KeyReleaseEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
+
+    JE::KeyModifiers    modifiers = { true, false, true, true };
+    JE::KeyReleaseEvent event{ handle, JE::KeyCode::KeyPadXOR, modifiers, 0 };
+    m_Backend.PushEvent(event);
+
+    m_Backend.PollEvents();
+
+    REQUIRE(checker.KeyReleaseEventReceived());
+
+    m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Text input)",
+                 "[JE::IPlatformBackend]")
+{
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+    class TextInputChecker final : public JE::IEventProcessor
+    {
+    public:
+        explicit TextInputChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::TextInput) {
+                const auto& textInputEvent =
+                static_cast<const JE::TextInputEvent&>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                if (textInputEvent.WindowHandle() == m_Handle && textInputEvent.Text() == TEXT_INPUT_TEXT) {
+                    m_TextInputEventReceived = true;
+                }
+            }
+        }
+
+        [[nodiscard]] inline auto TextInputEventReceived() const -> bool { return m_TextInputEventReceived; }
+
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_TextInputEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
+
+    JE::TextInputEvent event{ handle, TEXT_INPUT_TEXT };
+    m_Backend.PushEvent(event);
+
+    m_Backend.PollEvents();
+
+    REQUIRE(checker.TextInputEventReceived());
+
+    m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Mouse press)",
+                 "[JE::IPlatformBackend]")
+{
+    static constexpr auto CLICK_POSITION = JE::Position2DI{ 640, 480 };
+
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+    class MousePressChecker final : public JE::IEventProcessor
+    {
+    public:
+        explicit MousePressChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::MousePress) {
+                const auto& mousePressEvent =
+                static_cast<const JE::MousePressEvent&>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                if (mousePressEvent.WindowHandle() == m_Handle && mousePressEvent.Button() == JE::MouseButton::Middle
+                    && mousePressEvent.Clicks() == 1 && mousePressEvent.Position() == CLICK_POSITION) {
+                    m_MousePressEventReceived = true;
+                }
+            }
+        }
+
+        [[nodiscard]] inline auto MousePressEventReceived() const -> bool { return m_MousePressEventReceived; }
+
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_MousePressEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
+
+    JE::MousePressEvent event{ handle, CLICK_POSITION, JE::MouseButton::Middle, 1 };
+    m_Backend.PushEvent(event);
+
+    m_Backend.PollEvents();
+
+    REQUIRE(checker.MousePressEventReceived());
+
+    m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Mouse release)",
+                 "[JE::IPlatformBackend]")
+{
+    static constexpr auto CLICK_POSITION = JE::Position2DI{ 640, 480 };
+
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+    class MouseReleaseChecker final : public JE::IEventProcessor
+    {
+    public:
+        explicit MouseReleaseChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::MouseRelease) {
+                const auto& mouseReleaseEvent =
+                static_cast<const JE::MouseReleaseEvent&>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                if (mouseReleaseEvent.WindowHandle() == m_Handle && mouseReleaseEvent.Button() == JE::MouseButton::Left
+                    && mouseReleaseEvent.Clicks() == 1 && mouseReleaseEvent.Position() == CLICK_POSITION) {
+                    m_MouseReleaseEventReceived = true;
+                }
+            }
+        }
+
+        [[nodiscard]] inline auto MouseReleaseEventReceived() const -> bool { return m_MouseReleaseEventReceived; }
+
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_MouseReleaseEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
+
+    JE::MouseReleaseEvent event{ handle, CLICK_POSITION, JE::MouseButton::Left, 1 };
+    m_Backend.PushEvent(event);
+
+    m_Backend.PollEvents();
+
+    REQUIRE(checker.MouseReleaseEventReceived());
+
+    m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Mouse move)",
+                 "[JE::IPlatformBackend]")
+{
+    static constexpr auto INITIAL_POSITION = JE::Position2DI{ 320, 240 };
+    static constexpr auto MOVE_POSITION    = JE::Position2DI{ 640, 480 };
+
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+    class MouseMoveChecker final : public JE::IEventProcessor
+    {
+    public:
+        explicit MouseMoveChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::MouseMove) {
+                const auto& mouseMoveEvent =
+                static_cast<const JE::MouseMoveEvent&>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                if (mouseMoveEvent.WindowHandle() == m_Handle && mouseMoveEvent.Position() == MOVE_POSITION
+                    && mouseMoveEvent.RelativePosition()
+                       == JE::Position2DI{ MOVE_POSITION.X - INITIAL_POSITION.X, MOVE_POSITION.Y - INITIAL_POSITION.Y }) {
+                    m_MouseMoveEventReceived = true;
+                }
+            }
+        }
+
+        [[nodiscard]] inline auto MouseMoveEventReceived() const -> bool { return m_MouseMoveEventReceived; }
+
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_MouseMoveEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
+
+    JE::MouseMoveEvent event{ handle,
+                              MOVE_POSITION,
+                              JE::Position2DI{ MOVE_POSITION.X - INITIAL_POSITION.X, MOVE_POSITION.Y - INITIAL_POSITION.Y } };
+    m_Backend.PushEvent(event);
+
+    m_Backend.PollEvents();
+
+    REQUIRE(checker.MouseMoveEventReceived());
+
+    m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+                 "JE::IPlatformBackend Polls events to EventProcessor (Fake Mouse wheel)",
+                 "[JE::IPlatformBackend]")
+{
+    auto* handle = m_Backend.CreateWindow(TEST_WINDOW_TITLE, TEST_WINDOW_SIZE);
+
+    class MouseWheelChecker final : public JE::IEventProcessor
+    {
+    public:
+        explicit MouseWheelChecker(JE::IPlatform::NativeWindowHandle handle) : m_Handle(handle) {}
+
+        inline void OnEvent(JE::IEvent& event) override
+        {
+            if (event.Type() == JE::EventType::MouseWheel) {
+                const auto& mouseWheelEvent =
+                static_cast<const JE::MouseWheelEvent&>(event);// NOLINT(cppcoreguidelines-pro-type-static-cast-downcast)
+                if (mouseWheelEvent.WindowHandle() == m_Handle && mouseWheelEvent.ScrollAmount() == 1) { m_MouseWheelEventReceived = true; }
+            }
+        }
+
+        [[nodiscard]] inline auto MouseWheelEventReceived() const -> bool { return m_MouseWheelEventReceived; }
+
+    private:
+        JE::IPlatform::NativeWindowHandle m_Handle;
+        bool                              m_MouseWheelEventReceived = false;
+    } checker{ handle };
+    m_Backend.SetEventProcessor(&checker);
+
+    JE::MouseWheelEvent event{ handle, 1 };
+    m_Backend.PushEvent(event);
+
+    m_Backend.PollEvents();
+
+    REQUIRE(checker.MouseWheelEventReceived());
+
+    m_Backend.DestroyWindow(handle);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
+                 "JE::IPlatformBackend Returns current ticks (not 0) and tick frequency (not 0)",
+                 "[JE::IPlatformBackend]")
+{
+    REQUIRE(m_Backend.CurrentTicks() != 0);
+    REQUIRE(m_Backend.TickFrequency() != 0);
+}
+
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>, "JE::IPlatformBackend return clipboard text", "[JE::IPlatformBackend]")
+{
+    m_Backend.SetClipboardText(CLIPBOARD_TEXT);
+    REQUIRE(m_Backend.ClipboardText() == CLIPBOARD_TEXT);
 }
 
 
-TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>,
-  "JE::IPlatformBackend blocks execution by calling delay",
-  "[JE::IPlatformBackend]")
+TEST_CASE_METHOD(IPlatformBackendTestsFixture<Backend>, "JE::IPlatformBackend blocks execution by calling delay", "[JE::IPlatformBackend]")
 {
-  auto startTicks = m_Backend.CurrentTicks();
-  m_Backend.Delay(DELAY_COUNT_MS);
-  auto endTicks = m_Backend.CurrentTicks();
+    auto startTicks = m_Backend.CurrentTicks();
+    m_Backend.Delay(DELAY_COUNT_MS);
+    auto endTicks = m_Backend.CurrentTicks();
 
-  REQUIRE((endTicks - startTicks) >= m_Backend.TickFrequency());
+    REQUIRE((endTicks - startTicks) >= m_Backend.TickFrequency());
 }

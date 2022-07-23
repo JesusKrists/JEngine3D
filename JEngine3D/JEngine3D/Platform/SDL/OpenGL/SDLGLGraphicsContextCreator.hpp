@@ -4,13 +4,12 @@
 
 namespace JE {
 
-class IGraphicsContext;
+    class IGraphicsContext;
 
-class SDLGLGraphicsContextCreator final : public IGraphicsContextCreator
-{
-public:
-  [[nodiscard]] auto CreateContext(IPlatformBackend::NativeWindowHandle handle)
-    -> Scope<IGraphicsContext, MemoryTag::App> override;
-};
+    class SDLGLGraphicsContextCreator final : public IGraphicsContextCreator
+    {
+    public:
+        [[nodiscard]] auto CreateContext(IPlatform::NativeWindowHandle handle) -> Scope<IGraphicsContext, MemoryTag::App> override;
+    };
 
 }// namespace JE

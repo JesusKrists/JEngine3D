@@ -8,69 +8,69 @@
 
 namespace JEditor {
 
-struct FileSystemEntry
-{
-  FileSystemEntry(const std::filesystem::path &path, bool folder) : Path(path), Folder(folder) {}// NOLINT
+    struct FileSystemEntry
+    {
+        FileSystemEntry(const std::filesystem::path& path, bool folder) : Path(path), Folder(folder) {}// NOLINT
 
-  std::filesystem::path Path;
-  bool Folder;
-  bool Subdirectories = false;
-  FileSystemEntry *Parent = nullptr;
-  JE::Vector<JE::Scope<FileSystemEntry, JE::MemoryTag::Editor>, JE::MemoryTag::Editor> Entries{};
-};
+        std::filesystem::path                                                                Path;
+        bool                                                                                 Folder;
+        bool                                                                                 Subdirectories = false;
+        FileSystemEntry*                                                                     Parent         = nullptr;
+        JE::Vector<JE::Scope<FileSystemEntry, JE::MemoryTag::Editor>, JE::MemoryTag::Editor> Entries{};
+    };
 
-// NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
-class ContentBrowserPanel : public IPanel
-{
-  using NavigationStackContainer = JE::Vector<const FileSystemEntry *, JE::MemoryTag::Editor>;
+    // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
+    class ContentBrowserPanel : public IPanel
+    {
+        using NavigationStackContainer = JE::Vector<const FileSystemEntry*, JE::MemoryTag::Editor>;
 
-public:
-  const std::filesystem::path CONTENT_HOME_FOLDER = JE_APP.WORKING_DIRECTORY;
-  const std::filesystem::path CONTENT_DIR = "assets";
-  const std::filesystem::path CONTENT_FULL_PATH = JE_APP.WORKING_DIRECTORY / CONTENT_DIR;
+    public:
+        const std::filesystem::path CONTENT_HOME_FOLDER = JE_APP.WORKING_DIRECTORY;
+        const std::filesystem::path CONTENT_DIR         = "assets";
+        const std::filesystem::path CONTENT_FULL_PATH   = JE_APP.WORKING_DIRECTORY / CONTENT_DIR;
 
-  ContentBrowserPanel();
-  virtual ~ContentBrowserPanel() = default;// NOLINT
+        ContentBrowserPanel();
+        virtual ~ContentBrowserPanel() = default;// NOLINT
 
-private:
-  void OnImGuiRender() override;
-  void RenderContentTreeEntryRecursive(const FileSystemEntry &folder);
-  void RefreshFilesystem();
-  void PopulateFolderEntryRecursive(FileSystemEntry &folder);
+    private:
+        void OnImGuiRender() override;
+        void RenderContentTreeEntryRecursive(const FileSystemEntry& folder);
+        void RefreshFilesystem();
+        void PopulateFolderEntryRecursive(FileSystemEntry& folder);
 
-  [[nodiscard]] inline auto TrimCurrentDirToContentDir() const -> std::string
-  {
-    const auto CURRENT_DIR_FULL_PATH = (*m_CurrentNavigationPosition)->Path.generic_string();
-    const auto findPath = CONTENT_HOME_FOLDER / CONTENT_DIR;
-    const auto subStringIndex = CURRENT_DIR_FULL_PATH.find(findPath.generic_string());
-    return CURRENT_DIR_FULL_PATH.substr(subStringIndex + CONTENT_HOME_FOLDER.native().length());
-  }
+        [[nodiscard]] inline auto TrimCurrentDirToContentDir() const -> std::string
+        {
+            const auto CURRENT_DIR_FULL_PATH = (*m_CurrentNavigationPosition)->Path.generic_string();
+            const auto findPath              = CONTENT_HOME_FOLDER / CONTENT_DIR;
+            const auto subStringIndex        = CURRENT_DIR_FULL_PATH.find(findPath.generic_string());
+            return CURRENT_DIR_FULL_PATH.substr(subStringIndex + CONTENT_HOME_FOLDER.native().length());
+        }
 
 
-  inline void ChangeDirectory(const FileSystemEntry *entry)
-  {
-    if (*m_CurrentNavigationPosition != entry) {
-      m_NavigationStack.erase(std::next(m_CurrentNavigationPosition), std::end(m_NavigationStack));
-      m_NavigationStack.push_back(entry);
-      m_CurrentNavigationPosition = std::prev(std::end(m_NavigationStack));
+        inline void ChangeDirectory(const FileSystemEntry* entry)
+        {
+            if (*m_CurrentNavigationPosition != entry) {
+                m_NavigationStack.erase(std::next(m_CurrentNavigationPosition), std::end(m_NavigationStack));
+                m_NavigationStack.push_back(entry);
+                m_CurrentNavigationPosition = std::prev(std::end(m_NavigationStack));
 
-      RebuildBreadcrumbsPaths();
-    }
-  }
+                RebuildBreadcrumbsPaths();
+            }
+        }
 
-  inline void RebuildBreadcrumbsPaths()
-  {
-    m_BreadcrumbsPaths.clear();
-    for (const auto *entry = *m_CurrentNavigationPosition; entry != nullptr; entry = entry->Parent) {
-      m_BreadcrumbsPaths.insert(std::begin(m_BreadcrumbsPaths), entry);
-    }
-  }
+        inline void RebuildBreadcrumbsPaths()
+        {
+            m_BreadcrumbsPaths.clear();
+            for (const auto* entry = *m_CurrentNavigationPosition; entry != nullptr; entry = entry->Parent) {
+                m_BreadcrumbsPaths.insert(std::begin(m_BreadcrumbsPaths), entry);
+            }
+        }
 
-  FileSystemEntry m_RootFolder = { CONTENT_FULL_PATH, true };
+        FileSystemEntry m_RootFolder = { CONTENT_FULL_PATH, true };
 
-  JE::Vector<const FileSystemEntry *, JE::MemoryTag::Editor> m_BreadcrumbsPaths;
-  NavigationStackContainer m_NavigationStack;
-  NavigationStackContainer::iterator m_CurrentNavigationPosition;
-};
+        JE::Vector<const FileSystemEntry*, JE::MemoryTag::Editor> m_BreadcrumbsPaths;
+        NavigationStackContainer                                  m_NavigationStack;
+        NavigationStackContainer::iterator                        m_CurrentNavigationPosition;
+    };
 
 }// namespace JEditor

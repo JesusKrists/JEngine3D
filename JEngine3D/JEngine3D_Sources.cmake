@@ -24,10 +24,10 @@ set(JEngine3D_HEADERS
     JEngine3D/Debug/View/WindowControllerDebugView.hpp
     JEngine3D/Platform/IGraphicsContext.hpp
     JEngine3D/Platform/IGraphicsContextCreator.hpp
-    JEngine3D/Platform/IPlatformBackend.hpp
+    JEngine3D/Platform/IPlatform.hpp
     JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContext.hpp
     JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContextCreator.hpp
-    JEngine3D/Platform/SDL/SDLPlatformBackend.hpp
+    JEngine3D/Platform/SDL/SDLPlatform.hpp
     JEngine3D/Renderer/ImGui/ImGuiRenderer.hpp
     JEngine3D/Renderer/OpenGL/OpenGLBuffer.hpp
     JEngine3D/Renderer/OpenGL/OpenGLFramebuffer.hpp
@@ -64,10 +64,10 @@ set(JEngine3D_SOURCES
     JEngine3D/Debug/View/WindowControllerDebugView.cpp
     JEngine3D/Platform/IGraphicsContext.cpp
     JEngine3D/Platform/IGraphicsContextCreator.cpp
-    JEngine3D/Platform/IPlatformBackend.cpp
+    JEngine3D/Platform/IPlatform.cpp
     JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContext.cpp
     JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContextCreator.cpp
-    JEngine3D/Platform/SDL/SDLPlatformBackend.cpp
+    JEngine3D/Platform/SDL/SDLPlatform.cpp
     JEngine3D/Renderer/ImGui/ImGuiRenderer.cpp
     JEngine3D/Renderer/OpenGL/OpenGLBuffer.cpp
     JEngine3D/Renderer/OpenGL/OpenGLFramebuffer.cpp

@@ -4,13 +4,13 @@
 
 namespace JE {
 
-class Renderer2DDebugView final : public IImGuiDebugView
-{
-public:
-  Renderer2DDebugView() : IImGuiDebugView("Renderer2DDebugView") {}
+    class Renderer2DDebugView final : public IImGuiDebugView
+    {
+    public:
+        Renderer2DDebugView() : IImGuiDebugView("Renderer2DDebugView") {}
 
-private:
-  void OnImGuiRender() override;
-};
+    private:
+        void OnImGuiRender() override;
+    };
 
 }// namespace JE

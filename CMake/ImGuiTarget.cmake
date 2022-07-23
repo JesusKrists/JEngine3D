@@ -39,6 +39,7 @@ target_include_directories(ImGuiLibrary PUBLIC ${imgui_SOURCE_DIR}/backends)
 
 target_include_directories(ImGuiLibrary PRIVATE ${CMAKE_SOURCE_DIR}/JEngine3D)
 target_compile_definitions(ImGuiLibrary PUBLIC "IMGUI_USER_CONFIG=\"JEngine3D/Core/ImGui/config.hpp\"")
+target_compile_definitions(ImGuiLibrary PUBLIC IMGUI_DISABLE_OBSOLETE_FUNCTIONS)
 
 disable_static_analysis(ImGuiLibrary)
 

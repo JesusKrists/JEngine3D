@@ -9,60 +9,60 @@
 class LayerStackTestsFixture
 {
 protected:
-  JE::MemoryController m_MemoryController;
+    JE::MemoryController m_MemoryController;
 };
 
 namespace JE {
-class IEvent;
+    class IEvent;
 }
 
 // NOLINTNEXTLINE(readability-function-cognitive-complexity)
 TEST_CASE_METHOD(LayerStackTestsFixture, "JE::LayerStack can push and pop layers and overlays", "[JE::LayerStack]")
 {
-  static constexpr auto LAYER_NAME = std::string_view{ "Layer Debug Name" };
-  static constexpr auto OVERLAY_NAME = std::string_view{ "Overlay Debug Name" };
+    static constexpr auto LAYER_NAME   = std::string_view{ "Layer Debug Name" };
+    static constexpr auto OVERLAY_NAME = std::string_view{ "Overlay Debug Name" };
 
-  class TestLayer : public JE::ILayer
-  {
-  public:
-    explicit TestLayer(const std::string_view &name, bool &onDestroy) : ILayer(name), m_OnDestroyCalled(onDestroy) {}
+    class TestLayer : public JE::ILayer
+    {
+    public:
+        explicit TestLayer(const std::string_view& name, bool& onDestroy) : ILayer(name), m_OnDestroyCalled(onDestroy) {}
 
-    void OnCreate() override { m_OnCreateCalled = true; }
-    void OnDestroy() override { m_OnDestroyCalled = true; }
+        void OnCreate() override { m_OnCreateCalled = true; }
+        void OnDestroy() override { m_OnDestroyCalled = true; }
 
-    void OnUpdate() override {}
-    void OnImGuiRender() override {}
+        void OnUpdate() override {}
+        void OnImGuiRender() override {}
 
-    void OnEvent(JE::IEvent &event) override { JE::UNUSED(event); }
+        void OnEvent(JE::IEvent& event) override { JE::UNUSED(event); }
 
-    [[nodiscard]] inline auto OnCreateCalled() const -> bool { return m_OnCreateCalled; }
-    [[nodiscard]] inline auto OnDestroyCalled() const -> bool { return m_OnDestroyCalled; }
+        [[nodiscard]] inline auto OnCreateCalled() const -> bool { return m_OnCreateCalled; }
+        [[nodiscard]] inline auto OnDestroyCalled() const -> bool { return m_OnDestroyCalled; }
 
-  private:
-    bool m_OnCreateCalled = false;
-    bool &m_OnDestroyCalled;
-  };
-
-
-  JE::LayerStack layerStack;
-
-  bool testLayerOnDestroyCalled = false;
-  bool testOverlayOnDestroyCalled = false;
-  auto &testLayer = layerStack.PushLayer<TestLayer>(LAYER_NAME, testLayerOnDestroyCalled);
-  auto &testOverlay = layerStack.PushOverlay<TestLayer>(OVERLAY_NAME, testOverlayOnDestroyCalled);
-
-  REQUIRE(testLayer.DebugName() == LAYER_NAME);
-  REQUIRE(testOverlay.DebugName() == OVERLAY_NAME);
+    private:
+        bool  m_OnCreateCalled = false;
+        bool& m_OnDestroyCalled;
+    };
 
 
-  REQUIRE(!layerStack.Layers().empty());
-  REQUIRE(testLayer.OnCreateCalled());
-  REQUIRE(testOverlay.OnCreateCalled());
+    JE::LayerStack layerStack;
 
-  layerStack.PopLayer(testLayer);
-  layerStack.PopOverlay(testOverlay);
+    bool  testLayerOnDestroyCalled   = false;
+    bool  testOverlayOnDestroyCalled = false;
+    auto& testLayer                  = layerStack.PushLayer<TestLayer>(LAYER_NAME, testLayerOnDestroyCalled);
+    auto& testOverlay                = layerStack.PushOverlay<TestLayer>(OVERLAY_NAME, testOverlayOnDestroyCalled);
 
-  REQUIRE(layerStack.Layers().empty());
-  REQUIRE(testLayerOnDestroyCalled);
-  REQUIRE(testOverlayOnDestroyCalled);
+    REQUIRE(testLayer.DebugName() == LAYER_NAME);
+    REQUIRE(testOverlay.DebugName() == OVERLAY_NAME);
+
+
+    REQUIRE(!layerStack.Layers().empty());
+    REQUIRE(testLayer.OnCreateCalled());
+    REQUIRE(testOverlay.OnCreateCalled());
+
+    layerStack.PopLayer(testLayer);
+    layerStack.PopOverlay(testOverlay);
+
+    REQUIRE(layerStack.Layers().empty());
+    REQUIRE(testLayerOnDestroyCalled);
+    REQUIRE(testOverlayOnDestroyCalled);
 }
