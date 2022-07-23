@@ -25,25 +25,25 @@ namespace JEditor {
     ContentBrowserPanel::ContentBrowserPanel() : IPanel("Content Browser")
     {
         static constexpr std::array<ImWchar, 2> icon_ranges = { ICON_MIN_FA, ICON_MAX_FA };// NOLINT
-        JE_APP.ImGuiRenderer().PushMergeFont("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAS,
-                                             13.0F,// NOLINT
-                                             13.0F,// NOLINT
-                                             icon_ranges);// NOLINT
-        JE_APP.ImGuiRenderer().PushMergeFont("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAR,
-                                             13.0F,// NOLINT
-                                             13.0F,// NOLINT
-                                             icon_ranges,
-                                             true);// NOLINT
+        JE_APP.ImGuiLayer().PushMergeFont("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAS,
+                                          13.0F,// NOLINT
+                                          13.0F,// NOLINT
+                                          icon_ranges);// NOLINT
+        JE_APP.ImGuiLayer().PushMergeFont("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAR,
+                                          13.0F,// NOLINT
+                                          13.0F,// NOLINT
+                                          icon_ranges,
+                                          true);// NOLINT
 
-        EditorState::Get().DefaultFont = JE_APP.ImGuiRenderer().AddImGuiInternalFont();
+        EditorState::Get().DefaultFont = JE_APP.ImGuiLayer().AddImGuiInternalFont();
 
-        JE_APP.ImGuiRenderer().PopMergeFont();
-        JE_APP.ImGuiRenderer().PopMergeFont();
+        JE_APP.ImGuiLayer().PopMergeFont();
+        JE_APP.ImGuiLayer().PopMergeFont();
 
         // Load default font
         ImFontConfig fontConfigSmall;
         fontConfigSmall.SizePixels       = 12;// NOLINT
-        EditorState::Get().DefaultFont12 = JE_APP.ImGuiRenderer().AddImGuiInternalFont(&fontConfigSmall);
+        EditorState::Get().DefaultFont12 = JE_APP.ImGuiLayer().AddImGuiInternalFont(&fontConfigSmall);
 
         m_BreadcrumbsPaths.reserve(32);// NOLINT
         RefreshFilesystem();

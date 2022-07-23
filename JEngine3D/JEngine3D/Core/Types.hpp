@@ -93,13 +93,15 @@ namespace JE {
 template<>
 struct fmt::formatter<glm::vec2>
 {
-    template<typename ParseContext>// cppcheck-suppress functionStatic
+    template<typename ParseContext>
+    // cppcheck-suppress functionStatic
     constexpr auto parse(ParseContext& ctx)
     {
         return ctx.begin();
     }
 
-    template<typename FormatContext>// cppcheck-suppress functionStatic
+    template<typename FormatContext>
+    // cppcheck-suppress functionStatic
     auto format(const glm::vec2& vec, FormatContext& ctx)
     {
         return fmt::format_to(ctx.out(), "glm::vec2{{ X: {0}, Y: {1} }}", vec.x, vec.y);// NOLINT
@@ -109,13 +111,15 @@ struct fmt::formatter<glm::vec2>
 template<>
 struct fmt::formatter<glm::vec3>
 {
-    template<typename ParseContext>// cppcheck-suppress functionStatic
+    template<typename ParseContext>
+    // cppcheck-suppress functionStatic
     constexpr auto parse(ParseContext& ctx)
     {
         return ctx.begin();
     }
 
-    template<typename FormatContext>// cppcheck-suppress functionStatic
+    template<typename FormatContext>
+    // cppcheck-suppress functionStatic
     auto format(const glm::vec3& vec, FormatContext& ctx)
     {
         return fmt::format_to(ctx.out(), "glm::vec3{{ X: {0}, Y: {1}, Z: {2} }}", vec.x, vec.y, vec.z);// NOLINT
@@ -125,13 +129,15 @@ struct fmt::formatter<glm::vec3>
 template<>
 struct fmt::formatter<glm::vec4>
 {
-    template<typename ParseContext>// cppcheck-suppress functionStatic
+    template<typename ParseContext>
+    // cppcheck-suppress functionStatic
     constexpr auto parse(ParseContext& ctx)
     {
         return ctx.begin();
     }
 
-    template<typename FormatContext>// cppcheck-suppress functionStatic
+    template<typename FormatContext>
+    // cppcheck-suppress functionStatic
     auto format(const glm::vec4& vec, FormatContext& ctx)
     {
         return fmt::format_to(ctx.out(), "glm::vec4{{ X: {0}, Y: {1}, Z: {2}, W: {3} }}", vec.x, vec.y, vec.z, vec.w);// NOLINT
@@ -141,13 +147,15 @@ struct fmt::formatter<glm::vec4>
 template<>
 struct fmt::formatter<JE::Size2DI>
 {
-    template<typename ParseContext>// cppcheck-suppress functionStatic
+    template<typename ParseContext>
+    // cppcheck-suppress functionStatic
     constexpr auto parse(ParseContext& ctx)
     {
         return ctx.begin();
     }
 
-    template<typename FormatContext>// cppcheck-suppress functionStatic
+    template<typename FormatContext>
+    // cppcheck-suppress functionStatic
     auto format(const JE::Size2DI& size, FormatContext& ctx)
     {
         return fmt::format_to(ctx.out(), "Size2DI{{ Width: {0}, Height: {1} }}", size.Width, size.Height);
@@ -157,13 +165,15 @@ struct fmt::formatter<JE::Size2DI>
 template<>
 struct fmt::formatter<JE::Position2DI>
 {
-    template<typename ParseContext>// cppcheck-suppress functionStatic
+    template<typename ParseContext>
+    // cppcheck-suppress functionStatic
     constexpr auto parse(ParseContext& ctx)
     {
         return ctx.begin();
     }
 
-    template<typename FormatContext>// cppcheck-suppress functionStatic
+    template<typename FormatContext>
+    // cppcheck-suppress functionStatic
     auto format(const JE::Position2DI& position, FormatContext& ctx)
     {
         return fmt::format_to(ctx.out(), "Position2DI{{ X: {0}, Y: {1} }}", position.X, position.Y);
@@ -173,13 +183,15 @@ struct fmt::formatter<JE::Position2DI>
 template<>
 struct fmt::formatter<JE::RectangleI>
 {
-    template<typename ParseContext>// cppcheck-suppress functionStatic
+    template<typename ParseContext>
+    // cppcheck-suppress functionStatic
     constexpr auto parse(ParseContext& ctx)
     {
         return ctx.begin();
     }
 
-    template<typename FormatContext>// cppcheck-suppress functionStatic
+    template<typename FormatContext>
+    // cppcheck-suppress functionStatic
     auto format(const JE::RectangleI& rect, FormatContext& ctx)
     {
         return fmt::format_to(ctx.out(),
@@ -194,13 +206,15 @@ struct fmt::formatter<JE::RectangleI>
 template<>
 struct fmt::formatter<JE::Range>
 {
-    template<typename ParseContext>// cppcheck-suppress functionStatic
+    template<typename ParseContext>
+    // cppcheck-suppress functionStatic
     constexpr auto parse(ParseContext& ctx)
     {
         return ctx.begin();
     }
 
-    template<typename FormatContext>// cppcheck-suppress functionStatic
+    template<typename FormatContext>
+    // cppcheck-suppress functionStatic
     auto format(const JE::Range& range, FormatContext& ctx)
     {
         return fmt::format_to(ctx.out(), "Range{{ Start: {0}, End: {1} }}", range.Start, range.End);
@@ -210,14 +224,16 @@ struct fmt::formatter<JE::Range>
 template<>
 struct fmt::formatter<JE::Color>
 {
-    template<typename ParseContext>// cppcheck-suppress functionStatic
+    template<typename ParseContext>
+    // cppcheck-suppress functionStatic
     constexpr auto parse(ParseContext& ctx)
     {
         return ctx.begin();
     }
 
 
-    template<typename FormatContext>// cppcheck-suppress functionStatic
+    template<typename FormatContext>
+    // cppcheck-suppress functionStatic
     auto format(const JE::Color& color, FormatContext& ctx)
     {
         return fmt::format_to(ctx.out(),
@@ -232,13 +248,15 @@ struct fmt::formatter<JE::Color>
 template<>
 struct fmt::formatter<JE::Vertex>
 {
-    template<typename ParseContext>// cppcheck-suppress functionStatic
+    template<typename ParseContext>
+    // cppcheck-suppress functionStatic
     constexpr auto parse(ParseContext& ctx)
     {
         return ctx.begin();
     }
 
-    template<typename FormatContext>// cppcheck-suppress functionStatic
+    template<typename FormatContext>
+    // cppcheck-suppress functionStatic
     auto format(const JE::Vertex& vertex, FormatContext& ctx)
     {
         return fmt::format_to(ctx.out(), "Vertex{{\n{0},\nPosition: {1}\n,UV: {2}\n}}", vertex.Color, vertex.Position, vertex.UV);

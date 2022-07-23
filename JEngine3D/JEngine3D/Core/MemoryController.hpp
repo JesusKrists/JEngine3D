@@ -111,9 +111,10 @@ namespace JE {
         MemoryControllerAllocator() = default;
 
 
-        template<class U>// cppcheck-suppress noExplicitConstructor
-        MemoryControllerAllocator(MemoryControllerAllocator<U, TAG> const&)
-        {}// NOLINT
+        template<class U>
+        // cppcheck-suppress noExplicitConstructor
+        MemoryControllerAllocator(MemoryControllerAllocator<U, TAG> const&)// NOLINT
+        {}
 
         template<class U>
         struct rebind

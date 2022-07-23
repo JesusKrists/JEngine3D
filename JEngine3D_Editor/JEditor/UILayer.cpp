@@ -153,15 +153,15 @@ namespace JEditor {
         auto& imguiIO = ImGui::GetIO();
 
         static constexpr std::array<ImWchar, 2> icon_ranges = { ICON_MIN_FA, ICON_MAX_FA };// NOLINT
-        JE_APP.ImGuiRenderer().PushMergeFont("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAS, 16.0f, 16.0f, icon_ranges);// NOLINT
-        JE_APP.ImGuiRenderer().PushMergeFont("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAR, 16.0f, 16.0f, icon_ranges, true);// NOLINT
+        JE_APP.ImGuiLayer().PushMergeFont("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAS, 16.0f, 16.0f, icon_ranges);// NOLINT
+        JE_APP.ImGuiLayer().PushMergeFont("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAR, 16.0f, 16.0f, icon_ranges, true);// NOLINT
 
         // Load default font
-        auto* font          = JE_APP.ImGuiRenderer().AddFont("assets/EditorUI/fonts/SEGOEUI.TTF", 16.0f);// NOLINT
+        auto* font          = JE_APP.ImGuiLayer().AddFont("assets/EditorUI/fonts/SEGOEUI.TTF", 16.0f);// NOLINT
         imguiIO.FontDefault = font;
 
-        EditorState::Get().Segoe16Bold = JE_APP.ImGuiRenderer().AddFont("assets/EditorUI/fonts/SegoeBold.ttf", 16.0f);// NOLINT
-        EditorState::Get().Segoe24Bold = JE_APP.ImGuiRenderer().AddFont("assets/EditorUI/fonts/SegoeBold.ttf", 24.0f);// NOLINT
+        EditorState::Get().Segoe16Bold = JE_APP.ImGuiLayer().AddFont("assets/EditorUI/fonts/SegoeBold.ttf", 16.0f);// NOLINT
+        EditorState::Get().Segoe24Bold = JE_APP.ImGuiLayer().AddFont("assets/EditorUI/fonts/SegoeBold.ttf", 24.0f);// NOLINT
 
         if (!EditorState::Get().GameViewportFBO) {
             EditorState::Get().GameViewportFBO = JE::IRendererObjectCreator::Get().CreateFramebuffer(
