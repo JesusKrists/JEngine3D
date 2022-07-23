@@ -3,6 +3,7 @@
 #include "JEngine3D/Core/Events.hpp"
 #include "JEngine3D/Core/LayerStack.hpp"
 #include "JEngine3D/Core/PluginController.hpp"
+#include "JEngine3D/Core/ImGui/ImGuiLayer.hpp"
 
 #include "JEngine3D/Debug/View/ApplicationDebugView.hpp"
 #include "JEngine3D/Debug/View/InputControllerDebugView.hpp"
@@ -27,7 +28,6 @@ namespace JE {
     class Window;
     class ILayer;
     class IRendererAPI;
-    class ImGuiLayer;
     class IImGuiDebugView;
 
     // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
@@ -88,6 +88,8 @@ namespace JE {
         // cppcheck-suppress functionConst
         [[nodiscard]] inline auto ImGuiLayer() -> JE::ImGuiLayer& { return *m_ImGuiLayer; }
         // cppcheck-suppress functionConst
+        [[nodiscard]] inline auto ImGuiRenderer() -> JE::ImGuiRenderer& { return m_ImGuiLayer->Renderer(); }
+        // cppcheck-suppress functionConst
         [[nodiscard]] inline auto Layers() -> LayerStack& { return m_LayerStack; }
         // cppcheck-suppress functionConst
         [[nodiscard]] inline auto DebugViews() -> DebugViewContainer& { return m_DebugViewContainer; }
@@ -109,9 +111,9 @@ namespace JE {
         Scope<IRendererAPI, MemoryTag::Renderer> m_RendererAPI = IRendererObjectCreator::Get().CreateAPI();
         JE::Renderer2D                           m_Renderer2D;
 
-        JE::ImGuiLayer*        m_ImGuiLayer;
         NativePluginController m_NativePluginController;
         LayerStack             m_LayerStack;
+        JE::ImGuiLayer*        m_ImGuiLayer;
 
         InternalDebugViews m_InternalDebugViews;
         DebugViewContainer m_DebugViewContainer;

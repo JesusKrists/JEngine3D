@@ -152,24 +152,16 @@ namespace JEditor {
     {
         auto& imguiIO = ImGui::GetIO();
 
-        if (!imguiIO.Fonts->IsBuilt()) {
-            // Load default font
+        static constexpr std::array<ImWchar, 2> icon_ranges = { ICON_MIN_FA, ICON_MAX_FA };// NOLINT
+        JE_APP.ImGuiRenderer().PushMergeFont("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAS, 16.0f, 16.0f, icon_ranges);// NOLINT
+        JE_APP.ImGuiRenderer().PushMergeFont("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAR, 16.0f, 16.0f, icon_ranges, true);// NOLINT
 
-            auto* font          = imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/SEGOEUI.TTF", 16.0f);// NOLINT
-            imguiIO.FontDefault = font;
+        // Load default font
+        auto* font          = JE_APP.ImGuiRenderer().AddFont("assets/EditorUI/fonts/SEGOEUI.TTF", 16.0f);// NOLINT
+        imguiIO.FontDefault = font;
 
-            ImFontConfig iconFontConfig;
-            iconFontConfig.MergeMode               = true;
-            iconFontConfig.GlyphMinAdvanceX        = 16.0f;// NOLINT Use if you want to make the icon monospaced
-            static constexpr ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };// NOLINT
-            imguiIO.Fonts->AddFontFromFileTTF(
-            "assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAS, 16.0f, &iconFontConfig, icon_ranges);// NOLINT
-            imguiIO.Fonts->AddFontFromFileTTF(
-            "assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAR, 16.0f, &iconFontConfig, icon_ranges);// NOLINT
-
-            EditorState::Get().Segoe16Bold = imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/SegoeBold.ttf", 16.0f);// NOLINT
-            EditorState::Get().Segoe24Bold = imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/SegoeBold.ttf", 24.0f);// NOLINT
-        }
+        EditorState::Get().Segoe16Bold = JE_APP.ImGuiRenderer().AddFont("assets/EditorUI/fonts/SegoeBold.ttf", 16.0f);// NOLINT
+        EditorState::Get().Segoe24Bold = JE_APP.ImGuiRenderer().AddFont("assets/EditorUI/fonts/SegoeBold.ttf", 24.0f);// NOLINT
 
         if (!EditorState::Get().GameViewportFBO) {
             EditorState::Get().GameViewportFBO = JE::IRendererObjectCreator::Get().CreateFramebuffer(

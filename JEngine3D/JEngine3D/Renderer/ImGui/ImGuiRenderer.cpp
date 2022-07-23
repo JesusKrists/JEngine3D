@@ -1,6 +1,7 @@
 #include "ImGuiRenderer.hpp"
 
 #include "JEngine3D/Core/Application.hpp"
+#include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Renderer/ITexture.hpp"
 
 #include <glm/ext/matrix_clip_space.hpp>
@@ -43,22 +44,80 @@ namespace JE {
         m_Shader = IRendererObjectCreator::Get().CreateShader("JEngine3D ImGui Shader", VERTEX_SHADER_SOURCE, FRAGMENT_SHADER_SOURCE);
     }
 
-    void ImGuiRenderer::Initialize()
+    void ImGuiRenderer::Initialize()// NOLINT(readability-convert-member-functions-to-static)
     {
         ZoneScopedN("ImGuiRenderer::Initialize");// NOLINT
-        auto& imguiIO = ImGui::GetIO();
+        ImGui::GetIO().Fonts->Build();
+    }
 
-        uint8_t* textureData = nullptr;
-        int      fontWidth   = 0;
-        int      fontHeight  = 0;
-        imguiIO.Fonts->GetTexDataAsRGBA32(&textureData, &fontWidth, &fontHeight);
+    auto ImGuiRenderer::AddFont(const std::filesystem::path& fontFilePath,
+                                float                        pixelSize,
+                                const ImFontConfig*          fontCfg,
+                                const ImWchar*               glyphRanges) -> ImFont*
+    {
+        auto fontIt = FindIf(m_FontCache, [&](const Scope<FontEntry, MemoryTag::Renderer>& entry) {
+            return entry->FilePath == fontFilePath.generic_string() && entry->Font->FontSize == pixelSize;
+        });
+        if (fontIt == std::end(m_FontCache)) {
+            m_FontCache.push_back(CreateScope<FontEntry, MemoryTag::Renderer>(fontFilePath.generic_string()));
+            auto& entry = m_FontCache.back();
 
-        m_FontTexture = IRendererObjectCreator::Get().CreateTexture(
-        "ImGui Default Font",
-        { reinterpret_cast<const std::byte*>(textureData), static_cast<size_t>(fontWidth * fontHeight * 4) },// NOLINT
-        { fontWidth, fontHeight },
-        TextureFormat::RGBA8);
-        imguiIO.Fonts->TexID = m_FontTexture->RendererID();
+            entry->Font = entry->FontAtlas->AddFontFromFileTTF(entry->FilePath.c_str(), pixelSize, fontCfg, glyphRanges);
+            AddMergeFont(*entry->FontAtlas);
+
+            entry->BuildFontAtlas();
+
+            return entry->Font;
+        }
+
+        return (*fontIt)->Font;
+    }
+
+    auto ImGuiRenderer::AddImGuiInternalFont(const ImFontConfig* fontCfg) -> ImFont*
+    {
+        auto fontIt = FindIf(m_FontCache, [&](const Scope<FontEntry, MemoryTag::Renderer>& entry) {
+            if (fontCfg != nullptr) {
+                return entry->FilePath == IMGUI_INTERNAL_FONT_STRING_CUSTOM && entry->Font->FontSize == fontCfg->SizePixels;
+            }
+            return entry->FilePath == IMGUI_INTERNAL_FONT_STRING;
+        });
+
+        if (fontIt == std::end(m_FontCache)) {
+            m_FontCache.push_back(CreateScope<FontEntry, MemoryTag::Renderer>(fontCfg == nullptr ? IMGUI_INTERNAL_FONT_STRING
+                                                                                                 : IMGUI_INTERNAL_FONT_STRING_CUSTOM));
+            auto& entry = m_FontCache.back();
+
+            entry->Font = entry->FontAtlas->AddFontDefault(fontCfg);
+            AddMergeFont(*entry->FontAtlas);
+
+            entry->BuildFontAtlas();
+
+            return entry->Font;
+        }
+
+        return (*fontIt)->Font;
+    }
+
+    void ImGuiRenderer::PushMergeFont(const std::filesystem::path&    fontFilePath,
+                                      float                           pixelSize,
+                                      float                           xAdvance,
+                                      const std::span<const ImWchar>& glyphRanges,
+                                      bool                            mergeWithPrevious)
+    {
+        auto fontIt = FindIf(m_MergeFontStack, [&](const MergeFontEntry& entry) {
+            return entry.FilePath == fontFilePath.generic_string() && entry.PixelSize == pixelSize && entry.xAdvance == xAdvance
+                   && entry.MergeWithPrevious == mergeWithPrevious;
+        });
+        if (fontIt == std::end(m_MergeFontStack)) {
+            m_MergeFontStack.emplace_back(fontFilePath.generic_string(), pixelSize, xAdvance, glyphRanges, mergeWithPrevious);
+        } else {
+            Logger::CoreLogger().error("PushMergeFont: Font already in merge stack");
+        }
+    }
+
+    void ImGuiRenderer::PopMergeFont()
+    {
+        if (!m_MergeFontStack.empty()) { m_MergeFontStack.erase(--std::end(m_MergeFontStack)); }
     }
 
     void ImGuiRenderer::RenderDrawData(const ImDrawData& drawData)
@@ -88,6 +147,24 @@ namespace JE {
         JE_APP.RendererAPI().SetRendererState(m_PreviousRendererState);
 
         m_VertexArray->Delete();
+    }
+
+    void ImGuiRenderer::AddMergeFont(ImFontAtlas& fontAtlas)
+    {
+        if (!m_MergeFontStack.empty()) {
+            for (auto font = std::rbegin(m_MergeFontStack); font != std::rend(m_MergeFontStack); ++font) {
+                auto&        mergeFont = *font;
+                ImFontConfig mergeFontConfig;
+                mergeFontConfig.MergeMode        = true;
+                mergeFontConfig.GlyphMinAdvanceX = mergeFont.xAdvance;
+                fontAtlas.AddFontFromFileTTF(
+                mergeFont.FilePath.c_str(), mergeFont.PixelSize, &mergeFontConfig, mergeFont.GlyphRanges.data());
+
+                if (!mergeFont.MergeWithPrevious) { break; }
+            }
+        } else {
+            Logger::CoreLogger().error("AddMergeFont: No Merge font available");
+        }
     }
 
     void ImGuiRenderer::SetupRenderState(const ImDrawData& drawData)

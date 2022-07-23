@@ -24,30 +24,26 @@ namespace JEditor {
 
     ContentBrowserPanel::ContentBrowserPanel() : IPanel("Content Browser")
     {
-        auto& imguiIO = ImGui::GetIO();
+        static constexpr std::array<ImWchar, 2> icon_ranges = { ICON_MIN_FA, ICON_MAX_FA };// NOLINT
+        JE_APP.ImGuiRenderer().PushMergeFont("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAS,
+                                             13.0F,// NOLINT
+                                             13.0F,// NOLINT
+                                             icon_ranges);// NOLINT
+        JE_APP.ImGuiRenderer().PushMergeFont("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAR,
+                                             13.0F,// NOLINT
+                                             13.0F,// NOLINT
+                                             icon_ranges,
+                                             true);// NOLINT
 
-        if (EditorState::Get().DefaultFont == nullptr) {
-            EditorState::Get().DefaultFont = imguiIO.Fonts->AddFontDefault();
-            ImFontConfig iconFontConfig;
-            iconFontConfig.MergeMode               = true;
-            iconFontConfig.GlyphMinAdvanceX        = 13.0F;// NOLINT Use if you want to make the icon monospaced
-            static constexpr ImWchar icon_ranges[] = { ICON_MIN_FA, ICON_MAX_FA, 0 };// NOLINT
-            imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAS,
-                                              13.0F,// NOLINT
-                                              &iconFontConfig,
-                                              icon_ranges);// NOLINT
-            imguiIO.Fonts->AddFontFromFileTTF("assets/EditorUI/fonts/" FONT_ICON_FILE_NAME_FAR,
-                                              13.0F,// NOLINT
-                                              &iconFontConfig,
-                                              icon_ranges);// NOLINT
-        }
+        EditorState::Get().DefaultFont = JE_APP.ImGuiRenderer().AddImGuiInternalFont();
+
+        JE_APP.ImGuiRenderer().PopMergeFont();
+        JE_APP.ImGuiRenderer().PopMergeFont();
 
         // Load default font
-        if (EditorState::Get().DefaultFont12 == nullptr) {
-            ImFontConfig fontConfigSmall;
-            fontConfigSmall.SizePixels       = 12;// NOLINT
-            EditorState::Get().DefaultFont12 = imguiIO.Fonts->AddFontDefault(&fontConfigSmall);
-        }
+        ImFontConfig fontConfigSmall;
+        fontConfigSmall.SizePixels       = 12;// NOLINT
+        EditorState::Get().DefaultFont12 = JE_APP.ImGuiRenderer().AddImGuiInternalFont(&fontConfigSmall);
 
         m_BreadcrumbsPaths.reserve(32);// NOLINT
         RefreshFilesystem();

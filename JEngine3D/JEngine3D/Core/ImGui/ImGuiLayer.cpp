@@ -127,7 +127,7 @@ namespace JE {
 
     static void JEngine3DImGuiRendererRenderWindow(ImGuiViewport* viewport, void*)
     {
-        JE_APP.ImGuiLayer().Renderer().RenderDrawData(*viewport->DrawData);
+        JE_APP.ImGuiRenderer().RenderDrawData(*viewport->DrawData);
     }
 
     static void InitializeImGuiForJEngine3D()

@@ -50,7 +50,7 @@ namespace JE {
     {
         ForEach(m_NativePluginController.Plugins(), [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App>& plugin) {
             if (event.Handled()) { return; }
-            plugin->Implementation->OnEvent(event);
+            if (plugin->Implementation) { plugin->Implementation->OnEvent(event); }
         });
 
         ReverseForEach(m_LayerStack, [&](const Scope<ILayer, MemoryTag::App>& layer) {
@@ -199,7 +199,7 @@ namespace JE {
         ASSERT(!m_Running, "Engine already running");
         ASSERT(loopCount != 0, "Cannot run zero loops");
 
-        JE_APP.ImGuiLayer().Renderer().Initialize();
+        JE_APP.ImGuiRenderer().Initialize();
 
         m_Running = true;
 

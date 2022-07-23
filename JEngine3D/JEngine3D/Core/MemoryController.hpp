@@ -110,8 +110,8 @@ namespace JE {
     {
         MemoryControllerAllocator() = default;
 
-        // cppcheck-suppress noExplicitConstructor
-        template<class U>
+
+        template<class U>// cppcheck-suppress noExplicitConstructor
         MemoryControllerAllocator(MemoryControllerAllocator<U, TAG> const&)
         {}// NOLINT
 
