@@ -17,17 +17,17 @@ namespace JE {
     void Renderer2DDebugView::OnImGuiRender()
     {
         auto RenderRenderer2DModifiableIntParameter =
-        [](const std::string& label, size_t parameterValue, size_t min, size_t max, auto setterFunc) {// NOLINT
+        [](const std::string_view& label, size_t parameterValue, size_t min, size_t max, auto setterFunc) {// NOLINT
             auto newValue = static_cast<int>(parameterValue);
-            ImGui::SliderInt(label.c_str(), &newValue, static_cast<int>(min), static_cast<int>(max));
+            ImGui::SliderInt(label.data(), &newValue, static_cast<int>(min), static_cast<int>(max));
             if (static_cast<size_t>(newValue) != parameterValue) { setterFunc(static_cast<size_t>(newValue)); }
         };
 
         auto RenderRenderer2DParameter =
-        [](const std::string& label, const std::string& parameter, const Color& parameterColor = PARAMETER_COLOR) {
-            auto labelSize = ImGui::CalcTextSize(label.c_str());
+        [](const std::string_view& label, const std::string& parameter, const Color& parameterColor = PARAMETER_COLOR) {
+            auto labelSize = ImGui::CalcTextSize(label.data());
 
-            ImGui::TextUnformatted(label.c_str());
+            ImGui::TextUnformatted(label.data());
             ImGui::SameLine(0, RENDERER_PARAMETER_ALIGNMENT_START - labelSize.x);
             ImGui::TextColored(parameterColor, "%s", parameter.c_str());// NOLINT
         };

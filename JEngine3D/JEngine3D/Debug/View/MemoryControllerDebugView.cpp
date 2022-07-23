@@ -1,6 +1,7 @@
 #include "MemoryControllerDebugView.hpp"
 
 #include "JEngine3D/Core/MemoryController.hpp"
+#include "JEngine3D/Debug/NewOverrideDebug.hpp"
 
 #include <string>// for string, allocator
 
@@ -33,6 +34,21 @@ namespace JE {
         RenderMemoryControllerParameter("Total Deallocations:", fmt::format("{}", memoryController.TotalDeallocCount()));
         RenderMemoryControllerParameter("Alloc/Dealloc Delta:",
                                         fmt::format("{}", memoryController.TotalAllocCount() - memoryController.TotalDeallocCount()));
+
+
+        RenderMemoryControllerParameter("Total Global \"new\" Allocations:", fmt::format("{}", NewOverrideDebug::Get().GlobalAllocCount()));
+        RenderMemoryControllerParameter("Total Global \"delete\" Deallocations:",
+                                        fmt::format("{}", NewOverrideDebug::Get().GlobalDeallocCount()));
+        RenderMemoryControllerParameter("Total Global \"new\" Allocations per frame:",
+                                        fmt::format("{}", NewOverrideDebug::Get().FrameGlobalAllocCount()));
+        RenderMemoryControllerParameter("Total Global \"delete\" Deallocations per frame:",
+                                        fmt::format("{}", NewOverrideDebug::Get().FrameGlobalDeallocCount()));
+        RenderMemoryControllerParameter(
+        "Total Global Alloc/Dealloc Delta:",
+        fmt::format("{}", NewOverrideDebug::Get().GlobalAllocCount() - NewOverrideDebug::Get().GlobalDeallocCount()));
+        RenderMemoryControllerParameter(
+        "Total Global Alloc/Dealloc Delta per frame:",
+        fmt::format("{}", NewOverrideDebug::Get().FrameGlobalAllocCount() - NewOverrideDebug::Get().FrameGlobalDeallocCount()));
         ImGui::EndGroup();
 
         ImGui::Unindent();

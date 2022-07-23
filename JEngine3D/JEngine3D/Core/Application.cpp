@@ -3,6 +3,7 @@
 #include "JEngine3D/Core/ILayer.hpp"// for EventDispatcher
 #include "JEngine3D/Core/WindowController.hpp"// for WindowController
 #include "JEngine3D/Core/InputController.hpp"// for InputController
+#include "JEngine3D/Debug/NewOverrideDebug.hpp"
 #include "JEngine3D/Platform/IGraphicsContext.hpp"
 
 #include "JEngine3D/Debug/View/IImGuiDebugView.hpp"
@@ -118,8 +119,7 @@ namespace JE {
         static auto s_LastFrameTicks = IPlatform::Get().CurrentTicks();
         auto        currentTicks     = IPlatform::Get().CurrentTicks();
 
-        m_DeltaTime = static_cast<double>(currentTicks - s_LastFrameTicks) / static_cast<double>(IPlatform::Get().TickFrequency());
-
+        m_DeltaTime      = static_cast<double>(currentTicks - s_LastFrameTicks) / static_cast<double>(IPlatform::Get().TickFrequency());
         s_LastFrameTicks = currentTicks;
     }
 
@@ -132,12 +132,11 @@ namespace JE {
         {
             ZoneScopedN("Pre-Frame Setup");// NOLINT
 
+            NewOverrideDebug::Get().NewFrame();
+
             m_NativePluginController.UpdatePlugins();
-
             UpdateAppFocus();
-
             UpdateDeltaTime();
-
             InputController::Get().NewFrame();
             m_Renderer2D.NewFrame();
         }
@@ -202,7 +201,6 @@ namespace JE {
         JE_APP.ImGuiRenderer().Initialize();
 
         m_Running = true;
-
         m_MainWindow.Focus();
 
         if (loopCount < 0) {

@@ -17,10 +17,10 @@ namespace JE {
     void WindowControllerDebugView::OnImGuiRender()
     {
         auto RenderWindowParameter =
-        [](const std::string& label, const std::string& parameter, const Color& parameterColor = PARAMETER_COLOR) {
-            auto labelSize = ImGui::CalcTextSize(label.c_str());
+        [](const std::string_view& label, const std::string& parameter, const Color& parameterColor = PARAMETER_COLOR) {
+            auto labelSize = ImGui::CalcTextSize(label.data());
 
-            ImGui::TextUnformatted(label.c_str());
+            ImGui::TextUnformatted(label.data());
             ImGui::SameLine(0, WINDOW_PARAMETER_ALIGNMENT_START - labelSize.x);
             ImGui::TextColored(parameterColor, "%s", parameter.c_str());// NOLINT
         };

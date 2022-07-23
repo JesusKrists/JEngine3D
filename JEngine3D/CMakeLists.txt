@@ -54,6 +54,11 @@ endif()
 set_target_properties(JEngine3D PROPERTIES DEBUG_POSTFIX "d")
 set_target_properties(JEngine3D PROPERTIES RELWITHDEBINFO_POSTFIX "d")
 
+add_library(JEngine3D_NEW_OVERRIDE STATIC ${CMAKE_CURRENT_SOURCE_DIR}/JEngine3D/Debug/NewOverride.cpp)
+target_include_directories(JEngine3D_NEW_OVERRIDE PRIVATE ${CMAKE_CURRENT_SOURCE_DIR})
+
+target_link_system_libraries(JEngine3D PUBLIC JEngine3D_NEW_OVERRIDE)
+
 ###############################################################################################
 
 add_executable(JEngine3D_Executable JEngine3D/Core/EntryPoint.cpp)
