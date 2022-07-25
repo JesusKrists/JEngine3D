@@ -3,11 +3,15 @@
 #include "JEngine3D/Core/ILayer.hpp"// for EventDispatcher
 #include "JEngine3D/Core/WindowController.hpp"// for WindowController
 #include "JEngine3D/Core/InputController.hpp"// for InputController
+#include "JEngine3D/Core/PeriodicTimer.hpp"
+#include "JEngine3D/Core/PluginController.hpp"
+
 #include "JEngine3D/Debug/NewOverrideDebug.hpp"
 #include "JEngine3D/Platform/IGraphicsContext.hpp"
 
 #include "JEngine3D/Debug/View/IImGuiDebugView.hpp"
 
+#include "JEngine3D/Renderer/Renderer2D.hpp"
 #include "JEngine3D/Renderer/IRendererObjectCreator.hpp"
 #include "JEngine3D/Core/ImGui/ImGuiLayer.hpp"// for ImGuiLayer
 #include "JEngine3D/Renderer/IRendererAPI.hpp"// for IRendererAPI
@@ -29,27 +33,29 @@ namespace JE {
 
         ASSERT(!s_ApplicationInstance, "Application instance already exists");
         s_ApplicationInstance = this;
-
         Logger::CoreLogger().debug("Application address: {}", fmt::ptr(this));
+
+        m_Renderer2D             = JE::Renderer2D::Create();
+        m_NativePluginController = NativePluginController::Create();
 
         m_ImGuiLayer = &PushOverlay<JE::ImGuiLayer>();
         AddInternalDebugViews();
 
         IPlatform::Get().SetEventProcessor(this);
 
-        // m_NativePluginController.LoadPlugins();
+        // m_NativePluginController->LoadPlugins();
         if (!testMode) {
 #if defined(JE_DEBUG)
-            m_NativePluginController.LoadPlugin(WORKING_DIRECTORY + "/" NATIVE_PLUGIN_NAME("JEngine3D_Editord"));
+            m_NativePluginController->LoadPlugin(WORKING_DIRECTORY + "/" NATIVE_PLUGIN_NAME("JEngine3D_Editord"));
 #else
-            m_NativePluginController.LoadPlugin(WORKING_DIRECTORY + "/" NATIVE_PLUGIN_NAME("JEngine3D_Editor"));
+            m_NativePluginController->LoadPlugin(WORKING_DIRECTORY + "/" NATIVE_PLUGIN_NAME("JEngine3D_Editor"));
 #endif
         }
     }
 
     void Application::OnEvent(IEvent& event)
     {
-        ForEach(m_NativePluginController.Plugins(), [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App>& plugin) {
+        ForEach(m_NativePluginController->Plugins(), [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App>& plugin) {
             if (event.Handled()) { return; }
             if (plugin->Implementation) { plugin->Implementation->OnEvent(event); }
         });
@@ -126,19 +132,21 @@ namespace JE {
     void Application::ProcessMainLoop()
     {
         ++m_ProcessCount;
-        m_Uptime += m_DeltaTime;
 
+        UpdateAppFocus();
+        UpdateDeltaTime();
+
+        m_Uptime += m_DeltaTime;
+        ForEach(m_PeriodicTimers, [](PeriodicTimer& timer) { timer.UpdateTimer(); });
+
+        m_NativePluginController->UpdatePlugins();
 
         {
             ZoneScopedN("Pre-Frame Setup");// NOLINT
 
             NewOverrideDebug::Get().NewFrame();
-
-            m_NativePluginController.UpdatePlugins();
-            UpdateAppFocus();
-            UpdateDeltaTime();
             InputController::Get().NewFrame();
-            m_Renderer2D.NewFrame();
+            m_Renderer2D->NewFrame();
         }
 
         {
@@ -160,7 +168,7 @@ namespace JE {
             {
                 ZoneScopedN("OnUpdate");// NOLINT
                 ForEach(m_LayerStack, [](const Scope<ILayer, MemoryTag::App>& layer) { layer->OnUpdate(); });
-                ForEach(m_NativePluginController.Plugins(), [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App>& plugin) {
+                ForEach(m_NativePluginController->Plugins(), [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App>& plugin) {
                     plugin->Implementation->OnUpdate();
                 });
             }
@@ -170,7 +178,7 @@ namespace JE {
                 {
                     ZoneScopedN("OnImGuiRender");// NOLINT
                     ForEach(m_LayerStack, [](const Scope<ILayer, MemoryTag::App>& layer) { layer->OnImGuiRender(); });
-                    ForEach(m_NativePluginController.Plugins(),
+                    ForEach(m_NativePluginController->Plugins(),
                             [&](const Scope<NativePluginController::PluginEntry, MemoryTag::App>& plugin) {
                                 plugin->Implementation->OnImGuiRender();
                             });
@@ -198,10 +206,8 @@ namespace JE {
         ASSERT(!m_Running, "Engine already running");
         ASSERT(loopCount != 0, "Cannot run zero loops");
 
-        JE_APP.ImGuiRenderer().Initialize();
-
-        m_Running = true;
         m_MainWindow.Focus();
+        m_Running = true;
 
         if (loopCount < 0) {
             while (m_Running) { ProcessMainLoop(); }

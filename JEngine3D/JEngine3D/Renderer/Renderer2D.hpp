@@ -13,12 +13,14 @@ namespace JE {
 
     class Renderer2D
     {
-        friend class Application;
-
     public:
         static constexpr size_t MAX_TRIANGLES_PER_BATCH = 50000;
         static constexpr size_t MAX_TRIANGLE_INDICES    = MAX_TRIANGLES_PER_BATCH * 3;
         static constexpr size_t MAX_TEXTURE_SLOTS       = 16;
+
+        static auto Create() -> Scope<Renderer2D, MemoryTag::App> { return CreateScope<Renderer2D, MemoryTag::App>(); }
+
+        Renderer2D();
 
         void NewFrame();
 
@@ -49,8 +51,6 @@ namespace JE {
         [[nodiscard]] inline auto FrameDrawCalls() const -> size_t { return Data.Stats.FrameDrawCalls; }
 
     private:
-        Renderer2D();
-
         [[nodiscard]] inline auto TriangleCount() const -> size_t { return Data.TriangleIndices.size() / 3; }
 
         void InitializeBatch(IDrawTarget* target);

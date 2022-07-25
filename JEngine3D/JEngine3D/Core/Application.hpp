@@ -2,7 +2,6 @@
 
 #include "JEngine3D/Core/Events.hpp"
 #include "JEngine3D/Core/LayerStack.hpp"
-#include "JEngine3D/Core/PluginController.hpp"
 #include "JEngine3D/Core/ImGui/ImGuiLayer.hpp"
 
 #include "JEngine3D/Debug/View/ApplicationDebugView.hpp"
@@ -10,9 +9,6 @@
 #include "JEngine3D/Debug/View/MemoryControllerDebugView.hpp"
 #include "JEngine3D/Debug/View/Renderer2DDebugView.hpp"
 #include "JEngine3D/Debug/View/WindowControllerDebugView.hpp"
-
-
-#include "JEngine3D/Renderer/Renderer2D.hpp"
 
 #include <functional>// for reference_wrapper
 #include <filesystem>
@@ -29,10 +25,14 @@ namespace JE {
     class ILayer;
     class IRendererAPI;
     class IImGuiDebugView;
+    class Renderer2D;
+    class NativePluginController;
 
     // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
     class Application final : public IEventProcessor
     {
+        friend class PeriodicTimer;
+
         struct InternalDebugViews
         {
             ApplicationDebugView      applicationDebugView;
@@ -42,7 +42,8 @@ namespace JE {
             WindowControllerDebugView windowControllerDebugView;
         };
 
-        using DebugViewContainer = Vector<std::reference_wrapper<IImGuiDebugView>, MemoryTag::App>;
+        using PeriodicTimerContainer = Vector<std::reference_wrapper<PeriodicTimer>, MemoryTag::App>;
+        using DebugViewContainer     = Vector<std::reference_wrapper<IImGuiDebugView>, MemoryTag::App>;
 
     public:
         static constexpr auto DEFAULT_SIZE       = Size2DI{ 640, 480 };
@@ -84,7 +85,7 @@ namespace JE {
         // cppcheck-suppress functionConst
         [[nodiscard]] inline auto RendererAPI() -> JE::IRendererAPI& { return *m_RendererAPI; }
         // cppcheck-suppress functionConst
-        [[nodiscard]] inline auto Renderer2D() -> JE::Renderer2D& { return m_Renderer2D; }
+        [[nodiscard]] inline auto Renderer2D() -> JE::Renderer2D& { return *m_Renderer2D; }
         // cppcheck-suppress functionConst
         [[nodiscard]] inline auto ImGuiLayer() -> JE::ImGuiLayer& { return *m_ImGuiLayer; }
         // cppcheck-suppress functionConst
@@ -107,16 +108,30 @@ namespace JE {
         void UpdateDeltaTime();
         void ProcessMainLoop();
 
+        inline void RegisterPeriodicTimer(PeriodicTimer& timer) { m_PeriodicTimers.emplace_back(timer); }
+        inline void UnregisterPeriodicTimer(PeriodicTimer& timer)
+        {
+            auto timerIt = FindIf(m_PeriodicTimers, [&](const PeriodicTimer& timerEntry) { return &timer == &timerEntry; });
+            if (timerIt != std::end(m_PeriodicTimers)) {
+                m_PeriodicTimers.erase(timerIt);
+            } else {
+                Logger::CoreLogger().error("UnregisterPeroidicTimer: PeriodicTimer not found");
+                DEBUGBREAK();
+            }
+        }
+
+        LayerStack             m_LayerStack;
+        PeriodicTimerContainer m_PeriodicTimers;
+        DebugViewContainer     m_DebugViewContainer;
+
         Window&                                  m_MainWindow;
         Scope<IRendererAPI, MemoryTag::Renderer> m_RendererAPI = IRendererObjectCreator::Get().CreateAPI();
-        JE::Renderer2D                           m_Renderer2D;
+        Scope<JE::Renderer2D, MemoryTag::App>    m_Renderer2D;
 
-        NativePluginController m_NativePluginController;
-        LayerStack             m_LayerStack;
-        JE::ImGuiLayer*        m_ImGuiLayer;
+        Scope<NativePluginController, MemoryTag::App> m_NativePluginController;
+        JE::ImGuiLayer*                               m_ImGuiLayer;
 
         InternalDebugViews m_InternalDebugViews;
-        DebugViewContainer m_DebugViewContainer;
 
         bool    m_Running      = false;
         double  m_DeltaTime    = 0;

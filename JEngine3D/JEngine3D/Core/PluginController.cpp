@@ -33,8 +33,7 @@ namespace JE {
 
     void NativePluginController::UpdatePlugins()
     {
-        static auto s_LastUpdateTimestamp = JE_APP.Uptime();
-        if (s_LastUpdateTimestamp + PLUGIN_UPDATE_FREQUENCY_S <= JE_APP.Uptime()) {
+        m_PluginRefreshTimer.Execute([&]() {
             ForEach(m_Plugins, [](Scope<PluginEntry, MemoryTag::App>& plugin) {
                 if (plugin->PluginHandle.PluginUpdated()) {
                     plugin->Implementation->PreReload(plugin->Interface);
@@ -42,8 +41,7 @@ namespace JE {
                     plugin->Implementation->OnCreate(plugin->Interface);
                 }
             });
-            s_LastUpdateTimestamp = JE_APP.Uptime();
-        }
+        });
     }
 
 }// namespace JE

@@ -2,6 +2,7 @@
 
 #include "JEngine3D/Core/MemoryController.hpp"
 #include "JEngine3D/Core/Events.hpp"
+#include "JEngine3D/Core/PeriodicTimer.hpp"
 
 #include <filesystem>
 
@@ -78,7 +79,7 @@ namespace JE {
 
     class NativePluginController
     {
-        static constexpr auto PLUGIN_UPDATE_FREQUENCY_S = 0.25;
+        static constexpr auto PLUGIN_UPDATE_FREQUENCY_MS = 250;
 
     public:
         // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
@@ -111,6 +112,11 @@ namespace JE {
         };
         using NativePluginContainer = Vector<Scope<PluginEntry, MemoryTag::App>, MemoryTag::App>;
 
+        static auto Create() -> Scope<NativePluginController, MemoryTag::App>
+        {
+            return CreateScope<NativePluginController, MemoryTag::App>();
+        }
+
         void LoadPlugin(const std::filesystem::path& fullPath);
         // cppcheck-suppress functionStatic
         void LoadPlugins();
@@ -121,6 +127,7 @@ namespace JE {
 
     private:
         NativePluginContainer m_Plugins;
+        PeriodicTimer         m_PluginRefreshTimer{ PLUGIN_UPDATE_FREQUENCY_MS };
     };
 
 

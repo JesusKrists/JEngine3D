@@ -13,6 +13,7 @@ set(JEngine3D_HEADERS
     JEngine3D/Core/LoggerController.hpp
     JEngine3D/Core/MemoryController.hpp
     JEngine3D/Core/MouseButtons.hpp
+    JEngine3D/Core/PeriodicTimer.hpp
     JEngine3D/Core/PluginController.hpp
     JEngine3D/Core/Types.hpp
     JEngine3D/Core/WindowController.hpp

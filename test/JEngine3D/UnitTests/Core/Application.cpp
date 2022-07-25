@@ -8,6 +8,8 @@
 #include <JEngine3D/Core/Application.hpp>
 #include <JEngine3D/Core/InputController.hpp>// for InputController
 #include <JEngine3D/Core/ILayer.hpp>// for InputController
+#include <JEngine3D/Core/PluginController.hpp>
+#include "JEngine3D/Renderer/Renderer2D.hpp"
 
 
 class ApplicationTestsFixture : public TestPlatformFixture

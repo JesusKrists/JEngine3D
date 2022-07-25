@@ -232,7 +232,10 @@ namespace JE {
         }
 
         InitializeImGuiForJEngine3D();
+
+        m_ImGuiRenderer.Initialize();
     }
+
     void ImGuiLayer::OnDestroy() { ImGui::DestroyContext(); }
 
     void ImGuiLayer::OnUpdate()

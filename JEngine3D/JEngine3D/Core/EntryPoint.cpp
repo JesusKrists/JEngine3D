@@ -3,9 +3,11 @@
 #include "JEngine3D/Core/Application.hpp"
 #include "JEngine3D/Core/WindowController.hpp"
 #include "JEngine3D/Core/InputController.hpp"
+#include "JEngine3D/Core/PluginController.hpp"
 #include "JEngine3D/Platform/SDL/SDLPlatform.hpp"
 #include "JEngine3D/Platform/SDL/OpenGL/SDLGLGraphicsContextCreator.hpp"
 #include "JEngine3D/Renderer/OpenGL/OpenGLRendererObjectCreator.hpp"
+#include "JEngine3D/Renderer/Renderer2D.hpp"
 
 #include <docopt.h>// for docopt
 

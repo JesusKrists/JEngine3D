@@ -5,6 +5,7 @@
 #include "JEngine3D/Renderer/IRendererObjectCreator.hpp"
 #include "JEngine3D/Renderer/ITexture.hpp"
 #include "JEngine3D/Renderer/IRendererAPI.hpp"
+#include "JEngine3D/Renderer/IShader.hpp"
 
 struct ImDrawData;
 struct ImDrawList;

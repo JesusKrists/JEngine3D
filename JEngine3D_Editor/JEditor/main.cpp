@@ -1,6 +1,7 @@
 #include "JEditorState.hpp"
 #include "UILayer.hpp"
 #include <JEngine3D/Core/Application.hpp>
+#include <JEngine3D/Core/PluginController.hpp>
 
 namespace JEditor {
 
@@ -26,7 +27,9 @@ namespace JEditor {
             "EditorPlugin OnDestroy: DLL Application address: {} | Self address: {}", fmt::ptr(&JE_APP), fmt::ptr(this));
 
             plugin.DestroyState<EditorState>();// NOLINT(clang-analyzer-core.CallAndMessage)
+            JE_APP.PopLayer(*s_UILayer);
             EditorState::s_StateInstance = nullptr;
+            s_UILayer                    = nullptr;
         }
 
         void PreReload(JE::PluginInterface& plugin) override
