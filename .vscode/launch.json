@@ -11,6 +11,7 @@
             "program": "${workspaceFolder}/out/build/JEngine3D_Executable",
             "args": [],
             "stopAtEntry": false,
+            "requireExactSource": false,
             "cwd": "${workspaceFolder}/out/build/",
             "environment": [],
             "externalConsole": false,
@@ -26,7 +27,11 @@
                     "text": "-gdb-set disassembly-flavor intel",
                     "ignoreFailures": true
                 }
-            ]
+            ],
+            "symbolLoadInfo": {
+                "loadAll": true,
+                "exceptionList": ""
+            },
         },
         {
             "name": "Debug JEngine3D Executable - GDB Attach",

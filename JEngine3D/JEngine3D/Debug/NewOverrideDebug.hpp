@@ -1,26 +1,42 @@
 #pragma once
 
-#include <cstdint>
-#include <cstddef>
-#include <new>
+#include "JEngine3D/Core/Base.hpp"
 
-auto operator new(size_t size) -> void*;// NOLINT
-auto operator new[](size_t size) -> void*;// NOLINT
-void operator delete(void* p) noexcept;// NOLINT
-void operator delete(void* p, std::size_t) noexcept;
-void operator delete[](void* p) noexcept;// NOLINT
-void operator delete[](void* p, std::size_t) noexcept;
+auto operator new(std::size_t) -> void*;// NOLINT
+auto operator new(std::size_t, const std::nothrow_t&) noexcept -> void*;// NOLINT
+auto operator new[](std::size_t) -> void*;// NOLINT
+auto operator new[](std::size_t, const std::nothrow_t&) noexcept -> void*;// NOLINT
+
+void operator delete(void*) noexcept;// NOLINT
+void operator delete(void*, std::size_t) noexcept;// NOLINT
+void operator delete[](void*) noexcept;// NOLINT
+void operator delete[](void*, std::size_t) noexcept;// NOLINT
+
+auto operator new(std::size_t, std::align_val_t) -> void*;// NOLINT
+auto operator new(std::size_t, std::align_val_t, const std::nothrow_t&) noexcept -> void*;// NOLINT
+auto operator new[](std::size_t, std::align_val_t) -> void*;// NOLINT
+auto operator new[](std::size_t, std::align_val_t, const std::nothrow_t&) noexcept -> void*;// NOLINT
+
 
 namespace JE {
 
     class NewOverrideDebug
     {
-        friend auto ::operator new(size_t) -> void*;
-        friend auto ::operator new[](size_t) -> void*;
+        friend auto ::operator new(std::size_t) -> void*;
+        friend auto ::operator new[](std::size_t) -> void*;
+        friend auto ::operator new(std::size_t, const std::nothrow_t&) noexcept -> void*;
+        friend auto ::operator new[](std::size_t, const std::nothrow_t&) noexcept -> void*;
+
         friend void ::operator delete(void*) noexcept;
         friend void ::operator delete(void*, std::size_t) noexcept;
         friend void ::operator delete[](void*) noexcept;
         friend void ::operator delete[](void*, std::size_t) noexcept;
+
+
+        friend auto ::operator new(std::size_t, std::align_val_t) -> void*;// NOLINT
+        friend auto ::operator new(std::size_t, std::align_val_t, const std::nothrow_t&) noexcept -> void*;// NOLINT
+        friend auto ::operator new[](std::size_t, std::align_val_t) -> void*;// NOLINT
+        friend auto ::operator new[](std::size_t, std::align_val_t, const std::nothrow_t&) noexcept -> void*;// NOLINT
 
     public:
         NewOverrideDebug() = default;
@@ -50,7 +66,7 @@ namespace JE {
         uint64_t m_FrameGlobalAllocCount     = 0;
         uint64_t m_FrameGlobalDeallocCount   = 0;
 
-        static NewOverrideDebug s_OverrideDebugInstance;// NOLINT
+        JAPI static NewOverrideDebug s_OverrideDebugInstance;// NOLINT
     };
 
 }// namespace JE

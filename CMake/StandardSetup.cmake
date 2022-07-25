@@ -39,7 +39,7 @@ endif()
 # https://github.com/aminya/project_options
 # Change the version in the following URL to update the package (watch the releases of the repository for future updates)
 include(FetchContent)
-FetchContent_Declare(_project_options URL https://github.com/aminya/project_options/archive/refs/tags/v0.22.4.zip)
+FetchContent_Declare(_project_options URL https://github.com/aminya/project_options/archive/refs/tags/v0.24.0.zip)
 FetchContent_MakeAvailable(_project_options)
 include(${_project_options_SOURCE_DIR}/Index.cmake)
 include(${_project_options_SOURCE_DIR}/src/DynamicProjectOptions.cmake)
@@ -144,11 +144,5 @@ if(${CMAKE_BUILD_TYPE} STREQUAL Debug OR ${CMAKE_BUILD_TYPE} STREQUAL RelWithDeb
 endif()
 
 if(MSVC)
-  if(${CMAKE_BUILD_TYPE} STREQUAL Debug)
-    target_link_libraries(project_options INTERFACE msvcrtd ucrtd vcruntimed)
-  else()
-    target_link_libraries(project_options INTERFACE msvcrt ucrt vcruntime)
-  endif()
-
   target_compile_definitions(project_options INTERFACE _DISABLE_VECTOR_ANNOTATION)
 endif()

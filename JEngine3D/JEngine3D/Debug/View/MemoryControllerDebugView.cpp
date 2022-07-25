@@ -43,12 +43,6 @@ namespace JE {
                                         fmt::format("{}", NewOverrideDebug::Get().FrameGlobalAllocCount()));
         RenderMemoryControllerParameter("Total Global \"delete\" Deallocations per frame:",
                                         fmt::format("{}", NewOverrideDebug::Get().FrameGlobalDeallocCount()));
-        RenderMemoryControllerParameter(
-        "Total Global Alloc/Dealloc Delta:",
-        fmt::format("{}", NewOverrideDebug::Get().GlobalAllocCount() - NewOverrideDebug::Get().GlobalDeallocCount()));
-        RenderMemoryControllerParameter(
-        "Total Global Alloc/Dealloc Delta per frame:",
-        fmt::format("{}", NewOverrideDebug::Get().FrameGlobalAllocCount() - NewOverrideDebug::Get().FrameGlobalDeallocCount()));
         ImGui::EndGroup();
 
         ImGui::Unindent();
