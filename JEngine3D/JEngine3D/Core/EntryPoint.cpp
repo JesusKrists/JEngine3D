@@ -43,10 +43,6 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char** argv)
     const auto versionString = fmt::format("{} {}", JE::cmake::project_name, JE::cmake::project_version);
     const auto options = docopt::docopt(USAGE, std::vector<std::string>{ std::next(argv), std::next(argv, argc) }, true, versionString);
 
-    bool testMode = [&options]() {
-        auto it = options.find("--test");// NOLINT
-        return it->second.asBool();
-    }();
 
     JE::MemoryController s_MemoryController;
     JE::LoggerController s_LoggerController;
@@ -58,7 +54,7 @@ int main([[maybe_unused]] int argc, [[maybe_unused]] const char** argv)
     JE::WindowController s_WindowController;
     JE::InputController  s_InputController;
 
-    JE::Application engine{ versionString, testMode };
+    JE::Application engine{ versionString, options };
     engine.MainWindow().SetSize(MAIN_WINDOW_SIZE);
     engine.MainWindow().SetPosition(JE::IPlatform::WINDOW_CENTER_POSITION);
     engine.Run();

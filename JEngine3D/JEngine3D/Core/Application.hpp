@@ -1,5 +1,7 @@
 #pragma once
 
+#include <docopt.h>
+
 #include "JEngine3D/Core/Events.hpp"
 #include "JEngine3D/Core/LayerStack.hpp"
 #include "JEngine3D/Core/ImGui/ImGuiLayer.hpp"
@@ -27,6 +29,7 @@ namespace JE {
     class IImGuiDebugView;
     class Renderer2D;
     class NativePluginController;
+    class PeriodicTimer;
 
     // NOLINTNEXTLINE(hicpp-special-member-functions, cppcoreguidelines-special-member-functions)
     class Application final : public IEventProcessor
@@ -50,7 +53,7 @@ namespace JE {
         static constexpr auto MAIN_WINDOW_CONFIG = WindowConfiguration{ true };
         const std::string     WORKING_DIRECTORY  = std::filesystem::current_path().generic_string();
 
-        explicit Application(const std::string_view& title, bool testMode = false);
+        explicit Application(const std::string_view& title, const docopt::Options& commandLineArgs);
         virtual ~Application() = default;// NOLINT
 
         [[nodiscard]] static inline auto Get() -> Application&

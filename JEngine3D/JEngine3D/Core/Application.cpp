@@ -26,7 +26,7 @@ namespace JE {
 
     JAPI Application* Application::s_ApplicationInstance = nullptr;// NOLINT
 
-    Application::Application(const std::string_view& title, bool testMode)
+    Application::Application(const std::string_view& title, const docopt::Options& commandLineArgs)
         : m_MainWindow(WindowController::Get().CreateWindow(title, DEFAULT_SIZE, IPlatform::WINDOW_CENTER_POSITION, MAIN_WINDOW_CONFIG))
     {
         ZoneScopedN("Application::Application");// NOLINT
@@ -42,6 +42,13 @@ namespace JE {
         AddInternalDebugViews();
 
         IPlatform::Get().SetEventProcessor(this);
+
+
+        const bool testMode = [&]() {
+            auto testIt = commandLineArgs.find("--test");
+            if (testIt != std::end(commandLineArgs)) { return testIt->second.asBool(); }
+            return false;
+        }();
 
         // m_NativePluginController->LoadPlugins();
         if (!testMode) {

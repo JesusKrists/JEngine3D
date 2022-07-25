@@ -14,6 +14,7 @@ target_link_system_libraries(
   libglew_static
   lunasvg
   PUBLIC
+  docopt::docopt
   fmt::fmt
   spdlog
   ImGuiLibrary
@@ -62,12 +63,7 @@ target_link_system_libraries(JEngine3D PUBLIC JEngine3D_NEW_OVERRIDE)
 ###############################################################################################
 
 add_executable(JEngine3D_Executable JEngine3D/Core/EntryPoint.cpp)
-target_link_libraries(
-  JEngine3D_Executable
-  PRIVATE project_options
-          project_warnings
-          JEngine3D
-          docopt::docopt)
+target_link_libraries(JEngine3D_Executable PRIVATE project_options project_warnings JEngine3D)
 target_include_directories(JEngine3D_Executable
                            PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")
 
