@@ -30,7 +30,7 @@ namespace JE {
         return AssetType::UNKNOWN;
     }
 
-    AssetController* AssetController::s_AssetControllerInstance = nullptr;// NOLINT
+    JAPI AssetController* AssetController::s_AssetControllerInstance = nullptr;// NOLINT
 
     AssetController::AssetController()
     {

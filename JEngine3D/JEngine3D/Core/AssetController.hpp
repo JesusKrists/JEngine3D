@@ -59,6 +59,6 @@ namespace JE {
         AssetHandleContainer                                           m_AssetHandles;
         Vector<Scope<ITexture2D, MemoryTag::Renderer>, MemoryTag::App> m_TextureAssets;
 
-        static AssetController* s_AssetControllerInstance;// NOLINT
+        JAPI static AssetController* s_AssetControllerInstance;// NOLINT
     };
 }// namespace JE
