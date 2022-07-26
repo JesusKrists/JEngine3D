@@ -10,6 +10,7 @@ namespace JE {
 
     static constexpr auto SVG_EXTENSION_STR = std::string_view{ ".svg" };
     static constexpr auto JPG_EXTENSION_STR = std::string_view{ ".jpg" };
+    static constexpr auto PNG_EXTENSION_STR = std::string_view{ ".png" };
     static constexpr auto TTF_EXTENSION_STR = std::string_view{ ".ttf" };
     static constexpr auto INI_EXTENSION_STR = std::string_view{ ".ini" };
 

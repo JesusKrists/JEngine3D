@@ -13,7 +13,6 @@
 #include <JEngine3D/Utility/ImageLoader.hpp>
 
 #include <imgui.h>
-#include <stb_image.h>
 #include <IconsFontAwesome6.h>
 
 #include <filesystem>
@@ -45,16 +44,7 @@ namespace JEditor {
                                JE::TextureFormat::RGBA8);
 
 
-        stbi_set_flip_vertically_on_load(1);
-        JE::Size2DI    imageSize     = { 0, 0 };
-        int            imageChannels = 0;
-        unsigned char* data          = stbi_load("assets/textures/testtexture.jpg", &imageSize.Width, &imageSize.Height, &imageChannels, 4);
-        m_MemeTexture                = JE::IRendererObjectCreator::Get().CreateTexture(
-        "assets/textures/testtexture.jpg",
-        { reinterpret_cast<const std::byte*>(data), static_cast<size_t>(imageSize.Width * imageSize.Height * 4) },// NOLINT
-        imageSize,
-        JE::TextureFormat::RGBA8);
-        stbi_image_free(data);
+        m_MemeTexture = JE::AssetController::Get().LoadAsset("assets/textures/testtexture.jpg");
 
         LoadImGuiSettings();
 
@@ -122,7 +112,7 @@ namespace JEditor {
             for (int y = 0; y < 10; y++) {// NOLINT
                 for (int x = 0; x < 10; x++) {// NOLINT
                     const auto newPosition = glm::vec3{ -0.9F + (static_cast<float>(x) / 5), -0.9F + (static_cast<float>(y) / 5), 0 };
-                    renderer2D.DrawQuad(newPosition, size, *m_MemeTexture, color2);
+                    renderer2D.DrawQuad(newPosition, size, m_MemeTexture->As<JE::ITexture2D>(), color2);
                 }
             }
 

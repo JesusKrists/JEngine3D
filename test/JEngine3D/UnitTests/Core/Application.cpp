@@ -21,7 +21,7 @@ public:
     static constexpr auto NEW_WINDOW_SIZE   = JE::Size2DI{ 320, 240 };
     static constexpr auto NEW_WINDOW_RESIZE = JE::Size2DI{ 640, 480 };
 
-    ApplicationTestsFixture() : m_App(DEFAULT_TITLE, docopt::Options{}) { m_Backend.PollEvents(); }
+    ApplicationTestsFixture() : m_App(DEFAULT_TITLE, docopt::Options{ { "--test", docopt::value{ true } } }) { m_Backend.PollEvents(); }
 
 protected:
     JE::Application m_App;

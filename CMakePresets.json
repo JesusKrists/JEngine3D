@@ -374,6 +374,13 @@
             "configurePreset": "linux-clang-debug"
         },
         {
+            "name": "test-linux-clang-debug-nostaticanalysis",
+            "displayName": "Strict",
+            "description": "Enable output and stop on failure",
+            "inherits": "test-common",
+            "configurePreset": "linux-clang-debug-nostaticanalysis"
+        },
+        {
             "name": "test-linux-clang-release",
             "displayName": "Strict",
             "description": "Enable output and stop on failure",

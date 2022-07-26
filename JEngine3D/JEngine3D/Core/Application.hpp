@@ -2,6 +2,7 @@
 
 #include <docopt.h>
 
+#include "JEngine3D/Core/AssetController.hpp"
 #include "JEngine3D/Core/Events.hpp"
 #include "JEngine3D/Core/LayerStack.hpp"
 #include "JEngine3D/Core/ImGui/ImGuiLayer.hpp"
@@ -126,6 +127,7 @@ namespace JE {
         LayerStack             m_LayerStack;
         PeriodicTimerContainer m_PeriodicTimers;
         DebugViewContainer     m_DebugViewContainer;
+        AssetController        m_AssetController;
 
         Window&                                  m_MainWindow;
         Scope<IRendererAPI, MemoryTag::Renderer> m_RendererAPI = IRendererObjectCreator::Get().CreateAPI();

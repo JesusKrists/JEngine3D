@@ -1,6 +1,7 @@
 #pragma once
 
 #include <JEngine3D/Core/ILayer.hpp>
+#include <JEngine3D/Core/AssetController.hpp>
 #include <JEngine3D/Renderer/ITexture.hpp>
 #include <JEngine3D/Renderer/IFramebuffer.hpp>
 
@@ -42,7 +43,7 @@ namespace JEditor {
         bool m_ResetDockLayout = false;
 
         JE::Scope<JE::ITexture2D, JE::MemoryTag::Renderer> m_TestTexture;
-        JE::Scope<JE::ITexture2D, JE::MemoryTag::Renderer> m_MemeTexture;
+        JE::AssetHandle*                                   m_MemeTexture;
         JE::Size2DI                                        m_GameViewportSize = INITIAL_GAME_VIEWPORT_SIZE;
     };
 
