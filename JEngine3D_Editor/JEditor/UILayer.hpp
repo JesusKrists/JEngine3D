@@ -43,7 +43,7 @@ namespace JEditor {
         bool m_ResetDockLayout = false;
 
         JE::Scope<JE::ITexture2D, JE::MemoryTag::Renderer> m_TestTexture;
-        JE::AssetHandle*                                   m_MemeTexture;
+        JE::AssetHandle*                                   m_MemeTexture      = nullptr;
         JE::Size2DI                                        m_GameViewportSize = INITIAL_GAME_VIEWPORT_SIZE;
     };
 
