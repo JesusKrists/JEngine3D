@@ -48,10 +48,9 @@ namespace JE {
         virtual void               Resize(const Size2DI& size) = 0;
         virtual void               SwapBuffers()               = 0;
         virtual void               ResetViewport()             = 0;
-
-        virtual void EnableVSync()          = 0;
-        virtual void DisableVSync()         = 0;
-        virtual auto VSyncEnabled() -> bool = 0;
+        virtual void               EnableVSync()               = 0;
+        virtual void               DisableVSync()              = 0;
+        virtual auto               VSyncEnabled() -> bool      = 0;
 
     private:
         virtual void MakeContextCurrent() = 0;

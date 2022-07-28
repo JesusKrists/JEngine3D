@@ -1,9 +1,6 @@
-# [Choice] bionic (18.04), focal (20.04)
-ARG VARIANT="focal"
-FROM ubuntu:${VARIANT}
+FROM nvidia/opengl:1.2-glvnd-runtime-ubuntu20.04
 
-# Restate the variant to use it later on in the llvm and cmake installations
-ARG VARIANT
+ENV NVIDIA_DRIVER_CAPABILITIES ${NVIDIA_DRIVER_CAPABILITIES},display
 
 # Install necessary packages available from standard repos
 RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
@@ -11,7 +8,8 @@ RUN apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
     software-properties-common wget apt-utils file zip \
     openssh-client gpg-agent socat rsync \
     make ninja-build git \
-    python3 python3-pip pkg-config valgrind unzip curl kcachegrind dbus-x11
+    python3 python3-pip pkg-config valgrind unzip curl kcachegrind \
+    dbus-x11 libgtk-3-dev mesa-utils 
 
 # Install packages required by SDL2
 RUN apt-get -y install xorg-dev libsdl2-dev
@@ -20,11 +18,7 @@ ARG GCC_VER="11"
 RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
-    gcc-11 g++-11 gdb \
-    gcc-10 g++-10 \
-    gcc-9 g++-9 \
-    gcc-8 g++-8 \
-    gcc-7 g++-7
+    gcc-11 g++-11 gdb
 
 # Set gcc-${GCC_VER} as default gcc
 RUN update-alternatives --install /usr/bin/gcc gcc $(which gcc-${GCC_VER}) 100
@@ -36,31 +30,6 @@ RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s 15
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
     libclang-15-dev clang-tidy-15 clang-format-15
-
-RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s 14
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt-get install -y --no-install-recommends \
-    libclang-14-dev clang-tidy-14 clang-format-14
-
-RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s 13
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt-get install -y --no-install-recommends \
-    libclang-13-dev clang-tidy-13 clang-format-13
-
-RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s 12
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt-get install -y --no-install-recommends \
-    libclang-12-dev clang-tidy-12 clang-format-12
-
-RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s 11
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt-get install -y --no-install-recommends \
-    libclang-11-dev clang-tidy-11 clang-format-11
-
-RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s 10
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt-get install -y --no-install-recommends \
-    libclang-10-dev clang-tidy-10 clang-format-10
 
 
 RUN update-alternatives --install /usr/bin/clang-format clang-format $(which clang-format-15) 100
@@ -75,7 +44,7 @@ RUN python3 -m pip install cmakelang
 
 # Add current cmake/ccmake, from Kitware
 ARG CMAKE_URL="https://apt.kitware.com/ubuntu/"
-ARG CMAKE_PKG=${VARIANT}
+ARG CMAKE_PKG=focal
 RUN wget -O - https://apt.kitware.com/keys/kitware-archive-latest.asc 2>/dev/null \
     | gpg --dearmor - | tee /etc/apt/trusted.gpg.d/kitware.gpg >/dev/null && \
     apt-add-repository -y "deb ${CMAKE_URL} ${CMAKE_PKG} main" && \
@@ -108,12 +77,12 @@ ENV IWYU /home/iwyu
 ENV IWYU_BUILD ${IWYU}/build
 ENV IWYU_SRC ${IWYU}/include-what-you-use
 RUN mkdir -p ${IWYU_BUILD} && \
-    git clone --branch clang_14 \
+    git clone \
     https://github.com/include-what-you-use/include-what-you-use.git \
     ${IWYU_SRC}
-RUN CC=clang-14 CXX=clang++-14 cmake -S ${IWYU_SRC} \
+RUN CC=clang-15 CXX=clang++-15 cmake -S ${IWYU_SRC} \
     -B ${IWYU_BUILD} \
-    -G "Unix Makefiles" -DCMAKE_PREFIX_PATH=/usr/lib/llvm-14 && \
+    -G "Unix Makefiles" -DCMAKE_PREFIX_PATH=/usr/lib/llvm-15 && \
     cmake --build ${IWYU_BUILD} -j && \
     cmake --install ${IWYU_BUILD}
 
@@ -124,11 +93,6 @@ RUN CC=clang-14 CXX=clang++-14 cmake -S ${IWYU_SRC} \
 RUN mkdir -p $(include-what-you-use -print-resource-dir 2>/dev/null)
 RUN ln -s $(readlink -f /usr/lib/clang/14/include) \
     $(include-what-you-use -print-resource-dir 2>/dev/null)/include
-
-
-RUN export DEBIAN_FRONTEND=noninteractive && \
-    apt-get install -y --no-install-recommends \
-    libgtk-3-dev
 
 ## Cleanup cached apt data we don't need anymore
 RUN apt-get autoremove -y && apt-get clean && \
