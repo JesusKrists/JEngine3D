@@ -23,6 +23,11 @@
 // IWYU pragma: no_include <glm/detail/type_vec4.inl>
 // IWYU pragma: no_include <glm/ext/vector_float3.hpp>
 
+
+#include <entt/entt.hpp>
+#include <JEngine3D/ECS/Entity.hpp>
+#include <JEngine3D/ECS/Components.hpp>
+
 namespace JE {
     class IEvent;
 }
@@ -50,6 +55,33 @@ namespace JEditor {
 
         JE::ForEach(JE_APP.DebugViews(), [](JE::IImGuiDebugView& view) { view.Open(); });
         InitializeUI();
+
+        entt::registry testRegistry;
+        JE::Entity     testEntity{ testRegistry.create(), testRegistry };
+        auto&          testComponent = testEntity.AddComponent<JE::TagComponent>();
+        testComponent.Tag            = "Tag Component String Value";
+
+        auto view = testRegistry.view<const JE::TagComponent>();
+        JE::ForEach(view, [&](entt::entity entity) {
+            auto [tagComponent] = view.get(entity);
+            JE::Logger::ClientLogger().debug("{}", tagComponent.Tag);
+        });
+
+        auto& component = testEntity.GetComponent<JE::TagComponent>();
+        component.Tag   = "New Tag Component String Value";
+
+        auto view2 = testRegistry.view<const JE::TagComponent>();
+        JE::ForEach(view2, [&](entt::entity entity) {
+            auto [tagComponent] = view.get(entity);
+            JE::Logger::ClientLogger().debug("{}", tagComponent.Tag);
+        });
+
+
+        JE::Logger::ClientLogger().debug("Test Entity has component - {}", testEntity.HasComponent<JE::TagComponent>());
+
+        testEntity.DeleteComponent<JE::TagComponent>();
+
+        JE::Logger::ClientLogger().debug("Test Entity has component - {}", testEntity.HasComponent<JE::TagComponent>());
     }
 
     void UILayer::OnDestroy() {}

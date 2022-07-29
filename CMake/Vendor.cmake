@@ -186,3 +186,13 @@ FetchContent_Declare(
 
 FetchContent_MakeAvailable(lunasvg)
 disable_static_analysis(lunasvg)
+
+################################# entt (ECS) ###################################################3
+
+FetchContent_Declare(
+  entt
+  GIT_REPOSITORY https://github.com/skypjack/entt.git
+  GIT_TAG v3.10.1)
+
+FetchContent_MakeAvailable(entt)
+disable_static_analysis(EnTT)

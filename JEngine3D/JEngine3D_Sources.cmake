@@ -25,6 +25,8 @@ set(JEngine3D_HEADERS
     JEngine3D/Debug/View/Renderer2DDebugView.hpp
     JEngine3D/Debug/View/WindowControllerDebugView.hpp
     JEngine3D/Debug/NewOverrideDebug.hpp
+    JEngine3D/ECS/Components.hpp
+    JEngine3D/ECS/Entity.hpp
     JEngine3D/Platform/IGraphicsContext.hpp
     JEngine3D/Platform/IGraphicsContextCreator.hpp
     JEngine3D/Platform/IPlatform.hpp

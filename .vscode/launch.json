@@ -14,7 +14,7 @@
             "requireExactSource": false,
             "cwd": "${workspaceFolder}/out/build/",
             "environment": [],
-            "externalConsole": false,
+            "externalConsole": true,
             "MIMode": "gdb",
             "setupCommands": [
                 {

@@ -21,7 +21,8 @@ target_link_system_libraries(
   Tracy::TracyClient
   CRTarget
   STBTarget # Make this a private link when implented stb into JEngine3D properly (currently used in JEngine3D_Editor)
-  glm::glm)
+  glm::glm
+  EnTT::EnTT)
 target_compile_definitions(JEngine3D PRIVATE JE_EXPORT)
 
 target_include_directories(JEngine3D PRIVATE "${CMAKE_CURRENT_BINARY_DIR}/configured_files/configured_files/include")

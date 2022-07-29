@@ -43,3 +43,6 @@
 [submodule "fonticons"]
     path = out/build/_deps/fonticons-src
     url = dummy_string_to_satisfy_vscode
+[submodule "fonticons"]
+    path = out/build/_deps/entt-src
+    url = dummy_string_to_satisfy_vscode

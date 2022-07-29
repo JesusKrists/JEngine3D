@@ -69,6 +69,12 @@ if(NOT CMAKE_BUILD_TYPE AND NOT CMAKE_CONFIGURATION_TYPES)
              "RelWithDebInfo")
 endif()
 
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+  set(OPT_ENABLE_SANITIZER_ADDRESS
+      FALSE
+      CACHE BOOL "Disable ASAN" FORCE)
+endif()
+
 # defaulted_project_options sets recommended defaults and provides user and developer
 # modes and full GUI support for choosing options at configure time
 
