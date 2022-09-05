@@ -16,7 +16,7 @@ RUN apt-get -y install xorg-dev libsdl2-dev
 
 ARG GCC_VER="11"
 RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
-    apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
+    apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \\
     apt-get install -y --no-install-recommends \
     gcc-11 g++-11 gdb
 
@@ -25,19 +25,18 @@ RUN update-alternatives --install /usr/bin/gcc gcc $(which gcc-${GCC_VER}) 100
 RUN update-alternatives --install /usr/bin/g++ g++ $(which g++-${GCC_VER}) 100
 RUN update-alternatives --install /usr/bin/cpp cpp $(which cpp-${GCC_VER}) 100
 
-ARG LLVM_VER="13"
-RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s 15
+RUN wget -qO - https://apt.llvm.org/llvm.sh | bash -s 16
 RUN export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
-    libclang-15-dev clang-tidy-15 clang-format-15
+    libclang-16-dev clang-tidy-16 clang-format-16
 
 
-RUN update-alternatives --install /usr/bin/clang-format clang-format $(which clang-format-15) 100
+RUN update-alternatives --install /usr/bin/clang-format clang-format $(which clang-format-16) 100
 # Set the default clang-tidy, so CMake can find it
-RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-tidy-15) 100
+RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-tidy-16) 100
 # Set clang-${LLVM_VER} as default clang
-RUN update-alternatives --install /usr/bin/clang clang $(which clang-${LLVM_VER}) 100
-RUN update-alternatives --install /usr/bin/clang++ clang++ $(which clang++-${LLVM_VER}) 100
+RUN update-alternatives --install /usr/bin/clang clang $(which clang-16) 100
+RUN update-alternatives --install /usr/bin/clang++ clang++ $(which clang++-16) 100
 
 # Install cmake-format
 RUN python3 -m pip install cmakelang
@@ -67,8 +66,8 @@ ENV CPPCHECK_BUILD ${CPPCHECK}/build
 ENV CPPCHECK_SRC ${CPPCHECK}/cppcheck-src
 RUN mkdir -p ${CPPCHECK_BUILD}
 RUN apt-get install libxml2-utils && apt-get install libz3-dev libtinyxml2-dev && apt-get install libpcre3-dev
-RUN git clone --branch 2.8 https://github.com/danmar/cppcheck.git ${CPPCHECK_SRC}
-RUN CC=clang-15 CXX=clang++-15 cmake -S ${CPPCHECK_SRC} -B ${CPPCHECK_BUILD} -G "Unix Makefiles" -DHAVE_RULES=On -DBUILD_GUI=Off
+RUN git clone --branch 2.9 https://github.com/danmar/cppcheck.git ${CPPCHECK_SRC}
+RUN CC=clang-16 CXX=clang++-16 cmake -S ${CPPCHECK_SRC} -B ${CPPCHECK_BUILD} -G "Unix Makefiles" -DHAVE_RULES=On -DBUILD_GUI=Off
 RUN cmake --build ${CPPCHECK_BUILD} -j
 RUN cmake --install ${CPPCHECK_BUILD}
 
@@ -80,9 +79,9 @@ RUN mkdir -p ${IWYU_BUILD} && \
     git clone \
     https://github.com/include-what-you-use/include-what-you-use.git \
     ${IWYU_SRC}
-RUN CC=clang-15 CXX=clang++-15 cmake -S ${IWYU_SRC} \
+RUN CC=clang-16 CXX=clang++-16 cmake -S ${IWYU_SRC} \
     -B ${IWYU_BUILD} \
-    -G "Unix Makefiles" -DCMAKE_PREFIX_PATH=/usr/lib/llvm-15 && \
+    -G "Unix Makefiles" -DCMAKE_PREFIX_PATH=/usr/lib/llvm-16 && \
     cmake --build ${IWYU_BUILD} -j && \
     cmake --install ${IWYU_BUILD}
 
@@ -91,7 +90,7 @@ RUN CC=clang-15 CXX=clang++-15 cmake -S ${IWYU_SRC} \
 #  running (similarly, use include-what-you-use -print-resource-dir to learn
 #  exactly where IWYU wants the headers).`
 RUN mkdir -p $(include-what-you-use -print-resource-dir 2>/dev/null)
-RUN ln -s $(readlink -f /usr/lib/clang/14/include) \
+RUN ln -s $(readlink -f /usr/lib/clang/16/include) \
     $(include-what-you-use -print-resource-dir 2>/dev/null)/include
 
 ## Cleanup cached apt data we don't need anymore
