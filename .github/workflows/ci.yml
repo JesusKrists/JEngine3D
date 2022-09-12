@@ -21,7 +21,7 @@ env:
   SONAR_SERVER_URL: "https://sonarcloud.io"
   BUILD_WRAPPER_OUT_DIR: build_wrapper_output_directory # Directory where build-wrapper output will be placed
   CPPCHECK: /home/cppcheck
-  LLVM_VER: 15
+  LLVM_VER: 16
 
 jobs:
   Test:
@@ -198,7 +198,7 @@ jobs:
           unzip -o $HOME/.sonar/build-wrapper-linux-x86.zip -d $HOME/.sonar/
           echo "$HOME/.sonar/build-wrapper-linux-x86" >> $GITHUB_PATH
 
-      - name: Linux - Setup clang-15
+      - name: Linux - Setup clang-16
         if: runner.os == 'Linux' && matrix.compiler == 'llvm'
         env:
           LLVM_URL: http://apt.llvm.org/focal/
@@ -217,7 +217,7 @@ jobs:
           sudo update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-tidy-${{ env.LLVM_VER }}) 100 && \
           sudo update-alternatives --install /usr/bin/llvm-cov llvm-cov $(which llvm-cov-${{ env.LLVM_VER }}) 100
 
-      - name: Linux - Setup cppcheck 2.8
+      - name: Linux - Setup cppcheck 2.9
         if: runner.os == 'Linux' && matrix.compiler == 'llvm'
         env:
           CPPCHECK_BUILD: ${{ env.CPPCHECK }}/build
@@ -226,7 +226,7 @@ jobs:
           sudo apt-get purge --auto-remove cppcheck
           sudo mkdir -p ${{ env.CPPCHECK_BUILD }}
           sudo apt-get install libxml2-utils && sudo apt-get install libz3-dev libtinyxml2-dev && sudo apt-get install libpcre3-dev
-          git clone --branch 2.8 https://github.com/danmar/cppcheck.git ${{ env.CPPCHECK_SRC }}
+          git clone --branch 2.9 https://github.com/danmar/cppcheck.git ${{ env.CPPCHECK_SRC }}
           CC=clang-${{ env.LLVM_VER }} CXX=clang++-${{ env.LLVM_VER }} cmake -S ${{ env.CPPCHECK_SRC }} -B ${{ env.CPPCHECK_BUILD }} -G "Unix Makefiles" -DHAVE_RULES=On -DBUILD_GUI=Off
           cmake --build ${{ env.CPPCHECK_BUILD }} -j
           sudo cmake --install ${{ env.CPPCHECK_BUILD }}

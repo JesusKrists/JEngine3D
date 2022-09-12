@@ -36,10 +36,10 @@ namespace JE {
     class IEvent
     {
     public:
-        IEvent(const IEvent& other)                    = delete;
+        IEvent(const IEvent& other) = delete;
         auto operator=(const IEvent& other) -> IEvent& = delete;
         IEvent(IEvent&& other)                         = delete;
-        auto operator=(IEvent&& other) -> IEvent&      = delete;
+        auto operator=(IEvent&& other) -> IEvent& = delete;
 
         IEvent()          = default;
         virtual ~IEvent() = default;

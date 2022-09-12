@@ -11,10 +11,10 @@ namespace JE {
         static constexpr auto MILISECONDS = 1000;
 
     public:
-        PeriodicTimer(const PeriodicTimer& other)                    = default;
-        PeriodicTimer(PeriodicTimer&& other)                         = default;
+        PeriodicTimer(const PeriodicTimer& other) = default;
+        PeriodicTimer(PeriodicTimer&& other)      = default;
         auto operator=(const PeriodicTimer& other) -> PeriodicTimer& = default;
-        auto operator=(PeriodicTimer&& other) -> PeriodicTimer&      = default;
+        auto operator=(PeriodicTimer&& other) -> PeriodicTimer& = default;
 
         explicit PeriodicTimer(uint32_t frequencyMs) : m_FrequencyMs(frequencyMs) { JE_APP.RegisterPeriodicTimer(*this); }
         ~PeriodicTimer() { JE_APP.UnregisterPeriodicTimer(*this); }

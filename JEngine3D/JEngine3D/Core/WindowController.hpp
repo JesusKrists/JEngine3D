@@ -16,10 +16,10 @@ namespace JE {
         friend class WindowController;
 
     public:
-        Window(const Window& other)                    = delete;
+        Window(const Window& other) = delete;
         auto operator=(const Window& other) -> Window& = delete;
         Window(Window&& other)                         = delete;
-        auto operator=(Window&& other) -> Window&      = delete;
+        auto operator=(Window&& other) -> Window& = delete;
 
         Window(const std::string_view&       title,
                const Size2DI&                size,
