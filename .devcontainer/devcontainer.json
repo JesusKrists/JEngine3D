@@ -9,7 +9,6 @@
 		// Update 'USE_CLANG' to set clang as the default C and C++ compiler. Options: [1, null]. Default null
 		"args": {
 			"GCC_VER": "11",
-			"LLVM_VER": "16",
 			"USE_CLANG": "1"
 		}
 	},
@@ -27,47 +26,60 @@
 	},
 	// Set *default* container specific settings.json values on container create.
 	"settings": {
-		"clangd.path": "clangd-16",
 		"workbench.tree.indent": 24,
-		"cmake.configureOnOpen": false,
-		"cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
+		"editor.fontFamily": "Source Code Pro",
 		"editor.formatOnSave": true,
 		"workbench.iconTheme": "vscode-icons",
-		"workbench.colorTheme": "Ayu Dark Bordered",
-		"editor.fontFamily": "Source Code Pro, Consolas, 'Courier New', monospace",
 		"tabnine.experimentalAutoImports": true,
-		"files.exclude": {
-			"**/.git": false
-		},
 		"editor.guides.bracketPairs": true,
-		"editor.bracketPairColorization.enabled": true,
-		"debug.allowBreakpointsEverywhere": true,
+		"output.smartScroll.enabled": false,
+		"window.zoomLevel": -1,
+		"editor.fontSize": 16,
 		"C_Cpp.intelliSenseEngine": "Disabled",
+		"clangd.path": "clangd-16",
+		"clangd.detectExtensionConflicts": true,
+		"liveshare.allowGuestDebugControl": true,
+		"cmake.configureOnOpen": false,
+		"cmake.generator": "Ninja",
+		"cmake.copyCompileCommands": "${workspaceFolder}/compile_commands.json",
 		"git.enableSmartCommit": true,
-		"git.confirmSync": false,
-		"output.smartScroll.enabled": false
+		"files.associations": {
+			".yaml-lint": "yaml"
+		},
+		"debug.allowBreakpointsEverywhere": true
 	},
 	// Add the IDs of extensions you want installed when the container is created.
 	"extensions": [
-		"vadimcn.vscode-lldb",
-		"llvm-vs-code-extensions.vscode-clangd",
-		"ms-vscode.cmake-tools",
-		"twxs.cmake",
-		"ms-vscode.cpptools-themes",
-		"cschlosser.doxdocgen",
+		"amiralizadeh9480.cpp-helper",
+		"cheshirekow.cmake-format",
+		"davidbroetje.algorithm-mnemonics-vscode",
 		"eamodio.gitlens",
+		"jeff-hykin.better-cpp-syntax",
+		"llvm-vs-code-extensions.vscode-clangd",
+		"matepek.vscode-catch2-test-adapter",
 		"ms-python.python",
 		"ms-python.vscode-pylance",
-		"mutantdino.resourcemonitor",
+		"ms-toolsai.jupyter",
+		"ms-toolsai.jupyter-keymap",
+		"ms-toolsai.jupyter-renderers",
+		"ms-toolsai.vscode-jupyter-cell-tags",
+		"ms-toolsai.vscode-jupyter-slideshow",
+		"ms-vscode-remote.remote-containers",
+		"ms-vscode.cmake-tools",
 		"ms-vscode.cpptools",
-		// Custom extensions added by Jesus
-		"jeff-hykin.better-cpp-syntax",
+		"ms-vscode.cpptools-themes",
+		"ms-vsliveshare.vsliveshare",
+		"mutantdino.resourcemonitor",
+		"PKief.material-icon-theme",
+		"redhat.ansible",
+		"redhat.vscode-yaml",
 		"TabNine.tabnine-vscode",
+		"twxs.cmake",
+		"usernamehw.errorlens",
+		"vadimcn.vscode-lldb",
 		"vscode-icons-team.vscode-icons",
-		"cheshirekow.cmake-format",
-		"Guyutongxue.cpp-reference",
-		"teabyii.ayu",
-		"ms-vsliveshare.vsliveshare"
+		"wayou.vscode-todo-highlight",
+		"wholroyd.jinja"
 	],
 	"mounts": [
 		"source=/tmp/.X11-unix,target=/tmp/.X11-unix,type=bind,consistency=cached",

@@ -18,7 +18,7 @@ ARG GCC_VER="11"
 RUN add-apt-repository -y ppa:ubuntu-toolchain-r/test && \
     apt-get update -qq && export DEBIAN_FRONTEND=noninteractive && \
     apt-get install -y --no-install-recommends \
-    gcc-11 g++-11 gdb
+    gcc-${GCC_VER} g++-${GCC_VER} gdb
 
 # Set gcc-${GCC_VER} as default gcc
 RUN update-alternatives --install /usr/bin/gcc gcc $(which gcc-${GCC_VER}) 100
@@ -37,9 +37,7 @@ RUN export DEBIAN_FRONTEND=noninteractive && \
 
 
 RUN update-alternatives --install /usr/bin/clang-format clang-format $(which clang-format-16) 100
-# Set the default clang-tidy, so CMake can find it
 RUN update-alternatives --install /usr/bin/clang-tidy clang-tidy $(which clang-tidy-16) 100
-# Set clang-${LLVM_VER} as default clang
 RUN update-alternatives --install /usr/bin/clang clang $(which clang-16) 100
 RUN update-alternatives --install /usr/bin/clang++ clang++ $(which clang++-16) 100
 
